@@ -1,3 +1,11 @@
+# LX Plus v25.3 — Auth Rate Limit Fix
+
+- Exibe a versão na tela de autenticação para confirmar o deploy.
+- Força HTTPS nos redirects de produção.
+- Trata erro 429 do Supabase explicitamente.
+- Cache-busting em CSS/JS e Service Worker v25.3.
+- Não afirma que a conta foi criada quando o limite de e-mail bloqueia o signup.
+
 # LX Plus v25.2 — Auth UX Fix
 
 Melhora mensagens de cadastro/login, detecta conta não confirmada e rate limit, evita cliques repetidos e direciona o usuário para reenviar confirmação.
