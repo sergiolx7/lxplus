@@ -1,3 +1,7 @@
+# LX Plus v25.1 — Auth Redirect Fix
+
+Correção do fluxo de confirmação e recuperação do Supabase: redirects usam o domínio oficial configurado, link expirado é tratado dentro da interface e há botão para reenviar confirmação.
+
 # LX Plus v25 — Launch Complete
 
 A v25 fecha a lista de melhorias de lançamento: progresso no segundo exato, perfis editáveis, bio, formatos de avatar, molduras Premium, recomendações contextuais, mini player, WebVTT, HLS adaptativo real quando um manifesto é informado, dashboard avançado, agendamento, prioridade, prévia de rascunhos, pedidos convertidos em conteúdo e identidade visual global pelo ADM.

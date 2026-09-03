@@ -9,7 +9,7 @@
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="app.css">
-  <title>LX Plus v25 — Launch Complete</title>
+  <title>LX Plus v25.1 — Launch Complete</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -52,7 +52,7 @@
           <label>E-mail<input id="loginEmail" type="email" required autocomplete="email" placeholder="seuemail@exemplo.com"></label>
           <label>Senha<input id="loginPass" type="password" required autocomplete="current-password" placeholder="••••••••"></label>
           <button class="primary-btn full" type="submit">Entrar</button>
-          <button id="forgotBtn" class="link-btn" type="button">Esqueci minha senha</button>
+          <div class="auth-links"><button id="forgotBtn" class="link-btn" type="button">Esqueci minha senha</button><button id="resendConfirmBtn" class="link-btn" type="button">Reenviar confirmação</button></div>
           <div id="devHint" class="demo-hint">Modo local de demonstração. O modo produção usa a API do backend incluído no projeto.</div>
         </form>
         <form id="registerForm" class="auth-form hidden">
