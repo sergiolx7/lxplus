@@ -1,3 +1,12 @@
+# LX Plus v25.7 — Retry Safe Auth
+
+- Cadastro não fica mais bloqueado depois de e-mail/senha incorretos.
+- Um único envio de cadastro pode ficar em andamento por vez, evitando disparos duplicados.
+- Após cadastro pendente, há botão “Corrigir dados e tentar novamente”.
+- Erro 429 não trava o formulário; a pessoa pode corrigir os campos.
+- ADM ganhou “Excluir pendente” para remover contas com e-mail digitado errado.
+- Contas aprovadas e ADM não podem ser excluídas por essa função.
+
 # LX Plus v25.6 — Atomic Cloud Sync
 
 - Catálogo agora usa operações atômicas por item no Supabase.

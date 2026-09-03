@@ -69,7 +69,7 @@ body.light .verified-badge .check{stroke:#fff}
 
 .auth-links{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:2px}.auth-links .link-btn{font-size:12px}.auth-links .link-btn:last-child{color:var(--accent)}
 
-.auth-status{display:block;margin-top:12px;padding:11px 12px;border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);border-radius:11px;background:color-mix(in srgb,var(--accent) 8%,transparent);color:#aac9e8;line-height:1.45}.auth-status.hidden{display:none!important}.primary-btn:disabled{opacity:.58;cursor:not-allowed;transform:none!important}
+.auth-status{display:block;margin-top:12px;padding:11px 12px;border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);border-radius:11px;background:color-mix(in srgb,var(--accent) 8%,transparent);color:#aac9e8;line-height:1.45}.auth-status.hidden{display:none!important}#registerRetryBtn{margin-top:10px}.primary-btn:disabled{opacity:.58;cursor:not-allowed;transform:none!important}
 
 .auth-build-version{display:block;margin-top:14px;text-align:center;color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
 
