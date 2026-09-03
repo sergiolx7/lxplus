@@ -1,59 +1,113 @@
-# LX Plus v19 — Profile Identity & App Mode
+# LX Plus v25 — Launch Complete
 
-A v19 evolui a base da v18 sem remover os formulários específicos por mídia, Premium, personalização ou a arquitetura de produção.
+A v25 fecha a lista de melhorias de lançamento: progresso no segundo exato, perfis editáveis, bio, formatos de avatar, molduras Premium, recomendações contextuais, mini player, WebVTT, HLS adaptativo real quando um manifesto é informado, dashboard avançado, agendamento, prioridade, prévia de rascunhos, pedidos convertidos em conteúdo e identidade visual global pelo ADM.
 
-## Recursos herdados da v18
-- **Para Você 2.0**: recomendações agora combinam histórico, avaliações, gêneros/tags e preferências escolhidas pelo usuário.
-- **Perfil de gosto**: o usuário seleciona gêneros favoritos no Perfil LX.
-- **Autoplay configurável**: opção para reproduzir automaticamente o próximo episódio.
-- **LX Plus Premium**: nova área visual de assinatura com opções demonstrativas Mensal (R$ 9,90) e Anual (R$ 90).
-- **Selo Premium** no perfil e na saudação da home.
-- **ADM > Premium**: visão de assinaturas e ativação/desativação em modo local de demonstração.
-- **Arquitetura de produção ampliada**: tabelas PostgreSQL para preferências e assinaturas, leitura de assinatura pela API e endpoints de preferências.
-- Correção do scaffold do backend para leitura de cookie de sessão com `cookie-parser`.
+## O que é realmente adaptativo
 
-## Recursos preservados
-- Assistir / Ler / Ouvir.
-- Filmes, Séries, Animes, Doramas, Livros e Música.
-- Busca tolerante a erros por título, elenco, artista, autor, diretor, gênero e tags.
-- Player LX, leitor LX e player de música.
-- Minha Lista, progresso e avaliações 1–5.
-- Ranking com privacidade.
-- Pedidos e problemas com agrupamento por votos.
-- Biblioteca ADM segmentada por mídia.
-- Formulários específicos por tipo de conteúdo.
+O player usa **HLS.js**. Se o ADM informar um `master.m3u8`, a opção **Auto** deixa o HLS escolher a qualidade conforme rede/tela. Se houver apenas MP4s em resoluções diferentes, o player oferece troca manual entre as variantes cadastradas. A v25 não finge transcodificação: gerar o HLS continua sendo responsabilidade do pipeline/CDN de mídia.
+
+# LX Plus v24 — Full Experience
+
+Atualização ampla de experiência: painel do usuário modernizado, resumo de conta e sincronização, Home com faixa de experiência, player refinado com volume persistente e modo cinema, e painel ADM com Central de Lançamento e indicadores de prontidão.
+
+# LX Plus v23 — Verified Dynamic
+
+Atualização com selo verificado redesenhado em estilo inspirado nas plataformas sociais: mais visível, brilhando e acompanhando automaticamente a cor escolhida no tema.
+
+# LX Plus v22 — DM Professional
+
+Atualização DM com splash mais profissional, movimento visual refinado, menos exposição de nomes nas artes de fundo, identidade de perfil modernizada e ajustes de apresentação para lançamento.
+
+# LX Plus v21 — Launch Update
+
+Atualização com melhorias de lançamento: acesso ADM exclusivo no topo, retorno do painel ADM para a plataforma, galeria interna de fotos/avatares para perfil, ajustes visuais no logo LX Plus para evitar corte do X e refinamentos de interface.
+
+# LX Plus v20 — Cloud Sync
+
+A v20 transforma a LX Plus em uma base online multiusuário. O GitHub Pages continua servindo a interface, enquanto o Supabase passa a centralizar autenticação, catálogo, progresso, pedidos, assinaturas administrativas, notificações, analytics e storage.
+
+## O que passa a funcionar entre todos os dispositivos
+
+- Cadastro e login reais por e-mail/senha com Supabase Auth.
+- Sessão persistente e recuperação de senha.
+- Perfis e privacidade do Ranking LX.
+- Minha Lista, histórico, avaliações, preferências, aparência, Modo App e avatar sincronizados.
+- Catálogo único para todos os usuários.
+- Conteúdo criado/editado/excluído no ADM refletido globalmente.
+- Capas/banners/avatares em `lx-assets` e mídia privada em `lx-media` com URL assinada temporária.
 - Upload em lote de episódios e faixas.
-- Controle de qualidade.
-- Analytics local.
-- PWA e Modo TV demonstrativo.
+- Pedidos/problemas com votos centralizados.
+- Notificações publicadas pelo ADM.
+- Premium manual pelo ADM sincronizado em todos os dispositivos.
+- Analytics centralizado para o administrador.
+- RLS: permissões de ADM ficam no banco, não no JavaScript público.
+- Realtime para catálogo, notificações, assinatura e estado do usuário.
 
-## Premium no modo local
-O botão de plano ativa uma assinatura **somente nesta demonstração local**. Isso existe para testar UX, badges e regras de interface.
+## Migração automática da v19
 
-Em produção, o frontend **não deve liberar Premium por conta própria**. O fluxo correto é:
+A v20 mantém o prefixo de armazenamento local da v19 e o IndexedDB legado `LXPlus16Media`.
 
-`Checkout → provedor de pagamento → webhook no backend → tabela subscriptions → sessão do usuário`
+Na primeira entrada de uma conta cloud sem estado remoto, a v20 tenta importar automaticamente:
 
-A v19 não inclui nem inventa credenciais de pagamento.
+- histórico;
+- Minha Lista;
+- avaliações;
+- preferências;
+- tema/cor/Modo App;
+- avatar/logo do perfil.
 
-## Backend de produção
-O diretório `backend/` contém scaffold Node/Express/PostgreSQL com:
-- Argon2 no servidor;
-- sessão segura via cookie;
-- RBAC para ADM;
-- catálogo e estruturas de mídia;
-- preferências do usuário;
-- assinaturas;
-- pedidos e analytics;
-- ponto de integração para storage/CDN e HLS.
+No ADM > Produção & Nuvem, o botão **Enviar catálogo atual para a nuvem** também tenta migrar capas em data URI e arquivos locais de filmes/episódios/faixas para o Supabase Storage antes de publicar o catálogo.
 
-## Modo local do ADM
-- E-mail: `admin@lxplus.com.br`
-- Senha: `Admin@1234`
+## O que você precisa configurar uma única vez
 
-Essas credenciais existem apenas com `production:false`.
+Abra `GUIA-ATIVACAO-V20.md` e siga o passo a passo. Resumo:
 
-## Executar o protótipo
+1. Criar um projeto Supabase.
+2. Executar `supabase/setup.sql` no SQL Editor.
+3. Copiar a Project URL e a **Publishable Key** para `js/config.js`.
+4. Configurar a URL oficial da LX Plus no Supabase Auth.
+5. Criar sua conta normalmente pelo site.
+6. Tornar essa conta administradora executando `supabase/ADMIN_SETUP.sql` com seu e-mail.
+7. Entrar de novo e usar ADM > Produção & Nuvem > Enviar catálogo atual para a nuvem.
+8. Subir os arquivos da v20 no repositório GitHub Pages.
+
+## Domínio já preparado
+
+O arquivo `CNAME` está configurado para:
+
+`xn--rifamilionria-deb.api.br`
+
+que corresponde ao domínio internacionalizado da LX Plus configurado no GitHub Pages.
+
+## Chaves do Supabase
+
+No navegador use somente:
+
+- Project URL;
+- Publishable Key (`sb_publishable_...`), ou a `anon` key legada quando necessário.
+
+**Nunca coloque Secret Key / Service Role Key no GitHub, HTML ou JavaScript.**
+
+## ADM da v20
+
+A senha fixa `admin@lxplus.com.br / Admin@1234` não é usada no modo cloud de produção. Isso foi removido para evitar que qualquer pessoa que veja o JavaScript consiga entrar no ADM.
+
+Na v20, você cria uma conta normal e autoriza essa conta como ADM no banco usando o SQL de configuração.
+
+## Premium
+
+O ADM pode ativar/desativar Premium manualmente e isso já fica global no banco. Isso serve para cortesia, teste ou administração.
+
+Cobrança automática ainda exige um provedor de pagamento com checkout + webhook seguro. A v20 não finge que uma cobrança aconteceu apenas pelo JavaScript do navegador.
+
+## Mídia e escala
+
+Vídeo/áudio direto pelo bucket privado `lx-media` funciona para a base do produto e testes dentro dos limites do plano usado. O player recebe URLs assinadas temporárias. Para catálogo grande e streaming em escala, a arquitetura recomendada continua sendo object storage/CDN + transcodificação HLS.
+
+Publique apenas conteúdo que você tenha direito/licença para distribuir.
+
+## Teste local
+
 Na pasta do projeto:
 
 ```bash
@@ -62,26 +116,4 @@ python -m http.server 8000
 
 Abra `http://localhost:8000`.
 
-## Próximo passo para publicação real
-1. Criar o PostgreSQL e aplicar `backend/sql/schema.sql`.
-2. Configurar `backend/.env`.
-3. Instalar dependências do backend.
-4. Conectar storage/CDN e pipeline HLS.
-5. Integrar um provedor de pagamento no backend via checkout + webhook.
-6. Definir `production:true` em `js/config.js` e apontar `apiBase` para a API.
-7. Publicar apenas mídia para a qual a plataforma tenha direitos/licença de distribuição.
-
-
-## Novidades da v19
-- Galeria de logos/avatares no perfil (LX, Plus, Coroa, Play, Música, Livro, Neon e Mono).
-- Upload de logo/foto personalizada no perfil em modo local.
-- Avatar sincronizado na seleção de perfis, botão da conta e painel de perfil.
-- Aparência redesenhada com Tema, Cor, Animações e três modos de interface: Cinema, App e Compacto.
-- Modo App também no desktop, com navegação inferior e shell mais próximo de aplicativo.
-- Fluxo PWA de instalação via `beforeinstallprompt`, quando suportado pelo navegador.
-- Manifest atualizado para experiência standalone e ícone maskable.
-- Atalhos no perfil para Premium, Modo App e Central LX.
-- Atalhos no dashboard ADM para cadastrar Filme, Série, Anime, Dorama, Livro ou Música com um clique.
-
-### Observação
-No protótipo local, a logo/foto personalizada fica em `localStorage`. Em produção, imagens de perfil devem ser enviadas para storage/CDN e referenciadas pelo banco.
+Para testar confirmação/recuperação de senha localmente, adicione também a URL local permitida no Supabase Auth.

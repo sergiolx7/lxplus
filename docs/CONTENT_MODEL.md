@@ -1,30 +1,29 @@
-# Modelo de conteúdo — LX Plus v18
+# Modelo de conteúdo — LX Plus v25
 
-Cada tipo de mídia possui requisitos diferentes no ADM. O controle de qualidade não exige campos sem sentido para aquela mídia.
+## Campos editoriais comuns
+Título, tipo, ano, classificação, gênero, descrição, status, prioridade, destaque, Em alta e `scheduledAt` opcional. Um conteúdo publicado com `scheduledAt` futuro só aparece aos usuários quando o horário chega.
 
 ## Filme
-Obrigatórios: título, ano, classificação, gênero, descrição, capa vertical, banner 16:9, diretor, duração e arquivo do filme.
-Opcionais: elenco, idiomas, legendas e trailer.
+Obrigatórios editoriais: título, ano, classificação, gênero, descrição, capa, banner, diretor e duração.
+Mídia: pelo menos um entre arquivo original (`mediaKey`), `hlsUrl` ou `qualitySources`.
+Opcionais: trailer, elenco, idiomas, WebVTT e variantes 1080p/720p/480p/360p.
 
-## Série
-Obrigatórios: título, ano, classificação, gênero, descrição, capa, banner, criador/produção e ao menos um episódio numerado dentro de uma temporada.
-Opcionais: país/origem e trailer.
-
-## Anime
-Mesma estrutura de série, mas o campo principal é **Estúdio**. Episódios e temporadas são enviados no módulo Mídia & Upload.
-
-## Dorama
-Mesma estrutura de série, com **Criador/produção**, país/origem opcional e episódios separados por temporada.
+## Série / Anime / Dorama
+Obrigatórios: metadados da obra, capa, banner, criador/estúdio e episódios numerados. Para publicação com controle de qualidade, cada episódio deve ter arquivo (`mediaKey`), `hlsUrl` ou variante de qualidade.
+Cada episódio pode possuir `subtitleTracks` e `hlsUrl` próprios.
 
 ## Livro
-**Não exige banner.** Obrigatórios: título, ano, classificação, gênero, descrição, capa, autor e PDF/EPUB ou capítulos cadastrados.
-Opcionais: editora e ISBN.
+Sem banner obrigatório. Exige capa, autor e PDF/EPUB ou capítulos cadastrados.
 
 ## Música
-**Não exige banner.** Obrigatórios: título, ano, classificação, gênero, capa, artista e arquivo de áudio/faixas. Para texto editorial, basta uma descrição ou letra.
-Opcionais: álbum, compositor, número da faixa e letra. Para álbuns/EPs, as faixas podem ser enviadas em lote.
+Sem banner obrigatório. Exige capa, artista e arquivo/faixas. Descrição ou letra satisfaz o texto editorial.
 
-## Upload em lote
-A tela Mídia & Upload possui dois modos independentes:
-- **Episódios**: Série, Anime e Dorama; seleciona obra + temporada e detecta E01/EP02.
-- **Faixas de música**: seleciona a obra musical e envia vários arquivos de áudio em ordem.
+## Campos de experiência
+- `priority`: ordem editorial.
+- `scheduledAt`: lançamento agendado.
+- `publishedAt`: primeira publicação.
+- `featured`: destaque editorial.
+- `trending`: Em alta.
+- `hlsUrl`: manifesto adaptativo.
+- `qualitySources`: URLs por resolução.
+- `subtitleTracks`: `{label, lang, url}`.

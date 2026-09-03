@@ -1,15 +1,13 @@
-# Segurança da LX Plus
+# Segurança da LX Plus v25
 
-- Senha: Argon2id no servidor; nunca guardar senha ou hash no frontend em produção.
-- Sessões: cookie `HttpOnly`, `Secure` e `SameSite=Lax` ou mais restritivo conforme o fluxo.
-- Admin: RBAC no servidor, MFA recomendado, rate limit mais agressivo e log de todas as ações.
-- Upload: validar MIME, tamanho e extensão; usar URL assinada e varredura antes de publicar.
-- Mídia: URLs temporárias/assinadas; não expor bucket público.
-- API: validação de payload, CORS restrito, Helmet/CSP, limites de corpo e rate limiting.
-- Banco: usuário com mínimo privilégio, TLS, backups e rotação de credenciais.
-- Privacidade: ranking opt-in/opt-out e controles de histórico.
-- Segredos: `.env` fora do Git e secret manager em produção.
-
-
-## Premium e cobrança
-Em produção, o frontend nunca é autoridade para ativar Premium. O estado de assinatura deve ser confirmado no backend a partir do provedor de pagamento/webhooks, com auditoria administrativa.
+- Autenticação: Supabase Auth; senha não é armazenada pelo JavaScript da LX Plus.
+- Admin: autorização via tabela `lx_admins` e funções/RLS no banco.
+- Chave do navegador: somente Publishable Key (ou `anon` legada).
+- Nunca expor Secret Key/Service Role Key no GitHub.
+- Catálogo: leitura pública somente de itens publicados; rascunhos ficam visíveis apenas ao ADM autenticado.
+- Estado do usuário: Minha Lista, histórico, avaliações e preferências só podem ser lidos pelo próprio usuário/ADM conforme RLS.
+- Métricas: atualizadas por RPC `lx_track_event`; usuário não pode editar os números de ranking diretamente.
+- Assets: `lx-assets` é público para imagens que precisam carregar na interface. Usuários só podem enviar para a própria pasta de avatar; ADM pode gerir os demais assets.
+- Mídia: `lx-media` é privado. Usuários autenticados recebem URL assinada temporária para reprodução/leitura.
+- Premium: o ADM pode atribuir status manualmente. Cobrança automática só deve mudar assinatura após confirmação de webhook do provedor.
+- Upload: para uso público, imponha limites de tamanho/tipo e publique apenas mídia autorizada.

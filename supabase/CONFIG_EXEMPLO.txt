@@ -1,0 +1,6 @@
+Em js/config.js, preencha somente estas duas linhas:
+
+url:'https://SEU-PROJETO.supabase.co',
+publishableKey:'sb_publishable_SUA_CHAVE_PUBLICA',
+
+Não coloque Secret Key ou Service Role Key no frontend.

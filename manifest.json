@@ -1,6 +1,6 @@
 {
   "id": "./lxplus",
-  "name": "LX Plus v19",
+  "name": "LX Plus v25",
   "short_name": "LX+",
   "start_url": "./",
   "scope": "./",
@@ -13,7 +13,7 @@
   "orientation": "any",
   "background_color": "#03060b",
   "theme_color": "#03060b",
-  "description": "LX Plus — filmes, séries, animes, doramas, livros e música com perfis personalizados, Modo App e Premium.",
+  "description": "LX Plus — plataforma de entretenimento com perfis modernos, progresso sincronizado, player HLS, PWA, Premium e painel ADM.",
   "categories": [
     "entertainment",
     "music",

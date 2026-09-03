@@ -9,7 +9,7 @@
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="app.css">
-  <title>LX Plus v19 — Profile Identity & App Mode</title>
+  <title>LX Plus v25 — Launch Complete</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -22,7 +22,8 @@
     <div class="splash-core">
       <div class="energy-ring"></div>
       <div class="brand brand-xl"><b>LX</b><span>Plus</span><i>+</i></div>
-      <span class="eyebrow">LX EXPERIENCE PLATFORM</span>
+      <span class="eyebrow">DIGITAL MEDIA EXPERIENCE</span>
+      <span class="splash-mini-tag">DM VERSION</span>
       <h1>Seu entretenimento. Do seu jeito.</h1>
       <p>Filmes, séries, animes, doramas, livros e música conectados por uma única experiência.</p>
       <button id="enterSplash" class="primary-btn large">Entrar na LX Plus</button>
@@ -86,6 +87,7 @@
           <button id="requestBtn" class="icon-btn" aria-label="Pedidos e problemas">＋</button>
           <button id="notifyBtn" class="icon-btn" aria-label="Notificações">◌<i id="notifyCount">0</i></button>
           <button id="premiumBtn" class="premium-top-btn" aria-label="LX Plus Premium">PREMIUM</button>
+          <button id="adminTopBtn" class="glass-btn admin-top-btn hidden" aria-label="Painel ADM">⚙ ADM</button>
           <button id="themeBtn" class="icon-btn" aria-label="Aparência">✦</button>
           <button id="profileBtn" class="avatar-btn">LX</button>
         </div>
@@ -112,9 +114,10 @@
         <button data-admin="premium">Premium</button>
         <button data-admin="analytics">Analytics</button>
         <button data-admin="notifications">Notificações</button>
+        <button data-admin="appearance">Identidade visual</button>
         <button data-admin="settings">Produção</button>
       </nav>
-      <div class="admin-bottom"><button id="adminPreview">Ver como usuário</button><button id="adminLogout" class="danger">Sair</button></div>
+      <div class="admin-bottom"><button id="adminPreview">← Voltar para LX Plus</button><button id="adminLogout" class="danger">Sair</button></div>
     </aside>
     <main id="adminMain" class="admin-main"></main>
   </section>
@@ -122,12 +125,23 @@
   <div id="overlay" class="overlay hidden"><div id="modal" class="modal"></div></div>
   <div id="playerOverlay" class="overlay hidden"><div id="playerModal" class="player-modal"></div></div>
   <div id="readerOverlay" class="overlay hidden"><div id="readerModal" class="reader-modal"></div></div>
+  <div id="miniPlayer" class="mini-player hidden">
+    <div id="miniVideoSlot" class="mini-video-slot"></div>
+    <div class="mini-player-info"><strong id="miniTitle">Reproduzindo</strong><small id="miniMeta">LX Player</small></div>
+    <button id="miniPlay" aria-label="Pausar ou continuar">❚❚</button>
+    <button id="miniRestore" aria-label="Voltar ao player">↗</button>
+    <button id="miniClose" aria-label="Fechar">×</button>
+  </div>
+
   <div id="musicDock" class="music-dock hidden">
     <button id="musicPrev">‹</button><div class="music-info"><strong id="musicTitle">Faixa</strong><small id="musicArtist">LX Music</small></div><button id="musicPlay">▶</button><input id="musicProgress" type="range" min="0" max="100" value="0"><span id="musicTime">0:00</span><button id="musicNext">›</button><button id="musicClose">×</button><audio id="musicAudio"></audio>
   </div>
 
   <script defer src="js/config.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
   <script defer src="js/store.js"></script>
+  <script defer src="js/cloud.js"></script>
   <script defer src="js/services.js"></script>
   <script defer src="js/ui.js"></script>
   <script defer src="js/admin.js"></script>
