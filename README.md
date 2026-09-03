@@ -1,3 +1,7 @@
+# LX Plus v25.4 — Official Clean
+
+Versão limpa para operação oficial: sem catálogo de demonstração, sem usuários/notificações fictícias e sem posters de exemplo no splash. A estrutura, Supabase, ADM, conta verificada e recursos permanecem intactos. O ADM ganhou campos vazios para Sobre, Termos de Uso, Política de Privacidade e e-mail de suporte.
+
 # LX Plus v25.3 — Auth Rate Limit Fix
 
 - Exibe a versão na tela de autenticação para confirmar o deploy.

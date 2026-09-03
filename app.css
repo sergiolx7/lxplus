@@ -72,3 +72,15 @@ body.light .verified-badge .check{stroke:#fff}
 .auth-status{display:block;margin-top:12px;padding:11px 12px;border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);border-radius:11px;background:color-mix(in srgb,var(--accent) 8%,transparent);color:#aac9e8;line-height:1.45}.auth-status.hidden{display:none!important}.primary-btn:disabled{opacity:.58;cursor:not-allowed;transform:none!important}
 
 .auth-build-version{display:block;margin-top:14px;text-align:center;color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+
+/* v25.4 Official Clean */
+.official-tile{position:relative;overflow:hidden;background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 22%,#111823),#05070b 72%);border:1px solid rgba(255,255,255,.055)}
+.official-tile::before{content:"";position:absolute;inset:12% 18%;border-radius:24px;background:radial-gradient(circle at 30% 30%,color-mix(in srgb,var(--accent) 32%,transparent),transparent 62%);filter:blur(8px)}
+.official-tile::after{content:"";position:absolute;width:70%;height:26%;left:-12%;bottom:8%;transform:rotate(-15deg);background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent) 26%,transparent),transparent);filter:blur(10px)}
+.official-tile span{position:absolute;right:14px;bottom:12px;font-size:12px;font-weight:900;letter-spacing:.06em;color:rgba(255,255,255,.16)}
+.official-empty{max-width:760px;margin:28px auto 80px;padding:48px 34px;text-align:center;border:1px solid var(--line);border-radius:28px;background:linear-gradient(145deg,rgba(255,255,255,.035),rgba(255,255,255,.012));box-shadow:var(--shadow)}
+.official-empty h2{font-size:clamp(28px,4vw,46px);margin:8px 0 10px}.official-empty p{color:var(--muted);line-height:1.7;max-width:620px;margin:0 auto 18px}
+.legal-footer{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;padding:20px 20px 90px;color:var(--muted)}
+.legal-footer button,.legal-footer a{border:0;background:none;color:inherit;font:inherit;font-size:12px;cursor:pointer;text-decoration:none}.legal-footer button:hover,.legal-footer a:hover{color:var(--text)}
+.legal-page{max-width:820px}.legal-copy{margin-top:20px;line-height:1.75;color:var(--muted);white-space:normal}
+.official-info-card textarea{min-height:120px}.official-info-card textarea#brandTerms,.official-info-card textarea#brandPrivacy{min-height:190px}
