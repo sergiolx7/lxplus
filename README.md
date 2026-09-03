@@ -1,4 +1,15 @@
-# LX Plus v25.4 — Official Clean
+# LX Plus v25.5 — Approval + Global Sync
+
+Esta versão torna o Supabase a fonte de verdade do catálogo e adiciona aprovação de contas pelo ADM.
+
+- Cadastro pode ser liberado por confirmação de e-mail ou aprovação manual do ADM.
+- Mensagem de espera: até 24 horas.
+- ADM pode Aprovar, Reaprovar ou Recusar em Comunidade & Aprovações.
+- Aprovação manual confirma a conta no Auth sem expor chaves administrativas no frontend.
+- Catálogo e mídia privada ficam disponíveis apenas para contas aprovadas.
+- Adicionar, editar, publicar, priorizar e excluir conteúdo agora aguardam confirmação da nuvem antes de atualizar a interface.
+- Realtime mantém outros navegadores/dispositivos sincronizados.
+- Credencial ADM de demonstração removida da build de produção.
 
 Versão limpa para operação oficial: sem catálogo de demonstração, sem usuários/notificações fictícias e sem posters de exemplo no splash. A estrutura, Supabase, ADM, conta verificada e recursos permanecem intactos. O ADM ganhou campos vazios para Sobre, Termos de Uso, Política de Privacidade e e-mail de suporte.
 

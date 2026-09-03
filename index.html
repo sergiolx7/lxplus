@@ -8,8 +8,8 @@
   <meta name="description" content="LX Plus — Assistir, Ler e Ouvir em uma experiência premium.">
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="app.css?v=25.4">
-  <title>LX Plus v25.4 — Official Clean</title>
+  <link rel="stylesheet" href="app.css?v=25.5">
+  <title>LX Plus v25.5 — Approval & Global Sync</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -52,7 +52,7 @@
           <label>E-mail<input id="loginEmail" type="email" required autocomplete="email" placeholder="seuemail@exemplo.com"></label>
           <label>Senha<input id="loginPass" type="password" required autocomplete="current-password" placeholder="••••••••"></label>
           <button class="primary-btn full" type="submit">Entrar</button>
-          <div class="auth-links"><button id="forgotBtn" class="link-btn" type="button">Esqueci minha senha</button><button id="resendConfirmBtn" class="link-btn" type="button">Reenviar confirmação</button></div>
+          <div class="auth-links"><button id="forgotBtn" class="link-btn" type="button">Esqueci minha senha</button><button id="resendConfirmBtn" class="link-btn" type="button">Reenviar confirmação</button></div><div id="loginApprovalStatus" class="auth-status approval-status hidden"></div>
           <div id="devHint" class="demo-hint">Sua conta LX Plus é protegida pelo Supabase Auth e sincronizada na nuvem.</div>
         </form>
         <form id="registerForm" class="auth-form hidden">
@@ -64,7 +64,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small>
         </form>
-        <small class="auth-build-version">LX Plus v25.4 · Official Clean</small>
+        <small class="auth-build-version">LX Plus v25.5 · Approval + Global Sync</small>
       </div>
     </div>
   </section>
@@ -111,7 +111,7 @@
         <button data-admin="quality">Qualidade</button>
         <button data-admin="uploads">Mídia & Upload</button>
         <button data-admin="requests">Pedidos & Problemas</button>
-        <button data-admin="community">Comunidade</button>
+        <button data-admin="community">Aprovações</button>
         <button data-admin="premium">Premium</button>
         <button data-admin="analytics">Analytics</button>
         <button data-admin="notifications">Notificações</button>
@@ -138,14 +138,14 @@
     <button id="musicPrev">‹</button><div class="music-info"><strong id="musicTitle">Faixa</strong><small id="musicArtist">LX Music</small></div><button id="musicPlay">▶</button><input id="musicProgress" type="range" min="0" max="100" value="0"><span id="musicTime">0:00</span><button id="musicNext">›</button><button id="musicClose">×</button><audio id="musicAudio"></audio>
   </div>
 
-  <script defer src="js/config.js?v=25.4"></script>
+  <script defer src="js/config.js?v=25.5"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
-  <script defer src="js/store.js?v=25.4"></script>
-  <script defer src="js/cloud.js?v=25.4"></script>
-  <script defer src="js/services.js?v=25.4"></script>
-  <script defer src="js/ui.js?v=25.4"></script>
-  <script defer src="js/admin.js?v=25.4"></script>
-  <script defer src="js/app.js?v=25.4"></script>
+  <script defer src="js/store.js?v=25.5"></script>
+  <script defer src="js/cloud.js?v=25.5"></script>
+  <script defer src="js/services.js?v=25.5"></script>
+  <script defer src="js/ui.js?v=25.5"></script>
+  <script defer src="js/admin.js?v=25.5"></script>
+  <script defer src="js/app.js?v=25.5"></script>
 </body>
 </html>
