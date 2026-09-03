@@ -68,3 +68,5 @@ body.light .verified-badge .check{stroke:#fff}
 .profile-card-v25{padding:12px;border:1px solid transparent;border-radius:22px}.profile-card-v25:hover{background:rgba(255,255,255,.018);border-color:var(--line)}.profile-card-v25 strong{display:flex;align-items:center;justify-content:center;min-height:22px}.profile-card-v25 small{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.profile-card-v25 .premium-user-pill{margin-top:2px}
 
 .auth-links{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:2px}.auth-links .link-btn{font-size:12px}.auth-links .link-btn:last-child{color:var(--accent)}
+
+.auth-status{display:block;margin-top:12px;padding:11px 12px;border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);border-radius:11px;background:color-mix(in srgb,var(--accent) 8%,transparent);color:#aac9e8;line-height:1.45}.auth-status.hidden{display:none!important}.primary-btn:disabled{opacity:.58;cursor:not-allowed;transform:none!important}

@@ -1,4 +1,4 @@
-const C="lxplus-v25-1-core";
+const C="lxplus-v25.2";
 const CORE=["./","./index.html","./app.css","./manifest.json","./js/config.js","./js/store.js","./js/cloud.js","./js/services.js","./js/ui.js","./js/admin.js","./js/app.js","./assets/icon.svg"];
 self.addEventListener("install",e=>e.waitUntil(caches.open(C).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim())));

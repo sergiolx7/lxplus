@@ -9,7 +9,7 @@
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="app.css">
-  <title>LX Plus v25.1 — Launch Complete</title>
+  <title>LX Plus v25.2 — Auth UX Fix</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -53,7 +53,7 @@
           <label>Senha<input id="loginPass" type="password" required autocomplete="current-password" placeholder="••••••••"></label>
           <button class="primary-btn full" type="submit">Entrar</button>
           <div class="auth-links"><button id="forgotBtn" class="link-btn" type="button">Esqueci minha senha</button><button id="resendConfirmBtn" class="link-btn" type="button">Reenviar confirmação</button></div>
-          <div id="devHint" class="demo-hint">Modo local de demonstração. O modo produção usa a API do backend incluído no projeto.</div>
+          <div id="devHint" class="demo-hint">Sua conta LX Plus é protegida pelo Supabase Auth e sincronizada na nuvem.</div>
         </form>
         <form id="registerForm" class="auth-form hidden">
           <span class="eyebrow">NOVA CONTA</span><h2>Crie seu perfil LX</h2>
@@ -62,7 +62,7 @@
           <div class="split"><label>Senha<input id="regPass" type="password" required minlength="8" placeholder="Mín. 8"></label><label>Confirmar<input id="regPass2" type="password" required minlength="8" placeholder="Repita"></label></div>
           <label class="check"><input id="regRanking" type="checkbox" checked><span>Aparecer no Ranking LX</span></label>
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
-          <button class="primary-btn full" type="submit">Criar conta</button>
+          <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small>
         </form>
       </div>
     </div>

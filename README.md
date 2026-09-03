@@ -1,3 +1,7 @@
+# LX Plus v25.2 — Auth UX Fix
+
+Melhora mensagens de cadastro/login, detecta conta não confirmada e rate limit, evita cliques repetidos e direciona o usuário para reenviar confirmação.
+
 # LX Plus v25.1 — Auth Redirect Fix
 
 Correção do fluxo de confirmação e recuperação do Supabase: redirects usam o domínio oficial configurado, link expirado é tratado dentro da interface e há botão para reenviar confirmação.
