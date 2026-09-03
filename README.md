@@ -1,3 +1,13 @@
+# LX Plus v25.6 — Atomic Cloud Sync
+
+- Catálogo agora usa operações atômicas por item no Supabase.
+- Exclusão cria tombstone no banco: cache/navegador antigo não consegue ressuscitar conteúdo apagado.
+- Realtime + atualização automática a cada 12 segundos + sincronização ao voltar para a aba.
+- Formulário rápido: título, descrição e envio do arquivo; campos avançados ficam recolhidos.
+- Capa/banner podem ser gerados automaticamente quando não enviados.
+- Qualidade padrão do player fica em Automático; HLS adaptativo real permanece opcional em Mais opções.
+- Conteúdo só aparece para usuários quando está publicado e a mídia mínima necessária existe.
+
 # LX Plus v25.5 — Approval + Global Sync
 
 Esta versão torna o Supabase a fonte de verdade do catálogo e adiciona aprovação de contas pelo ADM.

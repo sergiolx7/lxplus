@@ -86,3 +86,20 @@ body.light .verified-badge .check{stroke:#fff}
 .official-info-card textarea{min-height:120px}.official-info-card textarea#brandTerms,.official-info-card textarea#brandPrivacy{min-height:190px}
 
 .approval-status{margin-top:12px;line-height:1.5}.approval-status.pending{border-color:color-mix(in srgb,var(--accent) 45%,transparent)}.approval-status.rejected{border-color:#a64a4a}.account-status-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.04em;border:1px solid var(--line)}.account-status-pill.pending{color:#ffd273}.account-status-pill.approved{color:#91f0bd}.account-status-pill.rejected{color:#ff9d9d}.approval-actions{display:flex;gap:6px;flex-wrap:wrap}.sync-lock-note{padding:12px 14px;border:1px solid var(--line);border-radius:14px;color:var(--muted);margin-bottom:14px}
+
+/* v25.6 quick publishing */
+.quick-editor-page{max-width:860px}
+.quick-content-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.quick-core{grid-column:1/-1;display:grid;grid-template-columns:1fr 220px;gap:14px;padding:18px;border:1px solid var(--line);border-radius:22px;background:rgba(255,255,255,.025)}
+.quick-core .span2,.quick-content-form .span2{grid-column:1/-1}
+.quick-upload{border:1px dashed color-mix(in srgb,var(--accent) 45%,var(--line));padding:16px;border-radius:16px;background:color-mix(in srgb,var(--accent) 6%,transparent)}
+.quick-upload>span{font-weight:800;margin-bottom:8px;display:block}
+.advanced-content{grid-column:1/-1;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:rgba(255,255,255,.018)}
+.advanced-content>summary{cursor:pointer;padding:15px 17px;font-weight:800;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.advanced-content>summary small{font-weight:500;color:var(--muted)}
+.advanced-content[open]>summary{border-bottom:1px solid var(--line)}
+.advanced-content-grid{padding:16px}
+.quick-save-status{min-height:20px;color:var(--muted);font-size:13px}
+@media(max-width:720px){.quick-content-form,.quick-core{grid-template-columns:1fr}.quick-core .span2,.quick-content-form .span2{grid-column:1}.advanced-content>summary{flex-direction:column}}
+
+.quick-type-badge{display:flex;flex-direction:column;justify-content:center;gap:3px;padding:10px 14px;border:1px solid var(--line);border-radius:14px;min-width:120px}.quick-type-badge small{color:var(--muted);font-size:10px;letter-spacing:.12em}.quick-type-badge strong{font-size:16px}

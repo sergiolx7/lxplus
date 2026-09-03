@@ -8,8 +8,8 @@
   <meta name="description" content="LX Plus — Assistir, Ler e Ouvir em uma experiência premium.">
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="app.css?v=25.5">
-  <title>LX Plus v25.5 — Approval & Global Sync</title>
+  <link rel="stylesheet" href="app.css?v=25.6">
+  <title>LX Plus v25.6 — Atomic Cloud Sync</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -64,7 +64,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small>
         </form>
-        <small class="auth-build-version">LX Plus v25.5 · Approval + Global Sync</small>
+        <small class="auth-build-version">LX Plus v25.6 · Atomic Cloud Sync</small>
       </div>
     </div>
   </section>
@@ -138,14 +138,15 @@
     <button id="musicPrev">‹</button><div class="music-info"><strong id="musicTitle">Faixa</strong><small id="musicArtist">LX Music</small></div><button id="musicPlay">▶</button><input id="musicProgress" type="range" min="0" max="100" value="0"><span id="musicTime">0:00</span><button id="musicNext">›</button><button id="musicClose">×</button><audio id="musicAudio"></audio>
   </div>
 
-  <script defer src="js/config.js?v=25.5"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
+  <script defer src="js/config.js?v=25.6"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
-  <script defer src="js/store.js?v=25.5"></script>
-  <script defer src="js/cloud.js?v=25.5"></script>
-  <script defer src="js/services.js?v=25.5"></script>
-  <script defer src="js/ui.js?v=25.5"></script>
-  <script defer src="js/admin.js?v=25.5"></script>
-  <script defer src="js/app.js?v=25.5"></script>
+  <script defer src="js/store.js?v=25.6"></script>
+  <script defer src="js/cloud.js?v=25.6"></script>
+  <script defer src="js/services.js?v=25.6"></script>
+  <script defer src="js/ui.js?v=25.6"></script>
+  <script defer src="js/admin.js?v=25.6"></script>
+  <script defer src="js/app.js?v=25.6"></script>
 </body>
 </html>
