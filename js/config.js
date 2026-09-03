@@ -1,0 +1,9 @@
+window.LX=window.LX||{};
+LX.config={
+  version:'19.0.0',
+  environment:'local',
+  apiBase:'',
+  production:false,
+  localDemoAdmin:{email:'admin@lxplus.com.br',password:'Admin@1234'},
+  features:{recommendations:true,preferenceProfile:true,premium:true,fuzzySearch:true,qualityGate:true,requests:true,ratings:true,analytics:true,tv:true,pwa:true,profileIdentity:true,appMode:true}
+};
