@@ -1,3 +1,8 @@
+# LX Plus v25.12 — Cinema Player
+
+Player reconstruído para iniciar pausado com Play central visível, vídeo sempre ajustado à tela,
+controles em overlay e cache-busting uniforme v25.12 em todos os arquivos locais.
+
 # LX Plus v25.11 — Screen Fit Player
 
 Player corrigido para respeitar a proporção original do vídeo e caber inteiro na viewport, sem zoom/corte. Inclui limpeza de cache por build e correção do Service Worker.

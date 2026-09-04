@@ -230,3 +230,344 @@ html.lx-player-open,html.lx-player-open body{overflow:hidden!important;overscrol
 @media (orientation:portrait){
   #watchVideoWrap>video,#videoEl,.player-stage video,.watch-video-wrap video{object-fit:contain!important;}
 }
+
+
+/* =========================================================
+   v25.12 — CINEMA PLAYER
+   Clean streaming-style player. Video always fits viewport.
+   ========================================================= */
+html.lx-player-open,
+html.lx-player-open body{
+  width:100%!important;
+  height:100%!important;
+  overflow:hidden!important;
+  background:#000!important;
+}
+
+#playerOverlay{
+  position:fixed!important;
+  inset:0!important;
+  display:block!important;
+  width:100vw!important;
+  height:100dvh!important;
+  padding:0!important;
+  margin:0!important;
+  overflow:hidden!important;
+  background:#000!important;
+  z-index:2147483000!important;
+  backdrop-filter:none!important;
+}
+#playerOverlay.hidden{display:none!important}
+
+#playerModal.player-modal{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  padding:0!important;
+  margin:0!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:0!important;
+  background:#000!important;
+  box-shadow:none!important;
+}
+
+.lx-watch,
+.lx-watch-stage,
+#watchVideoWrap{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  background:#000!important;
+}
+
+/* The movie itself: never zoom or crop. */
+#videoEl,
+#watchVideoWrap > video,
+.lx-watch-stage video{
+  position:absolute!important;
+  inset:0!important;
+  z-index:1!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  margin:0!important;
+  padding:0!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  transform:none!important;
+  scale:1!important;
+  zoom:1!important;
+  background:#000!important;
+}
+
+/* Cinematic gradients */
+.lx-watch-gradient{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  z-index:3!important;
+  pointer-events:none!important;
+  opacity:1;
+  transition:opacity .24s ease!important;
+}
+.lx-watch-gradient-top{
+  top:0!important;
+  height:32vh!important;
+  background:linear-gradient(180deg,rgba(0,0,0,.86),rgba(0,0,0,.36) 48%,transparent)!important;
+}
+.lx-watch-gradient-bottom{
+  bottom:0!important;
+  height:40vh!important;
+  background:linear-gradient(0deg,rgba(0,0,0,.94),rgba(0,0,0,.48) 48%,transparent)!important;
+}
+
+/* Top bar */
+.lx-watch-top{
+  position:absolute!important;
+  z-index:10!important;
+  top:0!important;
+  left:0!important;
+  right:0!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:14px!important;
+  padding:max(18px,env(safe-area-inset-top)) clamp(16px,3vw,46px) 20px!important;
+  background:transparent!important;
+  transition:opacity .2s ease,transform .2s ease!important;
+}
+.lx-watch-heading{min-width:0!important;display:flex!important;flex-direction:column!important;gap:4px!important}
+.lx-watch-heading strong{
+  font-size:clamp(16px,1.45vw,23px)!important;
+  line-height:1.15!important;
+  font-weight:800!important;
+  color:#fff!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  text-shadow:0 2px 16px rgba(0,0,0,.9)!important;
+}
+.lx-watch-heading small{
+  font-size:11px!important;
+  color:rgba(255,255,255,.72)!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.lx-watch-actions{margin-left:auto!important;display:flex!important;align-items:center!important;gap:8px!important}
+.lx-watch-source{display:none!important}
+
+/* Generic round icon buttons */
+.lx-watch-btn{
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  border-radius:50%!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:0!important;
+  background:rgba(14,14,14,.46)!important;
+  color:#fff!important;
+  font-size:18px!important;
+  cursor:pointer!important;
+  backdrop-filter:blur(14px)!important;
+  -webkit-backdrop-filter:blur(14px)!important;
+  transition:background .16s ease,transform .16s ease!important;
+}
+.lx-watch-btn:hover{background:rgba(255,255,255,.18)!important;transform:scale(1.055)!important}
+.lx-watch-back{
+  border:0!important;
+  background:transparent!important;
+  font-size:32px!important;
+  text-shadow:0 2px 12px #000!important;
+}
+
+/* Big central play — ALWAYS visible while paused */
+.lx-watch-center{
+  position:absolute!important;
+  z-index:12!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:clamp(18px,4vw,52px)!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  transition:opacity .2s ease,transform .2s ease!important;
+}
+.lx-watch-mainplay{
+  width:86px!important;
+  height:86px!important;
+  min-width:86px!important;
+  border:0!important;
+  border-radius:50%!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:0 0 0 5px!important;
+  background:#fff!important;
+  color:#080808!important;
+  font-size:35px!important;
+  cursor:pointer!important;
+  box-shadow:0 12px 42px rgba(0,0,0,.5)!important;
+  transition:transform .17s ease,background .17s ease!important;
+}
+.lx-watch-mainplay:hover{transform:scale(1.08)!important;background:#f3f3f3!important}
+.lx-watch-seek{
+  width:58px!important;
+  height:58px!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+  border-radius:50%!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:rgba(10,10,10,.52)!important;
+  color:#fff!important;
+  cursor:pointer!important;
+  backdrop-filter:blur(12px)!important;
+}
+.lx-watch-seek span{font-size:24px!important;line-height:18px!important}
+.lx-watch-seek b{font-size:9px!important;margin-top:3px!important}
+
+/* Bottom bar */
+.lx-watch-controls{
+  position:absolute!important;
+  z-index:11!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  display:block!important;
+  padding:0 clamp(16px,3vw,46px) max(18px,env(safe-area-inset-bottom))!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  transition:opacity .2s ease,transform .2s ease!important;
+}
+.lx-watch-progressbox{padding:16px 0 10px!important}
+.lx-watch-progress{
+  display:block!important;
+  width:100%!important;
+  height:5px!important;
+  margin:0!important;
+  accent-color:#e50914!important;
+  cursor:pointer!important;
+}
+.lx-watch-controlrow{
+  display:flex!important;
+  align-items:center!important;
+  gap:12px!important;
+}
+.lx-watch-left,.lx-watch-right{
+  display:flex!important;
+  align-items:center!important;
+  gap:7px!important;
+}
+.lx-watch-right{margin-left:auto!important}
+.lx-watch-volume{width:100px!important;accent-color:#fff!important}
+.lx-watch-time{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  font-size:11px!important;
+  color:#fff!important;
+  text-shadow:0 2px 10px #000!important;
+}
+.lx-watch-time i{font-style:normal!important;color:#777!important}
+.lx-watch-time span{color:#c6cbd1!important}
+.lx-watch-action{
+  height:38px!important;
+  padding:0 12px!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  border-radius:8px!important;
+  background:rgba(14,14,14,.52)!important;
+  color:#fff!important;
+  font-size:10px!important;
+  font-weight:750!important;
+  cursor:pointer!important;
+  backdrop-filter:blur(12px)!important;
+}
+.lx-watch-action:hover{background:rgba(255,255,255,.18)!important}
+
+/* Loading / error above video */
+.lx-watch-loading{z-index:8!important}
+.lx-watch-error{z-index:20!important}
+
+/* Hide controls only while actually playing. Never hide the center Play while paused. */
+.player-modal.controls-hidden.is-playing{cursor:none!important}
+.player-modal.controls-hidden.is-playing .lx-watch-top,
+.player-modal.controls-hidden.is-playing .lx-watch-controls,
+.player-modal.controls-hidden.is-playing .lx-watch-gradient{
+  opacity:0!important;
+  pointer-events:none!important;
+}
+.player-modal.controls-hidden.is-playing .lx-watch-center{
+  opacity:0!important;
+  pointer-events:none!important;
+}
+.player-modal.is-paused .lx-watch-center{
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+.player-modal.is-paused .lx-watch-top,
+.player-modal.is-paused .lx-watch-controls,
+.player-modal.is-paused .lx-watch-gradient{
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+
+/* Fullscreen stays true fit */
+#watchVideoWrap:fullscreen,
+#watchVideoWrap:-webkit-full-screen{
+  width:100vw!important;
+  height:100vh!important;
+  background:#000!important;
+}
+#watchVideoWrap:fullscreen video,
+#watchVideoWrap:-webkit-full-screen video{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+}
+
+/* Phone layout */
+@media(max-width:760px){
+  .lx-watch-top{
+    padding:max(10px,env(safe-area-inset-top)) 10px 8px!important;
+    gap:8px!important;
+  }
+  .lx-watch-heading strong{font-size:14px!important}
+  .lx-watch-heading small{font-size:9px!important}
+  .lx-watch-actions{gap:4px!important}
+  .lx-watch-actions .lx-watch-btn{width:38px!important;height:38px!important;min-width:38px!important;font-size:15px!important}
+  .lx-watch-pip{display:none!important}
+  .lx-watch-center{gap:18px!important}
+  .lx-watch-mainplay{width:68px!important;height:68px!important;min-width:68px!important;font-size:27px!important}
+  .lx-watch-seek{width:48px!important;height:48px!important}
+  .lx-watch-controls{padding:0 10px max(10px,env(safe-area-inset-bottom))!important}
+  .lx-watch-volume{display:none!important}
+  .lx-watch-time{font-size:9px!important}
+  .lx-watch-action{height:34px!important;padding:0 8px!important;font-size:9px!important}
+  #speedBtn,.lx-watch-mini{display:none!important}
+}
+@media(max-width:430px){
+  .lx-watch-heading small{display:none!important}
+  .lx-watch-right .lx-watch-cc{display:none!important}
+  .lx-watch-time i,.lx-watch-time span{display:none!important}
+  .lx-watch-mainplay{width:64px!important;height:64px!important;min-width:64px!important}
+  .lx-watch-seek{width:44px!important;height:44px!important}
+}
+
+/* Browser fallback */
+@supports not (height:100dvh){
+  #playerOverlay,#playerModal,.lx-watch,.lx-watch-stage,#watchVideoWrap{height:100vh!important}
+}
