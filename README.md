@@ -1,3 +1,7 @@
+# LX Plus v25.13 — Shadow Cinema Player
+
+Player isolado em Shadow DOM para impedir que CSS legado esconda os controles.
+
 # LX Plus v25.12 — Cinema Player
 
 Player reconstruído para iniciar pausado com Play central visível, vídeo sempre ajustado à tela,
