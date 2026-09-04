@@ -1,3 +1,7 @@
+# LX Plus v25.15 — Music · Reader · Cinema
+
+Atualização completa dos modos Ouvir, Ler e Assistir. LX Music com biblioteca/player/fila, LX Reader com PDF/EPUB/capítulos e player de vídeo com controles nativos permanentes como fallback. Tema claro reconstruído.
+
 # LX Plus v25.14 — Foundation Update
 
 Atualização de estabilidade com Cinema Core 3.0: player global isolado do modal antigo, vídeo sempre em `contain`, Play e controles persistentes quando pausado, fallback para controles nativos, renovação automática da URL privada do Supabase, TV/PiP/tela cheia, próximo episódio e atalhos. Também atualiza o ADM, selo verificado e limpeza de cache da build.
