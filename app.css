@@ -571,3 +571,4 @@ html.lx-player-open body{
 @supports not (height:100dvh){
   #playerOverlay,#playerModal,.lx-watch,.lx-watch-stage,#watchVideoWrap{height:100vh!important}
 }
+\n/* v25.14 Foundation */\nhtml.lx-player-open,html.lx-player-open body,body.lx-player-open{overflow:hidden!important;background:#000!important}.selected-media-info{display:block;margin-top:7px;color:#8fd0ff!important;font-weight:700}.catalog-actions .primary-btn{border-color:transparent!important}body.light .selected-media-info{color:#176bb3!important}\n\n/* v25.14 verified badge */\n.verified-badge .seal{fill:var(--verified-fill)!important;stroke:var(--verified-stroke)!important;stroke-width:1!important}.verified-badge .verified-inner{fill:none!important;stroke:#fff!important;stroke-width:2.5!important;stroke-linecap:round!important;stroke-linejoin:round!important}.verified-badge{animation:none!important;filter:drop-shadow(0 2px 5px rgba(0,0,0,.26))!important}\n

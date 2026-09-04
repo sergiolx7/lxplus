@@ -1,3 +1,7 @@
+# LX Plus v25.14 — Foundation Update
+
+Atualização de estabilidade com Cinema Core 3.0: player global isolado do modal antigo, vídeo sempre em `contain`, Play e controles persistentes quando pausado, fallback para controles nativos, renovação automática da URL privada do Supabase, TV/PiP/tela cheia, próximo episódio e atalhos. Também atualiza o ADM, selo verificado e limpeza de cache da build.
+
 # LX Plus v25.13 — Shadow Cinema Player
 
 Player isolado em Shadow DOM para impedir que CSS legado esconda os controles.
