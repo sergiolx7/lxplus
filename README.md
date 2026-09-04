@@ -1,3 +1,7 @@
+# LX Plus v25.11 — Screen Fit Player
+
+Player corrigido para respeitar a proporção original do vídeo e caber inteiro na viewport, sem zoom/corte. Inclui limpeza de cache por build e correção do Service Worker.
+
 # LX Plus v25.10 — Player Rebuild
 
 Atualização focada na tela de assistir: player isolado em viewport própria, layout responsivo para celular/PC, pôster antes da reprodução, loading e erro amigável, controles simplificados, retomada, tela cheia, PiP e transmissão para TV quando suportada.

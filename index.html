@@ -11,7 +11,7 @@
 
   <script>
   (function(){
-    var BUILD='25.10.0',KEY='lxplus_build_seen';
+    var BUILD='25.11.0',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -25,8 +25,8 @@
     }catch(e){}
   })();
   </script>
-  <link rel="stylesheet" href="app.css?v=25.10">
-  <title>LX Plus v25.10 — Player Rebuild</title>
+  <link rel="stylesheet" href="app.css?v=25.11">
+  <title>LX Plus v25.11 — Screen Fit Player</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -81,7 +81,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.10 · Player Rebuild</small>
+        <small class="auth-build-version">LX Plus v25.11 · Screen Fit Player</small>
       </div>
     </div>
   </section>
@@ -163,6 +163,6 @@
   <script defer src="js/services.js?v=25.10"></script>
   <script defer src="js/ui.js?v=25.10"></script>
   <script defer src="js/admin.js?v=25.10"></script>
-  <script defer src="js/app.js?v=25.10"></script>
+  <script defer src="js/app.js?v=25.11"></script>
 </body>
 </html>

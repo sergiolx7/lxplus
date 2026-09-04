@@ -184,3 +184,49 @@ html.lx-player-open,html.lx-player-open body{overflow:hidden!important;overscrol
 }
 @media(max-width:430px){.lx-watch-heading small{display:none}.lx-watch-actions{margin-left:auto}.lx-watch-right .lx-watch-cc{display:none}.lx-watch-time i,.lx-watch-time span{display:none}.lx-watch-center{top:48%}.lx-watch-seek{width:44px;height:44px}.lx-watch-mainplay{width:58px;height:58px}}
 @media(orientation:portrait) and (max-width:760px){.lx-watch-stage video{object-fit:contain}.lx-watch-gradient-top{height:22vh}.lx-watch-gradient-bottom{height:30vh}}
+
+
+/* v25.11 — Screen Fit Player: never crop the movie by default */
+#playerOverlay,#playerModal,.lx-watch,.lx-watch-stage,#watchVideoWrap{
+  box-sizing:border-box!important;
+  width:100vw!important;
+  height:100dvh!important;
+  max-width:100vw!important;
+  max-height:100dvh!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  background:#000!important;
+}
+#watchVideoWrap{position:fixed!important;inset:0!important;display:flex!important;align-items:center!important;justify-content:center!important;}
+#watchVideoWrap>video,#videoEl.lx-video-fitted,#videoEl{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  box-sizing:border-box!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100vw!important;
+  max-height:100dvh!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:auto!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  transform:none!important;
+  scale:1!important;
+  zoom:1!important;
+  background:#000!important;
+}
+/* Legacy player guard: old cached markup also fits instead of zooming */
+.player-stage,.watch-video-wrap{width:100vw!important;height:100dvh!important;max-height:100dvh!important;overflow:hidden!important;background:#000!important;}
+.player-stage video,.watch-video-wrap video{width:100%!important;height:100%!important;max-width:100vw!important;max-height:100dvh!important;object-fit:contain!important;object-position:center!important;transform:none!important;}
+@supports not (height:100dvh){
+  #playerOverlay,#playerModal,.lx-watch,.lx-watch-stage,#watchVideoWrap,.player-stage,.watch-video-wrap{height:100vh!important;max-height:100vh!important}
+  #watchVideoWrap>video,#videoEl,.player-stage video,.watch-video-wrap video{max-height:100vh!important}
+}
+@media (orientation:portrait){
+  #watchVideoWrap>video,#videoEl,.player-stage video,.watch-video-wrap video{object-fit:contain!important;}
+}
