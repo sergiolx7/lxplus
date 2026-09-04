@@ -1,3 +1,7 @@
+# LX Plus v25.9 — ADM Studio + Auto Quality
+
+Correção crítica do catálogo: escrita e exclusão somente via RPC protegida (`lx_catalog_upsert_item` / `lx_catalog_delete_item`), limpeza forçada de caches/Service Workers antigos na troca de versão e JavaScript/CSS em modo network-first sem cache persistente antigo.
+
 # LX Plus v25.7 — Retry Safe Auth
 
 - Cadastro não fica mais bloqueado depois de e-mail/senha incorretos.

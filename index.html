@@ -8,8 +8,25 @@
   <meta name="description" content="LX Plus — Assistir, Ler e Ouvir em uma experiência premium.">
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="app.css?v=25.7">
-  <title>LX Plus v25.6 — Atomic Cloud Sync</title>
+
+  <script>
+  (function(){
+    var BUILD='25.9.0',KEY='lxplus_build_seen';
+    try{
+      if(localStorage.getItem(KEY)!==BUILD){
+        localStorage.setItem(KEY,BUILD);
+        var jobs=[];
+        if('caches' in window) jobs.push(caches.keys().then(function(keys){return Promise.all(keys.map(function(k){return caches.delete(k)}))}));
+        if('serviceWorker' in navigator) jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister()}))}));
+        Promise.allSettled(jobs).then(function(){
+          var u=new URL(location.href);u.searchParams.set('lxbuild',BUILD);u.searchParams.set('_',Date.now());location.replace(u.toString());
+        });
+      }
+    }catch(e){}
+  })();
+  </script>
+  <link rel="stylesheet" href="app.css?v=25.9">
+  <title>LX Plus v25.9 — ADM Studio + Watch Player</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -64,7 +81,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.7 · Retry Safe Auth</small>
+        <small class="auth-build-version">LX Plus v25.9 · ADM Studio + Watch Player</small>
       </div>
     </div>
   </section>
@@ -105,18 +122,18 @@
     <aside class="admin-side">
       <div class="brand brand-sm"><b>LX</b><span>Plus</span><i>+</i></div>
       <div class="admin-identity"><div class="admin-avatar">LX</div><div><b>Administrador</b><small>Production Console</small></div></div>
+      <div class="admin-console-label"><span></span> LX COMMAND CENTER</div>
       <nav id="adminNav">
-        <button data-admin="dashboard" class="active">Visão geral</button>
-        <button data-admin="library">Biblioteca</button>
-        <button data-admin="quality">Qualidade</button>
-        <button data-admin="uploads">Mídia & Upload</button>
-        <button data-admin="requests">Pedidos & Problemas</button>
-        <button data-admin="community">Aprovações</button>
-        <button data-admin="premium">Premium</button>
-        <button data-admin="analytics">Analytics</button>
-        <button data-admin="notifications">Notificações</button>
-        <button data-admin="appearance">Identidade visual</button>
-        <button data-admin="settings">Produção</button>
+        <button data-admin="dashboard" class="active"><i>⌂</i><span>Visão geral</span></button>
+        <button data-admin="library"><i>▦</i><span>Biblioteca</span></button>
+        <button data-admin="uploads"><i>⇧</i><span>Uploads</span></button>
+        <button data-admin="requests"><i>✦</i><span>Pedidos & Problemas</span></button>
+        <button data-admin="community"><i>✓</i><span>Aprovações</span></button>
+        <button data-admin="premium"><i>♛</i><span>Premium</span></button>
+        <button data-admin="analytics"><i>⌁</i><span>Analytics</span></button>
+        <button data-admin="notifications"><i>◌</i><span>Notificações</span></button>
+        <button data-admin="appearance"><i>◈</i><span>Identidade visual</span></button>
+        <button data-admin="settings"><i>⚙</i><span>Produção</span></button>
       </nav>
       <div class="admin-bottom"><button id="adminPreview">← Voltar para LX Plus</button><button id="adminLogout" class="danger">Sair</button></div>
     </aside>
@@ -139,14 +156,13 @@
   </div>
 
   <script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
-  <script defer src="js/config.js?v=25.7"></script>
+  <script defer src="js/config.js?v=25.9"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
-  <script defer src="js/store.js?v=25.7"></script>
-  <script defer src="js/cloud.js?v=25.7"></script>
-  <script defer src="js/services.js?v=25.7"></script>
-  <script defer src="js/ui.js?v=25.7"></script>
-  <script defer src="js/admin.js?v=25.7"></script>
-  <script defer src="js/app.js?v=25.7"></script>
+  <script defer src="js/store.js?v=25.9"></script>
+  <script defer src="js/cloud.js?v=25.9"></script>
+  <script defer src="js/services.js?v=25.9"></script>
+  <script defer src="js/ui.js?v=25.9"></script>
+  <script defer src="js/admin.js?v=25.9"></script>
+  <script defer src="js/app.js?v=25.9"></script>
 </body>
 </html>
