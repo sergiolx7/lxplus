@@ -1,4 +1,8 @@
-# LX Plus v25.9 — ADM Studio + Auto Quality
+# LX Plus v25.10 — Player Rebuild
+
+Atualização focada na tela de assistir: player isolado em viewport própria, layout responsivo para celular/PC, pôster antes da reprodução, loading e erro amigável, controles simplificados, retomada, tela cheia, PiP e transmissão para TV quando suportada.
+
+# LX Plus v25.10 — ADM Studio + Auto Quality
 
 Correção crítica do catálogo: escrita e exclusão somente via RPC protegida (`lx_catalog_upsert_item` / `lx_catalog_delete_item`), limpeza forçada de caches/Service Workers antigos na troca de versão e JavaScript/CSS em modo network-first sem cache persistente antigo.
 
