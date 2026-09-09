@@ -1,3 +1,7 @@
+# LX Plus v25.16 — Catalog Importer
+
+Importador de metadados para TMDB, Open Library e música; livros públicos iniciais e catálogo com capas automáticas.
+
 # LX Plus v25.15 — Music · Reader · Cinema
 
 Atualização completa dos modos Ouvir, Ler e Assistir. LX Music com biblioteca/player/fila, LX Reader com PDF/EPUB/capítulos e player de vídeo com controles nativos permanentes como fallback. Tema claro reconstruído.

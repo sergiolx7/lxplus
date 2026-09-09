@@ -11,7 +11,7 @@
 
   <script>
   (function(){
-    var BUILD='25.15.0',KEY='lxplus_build_seen';
+    var BUILD='25.16.0',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -25,8 +25,8 @@
     }catch(e){}
   })();
   </script>
-  <link rel="stylesheet" href="app.css?v=25.15">
-  <title>LX Plus v25.15 — Music · Reader · Cinema</title>
+  <link rel="stylesheet" href="app.css?v=25.16">
+  <title>LX Plus v25.16 — Catalog Importer</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -126,6 +126,7 @@
       <nav id="adminNav">
         <button data-admin="dashboard" class="active"><i>⌂</i><span>Visão geral</span></button>
         <button data-admin="library"><i>▦</i><span>Biblioteca</span></button>
+        <button data-admin="importer"><i>⇲</i><span>Importar catálogo</span></button>
         <button data-admin="uploads"><i>⇧</i><span>Uploads</span></button>
         <button data-admin="requests"><i>✦</i><span>Pedidos & Problemas</span></button>
         <button data-admin="community"><i>✓</i><span>Aprovações</span></button>
@@ -164,13 +165,14 @@
 
   <script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
-  <script defer src="js/config.js?v=25.15"></script>
+  <script defer src="js/config.js?v=25.16"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="js/store.js?v=25.15"></script>
-  <script defer src="js/cloud.js?v=25.15"></script>
-  <script defer src="js/services.js?v=25.15"></script>
-  <script defer src="js/ui.js?v=25.15"></script>
-  <script defer src="js/admin.js?v=25.15"></script>
-  <script defer src="js/app.js?v=25.15"></script>
+  <script defer src="js/store.js?v=25.16"></script>
+  <script defer src="js/cloud.js?v=25.16"></script>
+  <script defer src="js/services.js?v=25.16"></script>
+  <script defer src="js/ui.js?v=25.16"></script>
+  <script defer src="js/catalog-importer.js?v=25.16"></script>
+  <script defer src="js/admin.js?v=25.16"></script>
+  <script defer src="js/app.js?v=25.16"></script>
 </body>
 </html>
