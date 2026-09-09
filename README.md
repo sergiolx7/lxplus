@@ -1,3 +1,14 @@
+# LX Plus v25.17 — Open Catalog + Official Live
+
+Esta versão adiciona catálogo online legal, biblioteca pública, previews musicais oficiais e agenda esportiva.
+Ela **não incorpora Futmax nem streams não autorizados**.
+
+- Filmes/séries: TMDB + disponibilidade JustWatch via Edge Function (exige TMDB API Key configurada no ADM).
+- Livros: Gutendex / Project Gutenberg.
+- Música: iTunes Search API + preview oficial quando disponível.
+- Esportes: TheSportsDB; plano gratuito funciona com limites, chave própria pode ser salva no ADM.
+- Filmes/séries completos continuam usando os arquivos enviados/licenciados na LX Plus.
+
 # LX Plus v25.16 — Catalog Importer
 
 Importador de metadados para TMDB, Open Library e música; livros públicos iniciais e catálogo com capas automáticas.

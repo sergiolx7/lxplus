@@ -11,7 +11,7 @@
 
   <script>
   (function(){
-    var BUILD='25.16.0',KEY='lxplus_build_seen';
+    var BUILD='25.17.0',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -25,8 +25,8 @@
     }catch(e){}
   })();
   </script>
-  <link rel="stylesheet" href="app.css?v=25.16">
-  <title>LX Plus v25.16 — Catalog Importer</title>
+  <link rel="stylesheet" href="app.css?v=25.17">
+  <title>LX Plus v25.17 · Open Catalog + Official Live</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -51,13 +51,14 @@
     <div class="auth-showcase">
       <div class="brand brand-lg"><b>LX</b><span>Plus</span><i>+</i></div>
       <div class="auth-copy">
-        <span class="eyebrow">UMA CONTA · TRÊS MODOS</span>
+        <span class="eyebrow">UMA CONTA · QUATRO MODOS</span>
         <h1>Continue de onde parou, em qualquer formato.</h1>
         <p>A experiência LX organiza o que você assiste, lê e ouve sem misturar as coisas.</p>
         <div class="universe-cards">
           <div><span>▶</span><strong>Assistir</strong><small>Filmes, séries, animes e doramas</small></div>
           <div><span>▤</span><strong>Ler</strong><small>Livros, capítulos e progresso</small></div>
           <div><span>♫</span><strong>Ouvir</strong><small>Artistas, álbuns e faixas</small></div>
+          <div><span>●</span><strong>Ao vivo</strong><small>Jogos, agenda, placares e emissoras oficiais</small></div>
         </div>
       </div>
     </div>
@@ -81,7 +82,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.15 · Music · Reader · Cinema</small>
+        <small class="auth-build-version">LX Plus v25.17 · Open Catalog + Official Live</small>
       </div>
     </div>
   </section>
@@ -99,6 +100,7 @@
           <button data-mode="Assistir" class="active"><span>▶</span>Assistir</button>
           <button data-mode="Ler"><span>▤</span>Ler</button>
           <button data-mode="Ouvir"><span>♫</span>Ouvir</button>
+          <button data-mode="Ao vivo"><span>●</span>Ao vivo</button>
         </div>
         <div class="top-actions">
           <div id="searchWrap" class="search-wrap"><input id="searchInput" placeholder="Título, ator, artista, autor, gênero..."><button id="searchBtn" aria-label="Buscar">⌕</button></div>
@@ -165,14 +167,15 @@
 
   <script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
-  <script defer src="js/config.js?v=25.16"></script>
+  <script defer src="js/config.js?v=25.17"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="js/store.js?v=25.16"></script>
-  <script defer src="js/cloud.js?v=25.16"></script>
-  <script defer src="js/services.js?v=25.16"></script>
-  <script defer src="js/ui.js?v=25.16"></script>
-  <script defer src="js/catalog-importer.js?v=25.16"></script>
-  <script defer src="js/admin.js?v=25.16"></script>
-  <script defer src="js/app.js?v=25.16"></script>
+  <script defer src="js/store.js?v=25.17"></script>
+  <script defer src="js/cloud.js?v=25.17"></script>
+  <script defer src="js/services.js?v=25.17"></script>
+  <script defer src="js/ui.js?v=25.17"></script>
+  <script defer src="js/catalog-importer.js?v=25.17"></script>
+  <script defer src="js/content-hub.js?v=25.17"></script>
+  <script defer src="js/admin.js?v=25.17"></script>
+  <script defer src="js/app.js?v=25.17"></script>
 </body>
 </html>
