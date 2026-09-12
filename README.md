@@ -1,3 +1,7 @@
+# LX Plus v25.22 — Comunidade Integrada
+
+Correção estrutural: o LX Social agora é embutido em `js/app.js`, removendo a dependência de `js/social.js` separado no deploy. O botão Comunidade continua com fallback imediato e handoff automático quando o app principal inicia.
+
 # LX Plus v25.21 — Comunidade Sempre Abre
 
 Correção estrutural do lançador da Comunidade: o clique abre uma UI de emergência imediatamente e faz handoff para o módulo social quando ele estiver pronto.

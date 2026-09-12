@@ -11,7 +11,7 @@
 
   <script>
   (function(){
-    var BUILD='25.21.0',KEY='lxplus_build_seen';
+    var BUILD='25.22.0',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -27,7 +27,7 @@
   </script>
 
   <script>
-  /* v25.21: emergency launcher. This UI opens even if app/social scripts fail. */
+  /* v25.22: emergency launcher; social runtime is embedded in app.js. This UI opens even if app/social scripts fail. */
   (function(){
     var busy=false, timer=null;
     function emergency(tab){
@@ -62,16 +62,16 @@
       }
       if(tries<=0){
         var st=document.getElementById('lxCommunityEmergencyStatus');
-        if(st)st.textContent='O módulo social não carregou. Atualize a página e tente novamente.';
+        if(st)st.textContent='A Comunidade demorou para iniciar. Toque novamente; o sistema principal continuará carregando.';
         busy=false; return;
       }
-      timer=setTimeout(function(){handoff(tab,box,tries-1)},150);
+      timer=setTimeout(function(){handoff(tab,box,tries-1)},100);
     }
     window.LXOpenCommunity=function(tab){
       if(busy) return false;
       busy=true;
       var box=emergency(tab||'discover');
-      handoff(tab||'discover',box,40);
+      handoff(tab||'discover',box,300);
       return false;
     };
     document.addEventListener('click',function(e){
@@ -82,8 +82,8 @@
     },true);
   })();
   </script>
-  <link rel="stylesheet" href="app.css?v=25.21">
-  <title>LX Plus v25.21 · Auth Approval Fix</title>
+  <link rel="stylesheet" href="app.css?v=25.22">
+  <title>LX Plus v25.22 · Comunidade Integrada</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -139,7 +139,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.21 · Auth Approval Fix</small>
+        <small class="auth-build-version">LX Plus v25.22 · Comunidade Integrada</small>
       </div>
     </div>
   </section>
@@ -225,16 +225,15 @@
 
   <script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
-  <script defer src="js/config.js?v=25.21"></script>
+  <script defer src="js/config.js?v=25.22"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="js/store.js?v=25.21"></script>
-  <script defer src="js/cloud.js?v=25.21"></script>
-  <script defer src="js/services.js?v=25.21"></script>
-  <script defer src="js/ui.js?v=25.21"></script>
-  <script defer src="js/catalog-importer.js?v=25.21"></script>
-  <script defer src="js/content-hub.js?v=25.21"></script>
-  <script defer src="js/social.js?v=25.21"></script>
-  <script defer src="js/admin.js?v=25.21"></script>
-  <script defer src="js/app.js?v=25.21"></script>
+  <script defer src="js/store.js?v=25.22"></script>
+  <script defer src="js/cloud.js?v=25.22"></script>
+  <script defer src="js/services.js?v=25.22"></script>
+  <script defer src="js/ui.js?v=25.22"></script>
+  <script defer src="js/catalog-importer.js?v=25.22"></script>
+  <script defer src="js/content-hub.js?v=25.22"></script>
+  <script defer src="js/admin.js?v=25.22"></script>
+  <script defer src="js/app.js?v=25.22"></script>
 </body>
 </html>
