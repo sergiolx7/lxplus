@@ -11,7 +11,7 @@
 
   <script>
   (function(){
-    var BUILD='25.18.0',KEY='lxplus_build_seen';
+    var BUILD='25.19.0',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -25,8 +25,8 @@
     }catch(e){}
   })();
   </script>
-  <link rel="stylesheet" href="app.css?v=25.18">
-  <title>LX Plus v25.18 · Social Calls + Screen Share</title>
+  <link rel="stylesheet" href="app.css?v=25.19">
+  <title>LX Plus v25.19 · Comunidade + Chamadas</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -82,7 +82,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.18 · Social Calls + Screen Share</small>
+        <small class="auth-build-version">LX Plus v25.19 · Comunidade + Chamadas</small>
       </div>
     </div>
   </section>
@@ -104,11 +104,12 @@
         </div>
         <div class="top-actions">
           <div id="searchWrap" class="search-wrap"><input id="searchInput" placeholder="Título, ator, artista, autor, gênero..."><button id="searchBtn" aria-label="Buscar">⌕</button></div>
-          <button id="socialBtn" class="icon-btn social-top-btn" aria-label="Pessoas e chamadas">👥<i id="socialCount" class="hidden">0</i></button><button id="requestBtn" class="icon-btn" aria-label="Pedidos e problemas">＋</button>
+          <button id="requestBtn" class="icon-btn" aria-label="Pedidos e problemas">＋</button>
           <button id="notifyBtn" class="icon-btn" aria-label="Notificações">◌<i id="notifyCount">0</i></button>
           <button id="premiumBtn" class="premium-top-btn" aria-label="LX Plus Premium">PREMIUM</button>
           <button id="adminTopBtn" class="glass-btn admin-top-btn hidden" aria-label="Painel ADM">⚙ ADM</button>
           <button id="themeBtn" class="icon-btn" aria-label="Aparência">✦</button>
+          <button id="communityBtn" class="community-top-btn" aria-label="Comunidade, amigos e chamadas"><span class="community-top-icon">👥</span><b>Comunidade</b><i id="socialCount" class="hidden">0</i></button>
           <button id="profileBtn" class="avatar-btn">LX</button>
         </div>
       </div>
@@ -116,7 +117,7 @@
     </header>
     <main><section id="hero" class="hero"></section><section id="welcome" class="welcome"></section><section id="homeContent" class="home-content"></section><footer id="legalFooter" class="legal-footer hidden"><button id="legalAboutBtn" class="hidden">Sobre</button><button id="legalTermsBtn" class="hidden">Termos de Uso</button><button id="legalPrivacyBtn" class="hidden">Privacidade</button><a id="legalSupportBtn" class="hidden" href="#">Suporte</a></footer></main>
     <nav id="mobileNav" class="mobile-nav">
-      <button data-mobile="Início" class="active"><span>⌂</span>Início</button><button data-mobile="Buscar"><span>⌕</span>Buscar</button><button data-mobile="Minha Lista"><span>＋</span>Lista</button><button data-mobile="Pedidos"><span>✦</span>Pedidos</button><button data-mobile="Ranking"><span>♛</span>Ranking</button><button data-mobile="Pessoas"><span>👥</span>Pessoas</button><button data-mobile="Perfil"><span>●</span>Perfil</button>
+      <button data-mobile="Início" class="active"><span>⌂</span>Início</button><button data-mobile="Buscar"><span>⌕</span>Buscar</button><button data-mobile="Minha Lista"><span>＋</span>Lista</button><button data-mobile="Pedidos"><span>✦</span>Pedidos</button><button data-mobile="Ranking"><span>♛</span>Ranking</button><button data-mobile="Comunidade"><span>👥</span>Comunidade</button><button data-mobile="Perfil"><span>●</span>Perfil</button>
     </nav>
   </section>
 
@@ -167,16 +168,16 @@
 
   <script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
-  <script defer src="js/config.js?v=25.18"></script>
+  <script defer src="js/config.js?v=25.19"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="js/store.js?v=25.18"></script>
-  <script defer src="js/cloud.js?v=25.18"></script>
-  <script defer src="js/services.js?v=25.18"></script>
-  <script defer src="js/ui.js?v=25.18"></script>
-  <script defer src="js/catalog-importer.js?v=25.18"></script>
-  <script defer src="js/content-hub.js?v=25.18"></script>
-  <script defer src="js/social.js?v=25.18"></script>
-  <script defer src="js/admin.js?v=25.18"></script>
-  <script defer src="js/app.js?v=25.18"></script>
+  <script defer src="js/store.js?v=25.19"></script>
+  <script defer src="js/cloud.js?v=25.19"></script>
+  <script defer src="js/services.js?v=25.19"></script>
+  <script defer src="js/ui.js?v=25.19"></script>
+  <script defer src="js/catalog-importer.js?v=25.19"></script>
+  <script defer src="js/content-hub.js?v=25.19"></script>
+  <script defer src="js/social.js?v=25.19"></script>
+  <script defer src="js/admin.js?v=25.19"></script>
+  <script defer src="js/app.js?v=25.19"></script>
 </body>
 </html>
