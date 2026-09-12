@@ -1,16 +1,18 @@
-LX Plus v25.31 — Stable Rebuild
+LX Plus v25.32 — Identity Polish
+
+BASE: v25.31 Stable Rebuild
 
 PUBLICAÇÃO
-1. Na raiz do GitHub Pages, substitua:
-   index.html
-   app.css
-   lxplus.js
-   CNAME
-   assets/icon.svg
-2. Remova sw.js antigo e a pasta js/ antiga.
-3. Faça Commit changes.
-4. Confirme na tela:
-   LX Plus v25.31 · Stable Rebuild
-5. Se aparecer versão antiga, use Ctrl+F5 uma única vez.
+1. Substitua na raiz:
+   - index.html
+   - app.css
+   - lxplus.js
+2. Mantenha/substitua:
+   - CNAME
+   - assets/icon.svg
+3. Não reative sw.js nem a pasta js/ antiga.
+4. Faça o commit.
+5. Confirme na tela:
+   LX Plus v25.32 · Identity Polish
 
-Não publique somente o index.html.
+Se algo inesperado acontecer, volte para v25.31 Stable Rebuild.

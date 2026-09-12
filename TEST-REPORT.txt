@@ -1,39 +1,48 @@
-LX Plus v25.31 — Relatório de validação
+LX Plus v25.32 — Identity Polish
+Base congelada: v25.31 Stable Rebuild
 
-Correções estruturais
-- Shell de entrada funciona antes do núcleo principal.
-- Login e cadastro nunca fazem reload nativo da página.
-- Storage local tem fallback em memória se o navegador bloquear localStorage.
-- Inicialização de seed, branding, carrossel e tema é isolada.
-- Corrigidos símbolos/funções inexistentes que interrompiam o bundle:
-  openAdmin, openLegal, setLayout, setMotion, installApp e tvMode.
-- Corrigidas páginas ADM ausentes: Premium, Analytics, Notificações e Identidade visual.
-- Corrigido painel Notificações para não tentar ligar botão inexistente.
-- Carrossel de entrada mantém fallback visual antes do catálogo da nuvem chegar.
+TESTES EM CHROMIUM HEADLESS — APROVADOS
+1. Boot sem erro JavaScript.
+2. Intro LX Plus presente.
+3. Clique no + executa animação/burst.
+4. Botão Entrar abre autenticação.
+5. Alternância Entrar / Criar conta.
+6. Fluxo de login aprovado simulado entra no app.
+7. Aparência abre normalmente.
+8. Temas Dark/Midnight/OLED/Claro disponíveis.
+9. Cor personalizada aplicada.
+10. Fonte personalizada aplicada.
+11. Densidade/espaçamento aplicado.
+12. API do chat carregada.
+13. Configurações de som do chat carregadas.
+14. Comunidade sem Feed/Post.
+15. Conversa com contato aceito abre.
+16. Campo de mensagem e ferramentas carregam.
+17. Anexo aceita foto e PDF.
+18. Painel de emojis abre.
+19. Painel de figurinhas abre.
+20. Canal de envio usa o mesmo contrato do destinatário (lx-chat-<id>).
+21. Todas as páginas do ADM renderizam.
+22. Biblioteca mostra Salvar alterações.
+23. Exclusão fica PENDENTE DE EXCLUSÃO.
+24. Verificado fica NÃO SALVO.
+25. Salvar alterações confirma os mocks e zera a fila.
+26. Layout móvel sem overflow horizontal.
+27. Núcleo exporta Premium/Legal/Preferências corretamente.
+28. Nenhum erro final de boot após as interações.
 
-Testes executados em Chromium headless
-1. Entrar na LX Plus -> autenticação: OK
-2. Pular -> autenticação: OK
-3. Alternar Entrar / Criar conta: OK
-4. Mostrar/ocultar senha: OK
-5. Submit de login não recarrega a página sem nuvem: OK
-6. Login simulado aprovado -> entra diretamente no app: OK
-7. Botão ADM -> abre painel: OK
-8. Páginas ADM dashboard/library/importer/uploads/requests/community/
-   premium/analytics/notifications/appearance/settings: OK
-9. Biblioteca mostra Salvar alterações: OK
-10. Excluir -> PENDENTE DE EXCLUSÃO -> Salvar -> removido: OK
-11. Dar selo -> NÃO SALVO -> Salvar -> verificado aplicado: OK
-12. Fila pendente zera depois de salvar: OK
-13. Comunidade abre pelo botão do topo: OK
-14. Perfil/Aparência/Notificações/Premium/Ranking/Pedidos: OK
-15. Runtime nos smoke tests: 0 erros JavaScript
+VALIDAÇÃO ESTÁTICA
+- lxplus.js: sintaxe OK.
+- scripts inline do index.html: sintaxe OK.
+- IDs HTML duplicados: 0.
+- Referências locais ausentes: 0.
+- Escrita direta insegura em lx_catalog: 0.
+- Referências de versão antiga: 0.
+- Feed/Post da Comunidade: removidos.
 
-Validação estática
-- lxplus.js: node --check OK
-- scripts inline do index.html: OK
-- versão v25.31 consistente.
-
-Observação
-O login real no Supabase depende das credenciais e da disponibilidade de rede/CDN.
-Os testes não usam nem conhecem senhas reais.
+OBSERVAÇÃO SOBRE MENSAGENS
+O frontend de envio em tempo real foi testado e o canal do remetente corresponde
+ao canal que o destinatário escuta. O conector do Supabase ficou indisponível durante
+esta rodada, então não foi possível confirmar no banco se o histórico persistente
+opcional está ativo. O chat ao vivo usa Supabase Realtime; se a persistência não existir,
+a interface não finge a entrega e mantém a cópia local quando a entrega falha.

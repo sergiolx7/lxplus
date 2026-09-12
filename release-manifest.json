@@ -1,6 +1,7 @@
 {
-  "version": "25.31.0",
-  "name": "Stable Rebuild",
+  "version": "25.32.0",
+  "name": "Identity Polish",
+  "base": "25.31.0 Stable Rebuild",
   "required_files": [
     "index.html",
     "app.css",
@@ -9,5 +10,16 @@
     "assets/icon.svg"
   ],
   "service_worker": false,
-  "old_js_folder_required": false
+  "old_js_folder_required": false,
+  "features": [
+    "LX Plus animated neon intro",
+    "theme/accent/font/density personalization",
+    "cleaner global top bar icons",
+    "messenger-only community without feed/posts",
+    "photo/screenshot and PDF attachments",
+    "emoji categories and custom stickers",
+    "configurable notification sound and volume",
+    "message notification button and unread badge",
+    "v25.31 admin/login regression fixes preserved"
+  ]
 }
