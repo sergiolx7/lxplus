@@ -1,4 +1,4 @@
-LX Plus v25.32 — Identity Polish
+LX Plus v25.33 — Cinematic Identity
 
 BASE: v25.31 Stable Rebuild
 
@@ -13,6 +13,6 @@ PUBLICAÇÃO
 3. Não reative sw.js nem a pasta js/ antiga.
 4. Faça o commit.
 5. Confirme na tela:
-   LX Plus v25.32 · Identity Polish
+   LX Plus v25.33 · Cinematic Identity
 
 Se algo inesperado acontecer, volte para v25.31 Stable Rebuild.

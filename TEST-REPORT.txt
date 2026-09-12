@@ -1,4 +1,4 @@
-LX Plus v25.32 — Identity Polish
+LX Plus v25.33 — Cinematic Identity
 Base congelada: v25.31 Stable Rebuild
 
 TESTES EM CHROMIUM HEADLESS — APROVADOS
@@ -46,3 +46,17 @@ ao canal que o destinatário escuta. O conector do Supabase ficou indisponível 
 esta rodada, então não foi possível confirmar no banco se o histórico persistente
 opcional está ativo. O chat ao vivo usa Supabase Realtime; se a persistência não existir,
 a interface não finge a entrega e mantém a cópia local quando a entrega falha.
+
+VALIDAÇÃO v25.33 — CINEMATIC IDENTITY
+- lxplus.js: sintaxe JavaScript validada com node --check.
+- scripts inline do index.html: sintaxe validada individualmente.
+- IDs HTML duplicados: 0.
+- Referências locais ausentes: 0.
+- IDs críticos preservados: splash, skipSplash, lxIntroMark, enterSplash, auth e app.
+- Fluxos existentes preservados por compatibilidade estrutural; a atualização foi feita por override visual e troca do componente do selo.
+- Badge verificado atualizado no núcleo e na Comunidade.
+- Fallback prefers-reduced-motion adicionado.
+- Responsividade específica da intro adicionada para telas <= 700 px.
+
+NOTA DO AMBIENTE DE TESTE
+A tentativa de captura/renderização automatizada com Chromium Headless neste ambiente foi bloqueada pelo runtime (DBus/zygote) antes de produzir screenshot. Portanto, esta rodada comprova validação estática/sintática e estrutural; a validação visual final deve ser conferida no navegador após publicação.

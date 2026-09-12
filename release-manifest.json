@@ -1,6 +1,6 @@
 {
-  "version": "25.32.0",
-  "name": "Identity Polish",
+  "version": "25.33.0",
+  "name": "Cinematic Identity",
   "base": "25.31.0 Stable Rebuild",
   "required_files": [
     "index.html",

@@ -10,7 +10,7 @@
 
   <script>
   (function(){
-    var BUILD='25.32.0',KEY='lxplus_build_seen';
+    var BUILD='25.33.0',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -39,28 +39,36 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=25.32">
-  <title>LX Plus v25.32 · Identity Polish</title>
+  <link rel="stylesheet" href="app.css?v=25.33">
+  <title>LX Plus v25.33 · Cinematic Identity</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
 
-  <section id="splash" class="screen splash">
+  <section id="splash" class="screen splash splash-cinematic">
     <div id="wallA" class="poster-wall wall-a" aria-hidden="true"></div>
     <div id="wallB" class="poster-wall wall-b" aria-hidden="true"></div>
     <div class="splash-shade"></div>
-    <button id="skipSplash" class="glass-btn splash-skip">Pular</button>
+    <div class="lx-cinema-orb orb-one" aria-hidden="true"></div>
+    <div class="lx-cinema-orb orb-two" aria-hidden="true"></div>
+    <div class="lx-cinema-stars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <button id="skipSplash" class="glass-btn splash-skip">Pular intro</button>
     <div class="splash-core">
-      <div class="energy-ring lx-intro-ring" aria-hidden="true"></div>
+      <div class="lx-intro-stage" aria-hidden="true">
+        <div class="lx-intro-halo halo-a"></div>
+        <div class="lx-intro-halo halo-b"></div>
+        <div class="energy-ring lx-intro-ring"></div>
+      </div>
       <button id="lxIntroMark" class="lx-intro-mark" type="button" aria-label="Animar símbolo LX Plus" title="LX Plus">
         <span class="lx-intro-plus">+</span><span class="lx-intro-star star-a"></span><span class="lx-intro-star star-b"></span><span class="lx-intro-star star-c"></span>
       </button>
       <div class="brand brand-xl lx-intro-brand"><b>LX</b><span>Plus</span><i>+</i></div>
-      <span class="eyebrow">DIGITAL MEDIA EXPERIENCE</span>
-      <span class="splash-mini-tag">DM VERSION</span>
-      <h1>Seu entretenimento. Do seu jeito.</h1>
-      <p>Filmes, séries, animes, doramas, livros e música conectados por uma única experiência.</p>
-      <button id="enterSplash" class="primary-btn large">Entrar na LX Plus</button>
+      <span class="eyebrow">LX ORIGINAL EXPERIENCE</span>
+      <span class="splash-mini-tag">CINEMATIC EDITION</span>
+      <h1>Seu universo começa aqui.</h1>
+      <p>Assista, ouça e leia em uma experiência feita para desaparecer e deixar só o conteúdo.</p>
+      <button id="enterSplash" class="primary-btn large lx-cinematic-enter"><span>Entrar na LX Plus</span><i aria-hidden="true">›</i></button>
+      <small class="lx-intro-footnote">LX PLUS · STREAM · MUSIC · BOOKS</small>
     </div>
   </section>
 
@@ -99,7 +107,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.32 · Identity Polish</small>
+        <small class="auth-build-version">LX Plus v25.33 · Cinematic Identity</small>
       </div>
     </div>
   </section>
@@ -243,7 +251,7 @@
   const avatar=(p,cls='lx-social-avatar')=>p?.avatar_url
     ? `<div class="${cls} has-image" style="background-image:url('${String(p.avatar_url).replace(/'/g,'%27')}')"></div>`
     : `<div class="${cls}">${esc(initials(p?.name))}</div>`;
-  const verified=p=>`${esc(p?.name||'Usuário')}${p?.verified?'<span class="lx-social-verified" title="Verificado">✓</span>':''}`;
+  const socialVerifiedBadge=()=>'<span class="lx-social-verified" title="Conta verificada" aria-label="Conta verificada"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="lx-vseal" d="M12 2.7l2.14 1.5 2.58-.16.92 2.42 2.24 1.3-.42 2.55 1.3 2.24-1.76 1.9-.16 2.58-2.42.92-1.3 2.24-2.55-.42-2.24 1.3-1.9-1.76-2.58-.16-.92-2.42-2.24-1.3.42-2.55-1.3-2.24 1.76-1.9.16-2.58 2.42-.92 1.3-2.24 2.55.42z"/><path class="lx-vcheck" d="m7.8 12.2 2.65 2.65 5.8-6.05"/></svg></span>';const verified=p=>`${esc(p?.name||'Usuário')}${p?.verified?socialVerifiedBadge():''}`;
   const SVG={
     video:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="12" height="12" rx="3"></rect><path d="m15 10 5-3v10l-5-3z"></path></svg>',
     phone:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.7 3.8 9 7.6 7.5 9.2c1.3 2.7 3.3 4.8 6.2 6.2l1.7-1.6 3.8 2.3-.8 3.1c-.2.8-1 1.3-1.8 1.2C9.7 19.5 4.4 14.1 3.6 7.2c-.1-.8.4-1.6 1.2-1.8z"></path></svg>',
