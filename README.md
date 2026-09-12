@@ -1,3 +1,7 @@
+# LX Plus v25.20 — Comunidade Sempre Abre
+
+Correção estrutural do lançador da Comunidade: o clique abre uma UI de emergência imediatamente e faz handoff para o módulo social quando ele estiver pronto.
+
 # LX Plus v25.18 — Social Calls + Screen Share
 
 Nova camada LX Social com perfis públicos de contas aprovadas, solicitações de amizade, amigos, chamadas WebRTC de áudio/vídeo, compartilhamento de tela, tela cheia e privacidade social.
