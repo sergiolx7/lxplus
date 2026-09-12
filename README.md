@@ -1,3 +1,7 @@
+# LX Plus v25.23 — Foundation Fix
+
+Revisão consolidada de estabilidade: Comunidade integrada, selo verificado via RPC administrativo dedicado, exclusão de catálogo confirmada pelo servidor, cache unificado e correções de sincronização de perfil.
+
 # LX Plus v25.22 — Comunidade Integrada
 
 Correção estrutural: o LX Social agora é embutido em `js/app.js`, removendo a dependência de `js/social.js` separado no deploy. O botão Comunidade continua com fallback imediato e handoff automático quando o app principal inicia.
