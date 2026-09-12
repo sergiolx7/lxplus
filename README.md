@@ -1,4 +1,10 @@
-# LX Plus v25.17 — Open Catalog + Official Live
+# LX Plus v25.18 — Social Calls + Screen Share
+
+Nova camada LX Social com perfis públicos de contas aprovadas, solicitações de amizade, amigos, chamadas WebRTC de áudio/vídeo, compartilhamento de tela, tela cheia e privacidade social.
+
+A sinalização usa Supabase Realtime/Postgres e a mídia da chamada é peer-to-peer via WebRTC. Para máxima confiabilidade em redes corporativas/celulares restritas, configure um servidor TURN além dos STUNs padrão.
+
+# Histórico: LX Plus v25.17 — Open Catalog + Official Live
 
 Esta versão adiciona catálogo online legal, biblioteca pública, previews musicais oficiais e agenda esportiva.
 Ela **não incorpora Futmax nem streams não autorizados**.
