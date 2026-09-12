@@ -1,4 +1,4 @@
-# LX Plus v25.20 — Comunidade Sempre Abre
+# LX Plus v25.21 — Comunidade Sempre Abre
 
 Correção estrutural do lançador da Comunidade: o clique abre uma UI de emergência imediatamente e faz handoff para o módulo social quando ele estiver pronto.
 

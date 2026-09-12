@@ -11,7 +11,7 @@
 
   <script>
   (function(){
-    var BUILD='25.20.0',KEY='lxplus_build_seen';
+    var BUILD='25.21.0',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -27,7 +27,7 @@
   </script>
 
   <script>
-  /* v25.20: emergency launcher. This UI opens even if app/social scripts fail. */
+  /* v25.21: emergency launcher. This UI opens even if app/social scripts fail. */
   (function(){
     var busy=false, timer=null;
     function emergency(tab){
@@ -82,8 +82,8 @@
     },true);
   })();
   </script>
-  <link rel="stylesheet" href="app.css?v=25.20">
-  <title>LX Plus v25.20 · Comunidade Sempre Abre</title>
+  <link rel="stylesheet" href="app.css?v=25.21">
+  <title>LX Plus v25.21 · Auth Approval Fix</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -125,7 +125,7 @@
         <form id="loginForm" class="auth-form">
           <span class="eyebrow">BEM-VINDO DE VOLTA</span><h2>Acesse sua conta</h2>
           <label>E-mail<input id="loginEmail" type="email" required autocomplete="email" placeholder="seuemail@exemplo.com"></label>
-          <label>Senha<input id="loginPass" type="password" required autocomplete="current-password" placeholder="••••••••"></label>
+          <label>Senha<div class="password-field"><input id="loginPass" type="password" required autocomplete="current-password" placeholder="••••••••"><button class="password-toggle" type="button" data-password-target="loginPass" aria-label="Mostrar senha" title="Mostrar senha">◉</button></div></label>
           <button class="primary-btn full" type="submit">Entrar</button>
           <div class="auth-links"><button id="forgotBtn" class="link-btn" type="button">Esqueci minha senha</button><button id="resendConfirmBtn" class="link-btn" type="button">Reenviar confirmação</button></div><div id="loginApprovalStatus" class="auth-status approval-status hidden"></div>
           <div id="devHint" class="demo-hint">Sua conta LX Plus é protegida pelo Supabase Auth e sincronizada na nuvem.</div>
@@ -134,12 +134,12 @@
           <span class="eyebrow">NOVA CONTA</span><h2>Crie seu perfil LX</h2>
           <label>Nome<input id="regName" type="text" required minlength="2" placeholder="Seu nome"></label>
           <label>E-mail<input id="regEmail" type="email" required placeholder="seuemail@exemplo.com"></label>
-          <div class="split"><label>Senha<input id="regPass" type="password" required minlength="8" placeholder="Mín. 8"></label><label>Confirmar<input id="regPass2" type="password" required minlength="8" placeholder="Repita"></label></div>
+          <div class="split"><label>Senha<div class="password-field"><input id="regPass" type="password" required minlength="8" autocomplete="new-password" placeholder="Mín. 8"><button class="password-toggle" type="button" data-password-target="regPass" aria-label="Mostrar senha" title="Mostrar senha">◉</button></div></label><label>Confirmar<div class="password-field"><input id="regPass2" type="password" required minlength="8" autocomplete="new-password" placeholder="Repita"><button class="password-toggle" type="button" data-password-target="regPass2" aria-label="Mostrar senha" title="Mostrar senha">◉</button></div></label></div>
           <label class="check"><input id="regRanking" type="checkbox" checked><span>Aparecer no Ranking LX</span></label>
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.20 · Comunidade Sempre Abre</small>
+        <small class="auth-build-version">LX Plus v25.21 · Auth Approval Fix</small>
       </div>
     </div>
   </section>
@@ -225,16 +225,16 @@
 
   <script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
-  <script defer src="js/config.js?v=25.20"></script>
+  <script defer src="js/config.js?v=25.21"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="js/store.js?v=25.20"></script>
-  <script defer src="js/cloud.js?v=25.20"></script>
-  <script defer src="js/services.js?v=25.20"></script>
-  <script defer src="js/ui.js?v=25.20"></script>
-  <script defer src="js/catalog-importer.js?v=25.20"></script>
-  <script defer src="js/content-hub.js?v=25.20"></script>
-  <script defer src="js/social.js?v=25.20"></script>
-  <script defer src="js/admin.js?v=25.20"></script>
-  <script defer src="js/app.js?v=25.20"></script>
+  <script defer src="js/store.js?v=25.21"></script>
+  <script defer src="js/cloud.js?v=25.21"></script>
+  <script defer src="js/services.js?v=25.21"></script>
+  <script defer src="js/ui.js?v=25.21"></script>
+  <script defer src="js/catalog-importer.js?v=25.21"></script>
+  <script defer src="js/content-hub.js?v=25.21"></script>
+  <script defer src="js/social.js?v=25.21"></script>
+  <script defer src="js/admin.js?v=25.21"></script>
+  <script defer src="js/app.js?v=25.21"></script>
 </body>
 </html>
