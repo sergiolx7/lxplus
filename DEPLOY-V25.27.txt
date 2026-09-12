@@ -1,0 +1,19 @@
+LX PLUS v25.27 — DEPLOY COMPLETO
+
+IMPORTANTE:
+1. Substitua TODOS os arquivos da versão anterior pelos arquivos desta pasta.
+2. Preserve somente o CNAME do pacote (ele já está incluído).
+3. Não envie apenas index.html. index.html + app.css + sw.js + pasta js precisam ser da mesma build.
+4. Depois de publicar, abra o site e confirme: LX Plus v25.27 · Message Fix + Screen Share + ADM Save.
+5. Se aparecer um aviso vermelho de arquivos misturados, ainda existe algum JS/CSS antigo no deploy.
+
+ADM:
+- Biblioteca e Aprovações têm Salvar alterações dentro da página.
+- Há também Salvar alterações fixo no menu lateral e dock flutuante.
+
+CHAT:
+- Mensagens ao vivo usam Realtime Broadcast corrigido.
+- Para histórico central/offline, aplique supabase/v2527_persistent_chat.sql quando disponível.
+
+TELA COMPARTILHADA:
+- Tela/janela normal deve ser transmitida. Conteúdo com DRM/proteção do navegador pode continuar preto por bloqueio do próprio sistema.
