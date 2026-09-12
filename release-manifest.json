@@ -1,26 +1,47 @@
 {
-  "version": "25.37",
-  "name": "Message Actions",
-  "base": "25.36 Presence & Controls",
+  "version": "25.38.0",
+  "name": "Adaptive Identity",
+  "base": "25.37 Message Actions",
   "date": "2026-09-12",
-  "changes": [
-    "Per-message context actions on right click / long press",
-    "Reply to message",
-    "Quick reactions",
-    "Copy and edit own text messages",
-    "Delete for me",
-    "Delete for everyone with synchronized tombstone",
-    "Typing indicator",
-    "Sending / sent / delivered / read states",
-    "Date separators",
-    "Automatic per-conversation drafts",
-    "Persistent Supabase message history",
-    "Realtime message INSERT/UPDATE synchronization"
+  "highlights": [
+    "Accent color follows the username and global interface details",
+    "Adaptive Home and dedicated For You page",
+    "Universal search across catalog and Community profiles",
+    "Notification center with Community, content and system categories",
+    "Profile banner, custom status, public favorites, activity visibility and achievements",
+    "Quick profile menu and centralized privacy controls",
+    "New-content indicators, keyboard shortcuts, skeletons and refined density modes",
+    "Admin live status strip with build and session health"
+  ],
+  "preserved": [
+    "v25.37 Message Actions",
+    "v25.36 Presence & Controls",
+    "v25.35 Community Glow",
+    "v25.34 Arc Reveal"
   ],
   "backend": {
-    "migration": "lx_message_actions_v2537 + lx_message_actions_v2537_security",
+    "migration": "lx_adaptive_identity_v2538",
     "applied": true,
-    "table": "public.lx_messages"
+    "profile_fields": [
+      "status_text",
+      "banner_url",
+      "activity_visible",
+      "favorites_visible",
+      "favorite_ids",
+      "last_activity"
+    ],
+    "social_directory_anon_execute": false,
+    "social_directory_authenticated_execute": true
+  },
+  "qa": {
+    "javascript_page_errors": 0,
+    "javascript_console_errors": 0,
+    "duplicate_html_ids": 0,
+    "mobile_390x844_horizontal_overflow": false,
+    "accent_switch_tested": true,
+    "universal_search_tested": true,
+    "profile_save_tested": true,
+    "admin_dashboard_tested": true
   },
   "files": [
     "index.html",
@@ -28,9 +49,15 @@
     "lxplus.js",
     "CNAME",
     "assets/icon.svg",
-    "SUPABASE-MESSAGE-ACTIONS.sql",
+    "SUPABASE-ADAPTIVE-IDENTITY.sql",
     "DEPLOY.txt",
-    "TEST-REPORT.txt"
+    "TEST-REPORT.txt",
+    "release-manifest.json",
+    "QA-ADAPTIVE-HOME-V2538-FINAL.png",
+    "QA-ADMIN-V2538-FINAL.png",
+    "QA-MOBILE-V2538-FINAL.png",
+    "QA-PROFILE-V2538.png",
+    "qa-results-final.json"
   ],
-  "rollback": "25.36 Presence & Controls"
+  "rollback": "25.37 Message Actions"
 }

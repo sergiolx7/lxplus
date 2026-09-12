@@ -1,8 +1,8 @@
 
-/* ===== config.js · LX Plus v25.37 ===== */
+/* ===== config.js · LX Plus v25.38 ===== */
 window.LX=window.LX||{};
 LX.config={
-  version:'25.37.0',
+  version:'25.38.0',
   environment:'cloud-ready',
   production:true,
   apiBase:'',
@@ -20,9 +20,9 @@ LX.config={
   features:{recommendations:true,preferenceProfile:true,premium:true,fuzzySearch:true,qualityGate:true,requests:true,ratings:true,analytics:true,tv:true,pwa:false,profileIdentity:true,appMode:true,cloudSync:true,realtime:true,cloudMedia:true}
 };
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['config']='25.37.0';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['config']='25.38.0';
 
-/* ===== LX v25.37 resilient SDK loader ===== */
+/* ===== LX v25.38 resilient SDK loader ===== */
 (()=>{
   const LX=window.LX=window.LX||{};
   let sdkPromise=null;
@@ -34,7 +34,7 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['config']='25.37
   try{if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});if('caches'in window)caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))).catch(()=>{})}catch{}
 })();
 
-/* ===== store.js · LX Plus v25.37 ===== */
+/* ===== store.js · LX Plus v25.38 ===== */
 (()=>{const LX=window.LX;const PREFIX='lx16_',memory=new Map();
 const keys={accounts:'accounts',users:'users',catalog:'catalog',session:'session',history:'history',list:'list',theme:'theme',accent:'accent',notices:'notices',requests:'requests',ratings:'ratings',analytics:'analytics',publicLists:'publicLists',noticeReads:'noticeReads',preferences:'preferences',subscriptions:'subscriptions',profileStyles:'profileStyles',layoutMode:'layoutMode',motion:'motion',playerPrefs:'playerPrefs',globalBranding:'globalBranding',chatThreads:'chatThreads',stickers:'stickers',uiPrefs:'uiPrefs',chatPrefs:'chatPrefs'};
 const read=(k,d)=>{const key=PREFIX+k;try{const raw=localStorage.getItem(key);if(raw!=null){const x=JSON.parse(raw);memory.set(key,raw);return x??d}}catch{}try{if(memory.has(key)){const x=JSON.parse(memory.get(key));return x??d}}catch{}return d};
@@ -47,9 +47,9 @@ async function getMedia(key){if(!key)return null;if(String(key).startsWith('clou
 async function putAsset(key,file,folder='assets'){if(LX.cloud?.enabled?.()){const mediaKey=await LX.cloud.uploadFile(key,file,folder);return LX.cloud.publicUrl(String(mediaKey).replace(/^cloud:/,''),LX.config.supabase?.assetBucket||'lx-assets')}return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
 LX.store={keys,read,write,writeLocal,putMedia,getMedia,putAsset,removeLocal,reset(){Object.values(keys).forEach(removeLocal)}}})();
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['store']='25.37';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['store']='25.38';
 
-/* ===== cloud.js · LX Plus v25.37 ===== */
+/* ===== cloud.js · LX Plus v25.38 ===== */
 (()=>{
 const LX=window.LX,S=LX.store;
 let client=null,currentAuth=null,currentProfile=null,adminDirectory=[],syncTimer=null,channels=[],catalogPollTimer=null,catalogSig='',userStateChannel=null;
@@ -197,7 +197,7 @@ function status(){return {configured:enabled(),connected:!!client,user:currentAu
 LX.cloud={enabled,db,user,profile,isAdmin,initPublic,signUp,resendConfirmation,signIn,resume,signOut,resetPassword,updatePassword,isRecoveryFlow,onLocalWrite,syncUserState,saveCatalog,upsertCatalogItem,deleteCatalogItem,saveUsers,saveBranding,requestOrVote,refreshRequests,updateRequestStatus,publishNotices,approveUser,setVerified,commitAdminChanges,rejectUser,deletePendingUser,setPremium,track,uploadFile,publicUrl,mediaUrl,removeUploadedPath,migrateLocalCatalog,status,hydrateUser,refreshBranding};
 })();
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['cloud']='25.37';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['cloud']='25.38';
 
 /* ===== services.js · LX Plus v25.36 ===== */
 (()=>{const LX=window.LX,S=LX.store,$=id=>document.getElementById(id);
@@ -451,7 +451,7 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['ui']='25.35';
   }
 
   function render(m){
-    m.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN · v25.36</span><h1>Importador de catálogo</h1><p>Pesquise metadados oficiais e monte o catálogo sem preencher capa, sinopse e ficha técnica manualmente.</p></div></div>
+    m.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN · v25.38</span><h1>Importador de catálogo</h1><p>Pesquise metadados oficiais e monte o catálogo sem preencher capa, sinopse e ficha técnica manualmente.</p></div></div>
     <section class="import-hero"><div><span class="eyebrow">LX CATALOG IMPORTER</span><h2>Catálogo rápido, mídia sob seu controle.</h2><p>Filmes e séries chegam como rascunho com capa, banner e ficha técnica. Livros e músicas também podem receber metadados e arte automaticamente.</p></div><div class="import-badges"><span>🎬 TMDB</span><span>📚 Open Library</span><span>♫ Music metadata</span></div></section>
     <div class="admin-grid"><section class="admin-card"><h2>Fonte</h2><div class="import-source-tabs"><button data-source="tmdb-movie">Filmes</button><button data-source="tmdb-tv">Séries</button><button data-source="book">Livros</button><button data-source="music">Músicas</button></div><div class="import-search-row"><input id="importSearch" placeholder="Ex.: Vingadores, Breaking Bad, Dom Casmurro, artista…"><button id="importGo" class="primary-btn">Buscar</button></div><small style="color:var(--muted)">Tudo importado entra como rascunho, salvo livros gratuitos que você decidir publicar.</small></section>
     <section class="admin-card"><h2>Fontes online</h2><label class="field">TMDB API Key v3<input id="tmdbKey" type="password" placeholder="Cole sua API Key do TMDB" value="${esc(key())}"></label><label class="field">TheSportsDB Key <span class="optional">opcional</span><input id="sportsKey" type="password" placeholder="Deixe vazio para usar o plano gratuito"></label><div class="import-key-actions"><button id="saveTmdb">Salvar TMDB + ativar catálogo online</button><button id="saveSports">Salvar chave esportiva</button><button id="importPopular" class="primary-btn">⚡ Importar populares da semana</button></div><div id="integrationStatus" class="import-key-status">Verificando integrações…</div><small style="color:var(--muted)">As chaves online são guardadas na tabela protegida do Supabase e usadas pela Edge Function. O TMDB também fica neste navegador para o importador ADM.</small></section></div>
@@ -549,7 +549,7 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['content-hub']='
 
 /* ===== admin.js · LX Plus v25.36 ===== */
 (()=>{const LX=window.LX,D=LX.data,S=LX.store,U=LX.ui,$=U.$,$$=U.$$ ,esc=U.esc;
-const head=(t,p)=>`<div class="admin-head"><div><span class="eyebrow">LX ADMIN · v25.36</span><h1>${t}</h1><p>${p}</p></div></div>`;
+const head=(t,p)=>`<div class="admin-head"><div><span class="eyebrow">LX ADMIN · v25.38</span><h1>${t}</h1><p>${p}</p></div></div>`;
 const mediaReady=x=>x?.type==='Filme'?!!x.mediaKey:['Série','Anime','Dorama'].includes(x?.type)?!!x.episodes?.some(e=>e.mediaKey):x?.type==='Livro'?!!(x.mediaKey||x.chapters?.length||x.externalReadUrl):x?.type==='Música'?!!(x.mediaKey||x.tracks?.some(t=>t.mediaKey)):true;
 const autoState=x=>x?.autoVariants&&Object.keys(x.autoVariants).length?'Auto Quality pronto':x?.autoQuality?.status==='queued'?'Auto Quality na fila':x?.mediaKey||x?.episodes?.some?.(e=>e.mediaKey)?'Master original':'Sem arquivo';
 const PENDING_KEY='lxplus_admin_pending_v2527';
@@ -566,14 +566,14 @@ function pendingBar(scope='library'){
  if(pendingAdmin.verified.size)parts.push(`${pendingAdmin.verified.size} selo${pendingAdmin.verified.size===1?'':'s'}`);
  if(pendingAdmin.access.size)parts.push(`${pendingAdmin.access.size} acesso${pendingAdmin.access.size===1?'':'s'}`);
  if(pendingAdmin.deleteIds.size)parts.push(`${pendingAdmin.deleteIds.size} exclusão${pendingAdmin.deleteIds.size===1?'':'ões'}`);
- return `<section class="admin-page-save ${n?'has-pending':'is-clean'}" data-admin-save-scope="${scope}"><div><span>${n?'ALTERAÇÕES PENDENTES':'CONTROLE DE ALTERAÇÕES'}</span><strong>${n?`${n} alteração${n===1?'':'ões'} aguardando salvar`:'Tudo salvo no Supabase · v25.36'}</strong><small>${n?parts.join(' · '):'Marque Excluir, Dar selo, Aprovar ou Recusar e depois confirme aqui.'}</small></div><div class="admin-page-save-actions"><button class="glass-btn" onclick="LX.admin.discardPending('${scope}')" ${n?'':'disabled'}>Descartar</button><button class="primary-btn admin-save-primary" onclick="LX.admin.saveChanges('${scope}')">Salvar alterações</button></div></section>`
+ return `<section class="admin-page-save ${n?'has-pending':'is-clean'}" data-admin-save-scope="${scope}"><div><span>${n?'ALTERAÇÕES PENDENTES':'CONTROLE DE ALTERAÇÕES'}</span><strong>${n?`${n} alteração${n===1?'':'ões'} aguardando salvar`:'Tudo salvo no Supabase · v25.38'}</strong><small>${n?parts.join(' · '):'Marque Excluir, Dar selo, Aprovar ou Recusar e depois confirme aqui.'}</small></div><div class="admin-page-save-actions"><button class="glass-btn" onclick="LX.admin.discardPending('${scope}')" ${n?'':'disabled'}>Descartar</button><button class="primary-btn admin-save-primary" onclick="LX.admin.saveChanges('${scope}')">Salvar alterações</button></div></section>`
 }
 function premium(m){const users=D.users(),subs=D.subscriptions();m.innerHTML=head('Premium','Gerencie os planos Premium sem sair do painel.')+`<div class="admin-card" style="overflow:auto"><table class="admin-table"><thead><tr><th>Usuário</th><th>Plano</th><th>Status</th><th>Ações</th></tr></thead><tbody>${users.map(u=>{const sub=subs[u.email]||{};return `<tr><td><b>${esc(u.name)}</b><br><small>${esc(u.email||'')}</small></td><td>${esc(sub.plan||'Free')}</td><td>${sub.active?'Ativo':'Free'}</td><td><button onclick="LX.admin.premiumSet('${esc(u.email).replace(/'/g,'&#39;')}','Mensal')">Mensal</button> <button onclick="LX.admin.premiumSet('${esc(u.email).replace(/'/g,'&#39;')}','Anual')">Anual</button> <button onclick="LX.admin.premiumOff('${esc(u.email).replace(/'/g,'&#39;')}')">Desativar</button></td></tr>`}).join('')}</tbody></table></div>`}
 function analytics(m){const events=D.analytics(),plays=events.filter(x=>x.event==='play'),searches=events.filter(x=>x.event==='search');m.innerHTML=head('Analytics','Resumo local e sincronizado da utilização da LX Plus.')+`<div class="stats"><div class="stat"><small>EVENTOS</small><strong>${events.length}</strong></div><div class="stat"><small>PLAYS</small><strong>${plays.length}</strong></div><div class="stat"><small>BUSCAS</small><strong>${searches.length}</strong></div><div class="stat"><small>USUÁRIOS</small><strong>${D.users().length}</strong></div></div><div class="admin-card" style="margin-top:12px"><h2>Eventos recentes</h2>${events.slice(-20).reverse().map(e=>`<div class="notice"><strong>${esc(e.event)}</strong><small>${new Date(e.at||Date.now()).toLocaleString('pt-BR')}</small></div>`).join('')||'<p>Sem eventos ainda.</p>'}</div>`}
 function notifications(m){const a=D.notices();m.innerHTML=head('Notificações','Publique avisos para os usuários da LX Plus.')+`<div class="admin-grid"><form id="noticeForm" class="admin-card form-grid"><h2 class="span2">Nova notificação</h2><label class="field span2">Título<input id="noticeTitle" maxlength="80" placeholder="Ex.: Novo filme disponível"></label><label class="field span2">Mensagem<textarea id="noticeText" rows="4" maxlength="400" placeholder="Mensagem para os usuários"></textarea></label><label class="field">Horário<input id="noticeTime" value="Agora"></label><div class="field"><span>&nbsp;</span><button id="sendNotice" class="primary-btn" type="button">Publicar notificação</button></div></form><div class="admin-card"><h2>Notificações atuais</h2>${a.map(n=>`<div class="notice"><strong>${esc(n.title||'Notificação')}</strong><small>${esc(n.text||n.message||'')}</small></div>`).join('')||'<p style="color:var(--muted)">Nenhuma notificação publicada.</p>'}</div></div>`}
 function appearance(m){const b=D.branding?.()||{};m.innerHTML=head('Identidade visual','Ajuste textos institucionais e a cor principal da LX Plus.')+`<form id="brandForm" class="admin-card form-grid"><label class="field">Cor principal<input id="brandAccent" type="color" value="${esc(b.accent||'#42a5ff')}"></label><label class="field span2">Título da entrada<input id="brandTitle" value="${esc(b.splashTitle||'Seu entretenimento. Do seu jeito.')}"></label><label class="field span2">Subtítulo<textarea id="brandSubtitle" rows="3">${esc(b.splashSubtitle||'')}</textarea></label><label class="field span2">Sobre<textarea id="brandAbout" rows="4">${esc(b.legalAbout||'')}</textarea></label><label class="field span2">Termos<textarea id="brandTerms" rows="4">${esc(b.legalTerms||'')}</textarea></label><label class="field span2">Privacidade<textarea id="brandPrivacy" rows="4">${esc(b.legalPrivacy||'')}</textarea></label><label class="field span2">E-mail de suporte<input id="brandSupport" type="email" value="${esc(b.supportEmail||'')}"></label><div class="span2"><button class="primary-btn" type="submit">Salvar identidade</button></div></form>`;const f=$('brandForm');if(f)f.onsubmit=async e=>{e.preventDefault();const next={...b,accent:$('brandAccent').value,splashTitle:$('brandTitle').value.trim(),splashSubtitle:$('brandSubtitle').value.trim(),legalAbout:$('brandAbout').value.trim(),legalTerms:$('brandTerms').value.trim(),legalPrivacy:$('brandPrivacy').value.trim(),supportEmail:$('brandSupport').value.trim()};try{await D.saveBranding(next);LX.applyBranding?.();LX.toast('Identidade visual salva.')}catch(err){console.warn(err);LX.toast('Não foi possível salvar a identidade agora.')}}}
 function render(page='dashboard'){U.state.adminPage=page;const m=$('adminMain');({dashboard,library,importer,uploads,requests,community,premium,analytics,notifications,appearance,settings}[page]||dashboard)(m);bind(page);updateSaveDock();LX.saveView?.()}
-function dashboard(m){const c=D.catalog(),u=D.users(),req=D.requests(),mediaPending=c.filter(x=>!mediaReady(x)),events=D.analytics(),cloud=LX.cloud?.status?.()||{},published=c.filter(x=>x.published!==false).length,drafts=c.filter(x=>x.published===false).length,openReq=req.filter(x=>!['Concluído','Fechado','Recusado'].includes(x.status)).length,plays=events.filter(x=>x.event==='play'),now=Date.now(),newUsers7=u.filter(x=>x.created&&now-x.created<=7*86400000).length,userDaily=Array.from({length:7},(_,i)=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-(6-i));const e=new Date(d);e.setDate(e.getDate()+1);return u.filter(x=>x.created&&x.created>=+d&&x.created<+e).length}),userMax=Math.max(1,...userDaily),launchScore=Math.round(([c.length>0,mediaPending.length===0,cloud.configured===true,published>0,plays.length>0].filter(Boolean).length/5)*100),daily=Array.from({length:14},(_,i)=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-(13-i));const e=new Date(d);e.setDate(e.getDate()+1);return plays.filter(x=>x.at>=+d&&x.at<+e).length}),max=Math.max(1,...daily),topCount=(arr,key)=>Object.entries(arr.reduce((o,x)=>{const k=key(x);if(k)o[k]=(o[k]||0)+1;return o},{})).sort((a,b)=>b[1]-a[1]).slice(0,5),topPlayed=topCount(plays,x=>x.data?.title),topReq=[...req].sort((a,b)=>(b.votes||1)-(a.votes||1)).slice(0,5);m.innerHTML=head('Visão geral','Operação, audiência, catálogo e lançamento em um único painel.')+`<section class="launch-center"><div><span class="eyebrow">CENTRAL DE LANÇAMENTO</span><h2>Prontidão da LX Plus</h2><p>Checklist técnico e editorial antes de publicar uma nova versão.</p></div><div class="launch-score"><strong>${launchScore}%</strong><small>PRONTO</small></div><div class="launch-checks"><span class="${c.length?'ok':''}">Catálogo ${c.length?'✓':'!'}</span><span class="${mediaPending.length===0?'ok':''}">Mídia ${mediaPending.length===0?'✓':'!'}</span><span class="${cloud.configured?'ok':''}">Nuvem ${cloud.configured?'✓':'!'}</span><span class="${published?'ok':''}">Publicados ${published?'✓':'!'}</span><span class="${plays.length?'ok':''}">Plays ${plays.length?'✓':'!'}</span></div></section><div class="admin-quick-add"><div><span class="eyebrow">PUBLICAR AGORA</span><strong>Adicionar conteúdo</strong><small>Abra o formulário certo com um clique.</small></div><div class="quick-add-actions">${['Filme','Série','Anime','Dorama','Livro','Música'].map(t=>`<button onclick="LX.admin.edit(null,'${t}')"><span>${t==='Filme'?'🎬':t==='Série'?'▣':t==='Anime'?'✦':t==='Dorama'?'♡':t==='Livro'?'▤':'♫'}</span>${t}</button>`).join('')}</div></div><div class="stats"><div class="stat"><small>USUÁRIOS</small><strong>${u.length}</strong><span>+${newUsers7} em 7 dias</span></div><div class="stat"><small>PLAYS</small><strong>${plays.length}</strong><span>reproduções registradas</span></div><div class="stat"><small>PUBLICADOS</small><strong>${published}</strong><span>${drafts} rascunhos</span></div><div class="stat"><small>PEDIDOS ABERTOS</small><strong>${openReq}</strong><span>priorizar</span></div></div><div class="admin-grid"><div class="admin-card"><h2>Plays — últimos 14 dias</h2><div class="chart">${daily.map(n=>`<i title="${n} plays" style="height:${Math.max(8,Math.round(n/max*118))}px"></i>`).join('')}</div><small style="color:var(--muted)">${plays.length} plays registrados no período total disponível</small></div><div class="admin-card"><h2>Títulos mais vistos</h2>${topPlayed.map(([x,n],i)=>`<div class="rank-row"><span class="position">#${i+1}</span><strong>${esc(x)}</strong><b>${n}</b></div>`).join('')||'<p style="color:var(--muted)">Ainda não há plays suficientes.</p>'}</div></div><div class="admin-grid"><div class="admin-card"><h2>Pedidos mais solicitados</h2>${topReq.map((x,i)=>`<div class="rank-row"><span class="position">#${i+1}</span><div><strong>${esc(x.title)}</strong><small style="display:block;color:var(--muted)">${esc(x.mediaType)} · ${esc(x.status)}</small></div><b>▲ ${x.votes||1}</b></div>`).join('')||'<p style="color:var(--muted)">Nenhum pedido recebido.</p>'}<h2 style="margin-top:22px">Novos usuários — 7 dias</h2><div class="chart mini-chart">${userDaily.map(n=>`<i title="${n} novos usuários" style="height:${Math.max(7,Math.round(n/userMax*88))}px"></i>`).join('')}</div><small style="color:var(--muted)">+${newUsers7} usuários nos últimos 7 dias</small></div><div class="admin-card"><h2>Saúde da plataforma</h2><div class="health-grid"><div class="health-card"><span class="status">Frontend</span><strong>Operacional</strong><small>Cache v25.36 + Open Catalog</small></div><div class="health-card"><span class="status ${cloud.configured?'':'warn'}">Nuvem</span><strong>${cloud.configured?'Conectada':'Pendente'}</strong><small>${cloud.configured?'Supabase e sincronização global':'Configure o Supabase'}</small></div><div class="health-card"><span class="status ${mediaPending.length?'warn':''}">Mídia</span><strong>${mediaPending.length?mediaPending.length+' pendências':'Masters prontos'}</strong><small>Cinema Core · Original master</small></div><div class="health-card"><span class="status">Versão</span><strong>v25.36</strong><small>Open Catalog · Official Live · Music · Reader · Cinema</small></div></div></div></div>`}
+function dashboard(m){const c=D.catalog(),u=D.users(),req=D.requests(),mediaPending=c.filter(x=>!mediaReady(x)),events=D.analytics(),cloud=LX.cloud?.status?.()||{},published=c.filter(x=>x.published!==false).length,drafts=c.filter(x=>x.published===false).length,openReq=req.filter(x=>!['Concluído','Fechado','Recusado'].includes(x.status)).length,plays=events.filter(x=>x.event==='play'),now=Date.now(),newUsers7=u.filter(x=>x.created&&now-x.created<=7*86400000).length,userDaily=Array.from({length:7},(_,i)=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-(6-i));const e=new Date(d);e.setDate(e.getDate()+1);return u.filter(x=>x.created&&x.created>=+d&&x.created<+e).length}),userMax=Math.max(1,...userDaily),launchScore=Math.round(([c.length>0,mediaPending.length===0,cloud.configured===true,published>0,plays.length>0].filter(Boolean).length/5)*100),daily=Array.from({length:14},(_,i)=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-(13-i));const e=new Date(d);e.setDate(e.getDate()+1);return plays.filter(x=>x.at>=+d&&x.at<+e).length}),max=Math.max(1,...daily),topCount=(arr,key)=>Object.entries(arr.reduce((o,x)=>{const k=key(x);if(k)o[k]=(o[k]||0)+1;return o},{})).sort((a,b)=>b[1]-a[1]).slice(0,5),topPlayed=topCount(plays,x=>x.data?.title),topReq=[...req].sort((a,b)=>(b.votes||1)-(a.votes||1)).slice(0,5);m.innerHTML=head('Visão geral','Operação, audiência, catálogo e lançamento em um único painel.')+`<section class="launch-center"><div><span class="eyebrow">CENTRAL DE LANÇAMENTO</span><h2>Prontidão da LX Plus</h2><p>Checklist técnico e editorial antes de publicar uma nova versão.</p></div><div class="launch-score"><strong>${launchScore}%</strong><small>PRONTO</small></div><div class="launch-checks"><span class="${c.length?'ok':''}">Catálogo ${c.length?'✓':'!'}</span><span class="${mediaPending.length===0?'ok':''}">Mídia ${mediaPending.length===0?'✓':'!'}</span><span class="${cloud.configured?'ok':''}">Nuvem ${cloud.configured?'✓':'!'}</span><span class="${published?'ok':''}">Publicados ${published?'✓':'!'}</span><span class="${plays.length?'ok':''}">Plays ${plays.length?'✓':'!'}</span></div></section><div class="admin-quick-add"><div><span class="eyebrow">PUBLICAR AGORA</span><strong>Adicionar conteúdo</strong><small>Abra o formulário certo com um clique.</small></div><div class="quick-add-actions">${['Filme','Série','Anime','Dorama','Livro','Música'].map(t=>`<button onclick="LX.admin.edit(null,'${t}')"><span>${t==='Filme'?'🎬':t==='Série'?'▣':t==='Anime'?'✦':t==='Dorama'?'♡':t==='Livro'?'▤':'♫'}</span>${t}</button>`).join('')}</div></div><div class="stats"><div class="stat"><small>USUÁRIOS</small><strong>${u.length}</strong><span>+${newUsers7} em 7 dias</span></div><div class="stat"><small>PLAYS</small><strong>${plays.length}</strong><span>reproduções registradas</span></div><div class="stat"><small>PUBLICADOS</small><strong>${published}</strong><span>${drafts} rascunhos</span></div><div class="stat"><small>PEDIDOS ABERTOS</small><strong>${openReq}</strong><span>priorizar</span></div></div><div class="admin-grid"><div class="admin-card"><h2>Plays — últimos 14 dias</h2><div class="chart">${daily.map(n=>`<i title="${n} plays" style="height:${Math.max(8,Math.round(n/max*118))}px"></i>`).join('')}</div><small style="color:var(--muted)">${plays.length} plays registrados no período total disponível</small></div><div class="admin-card"><h2>Títulos mais vistos</h2>${topPlayed.map(([x,n],i)=>`<div class="rank-row"><span class="position">#${i+1}</span><strong>${esc(x)}</strong><b>${n}</b></div>`).join('')||'<p style="color:var(--muted)">Ainda não há plays suficientes.</p>'}</div></div><div class="admin-grid"><div class="admin-card"><h2>Pedidos mais solicitados</h2>${topReq.map((x,i)=>`<div class="rank-row"><span class="position">#${i+1}</span><div><strong>${esc(x.title)}</strong><small style="display:block;color:var(--muted)">${esc(x.mediaType)} · ${esc(x.status)}</small></div><b>▲ ${x.votes||1}</b></div>`).join('')||'<p style="color:var(--muted)">Nenhum pedido recebido.</p>'}<h2 style="margin-top:22px">Novos usuários — 7 dias</h2><div class="chart mini-chart">${userDaily.map(n=>`<i title="${n} novos usuários" style="height:${Math.max(7,Math.round(n/userMax*88))}px"></i>`).join('')}</div><small style="color:var(--muted)">+${newUsers7} usuários nos últimos 7 dias</small></div><div class="admin-card"><h2>Saúde da plataforma</h2><div class="health-grid"><div class="health-card"><span class="status">Frontend</span><strong>Operacional</strong><small>Cache v25.38 + Adaptive Identity</small></div><div class="health-card"><span class="status ${cloud.configured?'':'warn'}">Nuvem</span><strong>${cloud.configured?'Conectada':'Pendente'}</strong><small>${cloud.configured?'Supabase e sincronização global':'Configure o Supabase'}</small></div><div class="health-card"><span class="status ${mediaPending.length?'warn':''}">Mídia</span><strong>${mediaPending.length?mediaPending.length+' pendências':'Masters prontos'}</strong><small>Cinema Core · Original master</small></div><div class="health-card"><span class="status">Versão</span><strong>v25.38</strong><small>Adaptive Identity · Community · Music · Reader · Cinema</small></div></div></div></div>`}
 function library(m){const c=D.catalog(),types=['Filme','Série','Anime','Dorama','Livro','Música'],t=U.state.libraryType||'Todos';m.innerHTML=head('Biblioteca','Publique, agende, priorize e gerencie o catálogo. Exclusões só são aplicadas quando você toca em Salvar alterações.')+pendingBar('library')+`<div class="library-summary">${types.map(x=>`<button data-libsummary="${x}" class="${t===x?'active':''}"><small>${x==='Música'?'Música':x+'s'}</small><strong>${c.filter(z=>z.type===x).length}</strong></button>`).join('')}</div><div class="admin-card"><div class="library-tabs"><button data-lib="Todos" class="${t==='Todos'?'active':''}">Tudo</button>${types.map(x=>`<button data-lib="${x}" class="${t===x?'active':''}">${x==='Música'?'Música':x+'s'}</button>`).join('')}</div><div class="admin-toolbar"><input id="libSearch" placeholder="Buscar nesta biblioteca"><select id="libStatus"><option>Todos os status</option><option>Publicado</option><option>Rascunho</option><option>Agendado</option></select><button id="newContent" class="primary-btn">＋ Novo conteúdo</button><button class="admin-inline-save" onclick="LX.admin.saveChanges('library')">Salvar alterações</button></div><div style="overflow:auto"><table class="admin-table"><thead><tr><th>Título</th><th>Tipo</th><th>Prioridade</th><th>Mídia</th><th>Status</th><th>Ações rápidas</th></tr></thead><tbody id="libRows">${rows(c)}</tbody></table></div></div>`}
 function rows(a){return a.map(x=>{const scheduled=x.scheduledAt&&+new Date(x.scheduledAt)>Date.now(),deleting=pendingAdmin.deleteIds.has(Number(x.id)),status=deleting?'Excluir ao salvar':x.published===false?'Rascunho':scheduled?`Agendado · ${new Date(x.scheduledAt).toLocaleString('pt-BR')}`:'Publicado';return `<tr class="${deleting?'pending-delete-row':''}"><td><b>${esc(x.title)}</b>${x.featured?' <span class="premium-user-pill">DESTAQUE</span>':''}${deleting?' <span class="account-status-pill rejected">PENDENTE DE EXCLUSÃO</span>':''}<br><small style="color:var(--muted)">${esc(x.genre)} · ${x.type==='Livro'?`${x.chapters?.length||0} capítulos`:x.type==='Música'?`${x.tracks?.length||0} faixas`:['Série','Anime','Dorama'].includes(x.type)?`${x.episodes?.length||0} episódios`:'1 título'}</small></td><td>${esc(x.type)}</td><td><div class="priority-control"><button onclick="LX.admin.priority(${x.id},-1)" ${deleting?'disabled':''}>−</button><b>${+x.priority||0}</b><button onclick="LX.admin.priority(${x.id},1)" ${deleting?'disabled':''}>＋</button></div></td><td><span class="media-state ${mediaReady(x)?'ok':'warn'}">${autoState(x)}</span></td><td><span class="${deleting?'account-status-pill rejected':''}">${status}</span></td><td><div class="catalog-actions">${!deleting?(x.type==='Livro'&&mediaReady(x)?`<button class="primary-btn" onclick="LX.read(${x.id})">▤ Ler</button>`:x.type==='Música'&&mediaReady(x)?`<button class="primary-btn" onclick="LX.music(${x.id},0)">♫ Ouvir</button>`:mediaReady(x)?`<button class="primary-btn" onclick="LX.play(${x.id})">▶ Assistir</button>`:''):''}${deleting?'':`<button onclick="LX.admin.preview(${x.id})">Prévia</button><button onclick="LX.admin.togglePublish(${x.id})">${x.published===false?'Publicar':'Rascunho'}</button><button onclick="LX.admin.toggleFeatured(${x.id})">${x.featured?'Tirar destaque':'Destacar'}</button><button onclick="LX.admin.edit(${x.id})">Editar</button>`}<button class="${deleting?'glass-btn':'danger'}" onclick="LX.admin.del(${x.id})">${deleting?'Cancelar exclusão':'Excluir'}</button></div></td></tr>`}).join('')}
 function importer(m){if(LX.importer?.render)LX.importer.render(m);else m.innerHTML=head('Importador','O módulo de importação ainda está carregando.')}
@@ -616,7 +616,7 @@ function community(m){
    return `<tr class="${dirty?'pending-change-row':''}"><td><b>${LX.verified(x.name,v)}</b>${dirty?' <span class="account-status-pill pending">NÃO SALVO</span>':''}<br><small style="color:var(--muted)">${esc(x.email)}</small></td><td><span class="account-status-pill ${cls}">${status}</span><br><small style="color:var(--muted)">${x.emailConfirmed?'e-mail confirmado':'e-mail pendente'}</small></td><td>${x.emailConfirmed?'✓ Confirmado':'○ Pendente'}</td><td>${x.visible===false?'Oculto':'Ativo'}</td><td><button class="${v?'primary-btn':''}" onclick="LX.admin.verify('${String(x.id)}')">${v?'Remover selo verificado':'Dar selo verificado ✓'}</button><small style="display:block;margin-top:6px;color:var(--muted)">${changedVerified?'Será aplicado ao salvar.':v?'Verificado no banco':'Sem selo'}</small></td><td><div class="approval-actions">${accessActions}</div>${changedAccess?'<small style="display:block;margin-top:7px;color:#ffbd62">Mudança de acesso pendente de salvar.</small>':''}</td></tr>`
  }).join('')}</tbody></table></div>`;
 }
-function settings(m){const st=LX.cloud?.status?.()||{configured:false,connected:false,admin:false,approved:false,mediaBucket:'lx-media',assetBucket:'lx-assets'};m.innerHTML=head('Produção & Nuvem','O Supabase é a fonte oficial de contas, catálogo, identidade, progresso e mídia em todos os dispositivos.')+`<div class="admin-grid"><div class="admin-card"><h2>Status da nuvem</h2><div class="health-grid"><div class="health-card"><span class="status ${st.configured?'':'warn'}">Supabase</span><strong>${st.configured?'Configurado':'Não configurado'}</strong><small>${st.configured?'Projeto conectado à LX Plus':'Revise a configuração do projeto'}</small></div><div class="health-card"><span class="status ${st.user?'':'warn'}">Sessão</span><strong>${st.user?'Conectada':'Sem sessão cloud'}</strong><small>${esc(st.user||'Entre com uma conta Supabase')}</small></div><div class="health-card"><span class="status ${st.admin?'':'warn'}">ADM</span><strong>${st.admin?'Autorizado':'Sem privilégio cloud'}</strong><small>Permissões administrativas ficam no banco.</small></div><div class="health-card"><span class="status ${st.approved?'':'warn'}">Acesso</span><strong>${st.approved?'Aprovado':'Pendente'}</strong><small>${esc(st.approvalStatus||'status da conta')}</small></div><div class="health-card"><span class="status ${st.configured?'':'warn'}">Storage</span><strong>${esc(st.mediaBucket||'lx-media')} + ${esc(st.assetBucket||'lx-assets')}</strong><small>Mídia privada e assets sincronizados.</small></div></div></div><div class="admin-card"><h2>Sincronização global</h2><p style="color:var(--muted);line-height:1.6">A partir da v25.6, o catálogo do Supabase é a <b>fonte de verdade</b>. Adicionar, editar ou excluir conteúdo só é confirmado na interface depois que a gravação na nuvem dá certo. Outros celulares, computadores e navegadores recebem a atualização pelo Realtime.</p><div class="sync-lock-note"><b>Modo de escrita:</b> ${esc(st.catalogWriteMode||'RPC')} · o navegador nunca grava diretamente em lx_catalog. Adicionar, editar e excluir passam pelas funções protegidas do Supabase.</div></div></div><div class="admin-card" style="margin-top:12px"><h2>Segurança</h2><p style="color:var(--muted);line-height:1.6">A v25.36 usa aprovação de conta no banco, RLS e funções administrativas protegidas, com escrita de catálogo exclusivamente via RPC. A build de produção não contém senha ADM de demonstração e nunca deve receber Service Role Key no GitHub.</p></div>`}
+function settings(m){const st=LX.cloud?.status?.()||{configured:false,connected:false,admin:false,approved:false,mediaBucket:'lx-media',assetBucket:'lx-assets'};m.innerHTML=head('Produção & Nuvem','O Supabase é a fonte oficial de contas, catálogo, identidade, progresso e mídia em todos os dispositivos.')+`<div class="admin-grid"><div class="admin-card"><h2>Status da nuvem</h2><div class="health-grid"><div class="health-card"><span class="status ${st.configured?'':'warn'}">Supabase</span><strong>${st.configured?'Configurado':'Não configurado'}</strong><small>${st.configured?'Projeto conectado à LX Plus':'Revise a configuração do projeto'}</small></div><div class="health-card"><span class="status ${st.user?'':'warn'}">Sessão</span><strong>${st.user?'Conectada':'Sem sessão cloud'}</strong><small>${esc(st.user||'Entre com uma conta Supabase')}</small></div><div class="health-card"><span class="status ${st.admin?'':'warn'}">ADM</span><strong>${st.admin?'Autorizado':'Sem privilégio cloud'}</strong><small>Permissões administrativas ficam no banco.</small></div><div class="health-card"><span class="status ${st.approved?'':'warn'}">Acesso</span><strong>${st.approved?'Aprovado':'Pendente'}</strong><small>${esc(st.approvalStatus||'status da conta')}</small></div><div class="health-card"><span class="status ${st.configured?'':'warn'}">Storage</span><strong>${esc(st.mediaBucket||'lx-media')} + ${esc(st.assetBucket||'lx-assets')}</strong><small>Mídia privada e assets sincronizados.</small></div></div></div><div class="admin-card"><h2>Sincronização global</h2><p style="color:var(--muted);line-height:1.6">A partir da v25.6, o catálogo do Supabase é a <b>fonte de verdade</b>. Adicionar, editar ou excluir conteúdo só é confirmado na interface depois que a gravação na nuvem dá certo. Outros celulares, computadores e navegadores recebem a atualização pelo Realtime.</p><div class="sync-lock-note"><b>Modo de escrita:</b> ${esc(st.catalogWriteMode||'RPC')} · o navegador nunca grava diretamente em lx_catalog. Adicionar, editar e excluir passam pelas funções protegidas do Supabase.</div></div></div><div class="admin-card" style="margin-top:12px"><h2>Segurança</h2><p style="color:var(--muted);line-height:1.6">A v25.38 usa aprovação de conta no banco, RLS e funções administrativas protegidas, com escrita de catálogo exclusivamente via RPC. A build de produção não contém senha ADM de demonstração e nunca deve receber Service Role Key no GitHub.</p></div>`}
 function bind(page){
  if(page==='library'){
   const apply=()=>{const q=$('libSearch').value.toLowerCase(),s=$('libStatus').value,t=U.state.libraryType,now=Date.now();const a=D.catalog().filter(x=>(t==='Todos'||x.type===t)&&(!q||D.normalize([x.title,x.genre,x.type,x.artist,x.author,x.director,x.creator,x.studio].join(' ')).includes(D.normalize(q)))&&(s==='Todos os status'||(s==='Publicado'?x.published!==false&&(!x.scheduledAt||+new Date(x.scheduledAt)<=now):s==='Agendado'?x.published!==false&&x.scheduledAt&&+new Date(x.scheduledAt)>now:x.published===false)));$('libRows').innerHTML=rows(a)};
@@ -643,7 +643,7 @@ async function edit(id=null,initialType=null,prefill=null){
  const x=id?D.catalog().find(z=>z.id===id):null,type=x?.type||prefill?.mediaType||initialType||'Filme',year=new Date().getFullYear(),dt=v=>{if(!v)return'';const d=new Date(v);if(Number.isNaN(+d))return'';const pad=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`};
  const acceptFor=t=>t==='Música'?'audio/*':t==='Livro'?'application/pdf,.pdf,.epub,application/epub+zip':'video/*';
  const uploadLabel=t=>['Série','Anime','Dorama'].includes(t)?'Enviar episódios':t==='Música'?'Enviar áudio':t==='Livro'?'Enviar livro':'Enviar filme';
- $('modal').innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page content-editor-page quick-editor-page"><span class="eyebrow">${x?'EDITAR':'PUBLICAR'} · v25.36</span><h2>${x?'Editar conteúdo':'Publicação rápida'}</h2><p class="editor-intro">Preencha só o essencial. A LX Plus configura capa padrão, player e o modo de mídia automaticamente. Use <b>Mais opções</b> somente se quiser personalizar.</p>
+ $('modal').innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page content-editor-page quick-editor-page"><span class="eyebrow">${x?'EDITAR':'PUBLICAR'} · v25.38</span><h2>${x?'Editar conteúdo':'Publicação rápida'}</h2><p class="editor-intro">Preencha só o essencial. A LX Plus configura capa padrão, player e o modo de mídia automaticamente. Use <b>Mais opções</b> somente se quiser personalizar.</p>
  <form id="contentForm" class="quick-content-form">
   <div class="quick-core">
    <div class="quick-type-badge"><small>TIPO</small><strong>${esc(type)}</strong></div>
@@ -901,3 +901,279 @@ try{const u=new URL(location.href);if(u.searchParams.has('lxbuild')||u.searchPar
 })();
 
 window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['app']='25.35';
+
+/* =====================================================================
+   LX Plus v25.38 — Adaptive Identity
+   Non-destructive enhancement layer over the stable v25.37 core.
+   ===================================================================== */
+(()=>{
+  const LX=window.LX=window.LX||{}, U=LX.ui, D=LX.data, S=LX.store;
+  if(!U||!D||!S||window.__LX_V2538)return;
+  window.__LX_V2538=true;
+  const $=id=>document.getElementById(id), esc=s=>U.esc?U.esc(s):String(s??'');
+  const V={version:'25.38.0',errors:[],searchSeq:0,decorateQueued:false};
+  LX.v2538=V;
+
+  // Keep a short, local diagnostic trail for the ADM health card. Never ships logs anywhere.
+  try{
+    const originalError=console.error.bind(console);
+    console.error=(...args)=>{try{V.errors.push({at:Date.now(),text:args.map(x=>String(x?.message||x)).join(' ').slice(0,240)});if(V.errors.length>12)V.errors.shift()}catch{}return originalError(...args)};
+    window.addEventListener('error',e=>{try{V.errors.push({at:Date.now(),text:String(e.message||'Erro de interface').slice(0,240)});if(V.errors.length>12)V.errors.shift()}catch{}});
+    window.addEventListener('unhandledrejection',e=>{try{V.errors.push({at:Date.now(),text:String(e.reason?.message||e.reason||'Promise rejeitada').slice(0,240)});if(V.errors.length>12)V.errors.shift()}catch{}});
+  }catch{}
+
+  function styleForMe(){
+    const email=U.state?.user?.email||'';
+    const all=S.read(S.keys.profileStyles,{})||{};
+    return {all,email,style:all[email]||{preset:'lx'}};
+  }
+  function saveStyle(patch={}){
+    const {all,email,style}=styleForMe(); if(!email)return null;
+    all[email]={...style,...patch}; S.write(S.keys.profileStyles,all); return all[email];
+  }
+  function currentUser(){
+    const email=U.state?.user?.email||'';
+    return D.users().find(x=>x.email===email)||U.state?.user||{};
+  }
+  function lastActivity(){
+    const hist=D.history()||{}, list=Object.entries(hist).filter(([,h])=>h?.opened).sort((a,b)=>(b[1].opened||0)-(a[1].opened||0));
+    const id=list[0]?.[0], item=D.catalog().find(x=>String(x.id)===String(id));
+    if(!item)return '';
+    const verb=item.type==='Livro'?'Lendo':item.type==='Música'?'Ouvindo':'Assistindo';
+    return `${verb}: ${item.title}`.slice(0,120);
+  }
+  function achievements(){
+    const u=currentUser(), hist=D.history()||{}, done=Object.values(hist).filter(h=>(h?.progress||0)>=95).length, list=D.myList().length;
+    const out=[];
+    if(Object.keys(hist).length>=1)out.push(['Primeiro play','Começou sua jornada LX']);
+    if(done>=3)out.push(['Maratonista',`${done} conteúdos concluídos`]);
+    if((u.streak||0)>=3)out.push(['Sequência',`${u.streak} dias seguidos`]);
+    if(list>=5)out.push(['Colecionador',`${list} itens na sua lista`]);
+    if((u.read||0)>=3)out.push(['Leitor LX',`${u.read} leituras`]);
+    if((u.listened||0)>=5)out.push(['No repeat',`${Math.round(u.listened||0)}h de música`]);
+    return out.slice(0,6);
+  }
+
+  function contextualWelcome(){
+    const style=styleForMe().style, box=document.querySelector('.welcome-v24'); if(!box)return;
+    const name=U.state?.profile?.name||U.state?.user?.name||'você';
+    const p=box.querySelector('.welcome-user p');
+    const h=D.history(), pending=Object.values(h).filter(x=>x?.progress>0&&x?.progress<98).length;
+    const hour=new Date().getHours();
+    if(p){
+      const copy=U.state.mode==='Ler'?(pending?`Você tem ${pending} leitura${pending===1?'':'s'} para continuar.`:'Que tal abrir uma nova história hoje?'):
+        U.state.mode==='Ouvir'?(pending?'Sua trilha está pronta para continuar.':'Descubra uma faixa nova para o seu momento.'):
+        pending?`${pending} história${pending===1?'':'s'} esperando por você.`:(hour<12?'Comece o dia com algo que combina com você.':hour<18?'Tem coisa nova para descobrir nesta tarde.':'Sua noite pode começar por aqui.');
+      p.textContent=copy;
+    }
+    const text=String(style.status||'').trim();
+    const host=box.querySelector('.welcome-user>div:last-child');
+    let line=box.querySelector('.lx-user-status-line');
+    if(text){if(!line){line=document.createElement('div');line.className='lx-user-status-line';host?.appendChild(line)}line.textContent=text}
+    else line?.remove();
+    box.setAttribute('aria-label',`Olá, ${name}`);
+  }
+
+  function publishedAt(x){return +(new Date(x.publishedAt||x.createdAt||0))||0}
+  function seenMap(){try{return JSON.parse(localStorage.getItem('lx2538_seen_categories')||'{}')}catch{return {}}}
+  function markCategorySeen(cat){const m=seenMap();m[cat]=Date.now();try{localStorage.setItem('lx2538_seen_categories',JSON.stringify(m))}catch{}}
+  function categoryHasNew(cat){
+    const seen=seenMap()[cat]||0, map={'Filmes':'Filme','Séries':'Série','Animes':'Anime','Doramas':'Dorama','Livros':'Livro','Música':'Música'};
+    const type=map[cat]; if(!type)return cat==='Para você'&&D.catalog().some(x=>x.newRelease&&publishedAt(x)>seen);
+    return D.catalog().some(x=>x.type===type&&(x.newRelease||publishedAt(x)>Date.now()-7*864e5)&&publishedAt(x)>seen);
+  }
+  function ensureForYouButton(){
+    const nav=$('categoryNav');if(!nav)return;
+    if(!nav.querySelector('[data-cat="Para você"]')){
+      const b=document.createElement('button'); b.dataset.cat='Para você'; b.textContent='Para você';
+      const first=nav.querySelector('button'); if(first?.nextSibling)nav.insertBefore(b,first.nextSibling); else nav.appendChild(b);
+      b.onclick=()=>{U.state.category='Para você';U.state.query='';const q=$('searchInput');if(q)q.value='';markCategorySeen('Para você');U.renderApp()};
+    }
+    nav.querySelectorAll('[data-cat]').forEach(b=>{
+      const cat=b.dataset.cat; b.classList.toggle('active',cat===U.state.category);
+      let dot=b.querySelector('.lx-new-dot'); const show=categoryHasNew(cat);
+      if(show&&!dot){dot=document.createElement('i');dot.className='lx-new-dot';b.appendChild(dot)}else if(!show)dot?.remove();
+    });
+  }
+  document.addEventListener('click',e=>{const b=e.target.closest?.('[data-cat]');if(b?.dataset.cat)markCategorySeen(b.dataset.cat)},true);
+
+  function scoredGlobal(){
+    const all=D.catalog().filter(x=>x.published!==false), email=U.state?.user?.email||'', pref=D.preferences()[email]||{}, hist=D.history();
+    return D.recommendation(all,hist,D.ratings(),pref);
+  }
+  function smartTiles(){
+    const all=scoredGlobal(), hist=D.history();
+    const recent=Object.entries(hist).filter(([,h])=>h?.opened).sort((a,b)=>(b[1].opened||0)-(a[1].opened||0)).map(([id])=>D.catalog().find(x=>String(x.id)===String(id))).filter(Boolean);
+    const typeCount=recent.reduce((o,x)=>(o[x.type]=(o[x.type]||0)+1,o),{}), dominant=Object.entries(typeCount).sort((a,b)=>b[1]-a[1])[0]?.[0];
+    const ordered=[...all].sort((a,b)=>(a.type===dominant?-1:0)-(b.type===dominant?-1:0));
+    return ordered.filter((x,i,a)=>a.findIndex(z=>z.id===x.id)===i).slice(0,4);
+  }
+  function smartHome(){
+    const hc=$('homeContent');if(!hc||U.state.category!=='Início'||U.state.query)return;
+    if(hc.querySelector('.lx-smart-home'))return;
+    const tiles=smartTiles();if(!tiles.length)return;
+    const sec=document.createElement('section');sec.className='lx-smart-home';
+    sec.innerHTML=`<div class="lx-smart-head"><div><span class="eyebrow">SEU MOMENTO</span><h2>Escolhido para você agora</h2><p>A ordem muda com seu histórico, notas e gêneros favoritos.</p></div><button class="glass-btn" type="button">Abrir Para você</button></div><div class="lx-smart-grid">${tiles.map(x=>`<button class="lx-smart-tile" type="button" data-lx-smart="${esc(x.id)}"><span class="lx-smart-tile-bg" style="background-image:url('${String(x.banner||x.cover||'').replace(/'/g,'%27')}')"></span><span class="lx-smart-tile-copy"><small>${esc(x.type)} · ${esc(x.genre||'LX')}</small><strong>${esc(x.title)}</strong></span></button>`).join('')}</div>`;
+    hc.prepend(sec); sec.querySelector('.glass-btn').onclick=()=>{U.state.category='Para você';U.renderApp()}; sec.querySelectorAll('[data-lx-smart]').forEach(b=>b.onclick=()=>LX.detail?.(+b.dataset.lxSmart));
+  }
+  function renderForYou(){
+    const hc=$('homeContent'),hero=$('hero'),welcome=$('welcome'); if(!hc)return;
+    const active=U.state.category==='Para você'; hero?.classList.toggle('hidden',active); welcome?.classList.toggle('hidden',false);
+    if(!active){delete hc.dataset.lxForYouRendered;return}
+    if(hc.dataset.lxForYouRendered==='1')return;
+    hc.dataset.lxForYouRendered='1';
+    const all=scoredGlobal(); const types=['Filme','Série','Anime','Dorama','Música','Livro'];
+    const groupName={Filme:'Filmes',Série:'Séries',Anime:'Animes',Dorama:'Doramas',Música:'Músicas',Livro:'Livros'};
+    const groups=types.map(t=>[t,all.filter(x=>x.type===t).slice(0,10)]).filter(([,a])=>a.length);
+    hc.innerHTML=`<div class="lx-for-you-page"><section class="lx-for-you-hero"><span class="eyebrow">LX PERSONAL</span><h1>Para você</h1><p>Uma página que se reorganiza pelo que você assiste, ouve, lê, avalia e salva. Quanto mais você usa a LX Plus, melhor ela fica.</p></section><div class="lx-for-you-groups">${groups.map(([t,a])=>`<section class="lx-for-you-group"><h2>${groupName[t]}</h2><div class="lx-for-you-grid">${a.map(x=>`<button class="lx-for-you-card" data-lx-foryou="${esc(x.id)}"><span class="lx-for-you-art" style="background-image:url('${String(x.cover||x.banner||'').replace(/'/g,'%27')}')"></span><strong>${esc(x.title)}</strong><small>${esc(x.genre||'LX')} · ${esc(x.year||'')}</small></button>`).join('')}</div></section>`).join('')}</div></div>`;
+    hc.querySelectorAll('[data-lx-foryou]').forEach(b=>b.onclick=()=>LX.detail?.(+b.dataset.lxForyou));
+  }
+
+  function ensureUniversalShell(){
+    let el=$('lxUniversalSearch'); if(el)return el;
+    el=document.createElement('aside');el.id='lxUniversalSearch';el.className='lx-universal-search hidden';el.innerHTML='<div class="lx-universal-head"><span>BUSCA UNIVERSAL LX</span><kbd>ESC</kbd></div><div id="lxUniversalBody" class="lx-universal-body"></div>';document.body.appendChild(el);return el;
+  }
+  function closeUniversal(){ensureUniversalShell().classList.add('hidden')}
+  function collapseSearch(){const w=$('searchWrap'),i=$('searchInput');w?.classList.remove('open');i?.blur()}
+  async function universalSearch(q){
+    q=String(q||'').trim(); const shell=ensureUniversalShell(),body=$('lxUniversalBody');
+    if(!q){closeUniversal();U.state.query='';U.renderHome?.();return}
+    shell.classList.remove('hidden'); const seq=++V.searchSeq;
+    body.innerHTML='<div class="lx-search-skeleton"><i class="lx-skeleton"></i><i class="lx-skeleton"></i><i class="lx-skeleton"></i></div>';
+    const content=D.search(D.catalog().filter(x=>x.published!==false),q).slice(0,8);
+    let people=[];try{people=(await LX.social?.refreshDirectory?.()||[]).filter(p=>String(p.name||'').toLowerCase().includes(q.toLowerCase())||String(p.bio||'').toLowerCase().includes(q.toLowerCase())).slice(0,5)}catch{}
+    if(seq!==V.searchSeq)return;
+    const cHtml=content.length?`<section class="lx-universal-section"><small>Conteúdo</small>${content.map(x=>`<button class="lx-universal-result" data-lx-content="${esc(x.id)}"><span class="lx-universal-thumb" style="background-image:url('${String(x.cover||x.banner||'').replace(/'/g,'%27')}')"></span><span><strong>${esc(x.title)}</strong><small>${esc(x.type)} · ${esc(x.genre||'LX')}</small></span><em>Abrir</em></button>`).join('')}</section>`:'';
+    const pHtml=people.length?`<section class="lx-universal-section"><small>Pessoas</small>${people.map(p=>`<button class="lx-universal-result" data-lx-person="${esc(p.user_id)}"><span class="lx-universal-thumb">${esc(String(p.name||'LX').split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase())}</span><span><strong>${esc(p.name||'Usuário')}</strong><small>${esc(p.status_text||p.bio||'Perfil LX')}</small></span><em>${LX.social?.isOnline?.(p.user_id)?'Online':'Perfil'}</em></button>`).join('')}</section>`:'';
+    body.innerHTML=cHtml+pHtml||'<div class="lx-universal-empty">Nada encontrado. Tente outro nome, artista, gênero, autor ou pessoa.</div>';
+    body.querySelectorAll('[data-lx-content]').forEach(b=>b.onclick=()=>{closeUniversal();collapseSearch();LX.detail?.(+b.dataset.lxContent)});
+    body.querySelectorAll('[data-lx-person]').forEach(b=>b.onclick=()=>{closeUniversal();collapseSearch();LX.social?.openProfile?.(b.dataset.lxPerson)});
+  }
+  function bindSearch(){
+    const input=$('searchInput'),btn=$('searchBtn');if(!input||input.dataset.lx38)return;input.dataset.lx38='1';
+    input.placeholder='Buscar filmes, músicas, livros ou pessoas...';
+    input.oninput=e=>{const q=e.target.value;U.state.query='';universalSearch(q);if(q.trim())D.track('search',{query:q.trim(),scope:'universal'})};
+    input.onkeydown=e=>{if(e.key==='Enter'&&input.value.trim()){closeUniversal();collapseSearch();U.state.query=input.value.trim();U.state.category='Início';U.renderHome?.()}if(e.key==='Escape'){input.value='';closeUniversal();collapseSearch();U.state.query='';U.renderHome?.()}};
+    if(btn)btn.onclick=()=>{$('searchWrap')?.classList.add('open');input.focus();if(input.value.trim())universalSearch(input.value)};
+  }
+
+  function profileMenu(){
+    let m=$('lxProfileMenu');if(m)return m;
+    m=document.createElement('aside');m.id='lxProfileMenu';m.className='lx-profile-menu hidden';document.body.appendChild(m);return m;
+  }
+  function closeProfileMenu(){profileMenu().classList.add('hidden')}
+  function openProfileMenu(){
+    const m=profileMenu(), email=U.state?.user?.email||'', name=U.state?.profile?.name||U.state?.user?.name||'Usuário',sub=D.subscriptions()[email],style=styleForMe().style;
+    m.innerHTML=`<div class="lx-profile-menu-user ${sub?.active?'is-premium':''}">${LX.avatarHTML?.(name,email,'avatar-inline')||''}<div><strong>${esc(name)}</strong><small>${esc(style.status||email||'Conta LX Plus')}</small></div></div><div class="lx-profile-menu-actions"><button data-act="profile"><span>●</span>Meu perfil</button><button data-act="privacy"><span>◈</span>Privacidade</button><button data-act="notifications"><span>◌</span>Notificações</button><button data-act="appearance"><span>✦</span>Aparência</button><button data-act="community"><span>◎</span>Comunidade</button><button data-act="premium"><span>♛</span>Premium</button>${U.state?.user?.admin?'<button data-act="admin"><span>⚙</span>Painel ADM</button>':''}<button data-act="logout" class="danger"><span>↪</span>Sair</button></div>`;
+    m.classList.remove('hidden');
+    m.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{const a=b.dataset.act;closeProfileMenu();if(a==='profile')LX.openProfile?.();else if(a==='privacy')openPrivacyCenter();else if(a==='notifications')openNotifications38();else if(a==='appearance')LX.openTheme?.();else if(a==='community')LX.social?.open?.('friends');else if(a==='premium')LX.openPremium?.();else if(a==='admin')LX.openAdmin?.();else if(a==='logout')$('profileLogout')?.click()});
+  }
+  function bindProfileMenu(){const p=$('profileBtn');if(!p||p.dataset.lx38)return;p.dataset.lx38='1';p.onclick=e=>{e.stopPropagation();const m=profileMenu();m.classList.contains('hidden')?openProfileMenu():closeProfileMenu()}}
+  document.addEventListener('click',e=>{if(!e.target.closest?.('#lxProfileMenu')&&!e.target.closest?.('#profileBtn'))closeProfileMenu()});
+
+  function profileStatusHTML(){
+    const {style}=styleForMe(), u=currentUser(), ach=achievements(), banner=style.banner||'', activity=lastActivity();
+    return `<section class="lx-profile-hero" ${banner?`style="background-image:url('${String(banner).replace(/'/g,'%27')}')"`:''}><div class="lx-profile-hero-copy"><span>IDENTIDADE LX</span><h3>${esc(style.status||'Seu perfil, do seu jeito.')}</h3><p>${style.showActivity!==false&&activity?esc(activity):'Personalize sua presença sem perder a identidade LX Plus.'}</p></div></section><section class="profile-personalization lx-profile-extra"><div class="profile-section-head"><div><h3>Status, capa e presença</h3><p>Seu status aparece na Home e pode aparecer para seus contatos.</p></div><span class="v19-pill">ADAPTIVE</span></div><div class="lx-profile-extra-grid"><label class="field span2">Status personalizado<input id="lxProfileStatus" maxlength="80" value="${esc(style.status||'')}" placeholder="Ex.: Maratonando uma série 🍿"></label><label class="field span2">Capa do perfil<label class="glass-btn avatar-upload-btn" style="margin-top:6px">Enviar imagem<input id="lxProfileBannerFile" type="file" accept="image/*"></label></label></div><div class="lx-profile-switches"><label><span><b>Mostrar atividade recente</b><small>Exibe o que você esteve assistindo, lendo ou ouvindo.</small></span><input id="lxShowActivity" type="checkbox" ${style.showActivity!==false?'checked':''}></label><label><span><b>Favoritos públicos</b><small>Permite mostrar sua lista salva para contatos.</small></span><input id="lxPublicFavorites" type="checkbox" ${style.publicFavorites===true?'checked':''}></label></div><button class="primary-btn" id="lxSaveProfileExtras" style="margin-top:11px">Salvar identidade</button><h3 style="margin:18px 0 4px">Conquistas</h3><div class="lx-achievements">${ach.length?ach.map(([a,b])=>`<div class="lx-achievement"><b>${esc(a)}</b><small>${esc(b)}</small></div>`).join(''):'<div class="lx-achievement"><b>Começando agora</b><small>Suas conquistas vão aparecer aqui.</small></div>'}</div></section>`;
+  }
+  async function fileToData(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
+  async function uploadBanner(file){
+    if(!file)return styleForMe().style.banner||'';
+    try{if(LX.cloud?.enabled?.()){const k=await LX.cloud.uploadFile(`profile_banner_${Date.now()}_${file.name||'banner'}`,file,'profiles');return LX.cloud.publicUrl(String(k).replace(/^cloud:/,''),LX.config.supabase?.assetBucket||'lx-assets')}return await fileToData(file)}catch(e){console.warn(e);LX.toast?.('Não foi possível enviar a capa agora.');return styleForMe().style.banner||''}
+  }
+  async function syncProfileExtras(){
+    const {style}=styleForMe(), db=LX.cloud?.db?.(), id=LX.cloud?.user?.()?.id||U.state?.user?.id; if(!db||!id)return false;
+    const fav=style.publicFavorites===true?(D.myList()||[]):[], activity=style.showActivity!==false?lastActivity():'';
+    const row={status_text:String(style.status||'').slice(0,80),banner_url:style.banner||null,activity_visible:style.showActivity!==false,favorites_visible:style.publicFavorites===true,favorite_ids:fav,last_activity:activity||null,updated_at:new Date().toISOString()};
+    try{const {error}=await db.from('lx_profiles').update(row).eq('user_id',id);if(error)throw error;return true}catch(e){console.warn('LX profile extras sync',e);return false}
+  }
+  async function saveProfileExtras(){
+    const input=$('lxProfileStatus'),show=$('lxShowActivity'),pub=$('lxPublicFavorites'),file=$('lxProfileBannerFile')?.files?.[0];
+    const banner=await uploadBanner(file); saveStyle({status:input?.value?.trim().slice(0,80)||'',showActivity:!!show?.checked,publicFavorites:!!pub?.checked,banner});
+    await syncProfileExtras(); contextualWelcome(); enhanceProfileModal(true);LX.toast?.('Identidade do perfil atualizada.');
+  }
+  function enhanceProfileModal(force=false){
+    const page=document.querySelector('.profile-page-v25');if(!page)return; if(page.dataset.lx38&&!force)return; page.dataset.lx38='1';
+    page.querySelectorAll('.lx-profile-hero,.lx-profile-extra').forEach(x=>x.remove()); const head=page.querySelector('.panel-head'); head?.insertAdjacentHTML('afterend',profileStatusHTML());
+    $('lxSaveProfileExtras')?.addEventListener('click',saveProfileExtras); $('lxProfileBannerFile')?.addEventListener('change',e=>{const n=e.target.files?.[0]?.name;if(n)LX.toast?.(`Capa selecionada: ${n}`)});
+  }
+
+  async function enhanceSocialProfile(){
+    const profile=document.querySelector('.lx-community-profile'); if(!profile||profile.dataset.lx38)return; profile.dataset.lx38='1';
+    try{
+      const name=profile.querySelector('h2')?.textContent?.trim()||''; const rows=await LX.social?.refreshDirectory?.()||[]; const p=rows.find(x=>String(x.name||'').trim()===name)||null;if(!p)return;
+      if(p.banner_url){const b=document.createElement('div');b.className='lx-social-profile-banner';b.style.backgroundImage=`url("${String(p.banner_url).replace(/"/g,'%22')}")`;profile.parentElement?.insertBefore(b,profile)}
+      const parts=[];if(p.status_text)parts.push(`<strong>${esc(p.status_text)}</strong>`);if(p.activity_visible&&p.last_activity)parts.push(`<small>${esc(p.last_activity)}</small>`);if(p.favorites_visible&&Array.isArray(p.favorite_ids))parts.push(`<small>＋ ${p.favorite_ids.length} favorito${p.favorite_ids.length===1?'':'s'} público${p.favorite_ids.length===1?'':'s'}</small>`);
+      if(parts.length){const x=document.createElement('div');x.className='lx-social-profile-extra';x.innerHTML=parts.join('');profile.insertAdjacentElement('afterend',x)}
+    }catch{}
+  }
+
+  function classifyNotice(n){const s=`${n.title||''} ${n.text||n.message||''}`.toLowerCase();return /(filme|série|serie|anime|dorama|música|musica|livro|episódio|episodio|lançamento|lancamento|catálogo|catalogo)/.test(s)?'content':'system'}
+  async function noticeItems(){
+    const rows=(D.notices()||[]).map(n=>({cat:classifyNotice(n),icon:classifyNotice(n)==='content'?'▶':'✦',title:n.title||'Atualização',text:n.text||n.message||'',time:n.time||'Agora',tag:classifyNotice(n)==='content'?'Conteúdo':'Sistema'}));
+    const unread=Number(LX.chat?.unreadTotal?.()||0);if(unread)rows.unshift({cat:'community',icon:'✉',title:`${unread} mensagem${unread===1?'':'s'} não lida${unread===1?'':'s'}`,text:'Abra a Comunidade para continuar suas conversas.',time:'Agora',tag:'Comunidade'});
+    try{const dir=await LX.social?.refreshDirectory?.()||[],req=dir.filter(x=>x.relation==='pending'&&x.direction==='incoming').length;if(req)rows.unshift({cat:'community',icon:'◎',title:`${req} solicitação${req===1?'':'ões'} de amizade`,text:'Há pessoas esperando sua resposta.',time:'Agora',tag:'Comunidade'})}catch{}
+    return rows;
+  }
+  async function openNotifications38(tab='all'){
+    const modal=$('modal');if(!modal)return; $('overlay')?.classList.remove('hidden');modal.innerHTML='<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page"><div class="panel-head"><div><span class="eyebrow">CENTRAL LX</span><h2>Notificações</h2><p>Mensagens, sistema e novidades em uma única caixa.</p></div><button class="glass-btn" id="lxReadAll38">Marcar avisos como lidos</button></div><div class="lx-notice-tabs" id="lxNoticeTabs"></div><div id="lxNoticeBody" class="lx-notice-list"><div class="lx-search-skeleton"><i class="lx-skeleton"></i><i class="lx-skeleton"></i></div></div></div>';
+    const items=await noticeItems();
+    const tabs=[['all','Tudo'],['community','Comunidade'],['content','Conteúdo'],['system','Sistema']];
+    const draw=t=>{const filtered=t==='all'?items:items.filter(x=>x.cat===t);$('lxNoticeTabs').innerHTML=tabs.map(([k,n])=>`<button class="${k===t?'active':''}" data-lx-nt="${k}">${n}</button>`).join('');$('lxNoticeBody').innerHTML=filtered.length?filtered.map(x=>`<article class="lx-notice-item"><span class="lx-notice-icon">${x.icon}</span><div><strong>${esc(x.title)}</strong><p>${esc(x.text)}</p><small>${esc(x.time)}</small></div><span class="lx-notice-badge">${esc(x.tag)}</span></article>`).join(''):'<div class="lx-universal-empty">Tudo limpo por aqui.</div>';$('lxNoticeTabs').querySelectorAll('[data-lx-nt]').forEach(b=>b.onclick=()=>draw(b.dataset.lxNt))};
+    draw(tab);$('lxReadAll38').onclick=()=>{LX.readAll?.();draw(tab)};
+  }
+  V.openNotifications=openNotifications38;
+
+  async function openPrivacyCenter(){
+    const modal=$('modal');if(!modal)return;$('overlay')?.classList.remove('hidden');modal.innerHTML='<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page"><div class="panel-head"><div><span class="eyebrow">CONTROLE DE DADOS</span><h2>Privacidade</h2><p>Escolha como sua presença aparece para outras pessoas.</p></div></div><div id="lxPrivacyBody" class="lx-search-skeleton"><i class="lx-skeleton"></i><i class="lx-skeleton"></i><i class="lx-skeleton"></i></div></div>';
+    let cloud={social_visible:true,calls_enabled:true};try{const db=LX.cloud?.db?.(),id=LX.cloud?.user?.()?.id||U.state?.user?.id;if(db&&id){const {data}=await db.from('lx_profiles').select('social_visible,calls_enabled,activity_visible,favorites_visible').eq('user_id',id).maybeSingle();if(data)cloud=data}}catch{}
+    const st=styleForMe().style, online=LX.social?.presenceVisible?.()!==false;
+    $('lxPrivacyBody').className='lx-privacy-grid';$('lxPrivacyBody').innerHTML=`<label class="lx-privacy-row"><span><b>Mostrar status online</b><small>Se desligar, seus amigos verão você como offline.</small></span><input id="lxPvOnline" type="checkbox" ${online?'checked':''}></label><label class="lx-privacy-row"><span><b>Aparecer na Comunidade</b><small>Permite que outras contas aprovadas encontrem seu perfil.</small></span><input id="lxPvSocial" type="checkbox" ${cloud.social_visible!==false?'checked':''}></label><label class="lx-privacy-row"><span><b>Receber chamadas</b><small>Somente contatos aceitos podem ligar.</small></span><input id="lxPvCalls" type="checkbox" ${cloud.calls_enabled!==false?'checked':''}></label><label class="lx-privacy-row"><span><b>Mostrar atividade recente</b><small>Exibe o último conteúdo aberto no seu perfil.</small></span><input id="lxPvActivity" type="checkbox" ${st.showActivity!==false?'checked':''}></label><label class="lx-privacy-row"><span><b>Favoritos públicos</b><small>Mostra quantos itens você salvou aos seus contatos.</small></span><input id="lxPvFavorites" type="checkbox" ${st.publicFavorites===true?'checked':''}></label><button id="lxPvSave" class="primary-btn">Salvar privacidade</button>`;
+    $('lxPvSave').onclick=async()=>{const activity=!!$('lxPvActivity').checked,favorites=!!$('lxPvFavorites').checked;saveStyle({showActivity:activity,publicFavorites:favorites});try{await LX.social?.setPresenceVisible?.(!!$('lxPvOnline').checked);const db=LX.cloud?.db?.(),id=LX.cloud?.user?.()?.id||U.state?.user?.id;if(db&&id)await db.from('lx_profiles').update({social_visible:!!$('lxPvSocial').checked,calls_enabled:!!$('lxPvCalls').checked,activity_visible:activity,favorites_visible:favorites,updated_at:new Date().toISOString()}).eq('user_id',id)}catch(e){console.warn(e)}await syncProfileExtras();LX.toast?.('Privacidade atualizada.');U.close?.()};
+  }
+  V.openPrivacyCenter=openPrivacyCenter;
+
+  function decorateAppearance(){
+    const page=document.querySelector('.lx-appearance-v32');if(!page||page.dataset.lx38)return;page.dataset.lx38='1';
+    page.querySelectorAll('.appearance-card').forEach(card=>{const h=card.querySelector('h3')?.textContent||'';if(h==='Espaçamento'){card.querySelectorAll('button').forEach(b=>{if(b.textContent.trim()==='Amplo')b.textContent='Confortável'})}});
+    const desc=page.querySelector('.panel-head p');if(desc)desc.textContent='A cor escolhida agora acompanha seu nome, botões, indicadores, progresso e detalhes do app inteiro.';
+  }
+
+  function adminLiveStrip(){
+    const main=$('adminMain');if(!main||U.state.adminPage!=='dashboard'||main.querySelector('.lx-admin-live-strip'))return;
+    const dirPromise=LX.social?.refreshDirectory?.();Promise.resolve(dirPromise).catch(()=>[]).then(dir=>{
+      if(!main||U.state.adminPage!=='dashboard'||main.querySelector('.lx-admin-live-strip'))return;
+      const online=(dir||[]).filter(p=>LX.social?.isOnline?.(p.user_id)).length, unread=Number(LX.chat?.unreadTotal?.()||0), errors=V.errors.length;
+      const el=document.createElement('section');el.className='lx-admin-live-strip';el.innerHTML=`<div><span>ONLINE AGORA</span><strong>${online}</strong><small>contatos visíveis nesta sessão</small></div><div><span>MENSAGENS NÃO LIDAS</span><strong>${unread}</strong><small>na conta atual</small></div><div><span>ERROS DA SESSÃO</span><strong>${errors}</strong><small>${errors?'verifique o console':'nenhum capturado'}</small></div><div><span>BUILD</span><strong>25.38</strong><small>Adaptive Identity</small></div>`;main.querySelector('.launch-center')?.insertAdjacentElement('afterend',el);
+    })
+  }
+
+  function decorateApp(){
+    contextualWelcome();ensureForYouButton();renderForYou();smartHome();bindSearch();bindProfileMenu();
+  }
+  function scheduleDecorate(){if(V.decorateQueued)return;V.decorateQueued=true;requestAnimationFrame(()=>{V.decorateQueued=false;decorateApp();enhanceProfileModal();decorateAppearance();enhanceSocialProfile();adminLiveStrip()})}
+  const observer=new MutationObserver(scheduleDecorate);observer.observe(document.body,{childList:true,subtree:true});
+
+  // Wrap public actions without disturbing stable internal closures.
+  const originalProfile=LX.openProfile?.bind(LX); if(originalProfile)LX.openProfile=()=>{originalProfile();setTimeout(()=>enhanceProfileModal(true),0)};
+  const originalTheme=LX.openTheme?.bind(LX); if(originalTheme)LX.openTheme=()=>{originalTheme();setTimeout(decorateAppearance,0)};
+  const originalToggleList=LX.toggleList?.bind(LX); if(originalToggleList)LX.toggleList=id=>{const r=originalToggleList(id);setTimeout(syncProfileExtras,150);return r};
+  const originalSocialProfile=LX.social?.openProfile?.bind(LX.social); if(originalSocialProfile)LX.social.openProfile=async id=>{const r=await originalSocialProfile(id);setTimeout(enhanceSocialProfile,0);return r};
+
+  // Rebind static topbar buttons to the richer centers.
+  const notify=$('notifyBtn');if(notify){notify.onclick=()=>openNotifications38();notify.title='Central de notificações'}
+  const theme=$('themeBtn');if(theme)theme.onclick=()=>LX.openTheme?.();
+
+  // Keyboard shortcuts: Ctrl/Cmd+K or / for search, Space and arrows for audio when not typing.
+  document.addEventListener('keydown',e=>{
+    const tag=document.activeElement?.tagName?.toLowerCase(),typing=['input','textarea','select'].includes(tag)||document.activeElement?.isContentEditable;
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('searchWrap')?.classList.add('open');$('searchInput')?.focus();return}
+    if(!typing&&e.key==='/'&&!e.ctrlKey&&!e.metaKey){e.preventDefault();$('searchWrap')?.classList.add('open');$('searchInput')?.focus();return}
+    if(e.key==='Escape'){closeUniversal();closeProfileMenu();collapseSearch();return}
+    if(typing||!$('musicAudio')||$('musicDock')?.classList.contains('hidden'))return;
+    const a=$('musicAudio');if(e.code==='Space'){e.preventDefault();a.paused?a.play().catch(()=>{}):a.pause()}else if(e.key==='ArrowRight'&&a.duration){a.currentTime=Math.min(a.duration,a.currentTime+10)}else if(e.key==='ArrowLeft'&&a.duration){a.currentTime=Math.max(0,a.currentTime-10)}
+  });
+
+  // Sync public profile extras when the account becomes available.
+  let syncAttempts=0;const syncTimer=setInterval(()=>{if(U.state?.user){clearInterval(syncTimer);syncProfileExtras().catch(()=>{})}else if(++syncAttempts>40)clearInterval(syncTimer)},500);
+  scheduleDecorate();
+})();

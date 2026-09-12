@@ -1,67 +1,73 @@
-LX Plus v25.37 — Message Actions
+LX Plus v25.38 — Adaptive Identity
 QA FINAL — 12/09/2026
-Base: v25.36 Presence & Controls
-
-TESTES DE INTERFACE AUTOMATIZADOS — CHROMIUM
-APROVADOS
-1. Chat abre sem erro.
-2. Separador de data renderiza.
-3. Lixeira de conversa inteira não fica mais como ação primária no cabeçalho.
-4. Menu ⋯ da conversa abre.
-5. Botão direito abre ações da mensagem.
-6. Mensagem recebida oferece Responder, Copiar e Apagar para mim.
-7. Mensagem de outra pessoa não oferece Apagar para todos.
-8. Responder abre barra de contexto no compositor.
-9. Resposta renderiza a citação da mensagem original.
-10. Mensagem própria oferece Editar.
-11. Mensagem própria oferece Apagar para todos.
-12. Edição persiste na interface e mostra “editada”.
-13. Reação cria pill abaixo da mensagem.
-14. Apagar para todos troca o conteúdo por “Mensagem apagada”.
-15. Apagar para mim remove somente aquela mensagem da interface local.
-16. Menu da conversa mantém “Apagar conversa” como ação secundária e confirmada.
-17. “Digitando…” aparece em tempo real.
-18. Estado Entregue atualiza corretamente.
-19. Estado Lida atualiza corretamente.
-20. Rascunho é restaurado ao reabrir a conversa.
-21. Toque normal no celular não abre o menu por engano.
-22. Toque longo no celular abre as ações.
-23. Layout desktop renderizado sem overflow crítico.
-24. Layout mobile 390×844 renderizado corretamente.
-25. Site completo inicia sem window.__LX_BOOT_ERROR.
-26. Intro continua para a tela de autenticação.
-27. Nenhum pageerror JavaScript durante o QA.
-
-TESTE DE BANCO — SUPABASE
-APROVADOS EM TRANSAÇÃO COM ROLLBACK
-- lx_send_message
-- lx_edit_message
-- lx_react_message
-- lx_mark_messages_delivered
-- lx_mark_messages_read
-- lx_hide_message_for_me
-- lx_delete_message_for_all
-- Tombstone preservou estado de leitura/entrega.
-- A transação de QA foi revertida; nenhuma mensagem de teste ficou salva.
-
-SEGURANÇA DO CHAT
-- RLS habilitado em public.lx_messages.
-- Participantes autenticados podem ler apenas mensagens em que são remetente/destinatário.
-- INSERT/UPDATE/DELETE diretos foram revogados para usuários autenticados; mutações passam pelos RPCs validados.
-- RPCs de mensagem não podem ser executados pela role anon.
-- lx_chat_is_friend é helper interno e não está exposto à role authenticated.
+Base: v25.37 Message Actions
 
 VALIDAÇÃO ESTÁTICA
-- lxplus.js: sintaxe OK.
-- scripts inline do index.html: sintaxe OK.
+- lxplus.js: sintaxe JavaScript OK.
+- Scripts inline do index.html: sintaxe JavaScript OK.
 - IDs HTML duplicados: 0.
-- Referências locais obrigatórias: presentes.
+- Referências locais obrigatórias presentes.
+- Build carregada: 25.38.0.
+
+QA AUTOMATIZADO — CHROMIUM
+Aprovados em render determinístico desktop + mobile:
+1. Boot sem window.__LX_BOOT_ERROR.
+2. Nenhum pageerror JavaScript durante a bateria final.
+3. Nenhum console.error durante a bateria final.
+4. Nome do usuário acompanha a cor de destaque.
+5. Troca validada de #8A2BE2 (roxo) para #2BBF8A (verde).
+6. Home adaptativa renderiza 4 recomendações inteligentes.
+7. Botão “Para você” aparece uma única vez.
+8. Indicadores de novidade aparecem sem duplicação.
+9. Ctrl+K leva o foco à busca universal.
+10. Busca universal encontra conteúdo e pessoas da Comunidade.
+11. Escape fecha a busca sem deixar o campo expandido no mobile.
+12. Menu rápido do perfil renderiza 8 ações no cenário ADM.
+13. Perfil adaptativo renderiza capa/status e conquistas.
+14. Salvar status atualiza corretamente a preferência local.
+15. Central de Notificações renderiza 4 abas e sinais de Comunidade.
+16. Central de Privacidade renderiza 5 controles.
+17. Aparência informa que a cor acompanha nome, botões, indicadores e progresso.
+18. Densidade “Amplo” foi refinada para “Confortável”.
+19. Página “Para você” criou 6 grupos no catálogo de QA.
+20. Painel ADM renderiza 4 indicadores ao vivo.
+21. Cabeçalho e cartões de saúde do ADM mostram v25.38.
+22. Layout mobile 390×844 sem overflow horizontal do documento.
+
+RESULTADOS IMPORTANTES DA BATERIA FINAL
+- accent_initial: rgb(138, 43, 226)
+- accent_after_change: rgb(43, 191, 138)
+- smart_tiles: 4
+- search_people: 1
+- profile_menu_actions: 8
+- achievements: 4
+- notification_tabs: 4
+- privacy_toggles: 5
+- for_you_groups: 6
+- admin_live_cards: 4
+- mobile_no_overflow: true
+- page_errors: []
+- console_errors: []
+
+SUPABASE — MIGRAÇÃO v25.38
+- lx_adaptive_identity_v2538 aplicada com sucesso no projeto atual.
+- As seis novas colunas de perfil foram confirmadas no schema.
+- lx_social_directory(): anon_execute = false.
+- lx_social_directory(): authenticated_execute = true.
+- A migração consta no histórico do projeto Supabase.
+
+REGRESSÃO / BASE
+- A camada v25.38 foi construída sobre a v25.37 sem substituir o núcleo estável de mensagens.
+- Message Actions, presença, Community Glow e Arc Reveal permanecem no pacote.
+- Ações de chat da v25.37 não foram removidas ou reescritas nesta atualização.
 
 ARQUIVOS DE QA
-- QA-MESSAGE-ACTIONS-DESKTOP.png
-- QA-MESSAGE-ACTIONS-MOBILE.png
-- QA-BOOT-V2537.png
+- QA-ADAPTIVE-HOME-V2538-FINAL.png
+- QA-ADMIN-V2538-FINAL.png
+- QA-MOBILE-V2538-FINAL.png
+- QA-PROFILE-V2538.png
+- qa-results-final.json
 
 OBSERVAÇÃO
-Os testes de UI usaram um backend simulado determinístico para exercitar todas as ações sem criar dados reais.
-Os RPCs reais do Supabase foram validados separadamente dentro de uma transação revertida.
+O QA de interface usa dados simulados determinísticos para evitar criação de conteúdo de teste em contas reais.
+A migração de perfil foi aplicada e verificada diretamente no Supabase real do projeto.
