@@ -1,36 +1,31 @@
-LX Plus v25.39 — Free Media Storage
-BASE: v25.38 Adaptive Identity
-DATA: 12/09/2026
+LX Plus v25.40 — Call Sync + Notifications
+BASE: v25.39.2 R2 Preflight
 
-O QUE ENTROU
-- Cloudflare R2 como storage gratuito para filmes, episódios e áudios grandes.
-- Edge Function privada `lx-r2-media` para URLs assinadas de upload/playback/delete.
-- Tela R2 em ADM > Mídia & Upload com salvar/testar credenciais.
-- O teste tenta configurar o CORS do bucket para o domínio atual.
-- Publicação agora oferece "Enviar arquivo" ou "Usar link externo".
-- Mensagens de erro explicam R2 não configurado, CORS, credencial recusada e URL externa inválida.
-- Fallback para Supabase apenas para arquivos pequenos quando R2 ainda não está configurado.
-- Player e música reconhecem chaves `r2:` e pedem URL temporária para reprodução.
-- Ajuste de z-index: o dock global do ADM não cobre mais o modal no celular.
-
-BACKEND
-- Edge Function `lx-r2-media` JÁ FOI IMPLANTADA no projeto Supabase atual.
-- Nenhuma migração SQL nova é necessária.
-- As credenciais R2 ainda NÃO estão cadastradas porque dependem da conta Cloudflare do proprietário.
-
-PUBLICAÇÃO DO FRONTEND
-1. Substitua na raiz:
+PUBLICAÇÃO
+1. Substitua na raiz do site:
    - index.html
    - app.css
    - lxplus.js
-2. Mantenha/substitua:
-   - CNAME
-   - assets/icon.svg
-3. Não reative sw.js nem a pasta js/ antiga.
-4. Confirme na autenticação: LX Plus v25.39 · Free Media Storage
+2. Mantenha CNAME e demais assets existentes.
+3. Faça hard refresh (Ctrl+F5) após publicar.
+4. Confirme na autenticação:
+   LX Plus v25.40 · Call Sync + Notifications
 
-ATIVAÇÃO R2
-Depois de publicar, siga R2-SETUP.txt. Assim que aparecer "R2 conectado", você já pode enviar os filmes pelo ADM.
+SUPABASE
+As migrations da v25.40 JÁ FORAM aplicadas no projeto conectado durante esta atualização.
+NÃO rode SUPABASE-CALL-SYNC-V2540.sql novamente no mesmo projeto.
+O arquivo SQL fica no pacote apenas para documentação/backup.
 
-ROLLBACK FRONTEND
-Se algo inesperado aparecer, volte para v25.38 Adaptive Identity. A Edge Function nova pode permanecer implantada sem afetar a v25.38.
+O QUE FOI CORRIGIDO
+- Compartilhamento de tela agora usa sinais permitidos no banco (share/hangup/reaction).
+- Dois modos de tela: Tela principal e Tela + câmera.
+- Renegociação WebRTC funciona independentemente de quem iniciou a chamada.
+- Encerrar chamada envia hangup primeiro, atualiza o banco e fecha as duas pontas.
+- Heartbeat/polling serve como fallback se um evento Realtime for perdido.
+- Cronômetro da chamada começa ao atender e continua por horas (HH:MM:SS).
+- Notificações pessoais persistentes para mensagens e chamadas perdidas.
+- Sino do topo passa a contar mensagens/notificações pessoais.
+- Prompt para ativar notificações do navegador.
+
+R2
+A integração R2 da v25.39 continua preservada. Consulte R2-SETUP.txt.
