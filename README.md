@@ -1,3 +1,19 @@
+# LX Plus v25.27 — Message Fix + Screen Share + ADM Save
+
+Build de estabilização focada nos bugs observados em produção.
+
+## Correções principais
+- **ADM:** Salvar alterações aparece dentro da Biblioteca/Aprovações, no painel lateral e no dock flutuante. Exclusões, selo verificado e aprovações ficam pendentes até confirmar.
+- **Mensagens:** o canal Realtime foi corrigido. O remetente agora publica exatamente no canal que o destinatário escuta. Há fallback ao vivo mesmo se a tabela persistente ainda não estiver ativa.
+- **Notificações:** novo ícone de mensagens com badge, toast visual e suporte opcional a Notification API.
+- **Chamadas:** botão Encerrar tem fallback de captura global; compartilhamento de tela usa um sender de vídeo estável desde o início da chamada e restaura a câmera ao parar.
+- **Refresh:** mantém modo, categoria, rolagem e posição do filme usando o sistema de restauração já existente.
+- **Deploy:** detector de arquivos misturados mostra um aviso vermelho se index.html e JS forem de versões diferentes.
+
+## Banco para histórico offline de chat
+Arquivo: `supabase/v2527_persistent_chat.sql`.
+Sem essa migration, mensagens ao vivo continuam funcionando por Realtime Broadcast; o histórico offline central depende dessa tabela/RPC.
+
 # LX Plus v25.26 — Community 3.0 + Stable ADM + Resume
 
 - Comunidade com conversa em tempo real, áudio, emojis e stickers personalizados.
