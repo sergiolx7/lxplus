@@ -1,4 +1,12 @@
-# LX Plus v25.24 — Foundation Fix
+# LX Plus v25.25 — Community Pro + ADM Save Fix
+
+- Comunidade com visual de contatos/conversas, ícones SVG LX e chamadas com prévia local imediata.
+- Compartilhamento de tela com estado visível e restauração automática da câmera.
+- Reações LX durante chamadas usando o canal seguro de sinalização da própria chamada.
+- ADM com Aprovar/Recusar/Verificar/Excluir em modo pendente e botão flutuante Salvar alterações.
+- Cada alteração é confirmada no Supabase antes de sair da fila pendente.
+
+# LX Plus v25.25 — Foundation Fix
 
 Revisão consolidada de estabilidade: Comunidade integrada, selo verificado via RPC administrativo dedicado, exclusão de catálogo confirmada pelo servidor, cache unificado e correções de sincronização de perfil.
 

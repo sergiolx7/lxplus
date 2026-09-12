@@ -11,7 +11,7 @@
 
   <script>
   (function(){
-    var BUILD='25.24.0',KEY='lxplus_build_seen';
+    var BUILD='25.25.0',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -36,8 +36,8 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=25.24">
-  <title>LX Plus v25.24 · Stable Foundation</title>
+  <link rel="stylesheet" href="app.css?v=25.25">
+  <title>LX Plus v25.25 · Community Pro + ADM Save Fix</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -93,7 +93,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.24 · Stable Foundation</small>
+        <small class="auth-build-version">LX Plus v25.25 · Community Pro + ADM Save Fix</small>
       </div>
     </div>
   </section>
@@ -179,20 +179,20 @@
 
   <script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
-  <script defer src="js/config.js?v=25.24"></script>
+  <script defer src="js/config.js?v=25.25"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="js/store.js?v=25.24"></script>
-  <script defer src="js/cloud.js?v=25.24"></script>
-  <script defer src="js/services.js?v=25.24"></script>
-  <script defer src="js/ui.js?v=25.24"></script>
-  <script defer src="js/catalog-importer.js?v=25.24"></script>
-  <script defer src="js/content-hub.js?v=25.24"></script>
-  <script defer src="js/admin.js?v=25.24"></script>
-  <script defer src="js/app.js?v=25.24"></script>
+  <script defer src="js/store.js?v=25.25"></script>
+  <script defer src="js/cloud.js?v=25.25"></script>
+  <script defer src="js/services.js?v=25.25"></script>
+  <script defer src="js/ui.js?v=25.25"></script>
+  <script defer src="js/catalog-importer.js?v=25.25"></script>
+  <script defer src="js/content-hub.js?v=25.25"></script>
+  <script defer src="js/admin.js?v=25.25"></script>
+  <script defer src="js/app.js?v=25.25"></script>
 
   <script>
   document.addEventListener('DOMContentLoaded',function(){
-/* LX SOCIAL EMBEDDED v25.24 */
+/* LX SOCIAL EMBEDDED v25.25 — COMMUNITY PRO */
 (()=>{
   const LX=window.LX=window.LX||{};
   const U=LX.ui;
@@ -210,6 +210,22 @@
     ? `<div class="${cls} has-image" style="background-image:url('${String(p.avatar_url).replace(/'/g,'%27')}')"></div>`
     : `<div class="${cls}">${esc(initials(p?.name))}</div>`;
   const verified=p=>`${esc(p?.name||'Usuário')}${p?.verified?'<span class="lx-social-verified" title="Verificado">✓</span>':''}`;
+  const SVG={
+    video:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="12" height="12" rx="3"></rect><path d="m15 10 5-3v10l-5-3z"></path></svg>',
+    phone:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.7 3.8 9 7.6 7.5 9.2c1.3 2.7 3.3 4.8 6.2 6.2l1.7-1.6 3.8 2.3-.8 3.1c-.2.8-1 1.3-1.8 1.2C9.7 19.5 4.4 14.1 3.6 7.2c-.1-.8.4-1.6 1.2-1.8z"></path></svg>',
+    mic:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3" width="8" height="12" rx="4"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"></path></svg>',
+    camera:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"></rect><circle cx="12" cy="12" r="3.5"></circle><path d="m8 5 1.2-2h5.6L16 5"></path></svg>',
+    screen:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 21h8M12 17v4M8 10l4-4 4 4M12 6v8"></path></svg>',
+    full:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"></path></svg>',
+    hang:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15c4.6-4 11.4-4 16 0l-2.4 3-3.1-1.7v-2.1a10 10 0 0 0-5 0v2.1L6.4 18z"></path></svg>',
+    smile:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8.5 14.5c1.8 2 5.2 2 7 0M9 9h.01M15 9h.01"></path></svg>',
+    add:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"></circle><path d="M2.5 20c.8-4 3-6 6.5-6 2.1 0 3.8.7 5 2M18 8v6M15 11h6"></path></svg>',
+    search:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m15.5 15.5 5 5"></path></svg>',
+    settings:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.5 1a8 8 0 0 0-1.7-1L14.3 3h-4.6l-.4 3.1a8 8 0 0 0-1.7 1l-2.5-1-2 3.4 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.5-1a8 8 0 0 0 1.7 1l.4 3.1h4.6l.4-3.1a8 8 0 0 0 1.7-1l2.5 1 2-3.4-2-1.5a7 7 0 0 0 .1-1z"></path></svg>',
+    check:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"></path></svg>',
+    close:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>'
+  };
+  const icon=n=>`<span class="lx-svg-icon">${SVG[n]||''}</span>`;
 
   function ensureShell(){
     let scrim=document.getElementById('lxCommunityScrim');
@@ -289,15 +305,16 @@
   function personCard(p){
     let actions='';
     if(p.relation==='accepted'){
-      actions=`<button class="lx-community-action call" onclick="LX.social.startCall('${p.user_id}','video')" ${p.calls_enabled?'':'disabled'}>📹 Chamar</button><button class="lx-community-action" onclick="LX.social.openProfile('${p.user_id}')">Perfil</button>`;
+      actions=`<button class="lx-community-iconbtn message" onclick="LX.social.openProfile('${p.user_id}')" title="Abrir contato">${icon('smile')}</button><button class="lx-community-iconbtn" onclick="LX.social.startCall('${p.user_id}','audio')" ${p.calls_enabled?'':'disabled'} title="Chamada de áudio">${icon('phone')}</button><button class="lx-community-iconbtn primary" onclick="LX.social.startCall('${p.user_id}','video')" ${p.calls_enabled?'':'disabled'} title="Chamada de vídeo">${icon('video')}</button>`;
     }else if(p.relation==='pending'&&p.direction==='incoming'){
-      actions=`<button class="lx-community-action primary" onclick="LX.social.respond('${p.user_id}',true)">Aceitar</button><button class="lx-community-action" onclick="LX.social.respond('${p.user_id}',false)">Recusar</button>`;
+      actions=`<button class="lx-community-action primary" onclick="LX.social.respond('${p.user_id}',true)">${icon('check')} Aceitar</button><button class="lx-community-action" onclick="LX.social.respond('${p.user_id}',false)">${icon('close')} Recusar</button>`;
     }else if(p.relation==='pending'){
-      actions='<button class="lx-community-action" disabled>Solicitado</button>';
+      actions='<button class="lx-community-action" disabled>Solicitação enviada</button>';
     }else{
-      actions=`<button class="lx-community-action primary" onclick="LX.social.add('${p.user_id}')">＋ Adicionar</button><button class="lx-community-action" onclick="LX.social.openProfile('${p.user_id}')">Perfil</button>`;
+      actions=`<button class="lx-community-action primary" onclick="LX.social.add('${p.user_id}')">${icon('add')} Adicionar</button><button class="lx-community-action" onclick="LX.social.openProfile('${p.user_id}')">Perfil</button>`;
     }
-    return `<article class="lx-community-person" data-name="${esc((p.name||'').toLowerCase())}">${avatar(p)}<div class="lx-community-person-copy"><strong>${verified(p)}</strong><small>${esc(p.bio||'Perfil LX Plus')}</small><span>${p.relation==='accepted'?(p.calls_enabled?'Amigo · disponível para chamada':'Amigo · chamadas desativadas'):p.relation==='pending'?(p.direction==='incoming'?'Quer adicionar você':'Solicitação enviada'):'Usuário LX Plus'}</span></div><div class="lx-community-person-actions">${actions}</div></article>`;
+    const status=p.relation==='accepted'?(p.calls_enabled?'Disponível para chamadas LX':'Chamadas desativadas'):p.relation==='pending'?(p.direction==='incoming'?'Quer adicionar você':'Solicitação enviada'):'Usuário LX Plus';
+    return `<article class="lx-community-person lx-community-conversation" data-name="${esc((p.name||'').toLowerCase())}">${avatar(p)}<div class="lx-community-person-copy"><strong>${verified(p)}</strong><small>${esc(p.bio||'Perfil LX Plus')}</small><span>${status}</span></div><div class="lx-community-person-actions">${actions}</div></article>`;
   }
   function emptyCard(tab){
     if(state.lastError)return `<div class="lx-community-empty error"><b>Comunidade indisponível</b><p>${esc(state.lastError)}</p><button onclick="LX.social.retry()">Tentar novamente</button></div>`;
@@ -311,7 +328,7 @@
     const s=sectionData();
     const list=tab==='requests'?[...s.incoming,...s.outgoing]:tab==='discover'?s.discover:s.friends;
     const settings=await getOwnSocialSettings();
-    drawer.innerHTML=`${shellHeader()}<div class="lx-community-status"><div><b>${s.friends.length}</b><span>AMIGOS</span></div><div><b>${s.incoming.length}</b><span>PEDIDOS</span></div><div><b>${settings?.calls_enabled!==false?'ON':'OFF'}</b><span>CHAMADAS</span></div></div><nav class="lx-community-tabs"><button class="${tab==='friends'?'active':''}" onclick="LX.social.open('friends')">Amigos</button><button class="${tab==='requests'?'active':''}" onclick="LX.social.open('requests')">Solicitações${s.incoming.length?` <i>${s.incoming.length}</i>`:''}</button><button class="${tab==='discover'?'active':''}" onclick="LX.social.open('discover')">Descobrir</button></nav><div class="lx-community-search"><span>⌕</span><input id="lxCommunitySearch" placeholder="Buscar pessoas..."></div><div id="lxCommunityList" class="lx-community-list">${state.loading?'<div class="lx-community-loading">Carregando pessoas...</div>':list.length?list.map(personCard).join(''):emptyCard(tab)}</div><footer class="lx-community-footer"><button onclick="LX.social.openSettings()">⚙ Privacidade e chamadas</button><span>Chamadas protegidas por WebRTC</span></footer>`;
+    drawer.innerHTML=`${shellHeader('Comunidade','Contatos, chamadas e presença LX em um só lugar')}<div class="lx-community-status"><div><b>${s.friends.length}</b><span>CONTATOS</span></div><div><b>${s.incoming.length}</b><span>PEDIDOS</span></div><div><b>${settings?.calls_enabled!==false?'ON':'OFF'}</b><span>CHAMADAS</span></div></div><nav class="lx-community-tabs"><button class="${tab==='friends'?'active':''}" onclick="LX.social.open('friends')">Conversas</button><button class="${tab==='requests'?'active':''}" onclick="LX.social.open('requests')">Solicitações${s.incoming.length?` <i>${s.incoming.length}</i>`:''}</button><button class="${tab==='discover'?'active':''}" onclick="LX.social.open('discover')">Pessoas</button></nav><div class="lx-community-search">${icon('search')}<input id="lxCommunitySearch" placeholder="Pesquisar contato..."></div><div id="lxCommunityList" class="lx-community-list">${state.loading?'<div class="lx-community-loading">Carregando contatos...</div>':list.length?list.map(personCard).join(''):emptyCard(tab)}</div><footer class="lx-community-footer"><button onclick="LX.social.openSettings()">${icon('settings')} Privacidade e chamadas</button><span>WebRTC · LX Social</span></footer>`;
     const q=document.getElementById('lxCommunitySearch');
     q?.addEventListener('input',()=>{const term=q.value.trim().toLowerCase();document.querySelectorAll('#lxCommunityList .lx-community-person').forEach(el=>el.classList.toggle('hidden',!!term&&!el.dataset.name.includes(term)))})
   }
@@ -331,10 +348,10 @@
     const p=state.directory.find(x=>String(x.user_id)===String(id)); if(!p)return (LX.toast||((m)=>console.log(m)))('Perfil não encontrado.');
     const {drawer}=ensureShell(); setDrawerOpen(true);
     let actions='';
-    if(p.relation==='accepted')actions=`<button class="lx-community-big primary" onclick="LX.social.startCall('${p.user_id}','video')" ${p.calls_enabled?'':'disabled'}>📹 Chamada de vídeo</button><button class="lx-community-big" onclick="LX.social.startCall('${p.user_id}','audio')" ${p.calls_enabled?'':'disabled'}>☎ Chamada de áudio</button><button class="lx-community-big danger" onclick="LX.social.removeFriend('${p.user_id}')">Remover amigo</button>`;
+    if(p.relation==='accepted')actions=`<button class="lx-community-big primary" onclick="LX.social.startCall('${p.user_id}','video')" ${p.calls_enabled?'':'disabled'}>${icon('video')} Chamada de vídeo</button><button class="lx-community-big" onclick="LX.social.startCall('${p.user_id}','audio')" ${p.calls_enabled?'':'disabled'}>${icon('phone')} Chamada de áudio</button><button class="lx-community-big danger" onclick="LX.social.removeFriend('${p.user_id}')">Remover contato</button>`;
     else if(p.relation==='pending'&&p.direction==='incoming')actions=`<button class="lx-community-big primary" onclick="LX.social.respond('${p.user_id}',true)">Aceitar solicitação</button><button class="lx-community-big" onclick="LX.social.respond('${p.user_id}',false)">Recusar</button>`;
     else if(p.relation==='pending')actions='<button class="lx-community-big" disabled>Solicitação enviada</button>';
-    else actions=`<button class="lx-community-big primary" onclick="LX.social.add('${p.user_id}')">＋ Adicionar amigo</button>`;
+    else actions=`<button class="lx-community-big primary" onclick="LX.social.add('${p.user_id}')">${icon('add')} Adicionar contato</button>`;
     drawer.innerHTML=`${shellHeader('Perfil','Comunidade LX Plus')}<button class="lx-community-back" onclick="LX.social.open('${state.openTab}')">← Voltar</button><section class="lx-community-profile">${avatar(p,'lx-social-profile-avatar')}<div><span>PERFIL LX</span><h2>${verified(p)}</h2><p>${esc(p.bio||'Sem bio ainda.')}</p><small>${p.calls_enabled?'Disponível para chamadas':'Chamadas desativadas'}</small></div></section><div class="lx-community-profile-actions">${actions}</div><div class="lx-community-note"><b>Chamadas:</b> câmera, microfone e compartilhamento de tela pedem permissão do navegador.</div>`;
   }
   async function openSettings(){
@@ -376,8 +393,8 @@
   function callPerson(id){return state.directory.find(x=>String(x.user_id)===String(id))||{user_id:id,name:'Contato LX',verified:false,avatar_url:null,calls_enabled:true}}
   function mountCallUI(person,mode='video',status='Conectando...'){
     close(); document.getElementById('lxCallOverlay')?.remove();
-    const el=document.createElement('div'); el.id='lxCallOverlay'; el.className='lx-call-overlay';
-    el.innerHTML=`<div class="lx-call-stage"><video id="lxRemoteVideo" class="lx-call-remote" autoplay playsinline></video><div id="lxRemoteFallback" class="lx-call-remote-fallback">${avatar(person,'lx-call-big-avatar')}<strong>${verified(person)}</strong><small id="lxCallStatus">${esc(status)}</small></div><video id="lxLocalVideo" class="lx-call-local" autoplay muted playsinline></video><header class="lx-call-header"><button onclick="LX.social.endCurrentCall()">‹</button><div><strong>${verified(person)}</strong><small id="lxCallStatusTop">${esc(status)}</small></div><span class="lx-call-encrypted">WEBRTC</span></header><div class="lx-call-controls"><button id="lxMicBtn" onclick="LX.social.toggleMic()"><span>🎙</span><small>Microfone</small></button><button id="lxCamBtn" onclick="LX.social.toggleCamera()"><span>📹</span><small>Câmera</small></button><button id="lxShareBtn" onclick="LX.social.shareScreen()"><span>▣</span><small>Compartilhar tela</small></button><button onclick="LX.social.toggleCallFullscreen()"><span>⛶</span><small>Tela cheia</small></button><button class="hangup" onclick="LX.social.endCurrentCall()"><span>☎</span><small>Encerrar</small></button></div></div>`;
+    const el=document.createElement('div'); el.id='lxCallOverlay'; el.className='lx-call-overlay lx-call-pro';
+    el.innerHTML=`<div class="lx-call-stage"><video id="lxRemoteVideo" class="lx-call-remote" autoplay playsinline></video><div id="lxRemoteFallback" class="lx-call-remote-fallback">${avatar(person,'lx-call-big-avatar')}<strong>${verified(person)}</strong><small id="lxCallStatus">${esc(status)}</small></div><div id="lxShareBadge" class="lx-share-badge hidden">${icon('screen')} Tela compartilhada</div><div class="lx-call-local-wrap"><video id="lxLocalVideo" class="lx-call-local" autoplay muted playsinline></video><span id="lxLocalLabel">VOCÊ</span></div><header class="lx-call-header"><button onclick="LX.social.endCurrentCall()" aria-label="Voltar">‹</button><div><strong>${verified(person)}</strong><small id="lxCallStatusTop">${esc(status)}</small></div><span class="lx-call-encrypted">LX CALL · WEBRTC</span></header><div id="lxReactionLayer" class="lx-reaction-layer"></div><div id="lxReactionPicker" class="lx-reaction-picker hidden"><button onclick="LX.social.sendReaction('❤️')">❤️</button><button onclick="LX.social.sendReaction('😂')">😂</button><button onclick="LX.social.sendReaction('🔥')">🔥</button><button onclick="LX.social.sendReaction('👏')">👏</button><button onclick="LX.social.sendReaction('😮')">😮</button><button onclick="LX.social.sendReaction('👍')">👍</button></div><div class="lx-call-controls"><button id="lxMicBtn" onclick="LX.social.toggleMic()">${icon('mic')}<small>Microfone</small></button><button id="lxCamBtn" onclick="LX.social.toggleCamera()">${icon('camera')}<small>Câmera</small></button><button id="lxShareBtn" onclick="LX.social.shareScreen()">${icon('screen')}<small>Compartilhar</small></button><button id="lxReactionBtn" onclick="LX.social.toggleReactions()">${icon('smile')}<small>Reações</small></button><button onclick="LX.social.toggleCallFullscreen()">${icon('full')}<small>Tela cheia</small></button><button class="hangup" onclick="LX.social.endCurrentCall()">${icon('hang')}<small>Encerrar</small></button></div></div>`;
     document.body.appendChild(el); document.documentElement.classList.add('lx-call-open');
     const local=document.getElementById('lxLocalVideo'); if(local&&state.localStream){local.srcObject=state.localStream;local.classList.toggle('hidden',!state.localStream.getVideoTracks().length)}
     updateCallStatus(status); return el;
@@ -387,7 +404,7 @@
     if(state.activeCall||state.incoming?.id===call.id)return; state.incoming=call;
     const person=callPerson(call.caller_id); document.getElementById('lxIncomingCall')?.remove();
     const el=document.createElement('div'); el.id='lxIncomingCall'; el.className='lx-incoming-call';
-    el.innerHTML=`${avatar(person,'lx-incoming-avatar')}<div><span>CHAMADA ${call.mode==='audio'?'DE ÁUDIO':'DE VÍDEO'}</span><strong>${verified(person)}</strong><small>está ligando para você</small></div><div class="lx-incoming-actions"><button class="decline" onclick="LX.social.rejectIncoming()">✕</button><button class="accept" onclick="LX.social.acceptIncoming()">✓</button></div>`;
+    el.innerHTML=`${avatar(person,'lx-incoming-avatar')}<div><span>CHAMADA ${call.mode==='audio'?'DE ÁUDIO':'DE VÍDEO'}</span><strong>${verified(person)}</strong><small>está ligando para você</small></div><div class="lx-incoming-actions"><button class="decline" onclick="LX.social.rejectIncoming()">${icon('close')}</button><button class="accept" onclick="LX.social.acceptIncoming()">${icon('check')}</button></div>`;
     document.body.appendChild(el); try{navigator.vibrate?.([180,100,180])}catch{}
   }
   function hideIncoming(){document.getElementById('lxIncomingCall')?.remove();state.incoming=null}
@@ -408,6 +425,8 @@
       if(row.kind==='offer'){await pc.setRemoteDescription(row.payload);for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{});if(state.activeCall?.role==='callee'){const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await sendSignal('answer',{type:ans.type,sdp:ans.sdp})}}
       else if(row.kind==='answer'){if(!pc.currentRemoteDescription){await pc.setRemoteDescription(row.payload);for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{})}}
       else if(row.kind==='ice'){if(pc.remoteDescription?.type)await pc.addIceCandidate(row.payload).catch(()=>{});else state.pendingIce.push(row.payload)}
+      else if(row.kind==='reaction'){showReaction(row.payload?.reaction||'❤️',false)}
+      else if(row.kind==='share'){document.getElementById('lxShareBadge')?.classList.toggle('hidden',!row.payload?.active)}
     }catch(e){console.warn('LX RTC signal',row.kind,e)}
   }
   async function subscribeSignals(callId){
@@ -422,16 +441,17 @@
     if(state.activeCall)return (LX.toast||((m)=>console.log(m)))('Você já está em uma chamada.'); await boot(); await refreshDirectory(); const p=callPerson(otherId);
     if(p.relation!=='accepted')return (LX.toast||((m)=>console.log(m)))('Adicione essa pessoa antes de ligar.'); if(!p.calls_enabled)return (LX.toast||((m)=>console.log(m)))('Essa pessoa desativou chamadas.');
     try{
-      state.localStream=await getLocalMedia(mode); const c=db(); const {data,error}=await c.rpc('lx_start_call',{p_other:otherId,p_mode:mode}); if(error)throw error;
-      state.activeCall={id:data,otherId,role:'caller',mode,status:'ringing'};mountCallUI(p,mode,'Chamando...');await createPeer();await subscribeSignals(data);
+      state.localStream=await getLocalMedia(mode); state.activeCall={id:null,otherId,role:'caller',mode,status:'preparing'};mountCallUI(p,mode,mode==='video'?'Câmera pronta · iniciando chamada...':'Iniciando chamada...');
+      const c=db(); const {data,error}=await c.rpc('lx_start_call',{p_other:otherId,p_mode:mode}); if(error)throw error;
+      state.activeCall.id=data;state.activeCall.status='ringing';updateCallStatus('Chamando...');await createPeer();await subscribeSignals(data);
       const offer=await state.pc.createOffer();await state.pc.setLocalDescription(offer);await sendSignal('offer',{type:offer.type,sdp:offer.sdp});
       clearTimeout(state.callTimeout);state.callTimeout=setTimeout(async()=>{if(state.activeCall?.id===data&&state.activeCall.status==='ringing'){await c.rpc('lx_end_call',{p_call_id:data}).catch(()=>{});(LX.toast||((m)=>console.log(m)))('Ninguém atendeu.');cleanupCall(false)}},45000);
     }catch(e){console.warn(e);cleanupCall(false);(LX.toast||((m)=>console.log(m)))(e?.name==='NotAllowedError'?'Permita câmera e microfone para fazer a chamada.':'Não foi possível iniciar a chamada.')}
   }
   async function acceptIncoming(){
     const call=state.incoming;if(!call)return;const p=callPerson(call.caller_id);
-    try{state.localStream=await getLocalMedia(call.mode||'video');const c=db();const {error}=await c.rpc('lx_respond_call',{p_call_id:call.id,p_accept:true});if(error)throw error;hideIncoming();state.activeCall={id:call.id,otherId:call.caller_id,role:'callee',mode:call.mode||'video',status:'accepted'};mountCallUI(p,call.mode||'video','Conectando...');await createPeer();await subscribeSignals(call.id)}
-    catch(e){console.warn(e);(LX.toast||((m)=>console.log(m)))(e?.name==='NotAllowedError'?'Permita câmera e microfone para atender.':'Não foi possível atender a chamada.')}
+    try{state.localStream=await getLocalMedia(call.mode||'video');hideIncoming();state.activeCall={id:call.id,otherId:call.caller_id,role:'callee',mode:call.mode||'video',status:'accepting'};mountCallUI(p,call.mode||'video','Sua câmera está pronta · conectando...');const c=db();const {error}=await c.rpc('lx_respond_call',{p_call_id:call.id,p_accept:true});if(error)throw error;state.activeCall.status='accepted';await createPeer();await subscribeSignals(call.id)}
+    catch(e){console.warn(e);await cleanupCall(false);(LX.toast||((m)=>console.log(m)))(e?.name==='NotAllowedError'?'Permita câmera e microfone para atender.':'Não foi possível atender a chamada.')}
   }
   async function rejectIncoming(){const call=state.incoming;if(!call)return;const c=db();await c.rpc('lx_respond_call',{p_call_id:call.id,p_accept:false}).catch(()=>{});hideIncoming()}
   async function endCurrentCall(){const c=db(),id=state.activeCall?.id;if(id)await c.rpc('lx_end_call',{p_call_id:id}).catch(()=>{});cleanupCall(false)}
@@ -447,9 +467,22 @@
     if(!state.pc)return (LX.toast||((m)=>console.log(m)))('Entre em uma chamada primeiro.');if(!navigator.mediaDevices?.getDisplayMedia)return (LX.toast||((m)=>console.log(m)))('Compartilhamento de tela não está disponível neste navegador.');
     const sender=state.pc.getSenders().find(s=>s.track?.kind==='video');if(!sender)return (LX.toast||((m)=>console.log(m)))('Compartilhamento de tela exige uma chamada de vídeo.');
     if(state.screenStream){await stopScreenShare();return}
-    try{const stream=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:30,max:60}},audio:false});const track=stream.getVideoTracks()[0];if(!track)return;state.screenStream=stream;await sender.replaceTrack(track);const local=document.getElementById('lxLocalVideo');if(local)local.srcObject=stream;document.getElementById('lxShareBtn')?.classList.add('active');track.onended=()=>stopScreenShare()}catch(e){if(e?.name!=='NotAllowedError')console.warn(e)}
+    try{
+      const stream=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:30,max:60}},audio:false});const track=stream.getVideoTracks()[0];if(!track)return;try{track.contentHint='detail'}catch{}
+      state.screenStream=stream;await sender.replaceTrack(track);const local=document.getElementById('lxLocalVideo');if(local)local.srcObject=stream;
+      document.getElementById('lxCallOverlay')?.classList.add('is-sharing');const btn=document.getElementById('lxShareBtn');btn?.classList.add('active');const small=btn?.querySelector('small');if(small)small.textContent='Parar tela';const label=document.getElementById('lxLocalLabel');if(label)label.textContent='SUA TELA';
+      document.getElementById('lxShareBadge')?.classList.remove('hidden');await sendSignal('share',{active:true}).catch(()=>{});track.onended=()=>stopScreenShare();
+    }catch(e){if(e?.name!=='NotAllowedError')console.warn(e)}
   }
-  async function stopScreenShare(){const sender=state.pc?.getSenders().find(s=>s.track?.kind==='video'||s.track==null);const camera=state.localStream?.getVideoTracks?.()[0]||null;if(sender&&camera)await sender.replaceTrack(camera).catch(()=>{});for(const t of state.screenStream?.getTracks?.()||[])try{t.stop()}catch{}state.screenStream=null;const local=document.getElementById('lxLocalVideo');if(local)local.srcObject=state.localStream;document.getElementById('lxShareBtn')?.classList.remove('active')}
+  async function stopScreenShare(){
+    const sender=state.pc?.getSenders().find(s=>s.track?.kind==='video'||s.track==null);const camera=state.localStream?.getVideoTracks?.()[0]||null;if(sender&&camera)await sender.replaceTrack(camera).catch(()=>{});for(const t of state.screenStream?.getTracks?.()||[])try{t.stop()}catch{}state.screenStream=null;
+    const local=document.getElementById('lxLocalVideo');if(local)local.srcObject=state.localStream;document.getElementById('lxCallOverlay')?.classList.remove('is-sharing');const btn=document.getElementById('lxShareBtn');btn?.classList.remove('active');const small=btn?.querySelector('small');if(small)small.textContent='Compartilhar';const label=document.getElementById('lxLocalLabel');if(label)label.textContent='VOCÊ';document.getElementById('lxShareBadge')?.classList.add('hidden');await sendSignal('share',{active:false}).catch(()=>{});
+  }
+  function toggleReactions(){document.getElementById('lxReactionPicker')?.classList.toggle('hidden')}
+  function showReaction(reaction,local=true){
+    const layer=document.getElementById('lxReactionLayer');if(!layer)return;const b=document.createElement('span');b.className='lx-call-reaction';b.textContent=reaction;b.style.left=`${18+Math.random()*64}%`;layer.appendChild(b);setTimeout(()=>b.remove(),2500);if(local)document.getElementById('lxReactionPicker')?.classList.add('hidden');
+  }
+  async function sendReaction(reaction){showReaction(reaction,true);await sendSignal('reaction',{reaction}).catch(()=>{})}
   function toggleCallFullscreen(){const el=document.getElementById('lxCallOverlay');if(!el)return;if(document.fullscreenElement)document.exitFullscreen?.();else el.requestFullscreen?.().catch(()=>{})}
   async function handleCallUpdate(call){if(state.incoming?.id===call.id&&call.status!=='ringing')hideIncoming();if(state.activeCall?.id!==call.id)return;state.activeCall.status=call.status;if(call.status==='accepted')updateCallStatus('Conectando...');if(['rejected','ended','missed'].includes(call.status)){updateCallStatus(call.status==='rejected'?'Chamada recusada.':call.status==='missed'?'Chamada não atendida.':'Chamada encerrada.');setTimeout(()=>cleanupCall(false),850)}}
   async function boot(){
@@ -475,7 +508,7 @@
     if(btn&&!btn.dataset.lxBound){btn.dataset.lxBound='1';btn.addEventListener('click',launch)}
     document.querySelectorAll('[data-mobile="Comunidade"],[data-open-community="1"]').forEach(el=>{if(!el.dataset.lxSocialBound){el.dataset.lxSocialBound='1';el.addEventListener('click',launch)}});
   }
-  LX.social={boot,shutdown,open,close,retry,openProfile,openSettings,commitSettings,refreshDirectory,syncMyProfile,add,respond,removeFriend,startCall,acceptIncoming,rejectIncoming,endCurrentCall,toggleMic,toggleCamera,shareScreen,toggleCallFullscreen,ready:true}; window.LXOpenCommunity=function(tab){return open(tab||'discover')};
+  LX.social={boot,shutdown,open,close,retry,openProfile,openSettings,commitSettings,refreshDirectory,syncMyProfile,add,respond,removeFriend,startCall,acceptIncoming,rejectIncoming,endCurrentCall,toggleMic,toggleCamera,shareScreen,toggleReactions,sendReaction,toggleCallFullscreen,ready:true}; window.LXOpenCommunity=function(tab){return open(tab||'discover')};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindLauncher,{once:true});else bindLauncher();
 })();
 
