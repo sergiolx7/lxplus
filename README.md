@@ -1,4 +1,12 @@
-# LX Plus v25.25 — Community Pro + ADM Save Fix
+# LX Plus v25.26 — Community 3.0 + Stable ADM + Resume
+
+- Comunidade com conversa em tempo real, áudio, emojis e stickers personalizados.
+- Chamada com encerrar imediato e compartilhamento de tela robusto.
+- Estado de navegação/filme preservado após atualizar a página.
+- Painel ADM com Salvar alterações sempre visível em Biblioteca/Aprovações e fila persistente.
+- Migração opcional `supabase/v2526_community_chat.sql` adiciona histórico persistente de chat no banco.
+
+# LX Plus v25.26 — Community Pro + ADM Save Fix
 
 - Comunidade com visual de contatos/conversas, ícones SVG LX e chamadas com prévia local imediata.
 - Compartilhamento de tela com estado visível e restauração automática da câmera.
@@ -6,7 +14,7 @@
 - ADM com Aprovar/Recusar/Verificar/Excluir em modo pendente e botão flutuante Salvar alterações.
 - Cada alteração é confirmada no Supabase antes de sair da fila pendente.
 
-# LX Plus v25.25 — Foundation Fix
+# LX Plus v25.26 — Foundation Fix
 
 Revisão consolidada de estabilidade: Comunidade integrada, selo verificado via RPC administrativo dedicado, exclusão de catálogo confirmada pelo servidor, cache unificado e correções de sincronização de perfil.
 
