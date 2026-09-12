@@ -1,34 +1,20 @@
 {
-  "build": "25.27.0",
-  "name": "LX Plus v25.27 Message Fix + Screen Share + ADM Save",
-  "critical": {
-    "index.html": {
-      "sha256": "e59837b11e103a297cc9b815e0f36ebe78984c9bf8c0ed685091c99148f91cd7",
-      "bytes": 75422
-    },
-    "app.css": {
-      "sha256": "0770af564247dbe03e7aecd76ffb9bf39d30e043c47b81d7f6f7b8a6b414a11f",
-      "bytes": 168970
-    },
-    "sw.js": {
-      "sha256": "31c9674099ba45277437182d93c0a446efea82f11f17ef6844ccdfed00b1bf83",
-      "bytes": 1251
-    },
-    "js/config.js": {
-      "sha256": "28740d6d1260012cb1976b6395a56460ae4095919c497c76c4da8e43725583be",
-      "bytes": 950
-    },
-    "js/cloud.js": {
-      "sha256": "d8bfa911220c60d776791760f08bdbf023f0898f078b175a77ce13c8261b6bb4",
-      "bytes": 26787
-    },
-    "js/admin.js": {
-      "sha256": "34b530047adf170fb21fe7d8ea7a7416e9e5b9910aa1a23c788fab5dbbcb42bc",
-      "bytes": 45388
-    },
-    "js/app.js": {
-      "sha256": "861a66cb9f4e23ae55051e763cd4d116ef4c7900e720d0f9f960e2635e1ff2a6",
-      "bytes": 77535
-    }
-  }
+  "version": "25.30.0",
+  "structure": "index + css + single bundle",
+  "serviceWorker": false,
+  "files": [
+    "index.html",
+    "app.css",
+    "lxplus.js",
+    "CNAME",
+    "assets/icon.svg"
+  ],
+  "fixes": [
+    "auth no reload",
+    "direct app after login",
+    "background cloud boot",
+    "catalog splash artwork",
+    "single local JS bundle",
+    "no stale PWA cache"
+  ]
 }

@@ -1,8 +1,13 @@
-LX Plus v25.29 — Stable Boot Rescue
+LX Plus v25.30 · Rebuild Core
 
-1. Na raiz do GitHub Pages, substitua index.html pelo arquivo desta versão.
-2. Preserve o CNAME incluído.
-3. Esta versão não depende de app.css, pasta js ou sw.js para iniciar.
-4. Abra o site e confirme no login: LX Plus v25.29 · Stable Boot Rescue.
-5. A interface e os botões da splash ligam antes de qualquer chamada ao Supabase.
-6. Supabase e restauração de sessão têm timeout e não podem mais prender a tela inicial.
+Publique TODOS estes arquivos na raiz:
+- index.html
+- app.css
+- lxplus.js
+- CNAME
+- pasta assets (ícone)
+
+A v25.30 não usa a pasta js antiga e não usa Service Worker.
+Você pode remover a pasta js antiga e sw.js da hospedagem para não confundir futuras versões.
+
+No login deve aparecer: LX Plus v25.30 · Rebuild Core
