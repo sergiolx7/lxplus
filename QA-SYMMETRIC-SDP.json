@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "tests": [
+    {
+      "name": "old build reproduces recvonly callee video",
+      "ok": true,
+      "detail": "recvonly,recvonly"
+    },
+    {
+      "name": "callee sees two reserved video transceivers",
+      "ok": true,
+      "detail": "2"
+    },
+    {
+      "name": "fixed callee answer is sendrecv for camera + screen",
+      "ok": true,
+      "detail": "sendrecv,sendrecv"
+    },
+    {
+      "name": "negotiated currentDirection symmetric",
+      "ok": true,
+      "detail": "{\"caller\":[\"sendrecv\",\"sendrecv\"],\"callee\":[\"sendrecv\",\"sendrecv\"]}"
+    },
+    {
+      "name": "callee can replace both outbound video tracks without renegotiation",
+      "ok": true,
+      "detail": "stable"
+    },
+    {
+      "name": "caller can replace both outbound video tracks without renegotiation",
+      "ok": true,
+      "detail": "stable"
+    },
+    {
+      "name": "both sides remain send-capable",
+      "ok": true,
+      "detail": "[\"sendrecv\",\"sendrecv\",\"sendrecv\",\"sendrecv\"]"
+    }
+  ],
+  "errors": [],
+  "browser_errors": []
+}

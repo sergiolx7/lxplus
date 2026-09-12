@@ -1,0 +1,49 @@
+<!doctype html><meta charset="utf-8"><title>QA Symmetric Share</title><body><pre id="out">RUNNING</pre><script>
+(async()=>{
+ const result={ok:false,tests:[],errors:[],offers:0,answers:0};
+ const log=(name,ok,detail='')=>result.tests.push({name,ok,detail});
+ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+ function canvasTrack(w,h,fps,label){
+   const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');let n=0;
+   const paint=()=>{x.fillStyle=`hsl(${(n++*47)%360} 80% 45%)`;x.fillRect(0,0,w,h);x.fillStyle='#fff';x.font='20px sans-serif';x.fillText(label+' '+n,10,28)};paint();
+   const timer=setInterval(paint,70);const s=c.captureStream(fps);const t=s.getVideoTracks()[0];t._timer=timer;return t;
+ }
+ const a=new RTCPeerConnection(),b=new RTCPeerConnection();
+ const qa={aIce:[],bIce:[]};
+ async function flush(target,list){while(list.length){const c=list.shift();try{await target.addIceCandidate(c)}catch(e){result.errors.push('flushICE '+e)}}}
+ a.onicecandidate=async e=>{if(!e.candidate)return;const c=e.candidate.toJSON();if(b.remoteDescription)try{await b.addIceCandidate(c)}catch(err){result.errors.push('aICE '+err)}else qa.aIce.push(c)};
+ b.onicecandidate=async e=>{if(!e.candidate)return;const c=e.candidate.toJSON();if(a.remoteDescription)try{await a.addIceCandidate(c)}catch(err){result.errors.push('bICE '+err)}else qa.bIce.push(c)};
+ const aCamPH=canvasTrack(16,16,1,'A-cam-ph'),aScrPH=canvasTrack(16,16,1,'A-screen-ph');
+ const bCamPH=canvasTrack(16,16,1,'B-cam-ph'),bScrPH=canvasTrack(16,16,1,'B-screen-ph');
+ // App v25.40.1 layout: caller reserves camera + dedicated screen as sendrecv.
+ const aCam=a.addTransceiver(aCamPH,{direction:'sendrecv',streams:[new MediaStream([aCamPH])]});
+ const aScr=a.addTransceiver(aScrPH,{direction:'sendrecv',streams:[new MediaStream([aScrPH])]});
+ const offer=await a.createOffer();result.offers++;await a.setLocalDescription(offer);await b.setRemoteDescription(offer);await flush(b,qa.aIce);
+ // App v25.40.1 callee binding: use offer-created transceivers and reserve SEND direction too.
+ const bVideos=b.getTransceivers().filter(t=>t.receiver?.track?.kind==='video');
+ const bCam=bVideos[0],bScr=bVideos[1];
+ if(bCam){bCam.direction='sendrecv';await bCam.sender.replaceTrack(bCamPH)}
+ if(bScr){bScr.direction='sendrecv';await bScr.sender.replaceTrack(bScrPH)}
+ const answer=await b.createAnswer();result.answers++;await b.setLocalDescription(answer);await a.setRemoteDescription(answer);await flush(a,qa.bIce);
+ const waitConnected=async()=>{for(let i=0;i<120;i++){if(['connected','completed'].includes(a.iceConnectionState)&&['connected','completed'].includes(b.iceConnectionState))return true;await sleep(100)}return false};
+ log('initial connected',await waitConnected(),`${a.connectionState}/${b.connectionState} ice=${a.iceConnectionState}/${b.iceConnectionState}`);
+ log('two negotiated video channels',a.getTransceivers().filter(t=>t.receiver?.track?.kind==='video').length===2&&bVideos.length===2,`${a.getTransceivers().filter(t=>t.receiver?.track?.kind==='video').length}/${bVideos.length}`);
+ log('both directions sendrecv',aCam.currentDirection==='sendrecv'&&aScr.currentDirection==='sendrecv'&&bCam?.currentDirection==='sendrecv'&&bScr?.currentDirection==='sendrecv',JSON.stringify({a:[aCam.currentDirection,aScr.currentDirection],b:[bCam?.currentDirection,bScr?.currentDirection]}));
+ async function inbound(pc,receiver){for(let i=0;i<30;i++){const st=await pc.getStats(receiver.track);let r=null;st.forEach(x=>{if(x.type==='inbound-rtp'&&(x.kind==='video'||x.mediaType==='video'))r=x});if(r&&(r.framesDecoded>0||r.bytesReceived>1000))return {w:r.frameWidth||0,h:r.frameHeight||0,bytes:r.bytesReceived||0,frames:r.framesDecoded||0};await sleep(100)}return null}
+ // Callee -> Caller replace mode. This is the production regression we are fixing.
+ const bScreen=canvasTrack(320,180,15,'B-screen');await bCam.sender.replaceTrack(bScreen);await sleep(700);let size=await inbound(a,aCam.receiver);log('callee B -> caller A replace',!!size,JSON.stringify(size));
+ await bCam.sender.replaceTrack(bCamPH);await sleep(200);
+ // Caller -> Callee replace mode.
+ const aScreen=canvasTrack(352,198,15,'A-screen');await aCam.sender.replaceTrack(aScreen);await sleep(700);size=await inbound(b,bCam.receiver);log('caller A -> callee B replace',!!size,JSON.stringify(size));
+ await aCam.sender.replaceTrack(aCamPH);await sleep(200);
+ // Callee -> Caller dual dedicated screen.
+ const bDual=canvasTrack(640,360,15,'B-dual');await bScr.sender.replaceTrack(bDual);await sleep(700);size=await inbound(a,aScr.receiver);log('callee B -> caller A dual',!!size,JSON.stringify(size));
+ // Caller -> Callee dual dedicated screen.
+ const aDual=canvasTrack(704,396,15,'A-dual');await aScr.sender.replaceTrack(aDual);await sleep(700);size=await inbound(b,bScr.receiver);log('caller A -> callee B dual',!!size,JSON.stringify(size));
+ log('no share renegotiation',result.offers===1&&result.answers===1&&a.signalingState==='stable'&&b.signalingState==='stable',`${result.offers}/${result.answers} ${a.signalingState}/${b.signalingState}`);
+ log('final connection stable',['connected','completed'].includes(a.iceConnectionState)&&['connected','completed'].includes(b.iceConnectionState),`${a.connectionState}/${b.connectionState} ice=${a.iceConnectionState}/${b.iceConnectionState}`);
+ result.ok=result.tests.every(t=>t.ok)&&result.errors.length===0;
+ document.getElementById('out').textContent=JSON.stringify(result,null,2);document.body.dataset.done='1';window.__qaResult=result;
+ [a,b].forEach(p=>p.close());[aCamPH,aScrPH,bCamPH,bScrPH,bScreen,aScreen,bDual,aDual].forEach(t=>{clearInterval(t._timer);t.stop()});
+})().catch(e=>{const result={ok:false,fatal:String(e),stack:e.stack};document.getElementById('out').textContent=JSON.stringify(result,null,2);document.body.dataset.done='1';window.__qaResult=result});
+</script></body>

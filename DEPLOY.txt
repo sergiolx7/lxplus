@@ -1,31 +1,33 @@
-LX Plus v25.40 — Call Sync + Notifications
-BASE: v25.39.2 R2 Preflight
+LX Plus v25.40.1 — Symmetric Screen Share
+BASE: v25.40 Call Sync + Notifications
 
 PUBLICAÇÃO
 1. Substitua na raiz do site:
    - index.html
    - app.css
    - lxplus.js
-2. Mantenha CNAME e demais assets existentes.
-3. Faça hard refresh (Ctrl+F5) após publicar.
-4. Confirme na autenticação:
-   LX Plus v25.40 · Call Sync + Notifications
+2. Mantenha CNAME e a pasta assets.
+3. Faça hard refresh no seu navegador (Ctrl+F5).
+4. A OUTRA PESSOA também precisa recarregar o site / fechar e abrir novamente.
+5. Confirme na autenticação:
+   LX Plus v25.40.1 · Symmetric Screen Share
+
+TESTE RECOMENDADO
+1. Comece uma chamada de áudio.
+2. Você compartilha "Tela principal" e a outra pessoa confirma que vê.
+3. Pare a tela.
+4. A outra pessoa compartilha "Tela principal" e você confirma que vê.
+5. Repita com "Tela + câmera" nos dois sentidos.
+6. Encerre por cada lado uma vez e confirme que fecha para os dois.
 
 SUPABASE
-As migrations da v25.40 JÁ FORAM aplicadas no projeto conectado durante esta atualização.
-NÃO rode SUPABASE-CALL-SYNC-V2540.sql novamente no mesmo projeto.
-O arquivo SQL fica no pacote apenas para documentação/backup.
+As migrations da v25.40 JÁ ESTÃO aplicadas no projeto conectado.
+A v25.40.1 não precisa de nova migration.
+NÃO rode SUPABASE-CALL-SYNC-V2540.sql novamente; ele está no pacote apenas como backup/documentação.
 
-O QUE FOI CORRIGIDO
-- Compartilhamento de tela agora usa sinais permitidos no banco (share/hangup/reaction).
-- Dois modos de tela: Tela principal e Tela + câmera.
-- Renegociação WebRTC funciona independentemente de quem iniciou a chamada.
-- Encerrar chamada envia hangup primeiro, atualiza o banco e fecha as duas pontas.
-- Heartbeat/polling serve como fallback se um evento Realtime for perdido.
-- Cronômetro da chamada começa ao atender e continua por horas (HH:MM:SS).
-- Notificações pessoais persistentes para mensagens e chamadas perdidas.
-- Sino do topo passa a contar mensagens/notificações pessoais.
-- Prompt para ativar notificações do navegador.
+CORREÇÃO PRINCIPAL
+O bug unilateral vinha da negociação WebRTC: a ponta que atendia podia terminar com o vídeo em recvonly.
+A v25.40.1 reserva câmera + tela como sendrecv desde o começo e também possui fallback de renegociação se um navegador perder a direção de envio.
 
 R2
 A integração R2 da v25.39 continua preservada. Consulte R2-SETUP.txt.

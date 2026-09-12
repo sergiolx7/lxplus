@@ -10,7 +10,7 @@
 
   <script>
   (function(){
-    var BUILD='25.40',KEY='lxplus_build_seen';
+    var BUILD='25.40.1',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -39,8 +39,8 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=25.40">
-  <title>LX Plus v25.40 · Call Sync + Notifications</title>
+  <link rel="stylesheet" href="app.css?v=25.40.1">
+  <title>LX Plus v25.40.1 · Symmetric Screen Share</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -111,7 +111,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.40 · Call Sync + Notifications</small>
+        <small class="auth-build-version">LX Plus v25.40.1 · Symmetric Screen Share</small>
       </div>
     </div>
   </section>
@@ -242,18 +242,18 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   })();
   </script>
-  <script src="lxplus.js?v=25.40"></script>
+  <script src="lxplus.js?v=25.40.1"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded',function(){
-/* LX SOCIAL EMBEDDED v25.40 — CALL SYNC + SCREEN SHARE */
+/* LX SOCIAL EMBEDDED v25.40.1 — SYMMETRIC SCREEN SHARE */
 (()=>{
   const LX=window.LX=window.LX||{};
   const U=LX.ui;
   const esc=s=>U?.esc?U.esc(s):String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const state={
     booted:false,directory:[],coreChannel:null,presenceChannel:null,presenceMap:{},presenceReady:false,signalChannel:null,activeCall:null,incoming:null,
-    pc:null,localStream:null,remoteStream:null,remoteCameraStream:null,remoteScreenStream:null,screenStream:null,screenSender:null,screenTransceiver:null,videoSender:null,processed:new Set(),pendingIce:[],remoteTracks:new Map(),remoteScreenMid:null,remoteSharing:false,screenMode:null,makingOffer:false,
+    pc:null,localStream:null,remoteStream:null,remoteCameraStream:null,remoteScreenStream:null,screenStream:null,screenSender:null,screenTransceiver:null,cameraTransceiver:null,videoSender:null,cameraPlaceholderTrack:null,screenPlaceholderTrack:null,placeholderCanvases:[],processed:new Set(),pendingIce:[],remoteTracks:new Map(),remoteScreenMid:null,remoteShareMode:null,remoteSharing:false,screenMode:null,makingOffer:false,
     callTimeout:null,callTimer:null,callStartedAt:null,callPollTimer:null,callPollBusy:false,openTab:'discover',drawerOpen:false,lastError:'',loading:false
   };
   const db=()=>LX.cloud?.db?.();
@@ -495,37 +495,96 @@
   }
   function hideIncoming(){document.getElementById('lxIncomingCall')?.remove();state.incoming=null}
   function addTrack(stream,track){if(track&&!stream.getTracks().some(t=>t.id===track.id))stream.addTrack(track)}
+  function makePlaceholderVideoTrack(kind='camera'){
+    try{
+      const canvas=document.createElement('canvas');canvas.width=16;canvas.height=16;const ctx=canvas.getContext('2d');
+      if(ctx){ctx.fillStyle='#03070c';ctx.fillRect(0,0,16,16);ctx.fillStyle=kind==='screen'?'#07101b':'#03070c';ctx.fillRect(2,2,12,12)}
+      const stream=canvas.captureStream?.(1),track=stream?.getVideoTracks?.()[0]||null;
+      if(track){try{track.contentHint='detail'}catch{};state.placeholderCanvases.push(canvas)}
+      return track;
+    }catch(e){console.warn('LX placeholder video',e);return null}
+  }
   function attachRemoteScreenTrack(track){if(!track)return;state.remoteScreenStream=state.remoteScreenStream||new MediaStream();for(const t of state.remoteScreenStream.getVideoTracks())if(t.id!==track.id)state.remoteScreenStream.removeTrack(t);addTrack(state.remoteScreenStream,track);const el=document.getElementById('lxRemoteScreen');if(el){el.srcObject=state.remoteScreenStream;el.classList.remove('hidden');el.play?.().catch(()=>{})}}
-  function attachRemoteCameraTrack(track){if(!track)return;state.remoteCameraStream=state.remoteCameraStream||new MediaStream();addTrack(state.remoteCameraStream,track);const el=document.getElementById('lxRemoteVideo');if(el){el.srcObject=state.remoteCameraStream;el.play?.().catch(()=>{})}document.getElementById('lxRemoteFallback')?.classList.add('hidden')}
+  function attachRemoteCameraTrack(track){if(!track)return;state.remoteCameraStream=state.remoteCameraStream||new MediaStream();for(const t of state.remoteCameraStream.getVideoTracks())if(t.id!==track.id)state.remoteCameraStream.removeTrack(t);addTrack(state.remoteCameraStream,track);const el=document.getElementById('lxRemoteVideo');if(el){el.srcObject=state.remoteCameraStream;el.play?.().catch(()=>{})}document.getElementById('lxRemoteFallback')?.classList.add('hidden')}
+  function transceiverByMid(mid){const value=String(mid??'');return value?state.pc?.getTransceivers?.().find(t=>String(t.mid??'')===value):null}
+  function currentCameraMid(){return String(state.cameraTransceiver?.mid??'')}
+  function currentScreenMid(){return String(state.screenTransceiver?.mid??'')}
   function applyRemoteShare(active,payload={}){
-    state.remoteSharing=!!active;state.remoteScreenMid=active?(payload.mid??state.remoteScreenMid):null;
-    const overlay=document.getElementById('lxCallOverlay'),badge=document.getElementById('lxShareBadge'),screen=document.getElementById('lxRemoteScreen');
-    overlay?.classList.toggle('is-sharing',!!active);overlay?.classList.toggle('is-dual-sharing',!!active&&payload.mode==='dual');badge?.classList.toggle('hidden',!active);
-    if(active&&payload.mode==='dual'){
-      const tr=state.pc?.getTransceivers?.().find(t=>String(t.mid)===String(state.remoteScreenMid));const track=tr?.receiver?.track||state.remoteTracks.get(String(state.remoteScreenMid));if(track)attachRemoteScreenTrack(track);
+    const mode=payload.mode==='dual'?'dual':'replace';
+    const targetMid=String(payload.mid??(mode==='dual'?currentScreenMid():currentCameraMid())??'');
+    state.remoteSharing=!!active;state.remoteShareMode=active?mode:null;state.remoteScreenMid=active?targetMid:null;
+    const overlay=document.getElementById('lxCallOverlay'),badge=document.getElementById('lxShareBadge'),screen=document.getElementById('lxRemoteScreen'),remote=document.getElementById('lxRemoteVideo');
+    overlay?.classList.toggle('is-sharing',!!active);overlay?.classList.toggle('is-dual-sharing',!!active&&mode==='dual');badge?.classList.toggle('hidden',!active);
+    if(active&&mode==='dual'){
+      const tr=transceiverByMid(targetMid)||state.screenTransceiver;const track=tr?.receiver?.track||state.remoteTracks.get(targetMid);if(track)attachRemoteScreenTrack(track);
       updateCallStatus('Recebendo tela + câmera');
-    }else if(active){screen?.classList.add('hidden');updateCallStatus('Recebendo tela compartilhada')}
-    else{if(screen){screen.srcObject=null;screen.classList.add('hidden')}state.remoteScreenStream=null;overlay?.classList.remove('is-dual-sharing');updateCallStatus('Conectado')}
+    }else if(active){
+      if(screen){screen.srcObject=null;screen.classList.add('hidden')}state.remoteScreenStream=null;
+      const tr=transceiverByMid(targetMid)||state.cameraTransceiver;const track=tr?.receiver?.track||state.remoteTracks.get(targetMid);if(track)attachRemoteCameraTrack(track);remote?.play?.().catch(()=>{});
+      updateCallStatus('Recebendo tela compartilhada');
+      // Compatibilidade: builds antigas enviavam o sinal de share sem renegociar.
+      // Se o peer antigo tinha respondido recvonly (comum em chamadas de áudio), um offer daqui
+      // dá a ele a chance de responder sendrecv agora que a tela já está no sender.
+      if(!payload.mode&&!payload.mid&&state.pc?.signalingState==='stable')setTimeout(()=>renegotiate('legacy-remote-share-recovery'),80);
+    }else{
+      if(screen){screen.srcObject=null;screen.classList.add('hidden')}state.remoteScreenStream=null;overlay?.classList.remove('is-dual-sharing');
+      if(state.activeCall?.mode==='audio'){if(remote){remote.srcObject=state.remoteCameraStream;remote.classList.add('lx-video-stalled')}document.getElementById('lxRemoteFallback')?.classList.remove('hidden')}
+      updateCallStatus('Conectado');
+    }
+  }
+  async function bindCalleeMediaToOffer(){
+    const pc=state.pc;if(!pc)return;
+    const trs=pc.getTransceivers?.()||[];
+    const audioTrack=state.localStream?.getAudioTracks?.()[0]||null;
+    const audioTr=trs.find(t=>t?.receiver?.track?.kind==='audio');
+    if(audioTr){try{audioTr.direction='sendrecv'}catch{};if(audioTrack)await audioTr.sender.replaceTrack(audioTrack).catch(e=>console.warn('LX callee audio sender',e))}
+    const videos=trs.filter(t=>t?.receiver?.track?.kind==='video');
+    const cameraTr=videos[0]||null,screenTr=videos[1]||null;
+    const videoTrack=state.localStream?.getVideoTracks?.()[0]||null,shareTrack=state.screenStream?.getVideoTracks?.()[0]||null;
+    const cameraSource=(state.screenMode==='replace'&&shareTrack)?shareTrack:(videoTrack||state.cameraPlaceholderTrack||null);
+    const screenSource=(state.screenMode==='dual'&&shareTrack)?shareTrack:(state.screenPlaceholderTrack||null);
+    if(cameraTr){state.cameraTransceiver=cameraTr;state.videoSender=cameraTr.sender;try{cameraTr.direction='sendrecv'}catch{};await cameraTr.sender.replaceTrack(cameraSource).catch(e=>console.warn('LX callee camera sender',e))}
+    if(screenTr){state.screenTransceiver=screenTr;state.screenSender=screenTr.sender;try{screenTr.direction='sendrecv'}catch{};await screenTr.sender.replaceTrack(screenSource).catch(e=>console.warn('LX callee screen sender',e))}
   }
   async function createPeer(){
-    if(state.pc)try{state.pc.close()}catch{}; state.pendingIce=[];state.processed.clear();state.videoSender=null;state.screenSender=null;state.screenTransceiver=null;state.remoteTracks=new Map();state.remoteScreenMid=null;state.remoteSharing=false;
+    if(state.pc)try{state.pc.close()}catch{};
+    state.pendingIce=[];state.processed.clear();state.videoSender=null;state.screenSender=null;state.screenTransceiver=null;state.cameraTransceiver=null;state.remoteTracks=new Map();state.remoteScreenMid=null;state.remoteShareMode=null;state.remoteSharing=false;state.placeholderCanvases=[];
+    try{state.cameraPlaceholderTrack?.stop?.()}catch{};try{state.screenPlaceholderTrack?.stop?.()}catch{};state.cameraPlaceholderTrack=null;state.screenPlaceholderTrack=null;
     const pc=new RTCPeerConnection(iceConfig());state.pc=pc;state.remoteStream=new MediaStream();state.remoteCameraStream=new MediaStream();state.remoteScreenStream=new MediaStream();
     const remote=document.getElementById('lxRemoteVideo');if(remote){remote.srcObject=state.remoteCameraStream;remote.autoplay=true;remote.playsInline=true;remote.muted=false;remote.onloadedmetadata=()=>remote.play?.().catch(()=>{})}
-    const audioTrack=state.localStream?.getAudioTracks?.()[0];if(audioTrack)pc.addTrack(audioTrack,state.localStream);
-    const videoTrack=state.localStream?.getVideoTracks?.()[0]||null;
-    try{const tr=pc.addTransceiver('video',{direction:'sendrecv'});state.videoSender=tr.sender;if(videoTrack)await tr.sender.replaceTrack(videoTrack)}catch(e){console.warn('LX video transceiver',e);if(videoTrack){const sender=pc.addTrack(videoTrack,state.localStream);state.videoSender=sender}}
+    state.cameraPlaceholderTrack=makePlaceholderVideoTrack('camera');state.screenPlaceholderTrack=makePlaceholderVideoTrack('screen');
+    // The caller defines a stable SDP layout up front: audio, camera, dedicated screen.
+    // The callee waits for that offer and binds its local tracks to those exact transceivers
+    // before creating the answer. This avoids duplicate m-lines and recvonly asymmetry.
+    if(state.activeCall?.role==='caller'){
+      const audioTrack=state.localStream?.getAudioTracks?.()[0];if(audioTrack)pc.addTrack(audioTrack,state.localStream);
+      const videoTrack=state.localStream?.getVideoTracks?.()[0]||null;
+      try{
+        const cameraSource=videoTrack||state.cameraPlaceholderTrack;
+        const cameraStream=cameraSource?(videoTrack?state.localStream:new MediaStream([cameraSource])):undefined;
+        const tr=cameraSource?pc.addTransceiver(cameraSource,{direction:'sendrecv',streams:cameraStream?[cameraStream]:[]}):pc.addTransceiver('video',{direction:'sendrecv'});
+        state.cameraTransceiver=tr;state.videoSender=tr.sender;
+      }catch(e){console.warn('LX camera transceiver',e);if(videoTrack){const sender=pc.addTrack(videoTrack,state.localStream);state.videoSender=sender}}
+      try{
+        const screenSource=state.screenPlaceholderTrack,screenStream=screenSource?new MediaStream([screenSource]):undefined;
+        const tr=screenSource?pc.addTransceiver(screenSource,{direction:'sendrecv',streams:screenStream?[screenStream]:[]}):pc.addTransceiver('video',{direction:'sendrecv'});
+        state.screenTransceiver=tr;state.screenSender=tr.sender;
+      }catch(e){console.warn('LX screen transceiver',e)}
+    }
     pc.ontrack=e=>{
       const track=e.track,mid=String(e.transceiver?.mid??'');if(mid)state.remoteTracks.set(mid,track);
       if(track.kind==='audio'){addTrack(state.remoteCameraStream,track);if(remote)remote.srcObject=state.remoteCameraStream}
       else if(track.kind==='video'){
-        const shouldScreen=(state.remoteScreenMid&&String(state.remoteScreenMid)===mid)||(state.remoteSharing&&state.activeCall?.mode==='audio')||(state.remoteSharing&&state.remoteCameraStream.getVideoTracks().length>0&&!state.remoteCameraStream.getVideoTracks().some(t=>t.id===track.id));
-        if(shouldScreen)attachRemoteScreenTrack(track);else attachRemoteCameraTrack(track);
-        const reveal=()=>{document.getElementById('lxRemoteFallback')?.classList.add('hidden');track.kind==='video'&&remote?.classList.remove('lx-video-stalled')};track.onunmute=reveal;track.onmute=()=>{if(track.kind==='video')remote?.classList.add('lx-video-stalled')};if(!track.muted)reveal();
+        const screenMid=currentScreenMid(),isScreen=(screenMid&&mid===screenMid)||(state.remoteScreenMid&&mid===String(state.remoteScreenMid));
+        if(isScreen){if(state.remoteSharing&&state.remoteShareMode==='dual')attachRemoteScreenTrack(track)}
+        else if(state.activeCall?.mode==='video'||state.remoteSharing){attachRemoteCameraTrack(track)}
+        const reveal=()=>{if(isScreen){if(state.remoteSharing&&state.remoteShareMode==='dual')document.getElementById('lxRemoteFallback')?.classList.add('hidden')}else if(state.activeCall?.mode==='video'||state.remoteSharing){document.getElementById('lxRemoteFallback')?.classList.add('hidden');remote?.classList.remove('lx-video-stalled')}};
+        track.onunmute=reveal;track.onmute=()=>{if(!isScreen)remote?.classList.add('lx-video-stalled')};if(!track.muted)reveal();
       }
-      remote?.play?.().catch(()=>{});updateCallStatus(state.remoteSharing?'Recebendo tela compartilhada':'Conectado');
+      remote?.play?.().catch(()=>{});updateCallStatus(state.remoteSharing?(state.remoteShareMode==='dual'?'Recebendo tela + câmera':'Recebendo tela compartilhada'):'Conectado');
     };
     pc.onicecandidate=e=>{if(e.candidate)sendSignal('ice',e.candidate.toJSON()).catch(()=>{})};
-    pc.onconnectionstatechange=()=>{const st=pc.connectionState;if(st==='connected'){updateCallStatus(state.remoteSharing?'Recebendo tela compartilhada':'Conectado');remote?.play?.().catch(()=>{})}else if(st==='connecting')updateCallStatus('Conectando...');else if(['failed','closed'].includes(st)){updateCallStatus('Chamada encerrada');setTimeout(()=>cleanupCall(false),700)}else if(st==='disconnected')updateCallStatus('Reconectando...')};
+    pc.onconnectionstatechange=()=>{const st=pc.connectionState;if(st==='connected'){updateCallStatus(state.remoteSharing?(state.remoteShareMode==='dual'?'Recebendo tela + câmera':'Recebendo tela compartilhada'):'Conectado');remote?.play?.().catch(()=>{})}else if(st==='connecting')updateCallStatus('Conectando...');else if(['failed','closed'].includes(st)){updateCallStatus('Chamada encerrada');setTimeout(()=>cleanupCall(false),700)}else if(st==='disconnected')updateCallStatus('Reconectando...')};
     return pc;
   }
   async function sendSignal(kind,payload){const c=db(),call=state.activeCall;if(!c||!call?.id)return false;const {error}=await c.from('lx_call_signals').insert({call_id:call.id,sender_id:uid(),kind,payload});if(error)throw error;return true}
@@ -538,7 +597,7 @@
     try{
       if(row.kind==='offer'){
         if(pc.signalingState!=='stable'){try{await pc.setLocalDescription({type:'rollback'})}catch{}}
-        await pc.setRemoteDescription(row.payload);for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{});const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await sendSignal('answer',{type:ans.type,sdp:ans.sdp});
+        await pc.setRemoteDescription(row.payload);if(state.activeCall?.role==='callee')await bindCalleeMediaToOffer();for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{});const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await sendSignal('answer',{type:ans.type,sdp:ans.sdp});
       }
       else if(row.kind==='answer'){if(pc.signalingState==='have-local-offer'||!pc.currentRemoteDescription){await pc.setRemoteDescription(row.payload);for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{})}}
       else if(row.kind==='ice'){if(pc.remoteDescription?.type)await pc.addIceCandidate(row.payload).catch(()=>{});else state.pendingIce.push(row.payload)}
@@ -593,23 +652,46 @@
     const channel=state.signalChannel;state.signalChannel=null;const c=db();
     try{state.pc?.close()}catch{}state.pc=null;
     for(const stream of [state.localStream,state.screenStream])for(const t of stream?.getTracks?.()||[])try{t.stop()}catch{}
-    state.localStream=null;state.screenStream=null;state.remoteStream=null;state.remoteCameraStream=null;state.remoteScreenStream=null;state.screenSender=null;state.screenTransceiver=null;state.videoSender=null;state.remoteTracks=new Map();state.remoteScreenMid=null;state.remoteSharing=false;state.screenMode=null;state.activeCall=null;state.pendingIce=[];state.processed.clear();
+    for(const t of [state.cameraPlaceholderTrack,state.screenPlaceholderTrack])try{t?.stop?.()}catch{};state.cameraPlaceholderTrack=null;state.screenPlaceholderTrack=null;state.placeholderCanvases=[];
+    state.localStream=null;state.screenStream=null;state.remoteStream=null;state.remoteCameraStream=null;state.remoteScreenStream=null;state.screenSender=null;state.screenTransceiver=null;state.cameraTransceiver=null;state.videoSender=null;state.remoteTracks=new Map();state.remoteScreenMid=null;state.remoteShareMode=null;state.remoteSharing=false;state.screenMode=null;state.activeCall=null;state.pendingIce=[];state.processed.clear();
     document.getElementById('lxCallOverlay')?.remove();document.documentElement.classList.remove('lx-call-open');
     if(channel&&c)c.removeChannel(channel).catch(()=>{});
     if(showToast)(LX.toast||((m)=>console.log(m)))('Chamada encerrada.');
   }
   function toggleMic(){const t=state.localStream?.getAudioTracks?.()[0];if(!t)return (LX.toast||((m)=>console.log(m)))('Microfone não disponível.');t.enabled=!t.enabled;document.getElementById('lxMicBtn')?.classList.toggle('off',!t.enabled)}
+  async function waitForStableSignaling(timeout=6500){
+    const pc=state.pc;if(!pc)return false;const started=Date.now();
+    while(pc.signalingState!=='stable'&&pc.signalingState!=='closed'&&Date.now()-started<timeout)await new Promise(r=>setTimeout(r,80));
+    return pc.signalingState==='stable';
+  }
+  async function ensureTransceiverCanSend(tr,reason='send-direction'){
+    const pc=state.pc;if(!pc||!tr||tr.stopped)return false;
+    const sends=v=>v==='sendrecv'||v==='sendonly';
+    try{if(!sends(tr.direction))tr.direction='sendrecv'}catch{}
+    if(sends(tr.currentDirection))return true;
+    if(pc.signalingState!=='stable')await waitForStableSignaling(2500);
+    if(pc.signalingState==='stable'){const ok=await renegotiate(reason);if(ok)await waitForStableSignaling(6500)}
+    return sends(tr.currentDirection)||sends(tr.direction);
+  }
   async function ensureVideoSender(){
-    if(!state.pc)return null;if(state.videoSender)return state.videoSender;
-    let tr=state.pc.getTransceivers?.().find(t=>t?.receiver?.track?.kind==='video'&&t!==state.screenTransceiver);if(tr?.sender){state.videoSender=tr.sender;return tr.sender}
-    let sender=state.pc.getSenders().find(s=>s!==state.screenSender&&s.track?.kind==='video');if(sender){state.videoSender=sender;return sender}
-    try{tr=state.pc.addTransceiver('video',{direction:'sendrecv'});state.videoSender=tr.sender;await renegotiate('add-camera');return tr.sender}catch(e){console.warn('LX add video sender',e);return null}
+    if(!state.pc)return null;
+    let tr=state.cameraTransceiver||null;
+    if(!tr||tr.stopped)tr=state.pc.getTransceivers?.().find(t=>t!==state.screenTransceiver&&t?.receiver?.track?.kind==='video')||null;
+    if(tr?.sender){state.cameraTransceiver=tr;state.videoSender=tr.sender;try{if(!['sendrecv','sendonly'].includes(tr.direction))tr.direction='sendrecv'}catch{};return tr.sender}
+    let sender=state.videoSender||state.pc.getSenders().find(s=>s!==state.screenSender&&s.track?.kind==='video');if(sender){state.videoSender=sender;return sender}
+    try{const placeholder=state.cameraPlaceholderTrack||makePlaceholderVideoTrack('camera');state.cameraPlaceholderTrack=placeholder;tr=placeholder?state.pc.addTransceiver(placeholder,{direction:'sendrecv',streams:[new MediaStream([placeholder])]}):state.pc.addTransceiver('video',{direction:'sendrecv'});state.cameraTransceiver=tr;state.videoSender=tr.sender;await renegotiate('camera-fallback-add');await waitForStableSignaling();return tr.sender}catch(e){console.warn('LX add video sender',e);return null}
+  }
+  async function ensureScreenSender(){
+    const pc=state.pc;if(!pc)return null;let tr=state.screenTransceiver||null;
+    if(!tr||tr.stopped){const videos=(pc.getTransceivers?.()||[]).filter(t=>t?.receiver?.track?.kind==='video');tr=videos.find(t=>t!==state.cameraTransceiver)||videos[1]||null}
+    if(!tr||tr.stopped){try{const placeholder=state.screenPlaceholderTrack||makePlaceholderVideoTrack('screen');state.screenPlaceholderTrack=placeholder;tr=placeholder?pc.addTransceiver(placeholder,{direction:'sendrecv',streams:[new MediaStream([placeholder])]}):pc.addTransceiver('video',{direction:'sendrecv'});state.screenTransceiver=tr;state.screenSender=tr.sender;await renegotiate('screen-fallback-add');await waitForStableSignaling();return tr.sender}catch(e){console.warn('LX add screen sender',e);return null}}
+    state.screenTransceiver=tr;state.screenSender=tr.sender;try{if(!['sendrecv','sendonly'].includes(tr.direction))tr.direction='sendrecv'}catch{};return tr.sender;
   }
   async function toggleCamera(){
     let t=state.localStream?.getVideoTracks?.()[0];
     if(t){t.enabled=!t.enabled;document.getElementById('lxCamBtn')?.classList.toggle('off',!t.enabled);return}
     if(!navigator.mediaDevices?.getUserMedia)return (LX.toast||((m)=>console.log(m)))('Câmera não disponível neste navegador.');
-    try{const stream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720},facingMode:'user'},audio:false});t=stream.getVideoTracks()[0];if(!t)return;state.localStream=state.localStream||new MediaStream();state.localStream.addTrack(t);const sender=await ensureVideoSender();if(sender)await sender.replaceTrack(t);await renegotiate('camera-on');const local=document.getElementById('lxLocalVideo');if(local){local.srcObject=state.localStream;local.classList.remove('hidden');local.play?.().catch(()=>{})}document.getElementById('lxCamBtn')?.classList.remove('off');(LX.toast||((m)=>console.log(m)))('Câmera ativada.')}catch(e){console.warn(e);(LX.toast||((m)=>console.log(m)))('Não foi possível ativar a câmera. Verifique a permissão do navegador.')}
+    try{const stream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720},facingMode:'user'},audio:false});t=stream.getVideoTracks()[0];if(!t)return;state.localStream=state.localStream||new MediaStream();state.localStream.addTrack(t);const sender=await ensureVideoSender();if(sender)await sender.replaceTrack(t);const local=document.getElementById('lxLocalVideo');if(local){local.srcObject=state.localStream;local.classList.remove('hidden');local.play?.().catch(()=>{})}document.getElementById('lxCamBtn')?.classList.remove('off');(LX.toast||((m)=>console.log(m)))('Câmera ativada.')}catch(e){console.warn(e);(LX.toast||((m)=>console.log(m)))('Não foi possível ativar a câmera. Verifique a permissão do navegador.')}
   }
   function toggleSharePicker(){if(state.screenStream){stopScreenShare();return}document.getElementById('lxReactionPicker')?.classList.add('hidden');document.getElementById('lxSharePicker')?.classList.toggle('hidden')}
   async function shareScreen(mode='replace'){
@@ -624,12 +706,14 @@
       const track=stream.getVideoTracks()[0];if(!track)throw new Error('SCREEN_TRACK_MISSING');try{track.contentHint='detail'}catch{}
       state.screenStream=stream;state.screenMode=mode;
       if(mode==='dual'){
-        let tr=state.screenTransceiver;
-        if(!tr||tr.stopped){tr=state.pc.addTransceiver(track,{direction:'sendonly',streams:[stream]});state.screenTransceiver=tr;state.screenSender=tr.sender}else{tr.direction='sendonly';await tr.sender.replaceTrack(track);state.screenSender=tr.sender}
-        await renegotiate('screen-dual-start');const mid=String(tr.mid??'');await sendSignal('share',{active:true,mode:'dual',mid,displaySurface:track.getSettings?.().displaySurface||'screen'}).catch(()=>{});
+        const sender=await ensureScreenSender();if(!sender)throw new Error('SCREEN_SENDER_UNAVAILABLE');await sender.replaceTrack(track);state.screenSender=sender;
+        if(!await ensureTransceiverCanSend(state.screenTransceiver,'screen-dual-enable-send'))throw new Error('SCREEN_SEND_DIRECTION_UNAVAILABLE');
+        const mid=currentScreenMid();await sendSignal('share',{active:true,mode:'dual',mid,displaySurface:track.getSettings?.().displaySurface||'screen'}).catch(()=>{});
         const prev=document.getElementById('lxLocalSharePreview'),wrap=document.getElementById('lxLocalShareWrap');if(prev){prev.srcObject=stream;prev.play?.().catch(()=>{})}wrap?.classList.remove('hidden');
       }else{
-        const sender=await ensureVideoSender();if(!sender)throw new Error('VIDEO_SENDER_UNAVAILABLE');await sender.replaceTrack(track);state.videoSender=sender;await renegotiate('screen-replace-start');await sendSignal('share',{active:true,mode:'replace',displaySurface:track.getSettings?.().displaySurface||'screen'}).catch(()=>{});
+        const sender=await ensureVideoSender();if(!sender)throw new Error('VIDEO_SENDER_UNAVAILABLE');await sender.replaceTrack(track);state.videoSender=sender;
+        if(!await ensureTransceiverCanSend(state.cameraTransceiver,'screen-replace-enable-send'))throw new Error('VIDEO_SEND_DIRECTION_UNAVAILABLE');
+        const mid=currentCameraMid();await sendSignal('share',{active:true,mode:'replace',mid,displaySurface:track.getSettings?.().displaySurface||'screen'}).catch(()=>{});
         const local=document.getElementById('lxLocalVideo');if(local){local.srcObject=stream;local.classList.remove('hidden');local.play?.().catch(()=>{})}const label=document.getElementById('lxLocalLabel');if(label)label.textContent='SUA TELA';
       }
       document.getElementById('lxCallOverlay')?.classList.add('is-sharing');btn?.classList.remove('busy');btn?.classList.add('active');if(small)small.textContent='Parar tela';document.getElementById('lxShareBadge')?.classList.remove('hidden');
@@ -639,8 +723,11 @@
   async function stopScreenShare(){
     const mode=state.screenMode,camera=state.localStream?.getVideoTracks?.()[0]||null;
     try{
-      if(mode==='dual'&&state.screenTransceiver){await state.screenTransceiver.sender.replaceTrack(null).catch(()=>{});try{state.screenTransceiver.direction='inactive'}catch{}await sendSignal('share',{active:false,mode:'dual'}).catch(()=>{});await renegotiate('screen-dual-stop')}
-      else{const sender=await ensureVideoSender();if(sender)await sender.replaceTrack(camera||null).catch(()=>{});await sendSignal('share',{active:false,mode:'replace'}).catch(()=>{});await renegotiate('screen-replace-stop')}
+      if(mode==='dual'){
+        const sender=state.screenSender||state.screenTransceiver?.sender;if(sender)await sender.replaceTrack(state.screenPlaceholderTrack||null).catch(()=>{});await sendSignal('share',{active:false,mode:'dual',mid:currentScreenMid()}).catch(()=>{});
+      }else{
+        const sender=await ensureVideoSender();if(sender)await sender.replaceTrack(camera||state.cameraPlaceholderTrack||null).catch(()=>{});await sendSignal('share',{active:false,mode:'replace',mid:currentCameraMid()}).catch(()=>{});
+      }
     }catch(e){console.warn('LX stop share',e)}
     for(const t of state.screenStream?.getTracks?.()||[])try{t.stop()}catch{}state.screenStream=null;state.screenMode=null;
     const local=document.getElementById('lxLocalVideo');if(local){local.srcObject=state.localStream;local.classList.toggle('hidden',!camera);local.play?.().catch(()=>{})}const preview=document.getElementById('lxLocalSharePreview');if(preview)preview.srcObject=null;document.getElementById('lxLocalShareWrap')?.classList.add('hidden');document.getElementById('lxCallOverlay')?.classList.remove('is-sharing');const btn=document.getElementById('lxShareBtn');btn?.classList.remove('active','busy');const small=btn?.querySelector('small');if(small)small.textContent='Compartilhar';const label=document.getElementById('lxLocalLabel');if(label)label.textContent='VOCÊ';document.getElementById('lxShareBadge')?.classList.add('hidden');updateCallStatus('Conectado');
@@ -692,7 +779,7 @@
   </script>
 
 <script>
-/* LX CHAT INLINE v25.40 — Notifications + resilient realtime */
+/* LX CHAT INLINE v25.40.1 — Notifications + resilient realtime */
 (()=>{
   const LX=window.LX=window.LX||{};
   const state={
