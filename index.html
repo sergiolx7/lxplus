@@ -11,7 +11,7 @@
 
   <script>
   (function(){
-    var BUILD='25.23.0',KEY='lxplus_build_seen';
+    var BUILD='25.24.0',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -26,64 +26,18 @@
   })();
   </script>
 
+
   <script>
-  /* v25.23: emergency launcher; social runtime is embedded in app.js. This UI opens even if app/social scripts fail. */
-  (function(){
-    var busy=false, timer=null;
-    function emergency(tab){
-      var old=document.getElementById('lxCommunityEmergency');
-      if(old) old.remove();
-      var box=document.createElement('div');
-      box.id='lxCommunityEmergency';
-      box.setAttribute('role','dialog');
-      box.setAttribute('aria-modal','true');
-      box.innerHTML='<div style="position:fixed;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(5px)"></div>'+
-        '<section style="position:fixed;right:14px;top:14px;bottom:14px;width:min(440px,calc(100vw - 28px));z-index:2;background:#08101a;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:24px;box-shadow:-20px 0 70px rgba(0,0,0,.55);padding:20px;font-family:system-ui,-apple-system,Segoe UI,sans-serif">'+
-        '<button id="lxCommunityEmergencyClose" style="float:right;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.13);background:#111d2b;color:#fff;font-size:24px;cursor:pointer">×</button>'+
-        '<small style="color:#6eb7ff;font-weight:900;letter-spacing:.16em">LX SOCIAL</small><h2 style="margin:8px 0 4px;font-size:26px">Comunidade</h2><p style="margin:0;color:#91a3b7;font-size:12px">Abrindo pessoas, amigos e chamadas…</p>'+
-        '<div style="margin-top:24px;padding:18px;border-radius:17px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08)"><b id="lxCommunityEmergencyStatus">Conectando ao módulo social…</b><p style="color:#8295a8;font-size:11px;line-height:1.5">Esta tela abre primeiro para o botão nunca ficar sem resposta.</p></div>'+
-        '</section>';
-      box.style.cssText='position:fixed;inset:0;z-index:2147483600;';
-      document.body.appendChild(box);
-      document.getElementById('lxCommunityEmergencyClose').onclick=function(){box.remove();};
-      return box;
-    }
-    function handoff(tab,box,tries){
-      if(window.LX && window.LX.social && typeof window.LX.social.open==='function'){
-        box && box.remove();
-        Promise.resolve(window.LX.social.open(tab||'discover')).catch(function(err){
-          console.error('LX Community open',err);
-          var retry=emergency(tab);
-          var st=document.getElementById('lxCommunityEmergencyStatus');
-          if(st)st.textContent='A Comunidade carregou, mas ocorreu um erro. Toque novamente para tentar.';
-          busy=false;
-        });
-        busy=false; return;
-      }
-      if(tries<=0){
-        var st=document.getElementById('lxCommunityEmergencyStatus');
-        if(st)st.textContent='A Comunidade demorou para iniciar. Toque novamente; o sistema principal continuará carregando.';
-        busy=false; return;
-      }
-      timer=setTimeout(function(){handoff(tab,box,tries-1)},100);
-    }
-    window.LXOpenCommunity=function(tab){
-      if(busy) return false;
-      busy=true;
-      var box=emergency(tab||'discover');
-      handoff(tab||'discover',box,300);
-      return false;
-    };
-    document.addEventListener('click',function(e){
-      var target=e.target && e.target.closest ? e.target.closest('#communityBtn,[data-open-community="1"]') : null;
-      if(!target)return;
-      e.preventDefault(); e.stopPropagation();
-      window.LXOpenCommunity('discover');
-    },true);
-  })();
+  window.__lxPendingCommunityTab=null;
+  window.LXOpenCommunity=function(tab){
+    tab=tab||'discover';
+    if(window.LX&&window.LX.social&&typeof window.LX.social.open==='function') return window.LX.social.open(tab);
+    window.__lxPendingCommunityTab=tab;
+    return false;
+  };
   </script>
-  <link rel="stylesheet" href="app.css?v=25.23">
-  <title>LX Plus v25.23 · Foundation Fix</title>
+  <link rel="stylesheet" href="app.css?v=25.24">
+  <title>LX Plus v25.24 · Stable Foundation</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -139,7 +93,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.23 · Foundation Fix</small>
+        <small class="auth-build-version">LX Plus v25.24 · Stable Foundation</small>
       </div>
     </div>
   </section>
@@ -166,7 +120,7 @@
           <button id="premiumBtn" class="premium-top-btn" aria-label="LX Plus Premium">PREMIUM</button>
           <button id="adminTopBtn" class="glass-btn admin-top-btn hidden" aria-label="Painel ADM">⚙ ADM</button>
           <button id="themeBtn" class="icon-btn" aria-label="Aparência">✦</button>
-          <button type="button" id="communityBtn" class="community-top-btn" aria-label="Comunidade, amigos e chamadas" onclick="window.LXOpenCommunity?.('discover'); return false;"><span class="community-top-icon">👥</span><b>Comunidade</b><i id="socialCount" class="hidden">0</i></button>
+          <button type="button" id="communityBtn" class="community-top-btn" aria-label="Comunidade, amigos e chamadas" onclick="window.LXOpenCommunity('discover'); return false;"><span class="community-top-icon">👥</span><b>Comunidade</b><i id="socialCount" class="hidden">0</i></button>
           <button id="profileBtn" class="avatar-btn">LX</button>
         </div>
       </div>
@@ -225,15 +179,313 @@
 
   <script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
-  <script defer src="js/config.js?v=25.23"></script>
+  <script defer src="js/config.js?v=25.24"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="js/store.js?v=25.23"></script>
-  <script defer src="js/cloud.js?v=25.23"></script>
-  <script defer src="js/services.js?v=25.23"></script>
-  <script defer src="js/ui.js?v=25.23"></script>
-  <script defer src="js/catalog-importer.js?v=25.23"></script>
-  <script defer src="js/content-hub.js?v=25.23"></script>
-  <script defer src="js/admin.js?v=25.23"></script>
-  <script defer src="js/app.js?v=25.23"></script>
+  <script defer src="js/store.js?v=25.24"></script>
+  <script defer src="js/cloud.js?v=25.24"></script>
+  <script defer src="js/services.js?v=25.24"></script>
+  <script defer src="js/ui.js?v=25.24"></script>
+  <script defer src="js/catalog-importer.js?v=25.24"></script>
+  <script defer src="js/content-hub.js?v=25.24"></script>
+  <script defer src="js/admin.js?v=25.24"></script>
+  <script defer src="js/app.js?v=25.24"></script>
+
+  <script>
+  document.addEventListener('DOMContentLoaded',function(){
+/* LX SOCIAL EMBEDDED v25.24 */
+(()=>{
+  const LX=window.LX=window.LX||{};
+  const U=LX.ui;
+  const esc=s=>U?.esc?U.esc(s):String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const state={
+    booted:false,directory:[],coreChannel:null,signalChannel:null,activeCall:null,incoming:null,
+    pc:null,localStream:null,remoteStream:null,screenStream:null,processed:new Set(),pendingIce:[],
+    callTimeout:null,openTab:'discover',drawerOpen:false,lastError:'',loading:false
+  };
+  const db=()=>LX.cloud?.db?.();
+  const me=()=>LX.cloud?.user?.()||U?.state?.user||null;
+  const uid=()=>me()?.id||null;
+  const initials=name=>String(name||'LX').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'LX';
+  const avatar=(p,cls='lx-social-avatar')=>p?.avatar_url
+    ? `<div class="${cls} has-image" style="background-image:url('${String(p.avatar_url).replace(/'/g,'%27')}')"></div>`
+    : `<div class="${cls}">${esc(initials(p?.name))}</div>`;
+  const verified=p=>`${esc(p?.name||'Usuário')}${p?.verified?'<span class="lx-social-verified" title="Verificado">✓</span>':''}`;
+
+  function ensureShell(){
+    let scrim=document.getElementById('lxCommunityScrim');
+    let drawer=document.getElementById('lxCommunityDrawer');
+    if(scrim&&drawer)return {scrim,drawer};
+    scrim=document.createElement('div');
+    scrim.id='lxCommunityScrim';
+    scrim.className='lx-community-scrim';
+    scrim.addEventListener('click',close);
+    drawer=document.createElement('aside');
+    drawer.id='lxCommunityDrawer';
+    drawer.className='lx-community-drawer';
+    drawer.setAttribute('aria-label','Comunidade LX');
+    drawer.innerHTML='<div class="lx-community-loading">Carregando Comunidade...</div>';
+    document.body.append(scrim,drawer);
+    return {scrim,drawer};
+  }
+  function setDrawerOpen(on){
+    const {scrim,drawer}=ensureShell();
+    state.drawerOpen=!!on;
+    scrim.classList.toggle('open',!!on);
+    drawer.classList.toggle('open',!!on);
+    document.documentElement.classList.toggle('lx-community-open',!!on);
+  }
+  function close(){setDrawerOpen(false)}
+  function shellHeader(title='Comunidade',subtitle='Amigos, chamadas e compartilhamento de tela'){
+    return `<header class="lx-community-head"><div><span>LX SOCIAL</span><h2>${esc(title)}</h2><p>${esc(subtitle)}</p></div><button class="lx-community-close" onclick="LX.social.close()" aria-label="Fechar">×</button></header>`;
+  }
+  function sectionData(){
+    const friends=state.directory.filter(x=>x.relation==='accepted');
+    const incoming=state.directory.filter(x=>x.relation==='pending'&&x.direction==='incoming');
+    const outgoing=state.directory.filter(x=>x.relation==='pending'&&x.direction==='outgoing');
+    const discover=state.directory.filter(x=>x.relation==='none'||x.relation==='rejected');
+    return {friends,incoming,outgoing,discover};
+  }
+  function updateBadge(){
+    const n=state.directory.filter(x=>x.relation==='pending'&&x.direction==='incoming').length;
+    const el=document.getElementById('socialCount');
+    if(el){el.textContent=String(n);el.classList.toggle('hidden',!n)}
+    document.getElementById('communityBtn')?.classList.toggle('has-alert',n>0);
+  }
+  async function syncMyProfile(extra={}){
+    const c=db(),u=me(); if(!c||!u?.id)return false;
+    const email=u.email||U?.state?.user?.email||'',st=LX.profileStyle?.(email)||{},cloudProfile=LX.cloud?.profile?.()||{};
+    const hasAvatar=Object.prototype.hasOwnProperty.call(extra,'avatar_url');
+    const stableName=extra.name||cloudProfile.name||U?.state?.user?.name||u.user_metadata?.name||u.email?.split('@')?.[0]||'Usuário';
+    const row={
+      name:String(stableName).slice(0,40),
+      bio:String(extra.bio??st.bio??'').slice(0,160),
+      avatar_url:hasAvatar?extra.avatar_url:(st.image??null),
+      updated_at:new Date().toISOString()
+    };
+    const {error}=await c.from('lx_profiles').update(row).eq('user_id',u.id);
+    if(error){console.warn('LX social profile sync',error);return false}
+    return true;
+  }
+  async function getOwnSocialSettings(){
+    const c=db(),id=uid();if(!c||!id)return null;
+    const {data,error}=await c.from('lx_profiles').select('social_visible,calls_enabled,bio,avatar_url,name,verified').eq('user_id',id).maybeSingle();
+    if(error){console.warn(error);return null} return data;
+  }
+  async function refreshDirectory(){
+    const c=db(); if(!c||!uid()){state.lastError='Sua sessão não está conectada à nuvem.';return []}
+    state.loading=true; state.lastError='';
+    try{
+      const {data,error}=await c.rpc('lx_social_directory');
+      if(error)throw error;
+      state.directory=(data||[]).map(x=>({...x,relation:x.relation||'none',direction:x.direction||'none'}));
+      updateBadge();
+      return state.directory;
+    }catch(e){
+      console.warn('LX social directory',e);
+      state.lastError=`Não foi possível carregar a comunidade agora${e?.message?' · '+String(e.message).slice(0,90):''}.`;
+      return state.directory;
+    }finally{state.loading=false}
+  }
+  function personCard(p){
+    let actions='';
+    if(p.relation==='accepted'){
+      actions=`<button class="lx-community-action call" onclick="LX.social.startCall('${p.user_id}','video')" ${p.calls_enabled?'':'disabled'}>📹 Chamar</button><button class="lx-community-action" onclick="LX.social.openProfile('${p.user_id}')">Perfil</button>`;
+    }else if(p.relation==='pending'&&p.direction==='incoming'){
+      actions=`<button class="lx-community-action primary" onclick="LX.social.respond('${p.user_id}',true)">Aceitar</button><button class="lx-community-action" onclick="LX.social.respond('${p.user_id}',false)">Recusar</button>`;
+    }else if(p.relation==='pending'){
+      actions='<button class="lx-community-action" disabled>Solicitado</button>';
+    }else{
+      actions=`<button class="lx-community-action primary" onclick="LX.social.add('${p.user_id}')">＋ Adicionar</button><button class="lx-community-action" onclick="LX.social.openProfile('${p.user_id}')">Perfil</button>`;
+    }
+    return `<article class="lx-community-person" data-name="${esc((p.name||'').toLowerCase())}">${avatar(p)}<div class="lx-community-person-copy"><strong>${verified(p)}</strong><small>${esc(p.bio||'Perfil LX Plus')}</small><span>${p.relation==='accepted'?(p.calls_enabled?'Amigo · disponível para chamada':'Amigo · chamadas desativadas'):p.relation==='pending'?(p.direction==='incoming'?'Quer adicionar você':'Solicitação enviada'):'Usuário LX Plus'}</span></div><div class="lx-community-person-actions">${actions}</div></article>`;
+  }
+  function emptyCard(tab){
+    if(state.lastError)return `<div class="lx-community-empty error"><b>Comunidade indisponível</b><p>${esc(state.lastError)}</p><button onclick="LX.social.retry()">Tentar novamente</button></div>`;
+    if(tab==='friends')return '<div class="lx-community-empty"><b>Seus amigos vão aparecer aqui</b><p>Abra “Descobrir” e adicione uma pessoa. Depois vocês podem fazer chamadas.</p><button onclick="LX.social.open(\'discover\')">Encontrar pessoas</button></div>';
+    if(tab==='requests')return '<div class="lx-community-empty"><b>Nenhuma solicitação</b><p>Quando alguém adicionar você, o pedido aparece aqui.</p></div>';
+    return '<div class="lx-community-empty"><b>Nenhuma outra conta aprovada disponível</b><p>Assim que outra pessoa tiver a conta aprovada e estiver visível na Comunidade, ela aparecerá aqui automaticamente.</p></div>';
+  }
+  async function render(tab=state.openTab){
+    state.openTab=tab;
+    const {drawer}=ensureShell();
+    const s=sectionData();
+    const list=tab==='requests'?[...s.incoming,...s.outgoing]:tab==='discover'?s.discover:s.friends;
+    const settings=await getOwnSocialSettings();
+    drawer.innerHTML=`${shellHeader()}<div class="lx-community-status"><div><b>${s.friends.length}</b><span>AMIGOS</span></div><div><b>${s.incoming.length}</b><span>PEDIDOS</span></div><div><b>${settings?.calls_enabled!==false?'ON':'OFF'}</b><span>CHAMADAS</span></div></div><nav class="lx-community-tabs"><button class="${tab==='friends'?'active':''}" onclick="LX.social.open('friends')">Amigos</button><button class="${tab==='requests'?'active':''}" onclick="LX.social.open('requests')">Solicitações${s.incoming.length?` <i>${s.incoming.length}</i>`:''}</button><button class="${tab==='discover'?'active':''}" onclick="LX.social.open('discover')">Descobrir</button></nav><div class="lx-community-search"><span>⌕</span><input id="lxCommunitySearch" placeholder="Buscar pessoas..."></div><div id="lxCommunityList" class="lx-community-list">${state.loading?'<div class="lx-community-loading">Carregando pessoas...</div>':list.length?list.map(personCard).join(''):emptyCard(tab)}</div><footer class="lx-community-footer"><button onclick="LX.social.openSettings()">⚙ Privacidade e chamadas</button><span>Chamadas protegidas por WebRTC</span></footer>`;
+    const q=document.getElementById('lxCommunitySearch');
+    q?.addEventListener('input',()=>{const term=q.value.trim().toLowerCase();document.querySelectorAll('#lxCommunityList .lx-community-person').forEach(el=>el.classList.toggle('hidden',!!term&&!el.dataset.name.includes(term)))})
+  }
+  async function open(tab=state.openTab||'discover'){
+    ensureShell(); setDrawerOpen(true);
+    const drawer=document.getElementById('lxCommunityDrawer');
+    if(drawer)drawer.innerHTML=`${shellHeader()}<div class="lx-community-loading"><span></span>Carregando pessoas e chamadas...</div>`;
+    if(!uid()){
+      if(drawer)drawer.innerHTML=`${shellHeader()}<div class="lx-community-empty error"><b>Sessão ainda não conectada</b><p>A Comunidade abriu normalmente, mas sua sessão da nuvem ainda não ficou disponível. Aguarde alguns segundos ou entre novamente na conta.</p><button onclick="LX.social.open('discover')">Tentar novamente</button></div>`;
+      return false;
+    }
+    try{await boot();await syncMyProfile();await refreshDirectory();await render(tab);return true}catch(e){console.warn(e);state.lastError='Ocorreu um erro ao abrir a Comunidade.';await render(tab);return false}
+  }
+  async function retry(){state.lastError='';await refreshDirectory();await render(state.openTab)}
+  async function openProfile(id){
+    await refreshDirectory();
+    const p=state.directory.find(x=>String(x.user_id)===String(id)); if(!p)return (LX.toast||((m)=>console.log(m)))('Perfil não encontrado.');
+    const {drawer}=ensureShell(); setDrawerOpen(true);
+    let actions='';
+    if(p.relation==='accepted')actions=`<button class="lx-community-big primary" onclick="LX.social.startCall('${p.user_id}','video')" ${p.calls_enabled?'':'disabled'}>📹 Chamada de vídeo</button><button class="lx-community-big" onclick="LX.social.startCall('${p.user_id}','audio')" ${p.calls_enabled?'':'disabled'}>☎ Chamada de áudio</button><button class="lx-community-big danger" onclick="LX.social.removeFriend('${p.user_id}')">Remover amigo</button>`;
+    else if(p.relation==='pending'&&p.direction==='incoming')actions=`<button class="lx-community-big primary" onclick="LX.social.respond('${p.user_id}',true)">Aceitar solicitação</button><button class="lx-community-big" onclick="LX.social.respond('${p.user_id}',false)">Recusar</button>`;
+    else if(p.relation==='pending')actions='<button class="lx-community-big" disabled>Solicitação enviada</button>';
+    else actions=`<button class="lx-community-big primary" onclick="LX.social.add('${p.user_id}')">＋ Adicionar amigo</button>`;
+    drawer.innerHTML=`${shellHeader('Perfil','Comunidade LX Plus')}<button class="lx-community-back" onclick="LX.social.open('${state.openTab}')">← Voltar</button><section class="lx-community-profile">${avatar(p,'lx-social-profile-avatar')}<div><span>PERFIL LX</span><h2>${verified(p)}</h2><p>${esc(p.bio||'Sem bio ainda.')}</p><small>${p.calls_enabled?'Disponível para chamadas':'Chamadas desativadas'}</small></div></section><div class="lx-community-profile-actions">${actions}</div><div class="lx-community-note"><b>Chamadas:</b> câmera, microfone e compartilhamento de tela pedem permissão do navegador.</div>`;
+  }
+  async function openSettings(){
+    const settings=await getOwnSocialSettings(); if(!settings)return (LX.toast||((m)=>console.log(m)))('Não foi possível abrir as configurações.');
+    const {drawer}=ensureShell(); setDrawerOpen(true);
+    drawer.innerHTML=`${shellHeader('Privacidade','Controle sua presença na Comunidade')}<button class="lx-community-back" onclick="LX.social.open('${state.openTab}')">← Voltar</button><div class="lx-community-settings"><label><span><b>Aparecer na Comunidade</b><small>Outras contas aprovadas podem encontrar seu perfil.</small></span><input id="lxSocialVisible" type="checkbox" ${settings.social_visible!==false?'checked':''}></label><label><span><b>Receber chamadas</b><small>Somente amigos aceitos podem ligar para você.</small></span><input id="lxCallsEnabled" type="checkbox" ${settings.calls_enabled!==false?'checked':''}></label><button class="lx-community-big primary" onclick="LX.social.commitSettings()">Salvar configurações</button></div>`;
+  }
+  async function commitSettings(){
+    const c=db(),id=uid(); if(!c||!id)return;
+    try{
+      const {error}=await c.from('lx_profiles').update({social_visible:!!document.getElementById('lxSocialVisible')?.checked,calls_enabled:!!document.getElementById('lxCallsEnabled')?.checked,updated_at:new Date().toISOString()}).eq('user_id',id);
+      if(error)throw error; (LX.toast||((m)=>console.log(m)))('Privacidade social atualizada.'); await refreshDirectory(); await render(state.openTab);
+    }catch(e){console.warn(e);(LX.toast||((m)=>console.log(m)))('Não foi possível salvar agora.')}
+  }
+  async function add(id){
+    const c=db(); if(!c)return;
+    const {data,error}=await c.rpc('lx_friend_request',{p_other:id});
+    if(error){console.warn(error);return (LX.toast||((m)=>console.log(m)))('Não foi possível enviar a solicitação.')}
+    (LX.toast||((m)=>console.log(m)))(data==='accepted'?'Agora vocês são amigos.':'Solicitação enviada.'); await refreshDirectory(); await render(state.openTab);
+  }
+  async function respond(id,accept){
+    const c=db();if(!c)return;
+    const {error}=await c.rpc('lx_friend_respond',{p_other:id,p_accept:!!accept});
+    if(error){console.warn(error);return (LX.toast||((m)=>console.log(m)))('Não foi possível responder.')}
+    (LX.toast||((m)=>console.log(m)))(accept?'Amigo adicionado.':'Solicitação recusada.'); await refreshDirectory(); await render('requests');
+  }
+  async function removeFriend(id){
+    if(!confirm('Remover esta pessoa dos seus amigos?'))return;
+    const c=db();const {error}=await c.rpc('lx_friend_remove',{p_other:id});
+    if(error)return (LX.toast||((m)=>console.log(m)))('Não foi possível remover.'); (LX.toast||((m)=>console.log(m)))('Amigo removido.'); await refreshDirectory(); await render('friends');
+  }
+
+  function iceConfig(){return {iceServers:LX.config?.rtc?.iceServers?.length?LX.config.rtc.iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']}],iceCandidatePoolSize:4}}
+  async function getLocalMedia(mode='video'){
+    if(!navigator.mediaDevices?.getUserMedia)throw new Error('MEDIA_UNSUPPORTED');
+    try{return await navigator.mediaDevices.getUserMedia({audio:true,video:mode==='video'?{width:{ideal:1280},height:{ideal:720},facingMode:'user'}:false})}
+    catch(e){if(mode==='video'){const fallback=await navigator.mediaDevices.getUserMedia({audio:true,video:false});(LX.toast||((m)=>console.log(m)))('Câmera indisponível. A chamada continuará em áudio.');return fallback}throw e}
+  }
+  function callPerson(id){return state.directory.find(x=>String(x.user_id)===String(id))||{user_id:id,name:'Contato LX',verified:false,avatar_url:null,calls_enabled:true}}
+  function mountCallUI(person,mode='video',status='Conectando...'){
+    close(); document.getElementById('lxCallOverlay')?.remove();
+    const el=document.createElement('div'); el.id='lxCallOverlay'; el.className='lx-call-overlay';
+    el.innerHTML=`<div class="lx-call-stage"><video id="lxRemoteVideo" class="lx-call-remote" autoplay playsinline></video><div id="lxRemoteFallback" class="lx-call-remote-fallback">${avatar(person,'lx-call-big-avatar')}<strong>${verified(person)}</strong><small id="lxCallStatus">${esc(status)}</small></div><video id="lxLocalVideo" class="lx-call-local" autoplay muted playsinline></video><header class="lx-call-header"><button onclick="LX.social.endCurrentCall()">‹</button><div><strong>${verified(person)}</strong><small id="lxCallStatusTop">${esc(status)}</small></div><span class="lx-call-encrypted">WEBRTC</span></header><div class="lx-call-controls"><button id="lxMicBtn" onclick="LX.social.toggleMic()"><span>🎙</span><small>Microfone</small></button><button id="lxCamBtn" onclick="LX.social.toggleCamera()"><span>📹</span><small>Câmera</small></button><button id="lxShareBtn" onclick="LX.social.shareScreen()"><span>▣</span><small>Compartilhar tela</small></button><button onclick="LX.social.toggleCallFullscreen()"><span>⛶</span><small>Tela cheia</small></button><button class="hangup" onclick="LX.social.endCurrentCall()"><span>☎</span><small>Encerrar</small></button></div></div>`;
+    document.body.appendChild(el); document.documentElement.classList.add('lx-call-open');
+    const local=document.getElementById('lxLocalVideo'); if(local&&state.localStream){local.srcObject=state.localStream;local.classList.toggle('hidden',!state.localStream.getVideoTracks().length)}
+    updateCallStatus(status); return el;
+  }
+  function updateCallStatus(text){['lxCallStatus','lxCallStatusTop'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=text})}
+  function showIncoming(call){
+    if(state.activeCall||state.incoming?.id===call.id)return; state.incoming=call;
+    const person=callPerson(call.caller_id); document.getElementById('lxIncomingCall')?.remove();
+    const el=document.createElement('div'); el.id='lxIncomingCall'; el.className='lx-incoming-call';
+    el.innerHTML=`${avatar(person,'lx-incoming-avatar')}<div><span>CHAMADA ${call.mode==='audio'?'DE ÁUDIO':'DE VÍDEO'}</span><strong>${verified(person)}</strong><small>está ligando para você</small></div><div class="lx-incoming-actions"><button class="decline" onclick="LX.social.rejectIncoming()">✕</button><button class="accept" onclick="LX.social.acceptIncoming()">✓</button></div>`;
+    document.body.appendChild(el); try{navigator.vibrate?.([180,100,180])}catch{}
+  }
+  function hideIncoming(){document.getElementById('lxIncomingCall')?.remove();state.incoming=null}
+  async function createPeer(){
+    if(state.pc)try{state.pc.close()}catch{}; state.pendingIce=[];state.processed.clear();
+    const pc=new RTCPeerConnection(iceConfig());state.pc=pc;state.remoteStream=new MediaStream();
+    const remote=document.getElementById('lxRemoteVideo');if(remote)remote.srcObject=state.remoteStream;
+    (state.localStream?.getTracks()||[]).forEach(t=>pc.addTrack(t,state.localStream));
+    pc.ontrack=e=>{const stream=e.streams?.[0];if(stream){state.remoteStream=stream;if(remote)remote.srcObject=stream}else if(e.track&&!state.remoteStream.getTracks().some(t=>t.id===e.track.id))state.remoteStream.addTrack(e.track);document.getElementById('lxRemoteFallback')?.classList.add('hidden');updateCallStatus('Conectado')};
+    pc.onicecandidate=e=>{if(e.candidate)sendSignal('ice',e.candidate.toJSON()).catch(()=>{})};
+    pc.onconnectionstatechange=()=>{const s=pc.connectionState;if(s==='connected')updateCallStatus('Conectado');else if(s==='connecting')updateCallStatus('Conectando...');else if(['failed','closed'].includes(s)){updateCallStatus('Chamada encerrada');setTimeout(()=>cleanupCall(false),700)}else if(s==='disconnected')updateCallStatus('Reconectando...')};
+    return pc;
+  }
+  async function sendSignal(kind,payload){const c=db(),call=state.activeCall;if(!c||!call?.id)return;const {error}=await c.from('lx_call_signals').insert({call_id:call.id,sender_id:uid(),kind,payload});if(error)throw error}
+  async function processSignal(row){
+    if(!row||state.processed.has(row.id)||row.sender_id===uid()||!state.pc)return; state.processed.add(row.id);const pc=state.pc;
+    try{
+      if(row.kind==='offer'){await pc.setRemoteDescription(row.payload);for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{});if(state.activeCall?.role==='callee'){const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await sendSignal('answer',{type:ans.type,sdp:ans.sdp})}}
+      else if(row.kind==='answer'){if(!pc.currentRemoteDescription){await pc.setRemoteDescription(row.payload);for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{})}}
+      else if(row.kind==='ice'){if(pc.remoteDescription?.type)await pc.addIceCandidate(row.payload).catch(()=>{});else state.pendingIce.push(row.payload)}
+    }catch(e){console.warn('LX RTC signal',row.kind,e)}
+  }
+  async function subscribeSignals(callId){
+    const c=db();if(!c)return;
+    if(state.signalChannel){await c.removeChannel(state.signalChannel).catch(()=>{});state.signalChannel=null}
+    const ch=c.channel(`lx-call-signal-${callId}-${Date.now()}`).on('postgres_changes',{event:'INSERT',schema:'public',table:'lx_call_signals',filter:`call_id=eq.${callId}`},p=>processSignal(p.new)).subscribe();state.signalChannel=ch;
+    await new Promise(r=>setTimeout(r,180));
+    const {data}=await c.from('lx_call_signals').select('id,call_id,sender_id,kind,payload,created_at').eq('call_id',callId).order('id',{ascending:true});
+    for(const row of data||[])await processSignal(row);
+  }
+  async function startCall(otherId,mode='video'){
+    if(state.activeCall)return (LX.toast||((m)=>console.log(m)))('Você já está em uma chamada.'); await boot(); await refreshDirectory(); const p=callPerson(otherId);
+    if(p.relation!=='accepted')return (LX.toast||((m)=>console.log(m)))('Adicione essa pessoa antes de ligar.'); if(!p.calls_enabled)return (LX.toast||((m)=>console.log(m)))('Essa pessoa desativou chamadas.');
+    try{
+      state.localStream=await getLocalMedia(mode); const c=db(); const {data,error}=await c.rpc('lx_start_call',{p_other:otherId,p_mode:mode}); if(error)throw error;
+      state.activeCall={id:data,otherId,role:'caller',mode,status:'ringing'};mountCallUI(p,mode,'Chamando...');await createPeer();await subscribeSignals(data);
+      const offer=await state.pc.createOffer();await state.pc.setLocalDescription(offer);await sendSignal('offer',{type:offer.type,sdp:offer.sdp});
+      clearTimeout(state.callTimeout);state.callTimeout=setTimeout(async()=>{if(state.activeCall?.id===data&&state.activeCall.status==='ringing'){await c.rpc('lx_end_call',{p_call_id:data}).catch(()=>{});(LX.toast||((m)=>console.log(m)))('Ninguém atendeu.');cleanupCall(false)}},45000);
+    }catch(e){console.warn(e);cleanupCall(false);(LX.toast||((m)=>console.log(m)))(e?.name==='NotAllowedError'?'Permita câmera e microfone para fazer a chamada.':'Não foi possível iniciar a chamada.')}
+  }
+  async function acceptIncoming(){
+    const call=state.incoming;if(!call)return;const p=callPerson(call.caller_id);
+    try{state.localStream=await getLocalMedia(call.mode||'video');const c=db();const {error}=await c.rpc('lx_respond_call',{p_call_id:call.id,p_accept:true});if(error)throw error;hideIncoming();state.activeCall={id:call.id,otherId:call.caller_id,role:'callee',mode:call.mode||'video',status:'accepted'};mountCallUI(p,call.mode||'video','Conectando...');await createPeer();await subscribeSignals(call.id)}
+    catch(e){console.warn(e);(LX.toast||((m)=>console.log(m)))(e?.name==='NotAllowedError'?'Permita câmera e microfone para atender.':'Não foi possível atender a chamada.')}
+  }
+  async function rejectIncoming(){const call=state.incoming;if(!call)return;const c=db();await c.rpc('lx_respond_call',{p_call_id:call.id,p_accept:false}).catch(()=>{});hideIncoming()}
+  async function endCurrentCall(){const c=db(),id=state.activeCall?.id;if(id)await c.rpc('lx_end_call',{p_call_id:id}).catch(()=>{});cleanupCall(false)}
+  async function cleanupCall(showToast=false){
+    clearTimeout(state.callTimeout);state.callTimeout=null;if(state.signalChannel&&db()){await db().removeChannel(state.signalChannel).catch(()=>{});state.signalChannel=null}
+    try{state.pc?.close()}catch{}state.pc=null;
+    for(const stream of [state.localStream,state.screenStream])for(const t of stream?.getTracks?.()||[])try{t.stop()}catch{}
+    state.localStream=null;state.screenStream=null;state.remoteStream=null;state.activeCall=null;state.pendingIce=[];state.processed.clear();document.getElementById('lxCallOverlay')?.remove();document.documentElement.classList.remove('lx-call-open');if(showToast)(LX.toast||((m)=>console.log(m)))('Chamada encerrada.')
+  }
+  function toggleMic(){const t=state.localStream?.getAudioTracks?.()[0];if(!t)return (LX.toast||((m)=>console.log(m)))('Microfone não disponível.');t.enabled=!t.enabled;document.getElementById('lxMicBtn')?.classList.toggle('off',!t.enabled)}
+  function toggleCamera(){const t=state.localStream?.getVideoTracks?.()[0];if(!t)return (LX.toast||((m)=>console.log(m)))('Câmera não disponível nesta chamada.');t.enabled=!t.enabled;document.getElementById('lxCamBtn')?.classList.toggle('off',!t.enabled)}
+  async function shareScreen(){
+    if(!state.pc)return (LX.toast||((m)=>console.log(m)))('Entre em uma chamada primeiro.');if(!navigator.mediaDevices?.getDisplayMedia)return (LX.toast||((m)=>console.log(m)))('Compartilhamento de tela não está disponível neste navegador.');
+    const sender=state.pc.getSenders().find(s=>s.track?.kind==='video');if(!sender)return (LX.toast||((m)=>console.log(m)))('Compartilhamento de tela exige uma chamada de vídeo.');
+    if(state.screenStream){await stopScreenShare();return}
+    try{const stream=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:30,max:60}},audio:false});const track=stream.getVideoTracks()[0];if(!track)return;state.screenStream=stream;await sender.replaceTrack(track);const local=document.getElementById('lxLocalVideo');if(local)local.srcObject=stream;document.getElementById('lxShareBtn')?.classList.add('active');track.onended=()=>stopScreenShare()}catch(e){if(e?.name!=='NotAllowedError')console.warn(e)}
+  }
+  async function stopScreenShare(){const sender=state.pc?.getSenders().find(s=>s.track?.kind==='video'||s.track==null);const camera=state.localStream?.getVideoTracks?.()[0]||null;if(sender&&camera)await sender.replaceTrack(camera).catch(()=>{});for(const t of state.screenStream?.getTracks?.()||[])try{t.stop()}catch{}state.screenStream=null;const local=document.getElementById('lxLocalVideo');if(local)local.srcObject=state.localStream;document.getElementById('lxShareBtn')?.classList.remove('active')}
+  function toggleCallFullscreen(){const el=document.getElementById('lxCallOverlay');if(!el)return;if(document.fullscreenElement)document.exitFullscreen?.();else el.requestFullscreen?.().catch(()=>{})}
+  async function handleCallUpdate(call){if(state.incoming?.id===call.id&&call.status!=='ringing')hideIncoming();if(state.activeCall?.id!==call.id)return;state.activeCall.status=call.status;if(call.status==='accepted')updateCallStatus('Conectando...');if(['rejected','ended','missed'].includes(call.status)){updateCallStatus(call.status==='rejected'?'Chamada recusada.':call.status==='missed'?'Chamada não atendida.':'Chamada encerrada.');setTimeout(()=>cleanupCall(false),850)}}
+  async function boot(){
+    const c=db(),id=uid();if(!c||!id)return false;if(state.booted)return true;
+    state.booted=true;
+    try{
+      await syncMyProfile();await refreshDirectory();
+      const ch=c.channel(`lx-social-core-${id}-${Date.now()}`)
+        .on('postgres_changes',{event:'*',schema:'public',table:'lx_friendships'},async()=>{await refreshDirectory();if(state.drawerOpen)render(state.openTab)})
+        .on('postgres_changes',{event:'*',schema:'public',table:'lx_profiles'},async()=>{await refreshDirectory();if(state.drawerOpen)render(state.openTab)})
+        .on('postgres_changes',{event:'INSERT',schema:'public',table:'lx_calls',filter:`callee_id=eq.${id}`},p=>{if(p.new?.status==='ringing')showIncoming(p.new)})
+        .on('postgres_changes',{event:'UPDATE',schema:'public',table:'lx_calls'},p=>handleCallUpdate(p.new)).subscribe();
+      state.coreChannel=ch;
+      const {data}=await c.from('lx_calls').select('id,caller_id,callee_id,mode,status,created_at').eq('callee_id',id).eq('status','ringing').order('created_at',{ascending:false}).limit(1);
+      if(data?.[0])showIncoming(data[0]);
+      updateBadge();return true;
+    }catch(e){state.booted=false;console.warn('LX social boot',e);state.lastError='Não foi possível conectar a Comunidade.';return false}
+  }
+  async function shutdown(){close();hideIncoming();await cleanupCall(false);if(state.coreChannel&&db())await db().removeChannel(state.coreChannel).catch(()=>{});state.coreChannel=null;state.booted=false;state.directory=[];updateBadge()}
+  function bindLauncher(){
+    const launch=e=>{e?.preventDefault?.();open('discover')};
+    const btn=document.getElementById('communityBtn');
+    if(btn&&!btn.dataset.lxBound){btn.dataset.lxBound='1';btn.addEventListener('click',launch)}
+    document.querySelectorAll('[data-mobile="Comunidade"],[data-open-community="1"]').forEach(el=>{if(!el.dataset.lxSocialBound){el.dataset.lxSocialBound='1';el.addEventListener('click',launch)}});
+  }
+  LX.social={boot,shutdown,open,close,retry,openProfile,openSettings,commitSettings,refreshDirectory,syncMyProfile,add,respond,removeFriend,startCall,acceptIncoming,rejectIncoming,endCurrentCall,toggleMic,toggleCamera,shareScreen,toggleCallFullscreen,ready:true}; window.LXOpenCommunity=function(tab){return open(tab||'discover')};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindLauncher,{once:true});else bindLauncher();
+})();
+
+
+    try{
+      if(window.__lxPendingCommunityTab && window.LX && window.LX.social){
+        var t=window.__lxPendingCommunityTab; window.__lxPendingCommunityTab=null; window.LX.social.open(t);
+      }
+    }catch(e){console.error('LX Social inline init',e)}
+  },{once:true});
+  </script>
 </body>
 </html>

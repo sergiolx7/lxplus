@@ -1,4 +1,4 @@
-# LX Plus v25.23 — Foundation Fix
+# LX Plus v25.24 — Foundation Fix
 
 Revisão consolidada de estabilidade: Comunidade integrada, selo verificado via RPC administrativo dedicado, exclusão de catálogo confirmada pelo servidor, cache unificado e correções de sincronização de perfil.
 
