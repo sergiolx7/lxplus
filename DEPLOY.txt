@@ -1,14 +1,8 @@
-LX Plus v25.28 — RESCUE SINGLE-FILE
+LX Plus v25.29 — Stable Boot Rescue
 
-O problema do print era publicação incompleta: index novo + módulos JS ausentes/antigos.
-Esta build coloca CSS + TODO o código LX dentro do próprio index.html.
-
-PUBLICAÇÃO NO GITHUB PAGES
-1. Na raiz do repositório, substitua index.html por este index.html.
-2. Mantenha o CNAME deste pacote.
-3. Para evitar confusão, apague a pasta js antiga, app.css antigo e sw.js antigo. Esta build NÃO depende deles.
-4. Commit. Aguarde o Pages atualizar.
-5. Abra o site. No login deve aparecer: LX Plus v25.28 · Rescue Single-File.
-
-Dependências externas mantidas: Supabase JS, EPUB.js e tus-js-client via jsDelivr.
-O Service Worker foi desativado nesta build para impedir cache antigo.
+1. Na raiz do GitHub Pages, substitua index.html pelo arquivo desta versão.
+2. Preserve o CNAME incluído.
+3. Esta versão não depende de app.css, pasta js ou sw.js para iniciar.
+4. Abra o site e confirme no login: LX Plus v25.29 · Stable Boot Rescue.
+5. A interface e os botões da splash ligam antes de qualquer chamada ao Supabase.
+6. Supabase e restauração de sessão têm timeout e não podem mais prender a tela inicial.
