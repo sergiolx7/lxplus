@@ -1,39 +1,39 @@
-LX Plus v25.35 — Community Glow
-Base: v25.34 Arc Reveal
-Data: 2026-09-12
+LX Plus v25.36 — Presence & Controls
+Base: v25.35 Community Glow
+Data do QA: 12/09/2026
 
-VALIDAÇÃO ESTÁTICA — APROVADA
-1. lxplus.js: sintaxe JavaScript válida via node --check.
-2. Todos os scripts inline do index.html: sintaxe válida via node --check.
+TESTES APROVADOS
+1. lxplus.js: sintaxe JavaScript OK.
+2. Todos os scripts inline do index.html: sintaxe OK.
 3. IDs HTML duplicados: 0.
-4. Referências locais ausentes: 0.
-5. Versão de build, CSS, JS e título atualizada para 25.35.
+4. Referências locais obrigatórias presentes: app.css, lxplus.js e assets/icon.svg.
+5. Boot completo em Chromium headless com CSS/JS reais embutidos: sem pageerror e sem console error.
+6. Abertura Arc Reveal continua encerrando e entrega a tela de autenticação normalmente.
+7. Versão exibida: LX Plus v25.36 · Presence & Controls.
+8. Presença simulada com duas contas: contato online mostra ponto verde + “Online agora”.
+9. Saída de presença: interface troca ao vivo para “Offline”.
+10. Privacidade de presença: desligar remove o próprio usuário da presença; religar rastreia novamente.
+11. Lista de conversas mostra status online/offline sem quebrar resumo, horário ou não lidas.
+12. Cabeçalho do chat mostra status de presença ao vivo.
+13. Botão “Apagar conversa” limpa a conversa selecionada.
+14. Corte local de histórico impede mensagens persistentes antigas de reaparecerem no mesmo dispositivo após a limpeza.
+15. Botão “Apagar conversas” limpa todas as conversas do usuário no dispositivo.
+16. Contadores de não lidas são recalculados após limpeza.
+17. Community desktop renderizada e inspecionada visualmente.
+18. Chat desktop renderizado e inspecionado visualmente.
+19. Community mobile 390×844 renderizada e inspecionada visualmente.
+20. Chat mobile 390×844 renderizado e inspecionado visualmente.
+21. Ícone de configurações do rodapé foi corrigido após teste visual para não expandir indevidamente.
+22. Nenhum erro JavaScript final durante os testes de presença, privacidade e limpeza.
 
-BOOT REAL EM CHROMIUM/PLAYWRIGHT — APROVADO
-6. index.html carregado com o CSS e o núcleo reais da build.
-7. Título detectado: LX Plus v25.35 · Community Glow.
-8. Splash e autenticação presentes.
-9. Transição automática da intro para autenticação continuou funcionando.
-10. Nenhum pageerror JavaScript detectado no boot.
-11. Nenhum console.error detectado no boot de teste.
+ARQUIVOS DE QA
+- QA-BOOT.png
+- QA-COMMUNITY-PRESENCE.png
+- QA-CHAT-PRESENCE.png
+- QA-COMMUNITY-MOBILE.png
+- QA-CHAT-MOBILE.png
 
-QA VISUAL ISOLADO — APROVADO
-12. Comunidade renderizada em 1440x1000 sem erro de página.
-13. Chat renderizado em 1440x1000 sem erro de página.
-14. Comunidade renderizada em 390x844 sem erro de página.
-15. Chat renderizado em 390x844 sem erro de página.
-16. Densidade da lista corrigida após inspeção visual: linhas não esticam verticalmente.
-17. Avatares circulares, contador de não lidas e ações permanecem legíveis.
-18. Sticker enviado reduzido para aproximadamente 108 px no desktop e 92 px no mobile.
-19. Seletor de stickers compactado para 5 colunas no desktop e 4 no mobile.
-20. Player de áudio customizado renderiza play, waveform, progresso e metadados.
+OBSERVAÇÃO TÉCNICA
+A presença usa Supabase Realtime Presence. O teste funcional foi realizado em Chromium com canais Supabase simulados reproduzindo join/sync/leave/track/untrack. Em produção, o status em tempo real depende de o Realtime do projeto Supabase permanecer disponível.
 
-REGRESSÕES PROTEGIDAS
-- Intro Arc Reveal preservada.
-- Botão Pular/entrada preservado.
-- Login/cadastro não foram reestruturados.
-- Perfil, painel ADM e catálogo não foram alterados nesta rodada.
-- Contrato de envio/recebimento do chat permaneceu o mesmo; a mudança de áudio é de apresentação/controle local.
-
-OBSERVAÇÃO
-A build foi validada localmente sem uma sessão real compartilhada de duas contas Supabase. Portanto, entrega Realtime entre dois usuários continua dependendo do backend já configurado na instalação publicada. A lógica de transporte não foi modificada nesta build.
+A exclusão de conversa desta versão é uma limpeza do histórico visível do usuário neste dispositivo/perfil local. Ela não apaga mensagens do aparelho do outro contato. Esse comportamento evita exclusão acidental do histórico de outra pessoa.

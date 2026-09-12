@@ -1,18 +1,15 @@
 {
-  "version": "25.35.0",
-  "name": "Community Glow",
-  "base": "25.34 Arc Reveal",
+  "version": "25.36",
+  "name": "Presence & Controls",
+  "base": "25.35 Community Glow",
   "date": "2026-09-12",
   "changes": [
-    "Comunidade redesenhada com visual mais limpo, escuro e organizado",
-    "Avatares circulares com acabamento premium e melhor hierarquia",
-    "Conversas passam a mostrar prévia da última mensagem, horário e contador de não lidas",
-    "Conversas recentes são priorizadas na lista",
-    "Figurinhas menores no chat e seletor de stickers mais compacto",
-    "Player de áudio personalizado com play/pause, waveform, progresso e duração",
-    "Cabeçalho, busca, abas, botões e perfil da Comunidade refinados",
-    "Responsividade revisada para desktop e mobile",
-    "Splash Arc Reveal da v25.34 preservada"
+    "Realtime online/offline presence",
+    "Presence privacy toggle",
+    "Presence dots and labels",
+    "Delete one conversation",
+    "Delete all conversations",
+    "Local clear cutoffs prevent old persistent history from reappearing on the same device"
   ],
   "files": [
     "index.html",
@@ -20,5 +17,6 @@
     "lxplus.js",
     "CNAME",
     "assets/icon.svg"
-  ]
+  ],
+  "rollback": "25.35 Community Glow"
 }

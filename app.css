@@ -1006,3 +1006,33 @@ body.light .verified-badge .seal,body.light .lx-social-verified .lx-vseal{fill:#
 }
 /* v25.35 list density correction after visual QA */
 .lx-community-list{align-content:start!important;grid-auto-rows:max-content!important}
+
+
+/* ===== LX Plus v25.36 · Presence & Controls ===== */
+.lx-avatar-presence{position:relative!important;overflow:visible!important}
+.lx-presence-dot{position:absolute;right:-1px;bottom:-1px;width:11px;height:11px;border-radius:50%;border:2px solid #08111b;background:#5f7184;box-shadow:0 0 0 1px rgba(255,255,255,.08);z-index:3;transition:background .18s ease,box-shadow .18s ease,transform .18s ease}
+.lx-presence-dot.online{background:#31d17c;box-shadow:0 0 0 1px rgba(49,209,124,.24),0 0 10px rgba(49,209,124,.38)}
+.lx-presence-dot.offline{background:#56687a;box-shadow:0 0 0 1px rgba(255,255,255,.06)}
+.lx-social-profile-avatar .lx-presence-dot{width:14px;height:14px;right:1px;bottom:1px;border-width:3px}
+.lx-presence-label{font-style:normal!important;color:#7f92a7;white-space:nowrap}
+.lx-presence-label.online{color:#62dda0}
+.lx-presence-label.offline{color:#6f8296}
+.lx-community-person-copy span .lx-presence-label{font-size:inherit!important}
+.lx-community-footer{gap:10px!important}
+.lx-community-footer-actions{display:flex;gap:7px;align-items:center;min-width:0;flex-wrap:wrap}
+.lx-community-clear-all{color:#f29aa8!important;border-color:rgba(242,112,133,.14)!important;background:rgba(242,80,108,.055)!important}
+.lx-community-clear-all:hover{background:rgba(242,80,108,.11)!important;color:#ffd1d8!important}
+.lx-chat-delete{color:#e998a5!important}
+.lx-chat-delete:hover{background:rgba(235,77,105,.11)!important;border-color:rgba(235,77,105,.2)!important;color:#ffd0d7!important}
+.lx-chat-head .lx-chat-avatar .lx-presence-dot{right:-2px;bottom:-2px;width:11px;height:11px}
+@media(max-width:520px){
+  .lx-community-footer{align-items:flex-start!important;flex-direction:column!important}
+  .lx-community-footer-actions{width:100%}
+  .lx-community-footer-actions button{flex:1;justify-content:center!important}
+  .lx-chat-call-actions .lx-chat-head-tool{width:32px!important;height:32px!important}
+  .lx-chat-call-actions{gap:3px!important}
+}
+/* v25.36 footer icon containment */
+.lx-community-footer-actions button{display:inline-flex!important;align-items:center!important;gap:6px!important;min-height:30px!important;padding:0 8px!important;border-radius:9px!important}
+.lx-community-footer .lx-svg-icon{display:inline-grid!important;width:16px!important;height:16px!important;min-width:16px!important;min-height:16px!important;flex:0 0 16px!important;margin-right:0!important;overflow:hidden!important}
+.lx-community-footer .lx-svg-icon svg{display:block!important;width:16px!important;height:16px!important;max-width:16px!important;max-height:16px!important}
