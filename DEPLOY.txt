@@ -1,18 +1,12 @@
-LX Plus v25.33 — Cinematic Identity
+LX Plus v25.34 — Arc Reveal
 
-BASE: v25.31 Stable Rebuild
+BASE: v25.33 Cinematic Identity
 
 PUBLICAÇÃO
-1. Substitua na raiz:
-   - index.html
-   - app.css
-   - lxplus.js
-2. Mantenha/substitua:
-   - CNAME
-   - assets/icon.svg
+1. Substitua na raiz: index.html, app.css e lxplus.js
+2. Mantenha CNAME e assets/icon.svg
 3. Não reative sw.js nem a pasta js/ antiga.
-4. Faça o commit.
-5. Confirme na tela:
-   LX Plus v25.33 · Cinematic Identity
+4. Faça o commit/publicação.
+5. Confirme no navegador: LX Plus v25.34 · Arc Reveal
 
-Se algo inesperado acontecer, volte para v25.31 Stable Rebuild.
+A abertura reproduz a linguagem do vídeo de referência com identidade própria LX Plus: fundo preto, arco luminoso, bloom ciano, revelação da marca e transição automática para autenticação.

@@ -1,62 +1,39 @@
-LX Plus v25.33 — Cinematic Identity
-Base congelada: v25.31 Stable Rebuild
+LX Plus v25.34 — Arc Reveal
+Base: v25.33 Cinematic Identity
+Referência visual analisada: video (3).mp4 — 5,87 s
 
-TESTES EM CHROMIUM HEADLESS — APROVADOS
-1. Boot sem erro JavaScript.
-2. Intro LX Plus presente.
-3. Clique no + executa animação/burst.
-4. Botão Entrar abre autenticação.
-5. Alternância Entrar / Criar conta.
-6. Fluxo de login aprovado simulado entra no app.
-7. Aparência abre normalmente.
-8. Temas Dark/Midnight/OLED/Claro disponíveis.
-9. Cor personalizada aplicada.
-10. Fonte personalizada aplicada.
-11. Densidade/espaçamento aplicado.
-12. API do chat carregada.
-13. Configurações de som do chat carregadas.
-14. Comunidade sem Feed/Post.
-15. Conversa com contato aceito abre.
-16. Campo de mensagem e ferramentas carregam.
-17. Anexo aceita foto e PDF.
-18. Painel de emojis abre.
-19. Painel de figurinhas abre.
-20. Canal de envio usa o mesmo contrato do destinatário (lx-chat-<id>).
-21. Todas as páginas do ADM renderizam.
-22. Biblioteca mostra Salvar alterações.
-23. Exclusão fica PENDENTE DE EXCLUSÃO.
-24. Verificado fica NÃO SALVO.
-25. Salvar alterações confirma os mocks e zera a fila.
-26. Layout móvel sem overflow horizontal.
-27. Núcleo exporta Premium/Legal/Preferências corretamente.
-28. Nenhum erro final de boot após as interações.
+OBJETIVO DA RODADA
+- Recriar a abertura com a mesma linguagem visual do vídeo enviado:
+  início preto, arco de luz, brilho ciano/teal, marca central e saída suave.
+- Manter identidade LX Plus, sem copiar a marca/lettering da referência.
+- Preservar o selo verificado premium e o restante da base v25.33.
 
-VALIDAÇÃO ESTÁTICA
-- lxplus.js: sintaxe OK.
-- scripts inline do index.html: sintaxe OK.
-- IDs HTML duplicados: 0.
-- Referências locais ausentes: 0.
-- Escrita direta insegura em lx_catalog: 0.
-- Referências de versão antiga: 0.
-- Feed/Post da Comunidade: removidos.
+VALIDAÇÃO ESTÁTICA — APROVADA
+1. lxplus.js: sintaxe JavaScript OK (node --check).
+2. Scripts inline do index.html: sintaxe OK.
+3. CSS: parsing sem erros (tinycss2).
+4. IDs HTML duplicados: 0.
+5. Splash contém o novo SVG de arco luminoso.
+6. IDs enterSplash e skipSplash preservados para compatibilidade.
+7. Guard de transição evita que o timer reabra Auth se outra tela já assumiu o fluxo.
+8. Versão atualizada para 25.34 / Arc Reveal.
+9. Badge verificado premium da v25.33 preservado.
 
-OBSERVAÇÃO SOBRE MENSAGENS
-O frontend de envio em tempo real foi testado e o canal do remetente corresponde
-ao canal que o destinatário escuta. O conector do Supabase ficou indisponível durante
-esta rodada, então não foi possível confirmar no banco se o histórico persistente
-opcional está ativo. O chat ao vivo usa Supabase Realtime; se a persistência não existir,
-a interface não finge a entrega e mantém a cópia local quando a entrega falha.
+TESTE DE NAVEGADOR — APROVADO
+Execução headless com Chromium/Playwright usando HTML, CSS e JS completos em memória,
+com chamadas externas bloqueadas para validar a resiliência local do frontend.
 
-VALIDAÇÃO v25.33 — CINEMATIC IDENTITY
-- lxplus.js: sintaxe JavaScript validada com node --check.
-- scripts inline do index.html: sintaxe validada individualmente.
-- IDs HTML duplicados: 0.
-- Referências locais ausentes: 0.
-- IDs críticos preservados: splash, skipSplash, lxIntroMark, enterSplash, auth e app.
-- Fluxos existentes preservados por compatibilidade estrutural; a atualização foi feita por override visual e troca do componente do selo.
-- Badge verificado atualizado no núcleo e na Comunidade.
-- Fallback prefers-reduced-motion adicionado.
-- Responsividade específica da intro adicionada para telas <= 700 px.
+Resultados:
+- Nenhum pageerror JavaScript durante o boot.
+- Sequência visual capturada em 0,5 s / 1,8 s / 3,0 s / 4,4 s.
+- Aos ~5,8 s a splash estava oculta.
+- Aos ~5,8 s a tela de autenticação estava visível.
+- Botão Pular abre Auth corretamente.
+- Botão Pular oculta a splash corretamente.
+- Teste mobile 390×844: sem overflow horizontal.
+- Título validado: LX Plus v25.34 · Arc Reveal.
 
-NOTA DO AMBIENTE DE TESTE
-A tentativa de captura/renderização automatizada com Chromium Headless neste ambiente foi bloqueada pelo runtime (DBus/zygote) antes de produzir screenshot. Portanto, esta rodada comprova validação estática/sintática e estrutural; a validação visual final deve ser conferida no navegador após publicação.
+OBSERVAÇÃO
+Chamadas externas (Supabase/CDNs) foram bloqueadas no teste headless propositalmente.
+Isso confirma que a alteração da splash não introduz erro de boot quando a rede externa
+não responde. Integrações de nuvem continuam dependendo do ambiente publicado, como na base anterior.

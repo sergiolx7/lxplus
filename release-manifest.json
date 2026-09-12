@@ -1,25 +1,21 @@
 {
-  "version": "25.33.0",
-  "name": "Cinematic Identity",
-  "base": "25.31.0 Stable Rebuild",
-  "required_files": [
+  "version": "25.34.0",
+  "name": "Arc Reveal",
+  "base": "25.33 Cinematic Identity",
+  "date": "2026-09-12",
+  "changes": [
+    "Splash reconstruída para acompanhar o ritmo visual do vídeo de referência",
+    "Arco luminoso desenhado por SVG com glow",
+    "Bloom ciano/teal e logo LX Plus revelada no centro",
+    "Transição automática para autenticação em 5.2s",
+    "Botão Pular preservado de forma discreta",
+    "Badge verificado premium da v25.33 preservado"
+  ],
+  "files": [
     "index.html",
     "app.css",
     "lxplus.js",
     "CNAME",
     "assets/icon.svg"
-  ],
-  "service_worker": false,
-  "old_js_folder_required": false,
-  "features": [
-    "LX Plus animated neon intro",
-    "theme/accent/font/density personalization",
-    "cleaner global top bar icons",
-    "messenger-only community without feed/posts",
-    "photo/screenshot and PDF attachments",
-    "emoji categories and custom stickers",
-    "configurable notification sound and volume",
-    "message notification button and unread badge",
-    "v25.31 admin/login regression fixes preserved"
   ]
 }

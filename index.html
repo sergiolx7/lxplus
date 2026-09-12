@@ -10,7 +10,7 @@
 
   <script>
   (function(){
-    var BUILD='25.33.0',KEY='lxplus_build_seen';
+    var BUILD='25.34.0',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -39,37 +39,41 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=25.33">
-  <title>LX Plus v25.33 · Cinematic Identity</title>
+  <link rel="stylesheet" href="app.css?v=25.34">
+  <title>LX Plus v25.34 · Arc Reveal</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
 
-  <section id="splash" class="screen splash splash-cinematic">
-    <div id="wallA" class="poster-wall wall-a" aria-hidden="true"></div>
-    <div id="wallB" class="poster-wall wall-b" aria-hidden="true"></div>
-    <div class="splash-shade"></div>
-    <div class="lx-cinema-orb orb-one" aria-hidden="true"></div>
-    <div class="lx-cinema-orb orb-two" aria-hidden="true"></div>
-    <div class="lx-cinema-stars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <button id="skipSplash" class="glass-btn splash-skip">Pular intro</button>
-    <div class="splash-core">
-      <div class="lx-intro-stage" aria-hidden="true">
-        <div class="lx-intro-halo halo-a"></div>
-        <div class="lx-intro-halo halo-b"></div>
-        <div class="energy-ring lx-intro-ring"></div>
+  <section id="splash" class="screen splash splash-cinematic splash-arc-reveal" aria-label="Abertura LX Plus">
+    <div class="lx-arc-scene" aria-hidden="true">
+      <div class="lx-arc-vignette"></div>
+      <div class="lx-arc-bloom bloom-main"></div>
+      <div class="lx-arc-bloom bloom-low"></div>
+      <svg class="lx-arc-swoosh" viewBox="0 0 620 300" role="presentation" focusable="false">
+        <defs>
+          <linearGradient id="lxArcGradient" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#4b191d" stop-opacity="0"/>
+            <stop offset=".28" stop-color="#a65f44" stop-opacity=".44"/>
+            <stop offset=".62" stop-color="#9de8f3" stop-opacity=".76"/>
+            <stop offset="1" stop-color="#f4ffff" stop-opacity="1"/>
+          </linearGradient>
+          <filter id="lxArcGlow" x="-30%" y="-60%" width="160%" height="220%">
+            <feGaussianBlur stdDeviation="3.8" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <path class="lx-arc-path lx-arc-path-soft" d="M72 195 C 145 20, 398 -35, 548 175"/>
+        <path class="lx-arc-path lx-arc-path-main" d="M72 195 C 145 20, 398 -35, 548 175"/>
+      </svg>
+      <div class="lx-reference-lockup">
+        <span class="lx-reference-word"><b>LX</b><i>Plus</i><em>+</em></span>
+        <span class="lx-reference-glint" aria-hidden="true"></span>
       </div>
-      <button id="lxIntroMark" class="lx-intro-mark" type="button" aria-label="Animar símbolo LX Plus" title="LX Plus">
-        <span class="lx-intro-plus">+</span><span class="lx-intro-star star-a"></span><span class="lx-intro-star star-b"></span><span class="lx-intro-star star-c"></span>
-      </button>
-      <div class="brand brand-xl lx-intro-brand"><b>LX</b><span>Plus</span><i>+</i></div>
-      <span class="eyebrow">LX ORIGINAL EXPERIENCE</span>
-      <span class="splash-mini-tag">CINEMATIC EDITION</span>
-      <h1>Seu universo começa aqui.</h1>
-      <p>Assista, ouça e leia em uma experiência feita para desaparecer e deixar só o conteúdo.</p>
-      <button id="enterSplash" class="primary-btn large lx-cinematic-enter"><span>Entrar na LX Plus</span><i aria-hidden="true">›</i></button>
-      <small class="lx-intro-footnote">LX PLUS · STREAM · MUSIC · BOOKS</small>
+      <div class="lx-arc-floor-glow"></div>
     </div>
+    <button id="skipSplash" class="splash-skip-reference" type="button">Pular</button>
+    <button id="enterSplash" class="lx-splash-hidden-enter" type="button" tabindex="-1" aria-hidden="true">Entrar na LX Plus</button>
   </section>
 
   <section id="auth" class="screen auth hidden">
@@ -107,7 +111,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.33 · Cinematic Identity</small>
+        <small class="auth-build-version">LX Plus v25.34 · Arc Reveal</small>
       </div>
     </div>
   </section>
@@ -197,7 +201,7 @@
     <audio id="musicAudio" preload="metadata"></audio>
   </div>
   <script>
-  /* LX SHELL v25.32 — funciona mesmo se o núcleo atrasar ou falhar */
+  /* LX SHELL v25.34 — funciona mesmo se o núcleo atrasar ou falhar */
   (function(){
     function byId(id){return document.getElementById(id)}
     function show(id){
@@ -213,10 +217,18 @@
     function toast(msg){var t=byId('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(t.__x);t.__x=setTimeout(function(){t.classList.remove('show')},3200)}
     window.LXShell={show:show,authTab:authTab,toast:toast};
     function bind(){
-      var enter=byId('enterSplash'),skip=byId('skipSplash'),intro=byId('lxIntroMark');
-      if(enter) enter.onclick=function(){show('auth');authTab('login')};
-      if(skip) skip.onclick=function(){show('auth');authTab('login')};
-      if(intro) intro.onclick=function(){intro.classList.remove('burst');void intro.offsetWidth;intro.classList.add('burst');setTimeout(function(){intro.classList.remove('burst')},1100)};
+      var enter=byId('enterSplash'),skip=byId('skipSplash'),splash=byId('splash');
+      var openAfterIntro=function(){
+        if(!splash || splash.classList.contains('hidden')) return;
+        splash.classList.add('lx-splash-exit');
+        setTimeout(function(){show('auth');authTab('login');splash.classList.remove('lx-splash-exit')},420);
+      };
+      if(enter) enter.onclick=openAfterIntro;
+      if(skip) skip.onclick=openAfterIntro;
+      if(splash){
+        clearTimeout(window.__LX_SPLASH_TIMER);
+        window.__LX_SPLASH_TIMER=setTimeout(openAfterIntro,5200);
+      }
       var tl=byId('tabLogin'),tr=byId('tabRegister');
       if(tl) tl.onclick=function(){authTab('login')};
       if(tr) tr.onclick=function(){authTab('register')};
@@ -230,7 +242,7 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   })();
   </script>
-  <script src="lxplus.js?v=25.32"></script>
+  <script src="lxplus.js?v=25.34"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded',function(){
