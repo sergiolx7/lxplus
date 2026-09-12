@@ -1,39 +1,39 @@
-LX Plus v25.34 — Arc Reveal
-Base: v25.33 Cinematic Identity
-Referência visual analisada: video (3).mp4 — 5,87 s
-
-OBJETIVO DA RODADA
-- Recriar a abertura com a mesma linguagem visual do vídeo enviado:
-  início preto, arco de luz, brilho ciano/teal, marca central e saída suave.
-- Manter identidade LX Plus, sem copiar a marca/lettering da referência.
-- Preservar o selo verificado premium e o restante da base v25.33.
+LX Plus v25.35 — Community Glow
+Base: v25.34 Arc Reveal
+Data: 2026-09-12
 
 VALIDAÇÃO ESTÁTICA — APROVADA
-1. lxplus.js: sintaxe JavaScript OK (node --check).
-2. Scripts inline do index.html: sintaxe OK.
-3. CSS: parsing sem erros (tinycss2).
-4. IDs HTML duplicados: 0.
-5. Splash contém o novo SVG de arco luminoso.
-6. IDs enterSplash e skipSplash preservados para compatibilidade.
-7. Guard de transição evita que o timer reabra Auth se outra tela já assumiu o fluxo.
-8. Versão atualizada para 25.34 / Arc Reveal.
-9. Badge verificado premium da v25.33 preservado.
+1. lxplus.js: sintaxe JavaScript válida via node --check.
+2. Todos os scripts inline do index.html: sintaxe válida via node --check.
+3. IDs HTML duplicados: 0.
+4. Referências locais ausentes: 0.
+5. Versão de build, CSS, JS e título atualizada para 25.35.
 
-TESTE DE NAVEGADOR — APROVADO
-Execução headless com Chromium/Playwright usando HTML, CSS e JS completos em memória,
-com chamadas externas bloqueadas para validar a resiliência local do frontend.
+BOOT REAL EM CHROMIUM/PLAYWRIGHT — APROVADO
+6. index.html carregado com o CSS e o núcleo reais da build.
+7. Título detectado: LX Plus v25.35 · Community Glow.
+8. Splash e autenticação presentes.
+9. Transição automática da intro para autenticação continuou funcionando.
+10. Nenhum pageerror JavaScript detectado no boot.
+11. Nenhum console.error detectado no boot de teste.
 
-Resultados:
-- Nenhum pageerror JavaScript durante o boot.
-- Sequência visual capturada em 0,5 s / 1,8 s / 3,0 s / 4,4 s.
-- Aos ~5,8 s a splash estava oculta.
-- Aos ~5,8 s a tela de autenticação estava visível.
-- Botão Pular abre Auth corretamente.
-- Botão Pular oculta a splash corretamente.
-- Teste mobile 390×844: sem overflow horizontal.
-- Título validado: LX Plus v25.34 · Arc Reveal.
+QA VISUAL ISOLADO — APROVADO
+12. Comunidade renderizada em 1440x1000 sem erro de página.
+13. Chat renderizado em 1440x1000 sem erro de página.
+14. Comunidade renderizada em 390x844 sem erro de página.
+15. Chat renderizado em 390x844 sem erro de página.
+16. Densidade da lista corrigida após inspeção visual: linhas não esticam verticalmente.
+17. Avatares circulares, contador de não lidas e ações permanecem legíveis.
+18. Sticker enviado reduzido para aproximadamente 108 px no desktop e 92 px no mobile.
+19. Seletor de stickers compactado para 5 colunas no desktop e 4 no mobile.
+20. Player de áudio customizado renderiza play, waveform, progresso e metadados.
+
+REGRESSÕES PROTEGIDAS
+- Intro Arc Reveal preservada.
+- Botão Pular/entrada preservado.
+- Login/cadastro não foram reestruturados.
+- Perfil, painel ADM e catálogo não foram alterados nesta rodada.
+- Contrato de envio/recebimento do chat permaneceu o mesmo; a mudança de áudio é de apresentação/controle local.
 
 OBSERVAÇÃO
-Chamadas externas (Supabase/CDNs) foram bloqueadas no teste headless propositalmente.
-Isso confirma que a alteração da splash não introduz erro de boot quando a rede externa
-não responde. Integrações de nuvem continuam dependendo do ambiente publicado, como na base anterior.
+A build foi validada localmente sem uma sessão real compartilhada de duas contas Supabase. Portanto, entrega Realtime entre dois usuários continua dependendo do backend já configurado na instalação publicada. A lógica de transporte não foi modificada nesta build.

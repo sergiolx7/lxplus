@@ -1,15 +1,18 @@
 {
-  "version": "25.34.0",
-  "name": "Arc Reveal",
-  "base": "25.33 Cinematic Identity",
+  "version": "25.35.0",
+  "name": "Community Glow",
+  "base": "25.34 Arc Reveal",
   "date": "2026-09-12",
   "changes": [
-    "Splash reconstruída para acompanhar o ritmo visual do vídeo de referência",
-    "Arco luminoso desenhado por SVG com glow",
-    "Bloom ciano/teal e logo LX Plus revelada no centro",
-    "Transição automática para autenticação em 5.2s",
-    "Botão Pular preservado de forma discreta",
-    "Badge verificado premium da v25.33 preservado"
+    "Comunidade redesenhada com visual mais limpo, escuro e organizado",
+    "Avatares circulares com acabamento premium e melhor hierarquia",
+    "Conversas passam a mostrar prévia da última mensagem, horário e contador de não lidas",
+    "Conversas recentes são priorizadas na lista",
+    "Figurinhas menores no chat e seletor de stickers mais compacto",
+    "Player de áudio personalizado com play/pause, waveform, progresso e duração",
+    "Cabeçalho, busca, abas, botões e perfil da Comunidade refinados",
+    "Responsividade revisada para desktop e mobile",
+    "Splash Arc Reveal da v25.34 preservada"
   ],
   "files": [
     "index.html",

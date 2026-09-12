@@ -10,7 +10,7 @@
 
   <script>
   (function(){
-    var BUILD='25.34.0',KEY='lxplus_build_seen';
+    var BUILD='25.35.0',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -39,8 +39,8 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=25.34">
-  <title>LX Plus v25.34 · Arc Reveal</title>
+  <link rel="stylesheet" href="app.css?v=25.35">
+  <title>LX Plus v25.35 · Community Glow</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -111,7 +111,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.34 · Arc Reveal</small>
+        <small class="auth-build-version">LX Plus v25.35 · Community Glow</small>
       </div>
     </div>
   </section>
@@ -242,7 +242,7 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   })();
   </script>
-  <script src="lxplus.js?v=25.34"></script>
+  <script src="lxplus.js?v=25.35"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded',function(){
@@ -367,8 +367,12 @@
     }else{
       actions=`<button class="lx-community-action primary" onclick="LX.social.add('${p.user_id}')">${icon('add')} Adicionar</button><button class="lx-community-action" onclick="LX.social.openProfile('${p.user_id}')">Perfil</button>`;
     }
-    const status=p.relation==='accepted'?(p.calls_enabled?'Disponível para chamadas LX':'Chamadas desativadas'):p.relation==='pending'?(p.direction==='incoming'?'Quer adicionar você':'Solicitação enviada'):'Usuário LX Plus';
-    return `<article class="lx-community-person lx-community-conversation" data-name="${esc((p.name||'').toLowerCase())}">${avatar(p)}<div class="lx-community-person-copy"><strong>${verified(p)}</strong><small>${esc(p.bio||'Perfil LX Plus')}</small><span>${status}</span></div><div class="lx-community-person-actions">${actions}</div></article>`;
+    const status=p.relation==='accepted'?(p.calls_enabled?'Chamadas disponíveis':'Chamadas desativadas'):p.relation==='pending'?(p.direction==='incoming'?'Quer adicionar você':'Solicitação enviada'):'Perfil LX Plus';
+    const chat=p.relation==='accepted'?LX.chat?.summary?.(p.user_id):null;
+    const preview=chat?.preview||p.bio||'Toque para abrir o perfil';
+    const meta=chat?.time?`${status} · ${chat.time}`:status;
+    const unread=Number(chat?.unread||0);
+    return `<article class="lx-community-person lx-community-conversation ${unread?'has-unread':''}" data-name="${esc((p.name||'').toLowerCase())}">${avatar(p)}<div class="lx-community-person-copy"><strong>${verified(p)}${unread?`<i class="lx-community-unread">${unread>9?'9+':unread}</i>`:''}</strong><small>${esc(preview)}</small><span>${esc(meta)}</span></div><div class="lx-community-person-actions">${actions}</div></article>`;
   }
   function emptyCard(tab){
     if(state.lastError)return `<div class="lx-community-empty error"><b>Comunidade indisponível</b><p>${esc(state.lastError)}</p><button onclick="LX.social.retry()">Tentar novamente</button></div>`;
@@ -380,7 +384,8 @@
     state.openTab=tab;
     const {drawer}=ensureShell();
     const s=sectionData();
-    const list=tab==='requests'?[...s.incoming,...s.outgoing]:tab==='discover'?s.discover:s.friends;
+    let list=tab==='requests'?[...s.incoming,...s.outgoing]:tab==='discover'?s.discover:[...s.friends];
+    if(tab==='friends')list.sort((a,b)=>String(LX.chat?.summary?.(b.user_id)?.created_at||'').localeCompare(String(LX.chat?.summary?.(a.user_id)?.created_at||'')));
     const settings=await getOwnSocialSettings();
     drawer.innerHTML=`${shellHeader('Comunidade','Contatos, chamadas e presença LX em um só lugar')}<div class="lx-community-status"><div><b>${s.friends.length}</b><span>CONTATOS</span></div><div><b>${s.incoming.length}</b><span>PEDIDOS</span></div><div><b>${settings?.calls_enabled!==false?'ON':'OFF'}</b><span>CHAMADAS</span></div></div><nav class="lx-community-tabs"><button class="${tab==='friends'?'active':''}" onclick="LX.social.open('friends')">Conversas</button><button class="${tab==='requests'?'active':''}" onclick="LX.social.open('requests')">Solicitações${s.incoming.length?` <i>${s.incoming.length}</i>`:''}</button><button class="${tab==='discover'?'active':''}" onclick="LX.social.open('discover')">Pessoas</button></nav><div class="lx-community-search">${icon('search')}<input id="lxCommunitySearch" placeholder="Pesquisar contato..."></div><div id="lxCommunityList" class="lx-community-list">${state.loading?'<div class="lx-community-loading">Carregando contatos...</div>':list.length?list.map(personCard).join(''):emptyCard(tab)}</div><footer class="lx-community-footer"><button onclick="LX.social.openSettings()">${icon('settings')} Privacidade e chamadas</button><span>WebRTC · LX Social</span></footer>`;
     const q=document.getElementById('lxCommunitySearch');
@@ -644,7 +649,8 @@
   function updateUnreadBadge(){const n=unreadTotal(),m=document.getElementById('messageCount');if(m){m.textContent=String(n);m.classList.toggle('hidden',!n)}const b=document.getElementById('socialCount');if(b){const base=Number(b.dataset.requests||0),total=base+n;b.textContent=String(total);b.classList.toggle('hidden',!total)}document.getElementById('messageBtn')?.classList.toggle('has-alert',n>0)}
   async function directory(){try{state.directory=await LX.social?.refreshDirectory?.()||[];return state.directory}catch{return state.directory}}
   function avatar(p,cls='lx-chat-avatar'){return p?.avatar_url?`<div class="${cls} has-image" style="background-image:url('${String(p.avatar_url).replace(/'/g,'%27')}')"></div>`:`<div class="${cls}">${esc(String(p?.name||'LX').split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase())}</div>`}
-  function verified(p){return `${esc(p?.name||'Usuário')}${p?.verified?'<span class="lx-social-verified">✓</span>':''}`}
+  const chatVerifiedBadge=()=>'<span class="lx-social-verified" title="Conta verificada" aria-label="Conta verificada"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="lx-vseal" d="M12 2.7l2.14 1.5 2.58-.16.92 2.42 2.24 1.3-.42 2.55 1.3 2.24-1.76 1.9-.16 2.58-2.42.92-1.3 2.24-2.55-.42-2.24 1.3-1.9-1.76-2.58-.16-.92-2.42-2.24-1.3.42-2.55-1.3-2.24 1.76-1.9.16-2.58 2.42-.92 1.3-2.24 2.55.42z"/><path class="lx-vcheck" d="m7.8 12.2 2.65 2.65 5.8-6.05"/></svg></span>';
+  function verified(p){return `${esc(p?.name||'Usuário')}${p?.verified?chatVerifiedBadge():''}`}
   function normalizeDb(row){if(!row)return null;return {id:row.client_id||row.id,server_id:row.id,client_id:row.client_id||null,sender_id:row.sender_id,recipient_id:row.recipient_id,kind:row.kind,body:row.body||'',media_key:row.media_key||null,created_at:row.created_at||now(),read:!!row.read_at}}
   async function subscribe(){const c=db(),u=uid();if(!c||!u)return false;if(state.broadcastChannel||state.dbChannel)return true;state.broadcastChannel=c.channel(`lx-chat-${u}`,{config:{broadcast:{self:false,ack:false}}}).on('broadcast',{event:'message'},ev=>receive(ev.payload,'broadcast')).subscribe();try{state.dbChannel=c.channel(`lx-message-db-${u}-${Date.now()}`).on('postgres_changes',{event:'INSERT',schema:'public',table:'lx_messages',filter:`recipient_id=eq.${u}`},p=>receive(normalizeDb(p.new),'database')).subscribe(status=>{if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')state.dbMessagesAvailable=false;else if(status==='SUBSCRIBED')state.dbMessagesAvailable=true})}catch{state.dbMessagesAvailable=false}return true}
   async function boot(){if(state.booted)return true;const c=db(),u=uid();if(!c||!u)return false;state.booted=true;await directory();await subscribe();updateUnreadBadge();return true}
@@ -659,8 +665,12 @@
   function fmtTime(v){try{return new Date(v).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}catch{return''}}
   function metaOf(m){try{return typeof m.body==='string'&&m.body.trim().startsWith('{')?JSON.parse(m.body):{}}catch{return{}}}
   function mediaBody(m){const meta=metaOf(m),key=esc(m.media_key||'');if(m.kind==='image'){if(!m.media_key&&String(m.body||'').startsWith('data:'))return `<a class="lx-chat-photo" href="${esc(m.body)}" target="_blank" rel="noopener"><img src="${esc(m.body)}" alt="Foto enviada"><span>${ICONS.download}</span></a>`;return `<a class="lx-chat-photo is-loading" data-lx-media-key="${key}" data-lx-media-kind="image" target="_blank" rel="noopener"><div class="lx-chat-media-loader">Carregando foto…</div><img alt="${esc(meta.name||'Foto enviada')}"><span>${ICONS.download}</span></a>`}if(m.kind==='file')return `<a class="lx-chat-file" data-lx-media-key="${key}" data-lx-media-kind="file" target="_blank" rel="noopener"><span class="lx-chat-file-icon">PDF</span><span><b>${esc(meta.name||'Arquivo')}</b><small>${meta.size?formatBytes(meta.size):'Documento'}</small></span>${ICONS.download}</a>`;return ''}
-  function messageBody(m){if(m.kind==='audio')return `<audio class="lx-chat-audio" controls preload="metadata" src="${esc(m.body)}"></audio>`;if(m.kind==='sticker')return `<img class="lx-chat-sticker" src="${esc(m.body)}" alt="Figurinha">`;if(m.kind==='image'||m.kind==='file')return mediaBody(m);return `<p>${esc(m.body).replace(/\n/g,'<br>')}</p>`}
-  function renderMessages(other){const box=document.getElementById('lxChatMessages');if(!box)return;const arr=thread(other);box.innerHTML=arr.length?arr.map(m=>`<div class="lx-chat-msg ${String(m.sender_id)===String(uid())?'mine':'theirs'}"><div class="lx-chat-bubble ${['sticker','image','file'].includes(m.kind)?'media-bubble':''}">${messageBody(m)}<span>${fmtTime(m.created_at)}${String(m.sender_id)===String(uid())?'<i class="lx-msg-status">✓</i>':''}</span></div></div>`).join(''):`<div class="lx-chat-empty"><b>Conversa nova</b><p>Mensagem, foto, documento, áudio, emoji ou figurinha.</p></div>`;hydrateMedia(box);requestAnimationFrame(()=>{box.scrollTop=box.scrollHeight})}
+  function voiceMarkup(m){return `<div class="lx-voice-note"><button type="button" class="lx-voice-play" aria-label="Reproduzir áudio" data-lx-voice-play><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z"/></svg></button><div class="lx-voice-content"><div class="lx-voice-wave" aria-hidden="true">${Array.from({length:18},(_,i)=>`<i style="--h:${[10,16,8,20,13,24,11,18,26,14,21,9,17,23,12,19,8,15][i]}px"></i>`).join('')}</div><input class="lx-voice-progress" type="range" min="0" max="100" value="0" step="0.1" aria-label="Progresso do áudio" data-lx-voice-progress><div class="lx-voice-meta"><span data-lx-voice-time>0:00</span><em>Áudio LX</em></div></div><audio preload="metadata" src="${esc(m.body)}" data-lx-voice></audio></div>`}
+  function messageBody(m){if(m.kind==='audio')return voiceMarkup(m);if(m.kind==='sticker')return `<img class="lx-chat-sticker" src="${esc(m.body)}" alt="Figurinha">`;if(m.kind==='image'||m.kind==='file')return mediaBody(m);return `<p>${esc(m.body).replace(/\n/g,'<br>')}</p>`}
+  function voiceTime(v){const n=Math.max(0,Number(v)||0),m=Math.floor(n/60),s=Math.floor(n%60);return `${m}:${String(s).padStart(2,'0')}`}
+  function initVoicePlayers(root){root?.querySelectorAll?.('.lx-voice-note').forEach(card=>{const audio=card.querySelector('[data-lx-voice]'),play=card.querySelector('[data-lx-voice-play]'),range=card.querySelector('[data-lx-voice-progress]'),time=card.querySelector('[data-lx-voice-time]');if(!audio||!play||!range)return;const draw=()=>{const d=Number(audio.duration)||0,c=Number(audio.currentTime)||0;range.value=d?String(Math.min(100,c/d*100)):'0';if(time)time.textContent=voiceTime(audio.paused?d||c:c)};const icon=()=>{play.innerHTML=audio.paused?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>';card.classList.toggle('is-playing',!audio.paused)};play.onclick=()=>{document.querySelectorAll('[data-lx-voice]').forEach(a=>{if(a!==audio&&!a.paused)a.pause()});audio.paused?audio.play().catch(()=>{}):audio.pause()};range.oninput=()=>{if(Number(audio.duration)>0)audio.currentTime=Number(range.value)/100*audio.duration};audio.addEventListener('loadedmetadata',draw);audio.addEventListener('timeupdate',draw);audio.addEventListener('play',icon);audio.addEventListener('pause',icon);audio.addEventListener('ended',()=>{audio.currentTime=0;draw();icon()});draw();icon()})}
+  function summary(other){const arr=thread(other),last=arr[arr.length-1];if(!last)return null;return {preview:previewText(last),time:fmtTime(last.created_at),created_at:last.created_at,unread:arr.filter(x=>String(x.recipient_id)===String(uid())&&!x.read).length}}
+  function renderMessages(other){const box=document.getElementById('lxChatMessages');if(!box)return;const arr=thread(other);box.innerHTML=arr.length?arr.map(m=>`<div class="lx-chat-msg ${String(m.sender_id)===String(uid())?'mine':'theirs'} ${m.kind==='sticker'?'is-sticker':''} ${m.kind==='audio'?'is-audio':''}"><div class="lx-chat-bubble ${['sticker','image','file','audio'].includes(m.kind)?'media-bubble':''}">${messageBody(m)}<span>${fmtTime(m.created_at)}${String(m.sender_id)===String(uid())?'<i class="lx-msg-status">✓</i>':''}</span></div></div>`).join(''):`<div class="lx-chat-empty"><b>Conversa nova</b><p>Mensagem, foto, documento, áudio, emoji ou figurinha.</p></div>`;hydrateMedia(box);initVoicePlayers(box);requestAnimationFrame(()=>{box.scrollTop=box.scrollHeight})}
   async function hydrateMedia(box){for(const el of box.querySelectorAll('[data-lx-media-key]')){if(el.dataset.loading==='1'||el.dataset.ready==='1')continue;el.dataset.loading='1';try{let raw=el.dataset.lxMediaKey||'';raw=raw.replace(/^cloud:/,'');const url=await LX.cloud?.mediaUrl?.(raw,21600);if(!url)throw 0;el.href=url;el.dataset.ready='1';if(el.dataset.lxMediaKind==='image'){const img=el.querySelector('img');if(img)img.src=url;el.classList.remove('is-loading');el.querySelector('.lx-chat-media-loader')?.remove()}}catch{el.classList.add('is-error');const l=el.querySelector('.lx-chat-media-loader');if(l)l.textContent='Não foi possível abrir esta mídia.'}finally{el.dataset.loading='0'}}}
   function formatBytes(n){n=Number(n)||0;if(n<1024)return `${n} B`;if(n<1048576)return `${(n/1024).toFixed(1)} KB`;return `${(n/1048576).toFixed(1)} MB`}
   function builtinSticker(text,bg='#1877f2'){const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320"><rect width="320" height="320" rx="78" fill="${bg}"/><circle cx="160" cy="160" r="112" fill="rgba(255,255,255,.08)"/><text x="160" y="178" text-anchor="middle" font-size="76" font-family="Arial" font-weight="900" fill="white">${text}</text></svg>`;return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg)}
@@ -683,7 +693,7 @@
   function commitSettings(){const sound=document.getElementById('lxChatSound')?.value||getPrefs().sound,volume=Number(document.getElementById('lxChatVolume')?.value??getPrefs().volume),desktop=!!document.getElementById('lxChatDesktop')?.checked;savePrefs({sound,volume,desktop})}
   function testSound(){const sound=document.getElementById('lxChatSound')?.value,volume=Number(document.getElementById('lxChatVolume')?.value??.7);if(sound)savePrefs({sound,volume});playNotificationSound(true)}
   async function shutdown(){const c=db();for(const ch of [state.broadcastChannel,state.dbChannel])if(ch&&c)await c.removeChannel(ch).catch(()=>{});state.broadcastChannel=null;state.dbChannel=null;state.booted=false;state.peer=null}
-  LX.chat={boot,shutdown,open,back,send,insertEmoji,sendSticker,sendStickerIndex,createSticker,loadPersistent,unreadTotal,enableNotifications,settingsHTML,commitSettings,testSound,getPrefs,handleAttachment,renderEmojiGrid,ready:true};
+  LX.chat={boot,shutdown,open,back,send,insertEmoji,sendSticker,sendStickerIndex,createSticker,loadPersistent,unreadTotal,enableNotifications,settingsHTML,commitSettings,testSound,getPrefs,handleAttachment,renderEmojiGrid,summary,ready:true};
   const start=()=>{boot().catch(()=>{});setInterval(()=>{if(uid()&&!state.booted)boot().catch(()=>{})},2500)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
 </script>
