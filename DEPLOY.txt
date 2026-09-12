@@ -1,19 +1,57 @@
-LX Plus v25.36 — Presence & Controls
+LX Plus v25.37 — Message Actions
 
-BASE: v25.35 Community Glow
+BASE: v25.36 Presence & Controls
+DATA: 12/09/2026
 
 MUDANÇAS PRINCIPAIS
-- Presença em tempo real via Supabase Realtime: Online agora / Offline.
-- Indicador verde nos avatares quando o contato está online.
-- Opção de privacidade “Mostrar status online”.
-- Status aparece na lista de conversas, perfil e cabeçalho do chat.
-- Botão para apagar uma conversa.
-- Botão para apagar todas as conversas da lista.
-- Limpeza usa corte local para impedir que histórico persistente antigo reapareça neste dispositivo.
+- Ações por mensagem no PC: botão direito ou botão ⋯.
+- Ações por mensagem no celular: toque longo (pressionar e segurar).
+- Responder mensagem específica com prévia da mensagem original.
+- Reações rápidas: ❤️ 😂 😮 😢 🔥 👍.
+- Copiar texto.
+- Editar mensagens próprias de texto e exibir “editada”.
+- Apagar para mim: remove somente do histórico do usuário.
+- Apagar para todos: cria tombstone sincronizado e remove a mídia da conversa quando aplicável.
+- A exclusão da conversa inteira saiu do cabeçalho principal e foi para o menu ⋯, com confirmação explícita.
+- “Digitando…” em tempo real.
+- Estados de envio: Enviando, Enviada, Entregue e Lida.
+- Separadores Hoje / Ontem / data.
+- Rascunho automático por conversa.
+- Histórico de mensagens persistente no Supabase.
+- Realtime para INSERT/UPDATE da tabela lx_messages.
+
+BACKEND / SUPABASE
+A migração v25.37 JÁ FOI APLICADA ao projeto configurado nesta versão.
+Arquivo de referência: SUPABASE-MESSAGE-ACTIONS.sql
+
+Ela cria:
+- public.lx_messages
+- RPCs lx_send_message, lx_message_history, lx_mark_messages_delivered,
+  lx_mark_messages_read, lx_edit_message, lx_delete_message_for_all,
+  lx_hide_message_for_me e lx_react_message.
+- RLS de leitura para participantes.
+- Realtime da tabela lx_messages.
+- Bloqueio de execução anônima dos RPCs de mensagem.
 
 PUBLICAÇÃO
-1. Substitua index.html, app.css e lxplus.js na raiz.
-2. Mantenha CNAME e assets/icon.svg.
+1. Substitua na raiz:
+   - index.html
+   - app.css
+   - lxplus.js
+2. Mantenha/substitua:
+   - CNAME
+   - assets/icon.svg
 3. Não reative sw.js nem a pasta js/ antiga.
-4. Confirme na autenticação: LX Plus v25.36 · Presence & Controls.
-5. Teste com duas contas em navegadores diferentes para validar presença em tempo real.
+4. Confirme na autenticação:
+   LX Plus v25.37 · Message Actions
+5. Depois da publicação, teste duas contas reais:
+   - enviar mensagem
+   - responder/reagir/editar
+   - apagar para mim
+   - apagar para todos
+   - “digitando…”
+   - entregue/lida
+
+ROLLBACK
+Frontend: volte para LX Plus v25.36 Presence & Controls.
+A tabela lx_messages pode permanecer no Supabase sem afetar a v25.36.

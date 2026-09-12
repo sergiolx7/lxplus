@@ -1,39 +1,67 @@
-LX Plus v25.36 — Presence & Controls
-Base: v25.35 Community Glow
-Data do QA: 12/09/2026
+LX Plus v25.37 — Message Actions
+QA FINAL — 12/09/2026
+Base: v25.36 Presence & Controls
 
-TESTES APROVADOS
-1. lxplus.js: sintaxe JavaScript OK.
-2. Todos os scripts inline do index.html: sintaxe OK.
-3. IDs HTML duplicados: 0.
-4. Referências locais obrigatórias presentes: app.css, lxplus.js e assets/icon.svg.
-5. Boot completo em Chromium headless com CSS/JS reais embutidos: sem pageerror e sem console error.
-6. Abertura Arc Reveal continua encerrando e entrega a tela de autenticação normalmente.
-7. Versão exibida: LX Plus v25.36 · Presence & Controls.
-8. Presença simulada com duas contas: contato online mostra ponto verde + “Online agora”.
-9. Saída de presença: interface troca ao vivo para “Offline”.
-10. Privacidade de presença: desligar remove o próprio usuário da presença; religar rastreia novamente.
-11. Lista de conversas mostra status online/offline sem quebrar resumo, horário ou não lidas.
-12. Cabeçalho do chat mostra status de presença ao vivo.
-13. Botão “Apagar conversa” limpa a conversa selecionada.
-14. Corte local de histórico impede mensagens persistentes antigas de reaparecerem no mesmo dispositivo após a limpeza.
-15. Botão “Apagar conversas” limpa todas as conversas do usuário no dispositivo.
-16. Contadores de não lidas são recalculados após limpeza.
-17. Community desktop renderizada e inspecionada visualmente.
-18. Chat desktop renderizado e inspecionado visualmente.
-19. Community mobile 390×844 renderizada e inspecionada visualmente.
-20. Chat mobile 390×844 renderizado e inspecionado visualmente.
-21. Ícone de configurações do rodapé foi corrigido após teste visual para não expandir indevidamente.
-22. Nenhum erro JavaScript final durante os testes de presença, privacidade e limpeza.
+TESTES DE INTERFACE AUTOMATIZADOS — CHROMIUM
+APROVADOS
+1. Chat abre sem erro.
+2. Separador de data renderiza.
+3. Lixeira de conversa inteira não fica mais como ação primária no cabeçalho.
+4. Menu ⋯ da conversa abre.
+5. Botão direito abre ações da mensagem.
+6. Mensagem recebida oferece Responder, Copiar e Apagar para mim.
+7. Mensagem de outra pessoa não oferece Apagar para todos.
+8. Responder abre barra de contexto no compositor.
+9. Resposta renderiza a citação da mensagem original.
+10. Mensagem própria oferece Editar.
+11. Mensagem própria oferece Apagar para todos.
+12. Edição persiste na interface e mostra “editada”.
+13. Reação cria pill abaixo da mensagem.
+14. Apagar para todos troca o conteúdo por “Mensagem apagada”.
+15. Apagar para mim remove somente aquela mensagem da interface local.
+16. Menu da conversa mantém “Apagar conversa” como ação secundária e confirmada.
+17. “Digitando…” aparece em tempo real.
+18. Estado Entregue atualiza corretamente.
+19. Estado Lida atualiza corretamente.
+20. Rascunho é restaurado ao reabrir a conversa.
+21. Toque normal no celular não abre o menu por engano.
+22. Toque longo no celular abre as ações.
+23. Layout desktop renderizado sem overflow crítico.
+24. Layout mobile 390×844 renderizado corretamente.
+25. Site completo inicia sem window.__LX_BOOT_ERROR.
+26. Intro continua para a tela de autenticação.
+27. Nenhum pageerror JavaScript durante o QA.
+
+TESTE DE BANCO — SUPABASE
+APROVADOS EM TRANSAÇÃO COM ROLLBACK
+- lx_send_message
+- lx_edit_message
+- lx_react_message
+- lx_mark_messages_delivered
+- lx_mark_messages_read
+- lx_hide_message_for_me
+- lx_delete_message_for_all
+- Tombstone preservou estado de leitura/entrega.
+- A transação de QA foi revertida; nenhuma mensagem de teste ficou salva.
+
+SEGURANÇA DO CHAT
+- RLS habilitado em public.lx_messages.
+- Participantes autenticados podem ler apenas mensagens em que são remetente/destinatário.
+- INSERT/UPDATE/DELETE diretos foram revogados para usuários autenticados; mutações passam pelos RPCs validados.
+- RPCs de mensagem não podem ser executados pela role anon.
+- lx_chat_is_friend é helper interno e não está exposto à role authenticated.
+
+VALIDAÇÃO ESTÁTICA
+- lxplus.js: sintaxe OK.
+- scripts inline do index.html: sintaxe OK.
+- IDs HTML duplicados: 0.
+- Referências locais obrigatórias: presentes.
 
 ARQUIVOS DE QA
-- QA-BOOT.png
-- QA-COMMUNITY-PRESENCE.png
-- QA-CHAT-PRESENCE.png
-- QA-COMMUNITY-MOBILE.png
-- QA-CHAT-MOBILE.png
+- QA-MESSAGE-ACTIONS-DESKTOP.png
+- QA-MESSAGE-ACTIONS-MOBILE.png
+- QA-BOOT-V2537.png
 
-OBSERVAÇÃO TÉCNICA
-A presença usa Supabase Realtime Presence. O teste funcional foi realizado em Chromium com canais Supabase simulados reproduzindo join/sync/leave/track/untrack. Em produção, o status em tempo real depende de o Realtime do projeto Supabase permanecer disponível.
-
-A exclusão de conversa desta versão é uma limpeza do histórico visível do usuário neste dispositivo/perfil local. Ela não apaga mensagens do aparelho do outro contato. Esse comportamento evita exclusão acidental do histórico de outra pessoa.
+OBSERVAÇÃO
+Os testes de UI usaram um backend simulado determinístico para exercitar todas as ações sem criar dados reais.
+Os RPCs reais do Supabase foram validados separadamente dentro de uma transação revertida.

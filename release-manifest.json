@@ -1,22 +1,36 @@
 {
-  "version": "25.36",
-  "name": "Presence & Controls",
-  "base": "25.35 Community Glow",
+  "version": "25.37",
+  "name": "Message Actions",
+  "base": "25.36 Presence & Controls",
   "date": "2026-09-12",
   "changes": [
-    "Realtime online/offline presence",
-    "Presence privacy toggle",
-    "Presence dots and labels",
-    "Delete one conversation",
-    "Delete all conversations",
-    "Local clear cutoffs prevent old persistent history from reappearing on the same device"
+    "Per-message context actions on right click / long press",
+    "Reply to message",
+    "Quick reactions",
+    "Copy and edit own text messages",
+    "Delete for me",
+    "Delete for everyone with synchronized tombstone",
+    "Typing indicator",
+    "Sending / sent / delivered / read states",
+    "Date separators",
+    "Automatic per-conversation drafts",
+    "Persistent Supabase message history",
+    "Realtime message INSERT/UPDATE synchronization"
   ],
+  "backend": {
+    "migration": "lx_message_actions_v2537 + lx_message_actions_v2537_security",
+    "applied": true,
+    "table": "public.lx_messages"
+  },
   "files": [
     "index.html",
     "app.css",
     "lxplus.js",
     "CNAME",
-    "assets/icon.svg"
+    "assets/icon.svg",
+    "SUPABASE-MESSAGE-ACTIONS.sql",
+    "DEPLOY.txt",
+    "TEST-REPORT.txt"
   ],
-  "rollback": "25.35 Community Glow"
+  "rollback": "25.36 Presence & Controls"
 }

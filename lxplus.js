@@ -1,8 +1,8 @@
 
-/* ===== config.js · LX Plus v25.36 ===== */
+/* ===== config.js · LX Plus v25.37 ===== */
 window.LX=window.LX||{};
 LX.config={
-  version:'25.35.0',
+  version:'25.37.0',
   environment:'cloud-ready',
   production:true,
   apiBase:'',
@@ -20,9 +20,9 @@ LX.config={
   features:{recommendations:true,preferenceProfile:true,premium:true,fuzzySearch:true,qualityGate:true,requests:true,ratings:true,analytics:true,tv:true,pwa:false,profileIdentity:true,appMode:true,cloudSync:true,realtime:true,cloudMedia:true}
 };
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['config']='25.35.0';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['config']='25.37.0';
 
-/* ===== LX v25.36 resilient SDK loader ===== */
+/* ===== LX v25.37 resilient SDK loader ===== */
 (()=>{
   const LX=window.LX=window.LX||{};
   let sdkPromise=null;
@@ -34,7 +34,7 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['config']='25.35
   try{if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});if('caches'in window)caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))).catch(()=>{})}catch{}
 })();
 
-/* ===== store.js · LX Plus v25.36 ===== */
+/* ===== store.js · LX Plus v25.37 ===== */
 (()=>{const LX=window.LX;const PREFIX='lx16_',memory=new Map();
 const keys={accounts:'accounts',users:'users',catalog:'catalog',session:'session',history:'history',list:'list',theme:'theme',accent:'accent',notices:'notices',requests:'requests',ratings:'ratings',analytics:'analytics',publicLists:'publicLists',noticeReads:'noticeReads',preferences:'preferences',subscriptions:'subscriptions',profileStyles:'profileStyles',layoutMode:'layoutMode',motion:'motion',playerPrefs:'playerPrefs',globalBranding:'globalBranding',chatThreads:'chatThreads',stickers:'stickers',uiPrefs:'uiPrefs',chatPrefs:'chatPrefs'};
 const read=(k,d)=>{const key=PREFIX+k;try{const raw=localStorage.getItem(key);if(raw!=null){const x=JSON.parse(raw);memory.set(key,raw);return x??d}}catch{}try{if(memory.has(key)){const x=JSON.parse(memory.get(key));return x??d}}catch{}return d};
@@ -47,13 +47,13 @@ async function getMedia(key){if(!key)return null;if(String(key).startsWith('clou
 async function putAsset(key,file,folder='assets'){if(LX.cloud?.enabled?.()){const mediaKey=await LX.cloud.uploadFile(key,file,folder);return LX.cloud.publicUrl(String(mediaKey).replace(/^cloud:/,''),LX.config.supabase?.assetBucket||'lx-assets')}return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
 LX.store={keys,read,write,writeLocal,putMedia,getMedia,putAsset,removeLocal,reset(){Object.values(keys).forEach(removeLocal)}}})();
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['store']='25.35';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['store']='25.37';
 
-/* ===== cloud.js · LX Plus v25.36 ===== */
+/* ===== cloud.js · LX Plus v25.37 ===== */
 (()=>{
 const LX=window.LX,S=LX.store;
 let client=null,currentAuth=null,currentProfile=null,adminDirectory=[],syncTimer=null,channels=[],catalogPollTimer=null,catalogSig='',userStateChannel=null;
-const USER_STATE_KEYS=new Set([S.keys.history,S.keys.list,S.keys.ratings,S.keys.preferences,S.keys.profileStyles,S.keys.theme,S.keys.accent,S.keys.layoutMode,S.keys.motion,S.keys.playerPrefs,S.keys.noticeReads,S.keys.chatThreads,S.keys.stickers,S.keys.uiPrefs,S.keys.chatPrefs]);
+const USER_STATE_KEYS=new Set([S.keys.history,S.keys.list,S.keys.ratings,S.keys.preferences,S.keys.profileStyles,S.keys.theme,S.keys.accent,S.keys.layoutMode,S.keys.motion,S.keys.playerPrefs,S.keys.noticeReads,S.keys.stickers,S.keys.uiPrefs,S.keys.chatPrefs]);
 function cfg(){return LX.config.supabase||{}}
 function publicKey(){const c=cfg();return c.publishableKey||c.anonKey||''}
 function enabled(){const c=cfg();return !!(window.supabase&&/^https:\/\/.+\.supabase\.co\/?$/i.test(c.url||'')&&publicKey().length>20)}
@@ -197,7 +197,7 @@ function status(){return {configured:enabled(),connected:!!client,user:currentAu
 LX.cloud={enabled,db,user,profile,isAdmin,initPublic,signUp,resendConfirmation,signIn,resume,signOut,resetPassword,updatePassword,isRecoveryFlow,onLocalWrite,syncUserState,saveCatalog,upsertCatalogItem,deleteCatalogItem,saveUsers,saveBranding,requestOrVote,refreshRequests,updateRequestStatus,publishNotices,approveUser,setVerified,commitAdminChanges,rejectUser,deletePendingUser,setPremium,track,uploadFile,publicUrl,mediaUrl,removeUploadedPath,migrateLocalCatalog,status,hydrateUser,refreshBranding};
 })();
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['cloud']='25.35';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['cloud']='25.37';
 
 /* ===== services.js · LX Plus v25.36 ===== */
 (()=>{const LX=window.LX,S=LX.store,$=id=>document.getElementById(id);
