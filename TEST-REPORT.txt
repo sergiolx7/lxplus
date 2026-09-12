@@ -1,0 +1,39 @@
+LX Plus v25.31 — Relatório de validação
+
+Correções estruturais
+- Shell de entrada funciona antes do núcleo principal.
+- Login e cadastro nunca fazem reload nativo da página.
+- Storage local tem fallback em memória se o navegador bloquear localStorage.
+- Inicialização de seed, branding, carrossel e tema é isolada.
+- Corrigidos símbolos/funções inexistentes que interrompiam o bundle:
+  openAdmin, openLegal, setLayout, setMotion, installApp e tvMode.
+- Corrigidas páginas ADM ausentes: Premium, Analytics, Notificações e Identidade visual.
+- Corrigido painel Notificações para não tentar ligar botão inexistente.
+- Carrossel de entrada mantém fallback visual antes do catálogo da nuvem chegar.
+
+Testes executados em Chromium headless
+1. Entrar na LX Plus -> autenticação: OK
+2. Pular -> autenticação: OK
+3. Alternar Entrar / Criar conta: OK
+4. Mostrar/ocultar senha: OK
+5. Submit de login não recarrega a página sem nuvem: OK
+6. Login simulado aprovado -> entra diretamente no app: OK
+7. Botão ADM -> abre painel: OK
+8. Páginas ADM dashboard/library/importer/uploads/requests/community/
+   premium/analytics/notifications/appearance/settings: OK
+9. Biblioteca mostra Salvar alterações: OK
+10. Excluir -> PENDENTE DE EXCLUSÃO -> Salvar -> removido: OK
+11. Dar selo -> NÃO SALVO -> Salvar -> verificado aplicado: OK
+12. Fila pendente zera depois de salvar: OK
+13. Comunidade abre pelo botão do topo: OK
+14. Perfil/Aparência/Notificações/Premium/Ranking/Pedidos: OK
+15. Runtime nos smoke tests: 0 erros JavaScript
+
+Validação estática
+- lxplus.js: node --check OK
+- scripts inline do index.html: OK
+- versão v25.31 consistente.
+
+Observação
+O login real no Supabase depende das credenciais e da disponibilidade de rede/CDN.
+Os testes não usam nem conhecem senhas reais.

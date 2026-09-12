@@ -7,25 +7,28 @@
   <meta name="color-scheme" content="dark light">
   <meta name="description" content="LX Plus — Assistir, Ler e Ouvir em uma experiência premium.">
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
-  <link rel="manifest" href="manifest.json">
 
   <script>
   (function(){
-    var BUILD='25.27.0',KEY='lxplus_build_seen';
+    var BUILD='25.31.0',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
-        var jobs=[];
-        if('caches' in window) jobs.push(caches.keys().then(function(keys){return Promise.all(keys.map(function(k){return caches.delete(k)}))}));
-        if('serviceWorker' in navigator) jobs.push(navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister()}))}));
-        Promise.allSettled(jobs).then(function(){
-          var u=new URL(location.href);u.searchParams.set('lxbuild',BUILD);u.searchParams.set('_',Date.now());location.replace(u.toString());
-        });
+        if('caches' in window)caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))).catch(()=>{});
+        if('serviceWorker' in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});
       }
     }catch(e){}
   })();
   </script>
 
+
+  <script>
+  // v25.31 hard guard: authentication forms never perform a native page reload.
+  document.addEventListener('submit',function(e){
+    if(e.target && (e.target.id==='loginForm'||e.target.id==='registerForm')) e.preventDefault();
+  },true);
+  window.addEventListener('error',function(ev){try{window.__LX_BOOT_ERROR=String(ev.message||ev.error||'Erro de inicialização')}catch(_){}});
+  </script>
 
   <script>
   window.__lxPendingCommunityTab=null;
@@ -36,8 +39,8 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=25.27">
-  <title>LX Plus v25.27 · Message Fix + Screen Share + ADM Save</title>
+  <link rel="stylesheet" href="app.css?v=25.31">
+  <title>LX Plus v25.31 · Stable Rebuild</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -93,7 +96,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.27 · Message Fix + Screen Share + ADM Save</small>
+        <small class="auth-build-version">LX Plus v25.31 · Stable Rebuild</small>
       </div>
     </div>
   </section>
@@ -182,32 +185,44 @@
     <div class="music-right-controls"><button id="musicQueueBtn" title="Fila">☷</button><span>🔊</span><input id="musicVolume" type="range" min="0" max="1" step="0.05" value="1"><button id="musicClose" title="Fechar">×</button></div>
     <audio id="musicAudio" preload="metadata"></audio>
   </div>
-
-  <script defer src="https://cdn.jsdelivr.net/npm/tus-js-client@4/dist/tus.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
-  <script defer src="js/config.js?v=25.27"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="js/store.js?v=25.27"></script>
-  <script defer src="js/cloud.js?v=25.27"></script>
-  <script defer src="js/services.js?v=25.27"></script>
-  <script defer src="js/ui.js?v=25.27"></script>
-  <script defer src="js/catalog-importer.js?v=25.27"></script>
-  <script defer src="js/content-hub.js?v=25.27"></script>
-  <script defer src="js/admin.js?v=25.27"></script>
-  <script defer src="js/app.js?v=25.27"></script>
   <script>
-  window.addEventListener('load',()=>{
-    setTimeout(()=>{
-      const need=['config','store','cloud','services','ui','catalog-importer','content-hub','admin','app'],mods=window.__LX_MODULES||{},bad=need.filter(k=>mods[k]!=='25.27');
-      const box=document.getElementById('lxBuildMismatch');
-      if(box&&bad.length){box.innerHTML=`<b>Arquivos de versões diferentes detectados.</b><br>Build esperada: v25.27 · módulos incorretos/ausentes: ${bad.join(', ')}.<br>Substitua <b>todos</b> os arquivos da versão antiga, não apenas o index.html.`;box.classList.remove('hidden')}
-    },1200)
-  });
+  /* LX SHELL v25.31 — funciona mesmo se o núcleo atrasar ou falhar */
+  (function(){
+    function byId(id){return document.getElementById(id)}
+    function show(id){
+      ['splash','auth','profiles','app','admin'].forEach(function(x){var el=byId(x);if(el)el.classList.add('hidden')});
+      var target=byId(id);if(target)target.classList.remove('hidden');
+    }
+    function authTab(tab){
+      byId('tabLogin')?.classList.toggle('active',tab==='login');
+      byId('tabRegister')?.classList.toggle('active',tab==='register');
+      byId('loginForm')?.classList.toggle('hidden',tab!=='login');
+      byId('registerForm')?.classList.toggle('hidden',tab!=='register');
+    }
+    function toast(msg){var t=byId('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(t.__x);t.__x=setTimeout(function(){t.classList.remove('show')},3200)}
+    window.LXShell={show:show,authTab:authTab,toast:toast};
+    function bind(){
+      var enter=byId('enterSplash'),skip=byId('skipSplash');
+      if(enter) enter.onclick=function(){show('auth');authTab('login')};
+      if(skip) skip.onclick=function(){show('auth');authTab('login')};
+      var tl=byId('tabLogin'),tr=byId('tabRegister');
+      if(tl) tl.onclick=function(){authTab('login')};
+      if(tr) tr.onclick=function(){authTab('register')};
+      var lf=byId('loginForm');
+      if(lf) lf.addEventListener('submit',function(){
+        setTimeout(function(){
+          if(!window.__LX_LOGIN_READY && !(window.LX&&window.LX.data&&window.LX.cloud)) toast('A LX ainda está carregando o login. A página não será reiniciada; aguarde alguns segundos e tente novamente.');
+        },0)
+      },true);
+    }
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+  })();
   </script>
+  <script src="lxplus.js?v=25.31"></script>
 
-  <script>
+<script>
   document.addEventListener('DOMContentLoaded',function(){
-/* LX SOCIAL EMBEDDED v25.27 — COMMUNITY PRO */
+/* LX SOCIAL EMBEDDED v25.31 — COMMUNITY PRO */
 (()=>{
   const LX=window.LX=window.LX||{};
   const U=LX.ui;
@@ -573,7 +588,7 @@
   </script>
 
 <script>
-/* LX CHAT INLINE v25.27 — persistent + live messaging + notifications + audio + stickers */
+/* LX CHAT INLINE v25.31 — persistent + live messaging + notifications + audio + stickers */
 (()=>{
   const LX=window.LX=window.LX||{};
   const state={booted:false,broadcastChannel:null,dbChannel:null,peer:null,directory:[],recorder:null,chunks:[],recordStream:null,recordTimer:null,dbMessagesAvailable:null,seen:new Set()};

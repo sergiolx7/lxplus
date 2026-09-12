@@ -762,7 +762,7 @@ html.lx-call-open,html.lx-call-open body{overflow:hidden!important}.lx-call-over
 
 
 /* =========================================================
-   v25.27 — COMMUNITY 3.0 + ADM RELIABLE SAVE
+   v25.31 — COMMUNITY 3.0 + ADM RELIABLE SAVE
    ========================================================= */
 .admin-global-save{position:fixed;right:24px;bottom:24px;z-index:2147483000;width:min(590px,calc(100vw - 48px));display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 16px;border:1px solid rgba(255,183,77,.48);border-radius:18px;background:rgba(27,20,10,.97);box-shadow:0 24px 80px rgba(0,0,0,.48);backdrop-filter:blur(18px);color:#fff}.admin-global-save.hidden{display:none}.admin-global-save>div:first-child{min-width:0;display:flex;flex-direction:column;gap:3px}.admin-global-save>div:first-child span{color:#ffbd62;font-size:8px;letter-spacing:.16em;font-weight:900}.admin-global-save strong{font-size:14px;line-height:1.25}.admin-global-save small{color:#a99d8a;font-size:9px;line-height:1.35}.admin-global-save-actions{display:flex;gap:8px;flex:none}.admin-global-save button:disabled{opacity:.45;cursor:not-allowed}.admin-inline-save{height:42px;padding:0 16px;border:1px solid rgba(255,183,77,.38);border-radius:11px;background:#ffad32;color:#15100a;font-weight:900;cursor:pointer;white-space:nowrap}.admin-save-explainer{display:flex;align-items:center;justify-content:space-between;gap:16px}.admin-save-explainer>div{min-width:0}.admin-toolbar .admin-inline-save{margin-left:auto}
 
@@ -778,7 +778,7 @@ html.lx-call-open,html.lx-call-open body{overflow:hidden!important}.lx-call-over
 @media(max-width:780px){.admin-global-save{right:10px;bottom:78px;width:calc(100vw - 20px);align-items:flex-start;flex-direction:column}.admin-global-save-actions{width:100%}.admin-global-save-actions button{flex:1}.admin-save-explainer{align-items:flex-start;flex-direction:column}.admin-inline-save{width:100%}.lx-chat-bubble{max-width:84%}.lx-emoji-grid{grid-template-columns:repeat(5,1fr)}.lx-chat-composer{grid-template-columns:auto auto auto minmax(0,1fr) auto}.lx-call-controls button{flex:0 0 56px;width:56px}.lx-call-controls button small{display:none}}
 
 /* =========================================================
-   v25.27 — ADMIN SAVE + MESSAGE CENTER + COMMUNITY POLISH
+   v25.31 — ADMIN SAVE + MESSAGE CENTER + COMMUNITY POLISH
    ========================================================= */
 .message-top-btn{position:relative;width:42px;height:42px;min-width:42px;border:1px solid var(--line);border-radius:13px;background:var(--panel);color:var(--text);display:grid;place-items:center;cursor:pointer;transition:.16s ease}
 .message-top-btn:hover,.message-top-btn.has-alert{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));background:color-mix(in srgb,var(--accent) 12%,var(--panel))}
@@ -796,3 +796,15 @@ html.lx-call-open,html.lx-call-open body{overflow:hidden!important}.lx-call-over
 
 @media(max-width:900px){.message-top-btn{width:38px;height:38px;min-width:38px}.community-top-btn b{display:none}.admin-page-save{align-items:flex-start;flex-direction:column}.admin-page-save-actions{width:100%}.admin-page-save-actions button{flex:1}.lx-message-toast{right:10px;top:70px;width:calc(100vw - 20px)}}
 .lx-call-overlay.is-sharing .lx-call-remote{object-fit:contain!important;background:#000!important}.lx-call-overlay.is-sharing .lx-call-stage{background:#000!important}.lx-call-overlay.is-sharing .lx-call-local{object-fit:contain!important;background:#050505!important}
+
+/* v25.31 Rebuild Core */
+.catalog-poster-tile{background-color:#09111c!important;background-size:cover!important;background-position:center!important;filter:saturate(.9) contrast(1.03)}
+.auth-form button[type="submit"]:disabled{opacity:.72;cursor:wait;transform:none!important}
+.lx-cloud-status{position:fixed;right:14px;bottom:14px;z-index:9999;padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.09);background:rgba(3,8,14,.78);backdrop-filter:blur(12px);font-size:9px;color:#91a5bb;pointer-events:none}
+
+/* v25.31 resilient splash fallback posters */
+.lx-fallback-poster{position:relative;display:flex!important;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(145deg,#0a1726,#203c5f)!important;color:#fff!important}
+.lx-fallback-poster::before{content:"";position:absolute;inset:-20%;background:radial-gradient(circle at 70% 20%,rgba(92,155,255,.55),transparent 32%),linear-gradient(140deg,transparent 30%,rgba(255,255,255,.12),transparent 65%);transform:rotate(-8deg)}
+.lx-fallback-poster span,.lx-fallback-poster b{position:relative;z-index:1;text-shadow:0 4px 20px rgba(0,0,0,.75)}
+.lx-fallback-poster span{font-size:clamp(9px,1vw,13px);font-weight:900;letter-spacing:.16em}.lx-fallback-poster b{font-size:clamp(22px,2vw,34px);margin-top:7px}
+.lx-fallback-poster.p1{background:linear-gradient(145deg,#22132d,#70428a)!important}.lx-fallback-poster.p2{background:linear-gradient(145deg,#17241b,#40684b)!important}.lx-fallback-poster.p3{background:linear-gradient(145deg,#301515,#8c3b35)!important}.lx-fallback-poster.p4{background:linear-gradient(145deg,#252113,#756531)!important}.lx-fallback-poster.p5{background:linear-gradient(145deg,#111d2f,#315c8f)!important}

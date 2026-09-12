@@ -1,13 +1,16 @@
-LX Plus v25.30 · Rebuild Core
+LX Plus v25.31 — Stable Rebuild
 
-Publique TODOS estes arquivos na raiz:
-- index.html
-- app.css
-- lxplus.js
-- CNAME
-- pasta assets (ícone)
+PUBLICAÇÃO
+1. Na raiz do GitHub Pages, substitua:
+   index.html
+   app.css
+   lxplus.js
+   CNAME
+   assets/icon.svg
+2. Remova sw.js antigo e a pasta js/ antiga.
+3. Faça Commit changes.
+4. Confirme na tela:
+   LX Plus v25.31 · Stable Rebuild
+5. Se aparecer versão antiga, use Ctrl+F5 uma única vez.
 
-A v25.30 não usa a pasta js antiga e não usa Service Worker.
-Você pode remover a pasta js antiga e sw.js da hospedagem para não confundir futuras versões.
-
-No login deve aparecer: LX Plus v25.30 · Rebuild Core
+Não publique somente o index.html.
