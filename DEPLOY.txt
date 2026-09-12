@@ -1,33 +1,18 @@
-LX Plus v25.40.1 — Symmetric Screen Share
-BASE: v25.40 Call Sync + Notifications
+LX Plus v25.41 — Shared Audio + Group Calls
 
-PUBLICAÇÃO
-1. Substitua na raiz do site:
-   - index.html
-   - app.css
-   - lxplus.js
-2. Mantenha CNAME e a pasta assets.
-3. Faça hard refresh no seu navegador (Ctrl+F5).
-4. A OUTRA PESSOA também precisa recarregar o site / fechar e abrir novamente.
-5. Confirme na autenticação:
-   LX Plus v25.40.1 · Symmetric Screen Share
+Publicar juntos:
+- index.html
+- app.css
+- lxplus.js
 
-TESTE RECOMENDADO
-1. Comece uma chamada de áudio.
-2. Você compartilha "Tela principal" e a outra pessoa confirma que vê.
-3. Pare a tela.
-4. A outra pessoa compartilha "Tela principal" e você confirma que vê.
-5. Repita com "Tela + câmera" nos dois sentidos.
-6. Encerre por cada lado uma vez e confirme que fecha para os dois.
+Supabase:
+- A migração de grupos foi aplicada no projeto durante esta atualização.
+- Não rode GROUP-CALLS-V2541.sql novamente no mesmo projeto.
 
-SUPABASE
-As migrations da v25.40 JÁ ESTÃO aplicadas no projeto conectado.
-A v25.40.1 não precisa de nova migration.
-NÃO rode SUPABASE-CALL-SYNC-V2540.sql novamente; ele está no pacote apenas como backup/documentação.
+Teste recomendado:
+1. Ambos Ctrl+F5 e confirmam v25.41.
+2. Chamada 1:1: microfone, câmera, timer, compartilhar tela marcando “Compartilhar áudio”.
+3. Grupo: crie um grupo, inicie call e entre com 3 contas.
+4. Teste microfone, câmera, saída/entrada e compartilhamento dentro do grupo.
 
-CORREÇÃO PRINCIPAL
-O bug unilateral vinha da negociação WebRTC: a ponta que atendia podia terminar com o vídeo em recvonly.
-A v25.40.1 reserva câmera + tela como sendrecv desde o começo e também possui fallback de renegociação se um navegador perder a direção de envio.
-
-R2
-A integração R2 da v25.39 continua preservada. Consulte R2-SETUP.txt.
+Observação: o navegador só fornece áudio da tela quando a fonte escolhida suporta áudio e a opção “Compartilhar áudio” está habilitada na caixa do navegador.

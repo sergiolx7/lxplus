@@ -1,0 +1,25 @@
+{
+  "version": "25.41",
+  "syntax": {"lxplus_js": true, "inline_scripts": true},
+  "static": {"duplicate_ids": 0, "missing_local_refs": 0},
+  "media": {
+    "mesh_negotiations_sendrecv": 3,
+    "web_audio_screen_plus_mic": true,
+    "audio_sender_replace": true,
+    "video_sender_replace": true,
+    "page_errors": 0
+  },
+  "groups_ui": {
+    "desktop_ok": true,
+    "mobile_ok": true,
+    "mobile_overflow": false,
+    "create_form_ok": true
+  },
+  "supabase": {
+    "group_schema_applied": true,
+    "rls_signal_test": true,
+    "two_user_heartbeat_participants": 2,
+    "realtime_tables": ["lx_group_calls", "lx_group_call_members", "lx_group_call_signals"]
+  },
+  "environment_note": "Cross-network ICE traffic is blocked in this QA environment; SDP/media sender logic and real Supabase signaling were tested separately."
+}

@@ -1,29 +1,12 @@
 {
-  "version": "25.40.1",
-  "name": "Symmetric Screen Share",
-  "base": "25.40 Call Sync + Notifications",
-  "files": ["index.html", "app.css", "lxplus.js", "CNAME"],
+  "version": "25.41",
+  "name": "Shared Audio + Group Calls",
   "features": [
-    "symmetric caller/callee screen sharing",
-    "reserved sendrecv camera and screen transceivers",
-    "screen replace mode in both directions",
-    "dual screen plus camera mode in both directions",
-    "send-direction renegotiation fallback",
-    "remote hangup synchronization preserved",
-    "call elapsed timer preserved",
-    "persistent message notifications preserved",
-    "R2 media storage preserved"
-  ],
-  "database_migrations_applied": [
-    "lx_call_sync_notifications_v2540",
-    "lx_call_signal_kinds_v2540"
-  ],
-  "new_database_migration_required": false,
-  "qa": {
-    "symmetric_sdp": "PASS",
-    "javascript_syntax": "PASS",
-    "duplicate_ids": 0,
-    "missing_local_refs": 0
-  },
-  "rollback": "25.40 Call Sync + Notifications"
+    "screen share system/tab audio mixed with microphone",
+    "call duration and start clock separated from network status",
+    "persistent groups up to 6 members",
+    "small-group audio/video WebRTC mesh",
+    "group screen share with optional shared audio",
+    "one-to-one Stable Calls retained"
+  ]
 }

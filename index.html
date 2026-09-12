@@ -10,7 +10,7 @@
 
   <script>
   (function(){
-    var BUILD='25.40.1',KEY='lxplus_build_seen';
+    var BUILD='25.41',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -39,8 +39,8 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=25.40.1">
-  <title>LX Plus v25.40.1 · Symmetric Screen Share</title>
+  <link rel="stylesheet" href="app.css?v=25.41">
+  <title>LX Plus v25.41 · Shared Audio + Group Calls</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -111,7 +111,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.40.1 · Symmetric Screen Share</small>
+        <small class="auth-build-version">LX Plus v25.41 · Shared Audio + Group Calls</small>
       </div>
     </div>
   </section>
@@ -242,19 +242,20 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   })();
   </script>
-  <script src="lxplus.js?v=25.40.1"></script>
+  <script src="lxplus.js?v=25.41"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded',function(){
-/* LX SOCIAL EMBEDDED v25.40.1 — SYMMETRIC SCREEN SHARE */
+/* LX SOCIAL EMBEDDED v25.41 — SHARED AUDIO + GROUP CALLS */
 (()=>{
   const LX=window.LX=window.LX||{};
   const U=LX.ui;
   const esc=s=>U?.esc?U.esc(s):String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const state={
     booted:false,directory:[],coreChannel:null,presenceChannel:null,presenceMap:{},presenceReady:false,signalChannel:null,activeCall:null,incoming:null,
-    pc:null,localStream:null,remoteStream:null,remoteCameraStream:null,remoteScreenStream:null,screenStream:null,screenSender:null,screenTransceiver:null,cameraTransceiver:null,videoSender:null,cameraPlaceholderTrack:null,screenPlaceholderTrack:null,placeholderCanvases:[],processed:new Set(),pendingIce:[],remoteTracks:new Map(),remoteScreenMid:null,remoteShareMode:null,remoteSharing:false,screenMode:null,makingOffer:false,
-    callTimeout:null,callTimer:null,callStartedAt:null,callPollTimer:null,callPollBusy:false,openTab:'discover',drawerOpen:false,lastError:'',loading:false
+    pc:null,localStream:null,remoteStream:null,remoteAudioStream:null,remoteCameraStream:null,remoteScreenStream:null,screenStream:null,audioTransceiver:null,screenSender:null,screenTransceiver:null,cameraTransceiver:null,videoSender:null,cameraPlaceholderTrack:null,screenPlaceholderTrack:null,placeholderCanvases:[],processed:new Set(),pendingIce:[],remoteTracks:new Map(),remoteScreenMid:null,remoteShareMode:null,remoteSharing:false,screenMode:null,makingOffer:false,negotiating:false,pendingNegotiation:null,lastRemoteOfferAt:0,lastLocalOfferAt:0,remoteShareRecoveryTimer:null,
+    reconnectTimer:null,reconnectAttempts:0,reconnectInFlight:false,callTimeout:null,callTimer:null,callStartedAt:null,callStartedClock:null,networkState:'idle',callPollTimer:null,callPollBusy:false,openTab:'discover',drawerOpen:false,lastError:'',loading:false,
+    screenAudioTrack:null,screenAudioContext:null,screenAudioDestination:null,screenAudioMixedTrack:null,screenAudioSources:[]
   };
   const db=()=>LX.cloud?.db?.();
   const me=()=>LX.cloud?.user?.()||U?.state?.user||null;
@@ -405,11 +406,12 @@
   async function render(tab=state.openTab){
     state.openTab=tab;
     const {drawer}=ensureShell();
+    if(tab==='groups'&&LX.groupCall?.renderIn)return LX.groupCall.renderIn(drawer);
     const s=sectionData();
     let list=tab==='requests'?[...s.incoming,...s.outgoing]:tab==='discover'?s.discover:[...s.friends];
     if(tab==='friends')list.sort((a,b)=>String(LX.chat?.summary?.(b.user_id)?.created_at||'').localeCompare(String(LX.chat?.summary?.(a.user_id)?.created_at||'')));
     const settings=await getOwnSocialSettings();
-    drawer.innerHTML=`${shellHeader('Comunidade','Contatos, chamadas e presença LX em um só lugar')}<div class="lx-community-status"><div><b>${s.friends.length}</b><span>CONTATOS</span></div><div><b>${s.incoming.length}</b><span>PEDIDOS</span></div><div><b>${settings?.calls_enabled!==false?'ON':'OFF'}</b><span>CHAMADAS</span></div></div><nav class="lx-community-tabs"><button class="${tab==='friends'?'active':''}" onclick="LX.social.open('friends')">Conversas</button><button class="${tab==='requests'?'active':''}" onclick="LX.social.open('requests')">Solicitações${s.incoming.length?` <i>${s.incoming.length}</i>`:''}</button><button class="${tab==='discover'?'active':''}" onclick="LX.social.open('discover')">Pessoas</button></nav><div class="lx-community-search">${icon('search')}<input id="lxCommunitySearch" placeholder="Pesquisar contato..."></div><div id="lxCommunityList" class="lx-community-list">${state.loading?'<div class="lx-community-loading">Carregando contatos...</div>':list.length?list.map(personCard).join(''):emptyCard(tab)}</div><footer class="lx-community-footer"><div class="lx-community-footer-actions"><button onclick="LX.social.openSettings()">${icon('settings')} Privacidade e chamadas</button></div><span>WebRTC · LX Social</span></footer>`;
+    drawer.innerHTML=`${shellHeader('Comunidade','Contatos, chamadas e presença LX em um só lugar')}<div class="lx-community-status"><div><b>${s.friends.length}</b><span>CONTATOS</span></div><div><b>${s.incoming.length}</b><span>PEDIDOS</span></div><div><b>${settings?.calls_enabled!==false?'ON':'OFF'}</b><span>CHAMADAS</span></div></div><nav class="lx-community-tabs"><button class="${tab==='friends'?'active':''}" onclick="LX.social.open('friends')">Conversas</button><button class="${tab==='requests'?'active':''}" onclick="LX.social.open('requests')">Solicitações${s.incoming.length?` <i>${s.incoming.length}</i>`:''}</button><button class="${tab==='discover'?'active':''}" onclick="LX.social.open('discover')">Pessoas</button><button class="${tab==='groups'?'active':''}" onclick="LX.social.open('groups')">Grupos</button></nav><div class="lx-community-search">${icon('search')}<input id="lxCommunitySearch" placeholder="Pesquisar contato..."></div><div id="lxCommunityList" class="lx-community-list">${state.loading?'<div class="lx-community-loading">Carregando contatos...</div>':list.length?list.map(personCard).join(''):emptyCard(tab)}</div><footer class="lx-community-footer"><div class="lx-community-footer-actions"><button onclick="LX.social.openSettings()">${icon('settings')} Privacidade e chamadas</button></div><span>WebRTC · LX Social · grupos</span></footer>`;
     const q=document.getElementById('lxCommunitySearch');
     q?.addEventListener('input',()=>{const term=q.value.trim().toLowerCase();document.querySelectorAll('#lxCommunityList .lx-community-person').forEach(el=>el.classList.toggle('hidden',!!term&&!el.dataset.name.includes(term)))})
   }
@@ -465,26 +467,78 @@
     if(error)return (LX.toast||((m)=>console.log(m)))('Não foi possível remover.'); (LX.toast||((m)=>console.log(m)))('Amigo removido.'); await refreshDirectory(); await render('friends');
   }
 
-  function iceConfig(){return {iceServers:LX.config?.rtc?.iceServers?.length?LX.config.rtc.iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']}],iceCandidatePoolSize:4}}
+  function iceConfig(){
+    const configured=Array.isArray(LX.config?.rtc?.iceServers)?LX.config.rtc.iceServers.filter(Boolean):[];
+    const defaults=[
+      {urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:stun2.l.google.com:19302','stun:stun3.l.google.com:19302']}
+    ];
+    const iceServers=configured.length?configured:defaults;
+    return {iceServers,iceCandidatePoolSize:8,bundlePolicy:'max-bundle',rtcpMuxPolicy:'require',iceTransportPolicy:'all'}
+  }
   async function getLocalMedia(mode='video'){
     if(!navigator.mediaDevices?.getUserMedia)throw new Error('MEDIA_UNSUPPORTED');
-    try{return await navigator.mediaDevices.getUserMedia({audio:true,video:mode==='video'?{width:{ideal:1280},height:{ideal:720},facingMode:'user'}:false})}
-    catch(e){if(mode==='video'){const fallback=await navigator.mediaDevices.getUserMedia({audio:true,video:false});(LX.toast||((m)=>console.log(m)))('Câmera indisponível. A chamada continuará em áudio.');return fallback}throw e}
+    const audio={echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:{ideal:1}};
+    const video=mode==='video'?{width:{ideal:1280},height:{ideal:720},frameRate:{ideal:30,max:30},facingMode:'user'}:false;
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio,video});
+      for(const t of stream.getAudioTracks())t.enabled=true;
+      return stream;
+    }catch(e){
+      if(mode==='video'){
+        try{const fallback=await navigator.mediaDevices.getUserMedia({audio:true,video:false});for(const t of fallback.getAudioTracks())t.enabled=true;(LX.toast||((m)=>console.log(m)))('Câmera indisponível. A chamada continuará em áudio.');return fallback}catch{}
+      }
+      try{const fallback=await navigator.mediaDevices.getUserMedia({audio:true,video:false});for(const t of fallback.getAudioTracks())t.enabled=true;return fallback}catch{}
+      throw e;
+    }
   }
   function callPerson(id){return state.directory.find(x=>String(x.user_id)===String(id))||{user_id:id,name:'Contato LX',verified:false,avatar_url:null,calls_enabled:true}}
   function fmtCallTime(ms){const total=Math.max(0,Math.floor(ms/1000)),h=Math.floor(total/3600),m=Math.floor((total%3600)/60),sec=total%60;return h?`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`:`${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`}
-  function tickCallTimer(){const el=document.getElementById('lxCallTimer');if(el)el.textContent=state.callStartedAt?fmtCallTime(Date.now()-state.callStartedAt):'00:00'}
-  function startCallTimer(answeredAt){const parsed=answeredAt?new Date(answeredAt).getTime():Date.now();state.callStartedAt=Number.isFinite(parsed)?parsed:Date.now();clearInterval(state.callTimer);tickCallTimer();state.callTimer=setInterval(tickCallTimer,1000)}
-  function stopCallTimer(){clearInterval(state.callTimer);state.callTimer=null;state.callStartedAt=null}
+  function fmtClock(ts){try{return new Intl.DateTimeFormat('pt-BR',{hour:'2-digit',minute:'2-digit'}).format(new Date(ts))}catch{return new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}}
+  function tickCallTimer(){
+    const elapsed=state.callStartedAt?fmtCallTime(Date.now()-state.callStartedAt):'00:00';
+    const el=document.getElementById('lxCallTimer');if(el)el.textContent=elapsed;
+    const top=document.getElementById('lxCallStatusTop');if(top&&state.callStartedAt)top.textContent=`Em chamada · ${elapsed}`;
+    const clock=document.getElementById('lxCallStartedClock');if(clock)clock.textContent=state.callStartedAt?`desde ${fmtClock(state.callStartedAt)}`:'aguardando';
+  }
+  function startCallTimer(answeredAt){const parsed=answeredAt?new Date(answeredAt).getTime():Date.now();state.callStartedAt=Number.isFinite(parsed)?parsed:Date.now();state.callStartedClock=state.callStartedAt;clearInterval(state.callTimer);tickCallTimer();state.callTimer=setInterval(tickCallTimer,1000)}
+  function stopCallTimer(){clearInterval(state.callTimer);state.callTimer=null;state.callStartedAt=null;state.callStartedClock=null}
+  function setCallNetwork(label='Conectando mídia',kind='connecting'){state.networkState=kind;const el=document.getElementById('lxCallNetwork');if(el){el.textContent=label;el.className=`lx-call-network ${kind}`}}
+  function showAudioUnlock(show){document.getElementById('lxAudioUnlock')?.classList.toggle('hidden',!show)}
+  async function resumeCallAudio(){
+    const el=document.getElementById('lxRemoteAudio');if(!el)return false;
+    try{el.muted=false;el.volume=1;await el.play();showAudioUnlock(false);return true}catch(e){console.warn('LX remote audio autoplay',e);showAudioUnlock(true);return false}
+  }
+  async function restoreMicSender(){
+    const mic=state.localStream?.getAudioTracks?.()[0]||null,tr=state.audioTransceiver||state.pc?.getTransceivers?.().find(t=>t?.receiver?.track?.kind==='audio');
+    if(tr?.sender){try{tr.direction='sendrecv'}catch{};await tr.sender.replaceTrack(mic).catch(e=>console.warn('LX restore mic',e))}
+    try{state.screenAudioMixedTrack?.stop?.()}catch{};state.screenAudioMixedTrack=null;state.screenAudioDestination=null;state.screenAudioSources=[];
+    try{await state.screenAudioContext?.close?.()}catch{}state.screenAudioContext=null;state.screenAudioTrack=null;
+  }
+  async function enableSharedScreenAudio(displayStream){
+    const screenAudio=displayStream?.getAudioTracks?.()[0]||null;state.screenAudioTrack=screenAudio;
+    if(!screenAudio)return false;
+    const tr=state.audioTransceiver||state.pc?.getTransceivers?.().find(t=>t?.receiver?.track?.kind==='audio');if(!tr?.sender)return false;
+    try{tr.direction='sendrecv'}catch{}
+    const mic=state.localStream?.getAudioTracks?.()[0]||null,AudioCtx=window.AudioContext||window.webkitAudioContext;
+    if(!AudioCtx){await tr.sender.replaceTrack(screenAudio);return true}
+    try{
+      const ctx=new AudioCtx();await ctx.resume?.().catch(()=>{});const dest=ctx.createMediaStreamDestination(),sources=[];
+      if(mic){const src=ctx.createMediaStreamSource(new MediaStream([mic]));src.connect(dest);sources.push(src)}
+      const screenSrc=ctx.createMediaStreamSource(new MediaStream([screenAudio]));screenSrc.connect(dest);sources.push(screenSrc);
+      const mixed=dest.stream.getAudioTracks()[0];if(!mixed)throw new Error('MIX_TRACK_MISSING');
+      try{mixed.contentHint='speech'}catch{};state.screenAudioContext=ctx;state.screenAudioDestination=dest;state.screenAudioSources=sources;state.screenAudioMixedTrack=mixed;
+      await tr.sender.replaceTrack(mixed);return true;
+    }catch(e){console.warn('LX shared audio mix',e);try{await tr.sender.replaceTrack(screenAudio);return true}catch{return false}}
+  }
   function mountCallUI(person,mode='video',status='Conectando...'){
     close(); document.getElementById('lxCallOverlay')?.remove();
     const el=document.createElement('div'); el.id='lxCallOverlay'; el.className='lx-call-overlay lx-call-pro';
-    el.innerHTML=`<div class="lx-call-stage"><video id="lxRemoteVideo" class="lx-call-remote" autoplay playsinline></video><video id="lxRemoteScreen" class="lx-call-screen hidden" autoplay playsinline></video><div id="lxRemoteFallback" class="lx-call-remote-fallback">${avatar(person,'lx-call-big-avatar')}<strong>${verified(person)}</strong><small id="lxCallStatus">${esc(status)}</small></div><div id="lxShareBadge" class="lx-share-badge hidden">${icon('screen')} Tela compartilhada</div><div class="lx-call-local-wrap"><video id="lxLocalVideo" class="lx-call-local" autoplay muted playsinline></video><span id="lxLocalLabel">VOCÊ</span></div><div id="lxLocalShareWrap" class="lx-call-local-share hidden"><video id="lxLocalSharePreview" autoplay muted playsinline></video><span>SUA TELA</span></div><header class="lx-call-header"><button data-lx-hangup="1" onclick="LX.social.endCurrentCall()" aria-label="Encerrar e voltar">‹</button><div><strong>${verified(person)}</strong><small id="lxCallStatusTop">${esc(status)}</small></div><div class="lx-call-meta"><span id="lxCallTimer" class="lx-call-timer">00:00</span><span class="lx-call-encrypted">LX CALL · WEBRTC</span></div></header><div id="lxReactionLayer" class="lx-reaction-layer"></div><div id="lxReactionPicker" class="lx-reaction-picker hidden"><button onclick="LX.social.sendReaction('❤️')">❤️</button><button onclick="LX.social.sendReaction('😂')">😂</button><button onclick="LX.social.sendReaction('🔥')">🔥</button><button onclick="LX.social.sendReaction('👏')">👏</button><button onclick="LX.social.sendReaction('😮')">😮</button><button onclick="LX.social.sendReaction('👍')">👍</button></div><div id="lxSharePicker" class="lx-share-picker hidden"><button onclick="LX.social.shareScreen('replace')"><b>${icon('screen')} Tela principal</b><small>Mostra sua tela no lugar da câmera. Mais compatível.</small></button><button onclick="LX.social.shareScreen('dual')"><b>${icon('video')} Tela + câmera</b><small>Compartilha a tela e mantém sua câmera na chamada.</small></button></div><div class="lx-call-controls"><button id="lxMicBtn" onclick="LX.social.toggleMic()">${icon('mic')}<small>Microfone</small></button><button id="lxCamBtn" onclick="LX.social.toggleCamera()">${icon('camera')}<small>Câmera</small></button><button id="lxShareBtn" onclick="LX.social.toggleSharePicker()">${icon('screen')}<small>Compartilhar</small></button><button id="lxReactionBtn" onclick="LX.social.toggleReactions()">${icon('smile')}<small>Reações</small></button><button onclick="LX.social.toggleCallFullscreen()">${icon('full')}<small>Tela cheia</small></button><button class="hangup" data-lx-hangup="1" onclick="LX.social.endCurrentCall()">${icon('hang')}<small>Encerrar</small></button></div></div>`;
+    el.innerHTML=`<div class="lx-call-stage"><audio id="lxRemoteAudio" autoplay playsinline></audio><video id="lxRemoteVideo" class="lx-call-remote" autoplay muted playsinline></video><video id="lxRemoteScreen" class="lx-call-screen hidden" autoplay muted playsinline></video><button id="lxAudioUnlock" class="lx-call-audio-unlock hidden" onclick="LX.social.resumeCallAudio()">🔊 Ativar áudio da chamada</button><div id="lxRemoteFallback" class="lx-call-remote-fallback">${avatar(person,'lx-call-big-avatar')}<strong>${verified(person)}</strong><small id="lxCallStatus">${esc(status)}</small></div><div id="lxShareBadge" class="lx-share-badge hidden">${icon('screen')} Tela compartilhada</div><div class="lx-call-local-wrap"><video id="lxLocalVideo" class="lx-call-local" autoplay muted playsinline></video><span id="lxLocalLabel">VOCÊ</span></div><div id="lxLocalShareWrap" class="lx-call-local-share hidden"><video id="lxLocalSharePreview" autoplay muted playsinline></video><span>SUA TELA</span></div><header class="lx-call-header"><button data-lx-hangup="1" onclick="LX.social.endCurrentCall()" aria-label="Encerrar e voltar">‹</button><div><strong>${verified(person)}</strong><small id="lxCallStatusTop">${esc(status)}</small></div><div class="lx-call-meta"><span id="lxCallNetwork" class="lx-call-network connecting">Conectando mídia</span><span id="lxCallTimer" class="lx-call-timer">00:00</span><span id="lxCallStartedClock" class="lx-call-start-clock">aguardando</span></div></header><div id="lxReactionLayer" class="lx-reaction-layer"></div><div id="lxReactionPicker" class="lx-reaction-picker hidden"><button onclick="LX.social.sendReaction('❤️')">❤️</button><button onclick="LX.social.sendReaction('😂')">😂</button><button onclick="LX.social.sendReaction('🔥')">🔥</button><button onclick="LX.social.sendReaction('👏')">👏</button><button onclick="LX.social.sendReaction('😮')">😮</button><button onclick="LX.social.sendReaction('👍')">👍</button></div><div id="lxSharePicker" class="lx-share-picker hidden"><button onclick="LX.social.shareScreen('replace')"><b>${icon('screen')} Tela principal</b><small>Mostra sua tela no lugar da câmera. Inclui áudio quando disponível.</small></button><button onclick="LX.social.shareScreen('dual')"><b>${icon('video')} Tela + câmera</b><small>Compartilha a tela, mantém a câmera e tenta incluir o áudio da tela.</small></button></div><div class="lx-call-controls"><button id="lxMicBtn" onclick="LX.social.toggleMic()">${icon('mic')}<small>Microfone</small></button><button id="lxCamBtn" onclick="LX.social.toggleCamera()">${icon('camera')}<small>Câmera</small></button><button id="lxShareBtn" onclick="LX.social.toggleSharePicker()">${icon('screen')}<small>Compartilhar</small></button><button id="lxReactionBtn" onclick="LX.social.toggleReactions()">${icon('smile')}<small>Reações</small></button><button onclick="LX.social.toggleCallFullscreen()">${icon('full')}<small>Tela cheia</small></button><button class="hangup" data-lx-hangup="1" onclick="LX.social.endCurrentCall()">${icon('hang')}<small>Encerrar</small></button></div></div>`;
     document.body.appendChild(el); document.documentElement.classList.add('lx-call-open');
     const local=document.getElementById('lxLocalVideo'); if(local&&state.localStream){local.srcObject=state.localStream;local.classList.toggle('hidden',!state.localStream.getVideoTracks().length);local.play?.().catch(()=>{})}
     updateCallStatus(status); tickCallTimer(); return el;
   }
-  function updateCallStatus(text){['lxCallStatus','lxCallStatusTop'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=text})}
+  function updateCallStatus(text){const a=document.getElementById('lxCallStatus');if(a)a.textContent=text;const b=document.getElementById('lxCallStatusTop');if(b&&!state.callStartedAt)b.textContent=text}
   function showIncoming(call){
     if(state.activeCall||state.incoming?.id===call.id)return; state.incoming=call;
     const person=callPerson(call.caller_id); document.getElementById('lxIncomingCall')?.remove();
@@ -514,7 +568,8 @@
     const targetMid=String(payload.mid??(mode==='dual'?currentScreenMid():currentCameraMid())??'');
     state.remoteSharing=!!active;state.remoteShareMode=active?mode:null;state.remoteScreenMid=active?targetMid:null;
     const overlay=document.getElementById('lxCallOverlay'),badge=document.getElementById('lxShareBadge'),screen=document.getElementById('lxRemoteScreen'),remote=document.getElementById('lxRemoteVideo');
-    overlay?.classList.toggle('is-sharing',!!active);overlay?.classList.toggle('is-dual-sharing',!!active&&mode==='dual');badge?.classList.toggle('hidden',!active);
+    overlay?.classList.toggle('is-sharing',!!active);overlay?.classList.toggle('is-dual-sharing',!!active&&mode==='dual');badge?.classList.toggle('hidden',!active);if(badge&&active)badge.innerHTML=`${icon('screen')} ${payload.screenAudio?'Tela + áudio':'Tela compartilhada'}`;
+    clearTimeout(state.remoteShareRecoveryTimer);state.remoteShareRecoveryTimer=null;
     if(active&&mode==='dual'){
       const tr=transceiverByMid(targetMid)||state.screenTransceiver;const track=tr?.receiver?.track||state.remoteTracks.get(targetMid);if(track)attachRemoteScreenTrack(track);
       updateCallStatus('Recebendo tela + câmera');
@@ -522,42 +577,64 @@
       if(screen){screen.srcObject=null;screen.classList.add('hidden')}state.remoteScreenStream=null;
       const tr=transceiverByMid(targetMid)||state.cameraTransceiver;const track=tr?.receiver?.track||state.remoteTracks.get(targetMid);if(track)attachRemoteCameraTrack(track);remote?.play?.().catch(()=>{});
       updateCallStatus('Recebendo tela compartilhada');
-      // Compatibilidade: builds antigas enviavam o sinal de share sem renegociar.
-      // Se o peer antigo tinha respondido recvonly (comum em chamadas de áudio), um offer daqui
-      // dá a ele a chance de responder sendrecv agora que a tela já está no sender.
-      if(!payload.mode&&!payload.mid&&state.pc?.signalingState==='stable')setTimeout(()=>renegotiate('legacy-remote-share-recovery'),80);
     }else{
       if(screen){screen.srcObject=null;screen.classList.add('hidden')}state.remoteScreenStream=null;overlay?.classList.remove('is-dual-sharing');
       if(state.activeCall?.mode==='audio'){if(remote){remote.srcObject=state.remoteCameraStream;remote.classList.add('lx-video-stalled')}document.getElementById('lxRemoteFallback')?.classList.remove('hidden')}
       updateCallStatus('Conectado');
+      return;
     }
+    // Backward-compatible recovery. Older peers only emitted a `share` signal and could
+    // leave their video transceiver on a black placeholder/recvonly track. If no fresh
+    // remote offer follows the share signal, we initiate a safe renegotiation from here.
+    const shareSeenAt=Date.now();
+    state.remoteShareRecoveryTimer=setTimeout(async()=>{
+      if(!state.activeCall||!state.pc||!state.remoteSharing)return;
+      if(state.lastRemoteOfferAt>=shareSeenAt-120)return;
+      if(state.pc.signalingState!=='stable')await waitForStableSignaling(2500);
+      if(state.pc?.signalingState==='stable')await renegotiate('remote-share-recovery');
+    },520);
   }
-  async function bindCalleeMediaToOffer(){
+  async function bindLocalMediaToOffer(){
     const pc=state.pc;if(!pc)return;
     const trs=pc.getTransceivers?.()||[];
     const audioTrack=state.localStream?.getAudioTracks?.()[0]||null;
     const audioTr=trs.find(t=>t?.receiver?.track?.kind==='audio');
-    if(audioTr){try{audioTr.direction='sendrecv'}catch{};if(audioTrack)await audioTr.sender.replaceTrack(audioTrack).catch(e=>console.warn('LX callee audio sender',e))}
+    if(audioTr){state.audioTransceiver=audioTr;try{audioTr.direction='sendrecv'}catch{};if(audioTrack){audioTrack.enabled=true;await audioTr.sender.replaceTrack(audioTrack).catch(e=>console.warn('LX local audio sender',e))}}
     const videos=trs.filter(t=>t?.receiver?.track?.kind==='video');
     const cameraTr=videos[0]||null,screenTr=videos[1]||null;
     const videoTrack=state.localStream?.getVideoTracks?.()[0]||null,shareTrack=state.screenStream?.getVideoTracks?.()[0]||null;
     const cameraSource=(state.screenMode==='replace'&&shareTrack)?shareTrack:(videoTrack||state.cameraPlaceholderTrack||null);
     const screenSource=(state.screenMode==='dual'&&shareTrack)?shareTrack:(state.screenPlaceholderTrack||null);
-    if(cameraTr){state.cameraTransceiver=cameraTr;state.videoSender=cameraTr.sender;try{cameraTr.direction='sendrecv'}catch{};await cameraTr.sender.replaceTrack(cameraSource).catch(e=>console.warn('LX callee camera sender',e))}
-    if(screenTr){state.screenTransceiver=screenTr;state.screenSender=screenTr.sender;try{screenTr.direction='sendrecv'}catch{};await screenTr.sender.replaceTrack(screenSource).catch(e=>console.warn('LX callee screen sender',e))}
+    if(cameraTr){state.cameraTransceiver=cameraTr;state.videoSender=cameraTr.sender;try{cameraTr.direction='sendrecv'}catch{};await cameraTr.sender.replaceTrack(cameraSource).catch(e=>console.warn('LX local camera sender',e))}
+    if(screenTr){state.screenTransceiver=screenTr;state.screenSender=screenTr.sender;try{screenTr.direction='sendrecv'}catch{};await screenTr.sender.replaceTrack(screenSource).catch(e=>console.warn('LX local screen sender',e))}
+  }
+  function clearPeerRecovery(){clearTimeout(state.reconnectTimer);state.reconnectTimer=null;state.reconnectAttempts=0;state.reconnectInFlight=false}
+  async function recoverPeerConnection(reason='network'){
+    const pc=state.pc;if(!pc||!state.activeCall||pc.signalingState==='closed'||state.reconnectInFlight)return false;
+    if(pc.connectionState==='connected'||pc.iceConnectionState==='connected'||pc.iceConnectionState==='completed'){clearPeerRecovery();return true}
+    state.reconnectInFlight=true;state.reconnectAttempts=Math.min(6,(state.reconnectAttempts||0)+1);
+    setCallNetwork(state.reconnectAttempts===1?'Reconectando':`Reconectando · ${state.reconnectAttempts}`,'reconnecting');
+    try{try{pc.restartIce?.()}catch{};if(pc.signalingState!=='stable')await waitForStableSignaling(2200);if(pc.signalingState==='stable')await renegotiate(`ice-restart-${reason}-${state.reconnectAttempts}`,{iceRestart:true});return true}
+    catch(e){console.warn('LX ICE recovery',e);return false}
+    finally{state.reconnectInFlight=false}
+  }
+  function schedulePeerRecovery(reason='network',delay=1400){
+    if(!state.activeCall||!state.pc)return;clearTimeout(state.reconnectTimer);
+    state.reconnectTimer=setTimeout(async()=>{const pc=state.pc;if(!pc||!state.activeCall)return;if(pc.connectionState==='connected'||pc.iceConnectionState==='connected'||pc.iceConnectionState==='completed'){clearPeerRecovery();return}await recoverPeerConnection(reason);if(state.activeCall&&state.pc&&!['connected','completed'].includes(state.pc.iceConnectionState||'')&&state.pc.connectionState!=='connected')schedulePeerRecovery(reason,Math.min(6500,2200+(state.reconnectAttempts||0)*900))},delay);
   }
   async function createPeer(){
     if(state.pc)try{state.pc.close()}catch{};
-    state.pendingIce=[];state.processed.clear();state.videoSender=null;state.screenSender=null;state.screenTransceiver=null;state.cameraTransceiver=null;state.remoteTracks=new Map();state.remoteScreenMid=null;state.remoteShareMode=null;state.remoteSharing=false;state.placeholderCanvases=[];
+    state.pendingIce=[];state.processed.clear();state.videoSender=null;state.audioTransceiver=null;state.screenSender=null;state.screenTransceiver=null;state.cameraTransceiver=null;state.remoteTracks=new Map();state.remoteScreenMid=null;state.remoteShareMode=null;state.remoteSharing=false;state.placeholderCanvases=[];state.reconnectAttempts=0;clearTimeout(state.reconnectTimer);state.reconnectTimer=null;state.reconnectInFlight=false;state.pendingNegotiation=null;state.negotiating=false;state.lastRemoteOfferAt=0;state.lastLocalOfferAt=0;
     try{state.cameraPlaceholderTrack?.stop?.()}catch{};try{state.screenPlaceholderTrack?.stop?.()}catch{};state.cameraPlaceholderTrack=null;state.screenPlaceholderTrack=null;
-    const pc=new RTCPeerConnection(iceConfig());state.pc=pc;state.remoteStream=new MediaStream();state.remoteCameraStream=new MediaStream();state.remoteScreenStream=new MediaStream();
-    const remote=document.getElementById('lxRemoteVideo');if(remote){remote.srcObject=state.remoteCameraStream;remote.autoplay=true;remote.playsInline=true;remote.muted=false;remote.onloadedmetadata=()=>remote.play?.().catch(()=>{})}
+    const pc=new RTCPeerConnection(iceConfig());state.pc=pc;state.remoteStream=new MediaStream();state.remoteAudioStream=new MediaStream();state.remoteCameraStream=new MediaStream();state.remoteScreenStream=new MediaStream();
+    const remote=document.getElementById('lxRemoteVideo'),remoteAudio=document.getElementById('lxRemoteAudio');if(remote){remote.srcObject=state.remoteCameraStream;remote.autoplay=true;remote.playsInline=true;remote.muted=true;remote.onloadedmetadata=()=>remote.play?.().catch(()=>{})}if(remoteAudio){remoteAudio.srcObject=state.remoteAudioStream;remoteAudio.autoplay=true;remoteAudio.muted=false;remoteAudio.volume=1}
     state.cameraPlaceholderTrack=makePlaceholderVideoTrack('camera');state.screenPlaceholderTrack=makePlaceholderVideoTrack('screen');
     // The caller defines a stable SDP layout up front: audio, camera, dedicated screen.
     // The callee waits for that offer and binds its local tracks to those exact transceivers
     // before creating the answer. This avoids duplicate m-lines and recvonly asymmetry.
     if(state.activeCall?.role==='caller'){
-      const audioTrack=state.localStream?.getAudioTracks?.()[0];if(audioTrack)pc.addTrack(audioTrack,state.localStream);
+      const audioTrack=state.localStream?.getAudioTracks?.()[0]||null;
+      try{const atr=audioTrack?pc.addTransceiver(audioTrack,{direction:'sendrecv',streams:[state.localStream]}):pc.addTransceiver('audio',{direction:'sendrecv'});state.audioTransceiver=atr;if(audioTrack)audioTrack.enabled=true}catch(e){console.warn('LX audio transceiver',e);if(audioTrack)pc.addTrack(audioTrack,state.localStream)}
       const videoTrack=state.localStream?.getVideoTracks?.()[0]||null;
       try{
         const cameraSource=videoTrack||state.cameraPlaceholderTrack;
@@ -573,7 +650,9 @@
     }
     pc.ontrack=e=>{
       const track=e.track,mid=String(e.transceiver?.mid??'');if(mid)state.remoteTracks.set(mid,track);
-      if(track.kind==='audio'){addTrack(state.remoteCameraStream,track);if(remote)remote.srcObject=state.remoteCameraStream}
+      if(track.kind==='audio'){
+        addTrack(state.remoteAudioStream,track);const ae=document.getElementById('lxRemoteAudio');if(ae){ae.srcObject=state.remoteAudioStream;ae.muted=false;ae.volume=1;resumeCallAudio().catch(()=>{})}
+      }
       else if(track.kind==='video'){
         const screenMid=currentScreenMid(),isScreen=(screenMid&&mid===screenMid)||(state.remoteScreenMid&&mid===String(state.remoteScreenMid));
         if(isScreen){if(state.remoteSharing&&state.remoteShareMode==='dual')attachRemoteScreenTrack(track)}
@@ -584,22 +663,37 @@
       remote?.play?.().catch(()=>{});updateCallStatus(state.remoteSharing?(state.remoteShareMode==='dual'?'Recebendo tela + câmera':'Recebendo tela compartilhada'):'Conectado');
     };
     pc.onicecandidate=e=>{if(e.candidate)sendSignal('ice',e.candidate.toJSON()).catch(()=>{})};
-    pc.onconnectionstatechange=()=>{const st=pc.connectionState;if(st==='connected'){updateCallStatus(state.remoteSharing?(state.remoteShareMode==='dual'?'Recebendo tela + câmera':'Recebendo tela compartilhada'):'Conectado');remote?.play?.().catch(()=>{})}else if(st==='connecting')updateCallStatus('Conectando...');else if(['failed','closed'].includes(st)){updateCallStatus('Chamada encerrada');setTimeout(()=>cleanupCall(false),700)}else if(st==='disconnected')updateCallStatus('Reconectando...')};
+    pc.oniceconnectionstatechange=()=>{const st=pc.iceConnectionState;if(st==='connected'||st==='completed'){clearPeerRecovery();setCallNetwork('Conectado','connected');resumeCallAudio().catch(()=>{})}else if(st==='checking')setCallNetwork('Conectando mídia','connecting');else if(st==='disconnected'){setCallNetwork('Reconectando','reconnecting');schedulePeerRecovery('ice-disconnected',1000)}else if(st==='failed'){setCallNetwork('Recuperando conexão','reconnecting');schedulePeerRecovery('ice-failed',200)}};
+    pc.onconnectionstatechange=()=>{const st=pc.connectionState;if(st==='connected'){clearPeerRecovery();setCallNetwork('Conectado','connected');updateCallStatus(state.remoteSharing?(state.remoteShareMode==='dual'?'Recebendo tela + câmera':'Recebendo tela compartilhada'):'Áudio e vídeo conectados');remote?.play?.().catch(()=>{});resumeCallAudio().catch(()=>{})}else if(st==='connecting')setCallNetwork('Conectando mídia','connecting');else if(st==='failed'){setCallNetwork('Recuperando conexão','reconnecting');schedulePeerRecovery('connection-failed',200)}else if(st==='disconnected'){setCallNetwork('Reconectando','reconnecting');schedulePeerRecovery('connection-disconnected',1000)}else if(st==='closed'&&state.activeCall){setCallNetwork('Encerrada','closed');updateCallStatus('Chamada encerrada')}};
     return pc;
   }
   async function sendSignal(kind,payload){const c=db(),call=state.activeCall;if(!c||!call?.id)return false;const {error}=await c.from('lx_call_signals').insert({call_id:call.id,sender_id:uid(),kind,payload});if(error)throw error;return true}
-  async function renegotiate(reason='media-change'){
+  async function renegotiate(reason='media-change',opts={}){
     const pc=state.pc;if(!pc||pc.signalingState==='closed')return false;
-    try{state.makingOffer=true;const offer=await pc.createOffer();await pc.setLocalDescription(offer);await sendSignal('offer',{type:offer.type,sdp:offer.sdp,reason});return true}catch(e){console.warn('LX renegotiate',reason,e);return false}finally{state.makingOffer=false}
+    if(state.negotiating){state.pendingNegotiation={reason,opts};return true}
+    state.negotiating=true;
+    try{
+      if(pc.signalingState!=='stable')await waitForStableSignaling(3200);
+      if(pc.signalingState!=='stable')return false;
+      state.makingOffer=true;
+      const offer=await pc.createOffer(opts?.iceRestart?{iceRestart:true}:undefined);
+      await pc.setLocalDescription(offer);state.lastLocalOfferAt=Date.now();
+      await sendSignal('offer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp,reason,iceRestart:!!opts?.iceRestart,build:'25.41'});return true;
+    }catch(e){console.warn('LX renegotiate',reason,e);return false}
+    finally{
+      state.makingOffer=false;state.negotiating=false;
+      const next=state.pendingNegotiation;state.pendingNegotiation=null;if(next&&state.activeCall)setTimeout(()=>renegotiate(next.reason,next.opts).catch(()=>{}),90);
+    }
   }
   async function processSignal(row){
     if(!row||state.processed.has(row.id)||row.sender_id===uid()||!state.pc)return; state.processed.add(row.id);const pc=state.pc;
     try{
       if(row.kind==='offer'){
-        if(pc.signalingState!=='stable'){try{await pc.setLocalDescription({type:'rollback'})}catch{}}
-        await pc.setRemoteDescription(row.payload);if(state.activeCall?.role==='callee')await bindCalleeMediaToOffer();for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{});const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await sendSignal('answer',{type:ans.type,sdp:ans.sdp});
+        state.lastRemoteOfferAt=Date.now();
+        if(pc.signalingState!=='stable'){try{await pc.setLocalDescription({type:'rollback'})}catch{};state.negotiating=false;state.makingOffer=false}
+        await pc.setRemoteDescription({type:row.payload?.type||'offer',sdp:row.payload?.sdp||''});await bindLocalMediaToOffer();for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{});const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await sendSignal('answer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp,build:'25.41'});
       }
-      else if(row.kind==='answer'){if(pc.signalingState==='have-local-offer'||!pc.currentRemoteDescription){await pc.setRemoteDescription(row.payload);for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{})}}
+      else if(row.kind==='answer'){if(pc.signalingState==='have-local-offer'||!pc.currentRemoteDescription){await pc.setRemoteDescription({type:row.payload?.type||'answer',sdp:row.payload?.sdp||''});for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{});resumeCallAudio().catch(()=>{})}}
       else if(row.kind==='ice'){if(pc.remoteDescription?.type)await pc.addIceCandidate(row.payload).catch(()=>{});else state.pendingIce.push(row.payload)}
       else if(row.kind==='reaction'){showReaction(row.payload?.reaction||'❤️',false)}
       else if(row.kind==='share'){applyRemoteShare(!!row.payload?.active,row.payload||{})}
@@ -626,19 +720,20 @@
   function startCallPolling(){clearInterval(state.callPollTimer);state.callPollTimer=setInterval(heartbeatAndPoll,4000);heartbeatAndPoll().catch(()=>{})}
   function stopCallPolling(){clearInterval(state.callPollTimer);state.callPollTimer=null;state.callPollBusy=false}
   async function startCall(otherId,mode='video'){
+    if(LX.groupCall?.active?.())return (LX.toast||((m)=>console.log(m)))('Saia da call em grupo antes de iniciar outra chamada.');
     if(state.activeCall)return (LX.toast||((m)=>console.log(m)))('Você já está em uma chamada.'); await boot(); await refreshDirectory(); const p=callPerson(otherId);
     if(p.relation!=='accepted')return (LX.toast||((m)=>console.log(m)))('Adicione essa pessoa antes de ligar.'); if(!p.calls_enabled)return (LX.toast||((m)=>console.log(m)))('Essa pessoa desativou chamadas.');
     try{
       state.localStream=await getLocalMedia(mode); state.activeCall={id:null,otherId,role:'caller',mode,status:'preparing',answeredAt:null};mountCallUI(p,mode,mode==='video'?'Câmera pronta · iniciando chamada...':'Iniciando chamada...');
       const c=db(); const {data,error}=await c.rpc('lx_start_call',{p_other:otherId,p_mode:mode}); if(error)throw error;
       state.activeCall.id=data;state.activeCall.status='ringing';updateCallStatus('Chamando...');await createPeer();await subscribeSignals(data);startCallPolling();
-      const offer=await state.pc.createOffer();await state.pc.setLocalDescription(offer);await sendSignal('offer',{type:offer.type,sdp:offer.sdp,reason:'initial'});
+      await renegotiate('initial');
       clearTimeout(state.callTimeout);state.callTimeout=setTimeout(async()=>{if(state.activeCall?.id===data&&state.activeCall.status==='ringing'){await c.rpc('lx_end_call',{p_call_id:data}).catch(()=>{});(LX.toast||((m)=>console.log(m)))('Ninguém atendeu.');cleanupCall(false)}},45000);
     }catch(e){console.warn(e);cleanupCall(false);(LX.toast||((m)=>console.log(m)))(e?.name==='NotAllowedError'?'Permita câmera e microfone para fazer a chamada.':'Não foi possível iniciar a chamada.')}
   }
   async function acceptIncoming(){
     const call=state.incoming;if(!call)return;const p=callPerson(call.caller_id);
-    try{state.localStream=await getLocalMedia(call.mode||'video');hideIncoming();state.activeCall={id:call.id,otherId:call.caller_id,role:'callee',mode:call.mode||'video',status:'accepting',answeredAt:new Date().toISOString()};mountCallUI(p,call.mode||'video','Sua câmera está pronta · conectando...');const c=db();const {error}=await c.rpc('lx_respond_call',{p_call_id:call.id,p_accept:true});if(error)throw error;state.activeCall.status='accepted';startCallTimer(state.activeCall.answeredAt);await createPeer();await subscribeSignals(call.id);startCallPolling()}
+    try{state.localStream=await getLocalMedia(call.mode||'video');hideIncoming();state.activeCall={id:call.id,otherId:call.caller_id,role:'callee',mode:call.mode||'video',status:'accepting',answeredAt:new Date().toISOString()};mountCallUI(p,call.mode||'video','Sua câmera está pronta · conectando...');const c=db();const {error}=await c.rpc('lx_respond_call',{p_call_id:call.id,p_accept:true});if(error)throw error;state.activeCall.status='accepted';startCallTimer(state.activeCall.answeredAt);setCallNetwork('Conectando mídia','connecting');await createPeer();await subscribeSignals(call.id);startCallPolling()}
     catch(e){console.warn(e);await cleanupCall(false);(LX.toast||((m)=>console.log(m)))(e?.name==='NotAllowedError'?'Permita câmera e microfone para atender.':'Não foi possível atender a chamada.')}
   }
   async function rejectIncoming(){const call=state.incoming;if(!call)return;const c=db();await c.rpc('lx_respond_call',{p_call_id:call.id,p_accept:false}).catch(()=>{});hideIncoming()}
@@ -651,9 +746,11 @@
     clearTimeout(state.callTimeout);state.callTimeout=null;stopCallTimer();stopCallPolling();
     const channel=state.signalChannel;state.signalChannel=null;const c=db();
     try{state.pc?.close()}catch{}state.pc=null;
+    try{restoreMicSender().catch(()=>{})}catch{}
     for(const stream of [state.localStream,state.screenStream])for(const t of stream?.getTracks?.()||[])try{t.stop()}catch{}
     for(const t of [state.cameraPlaceholderTrack,state.screenPlaceholderTrack])try{t?.stop?.()}catch{};state.cameraPlaceholderTrack=null;state.screenPlaceholderTrack=null;state.placeholderCanvases=[];
-    state.localStream=null;state.screenStream=null;state.remoteStream=null;state.remoteCameraStream=null;state.remoteScreenStream=null;state.screenSender=null;state.screenTransceiver=null;state.cameraTransceiver=null;state.videoSender=null;state.remoteTracks=new Map();state.remoteScreenMid=null;state.remoteShareMode=null;state.remoteSharing=false;state.screenMode=null;state.activeCall=null;state.pendingIce=[];state.processed.clear();
+    clearTimeout(state.remoteShareRecoveryTimer);state.remoteShareRecoveryTimer=null;clearTimeout(state.reconnectTimer);state.reconnectTimer=null;state.reconnectAttempts=0;state.reconnectInFlight=false;state.negotiating=false;state.pendingNegotiation=null;
+    state.localStream=null;state.screenStream=null;state.remoteStream=null;state.remoteAudioStream=null;state.remoteCameraStream=null;state.remoteScreenStream=null;state.audioTransceiver=null;state.screenSender=null;state.screenTransceiver=null;state.cameraTransceiver=null;state.videoSender=null;state.remoteTracks=new Map();state.remoteScreenMid=null;state.remoteShareMode=null;state.remoteSharing=false;state.screenMode=null;state.activeCall=null;state.pendingIce=[];state.processed.clear();showAudioUnlock(false);
     document.getElementById('lxCallOverlay')?.remove();document.documentElement.classList.remove('lx-call-open');
     if(channel&&c)c.removeChannel(channel).catch(()=>{});
     if(showToast)(LX.toast||((m)=>console.log(m)))('Chamada encerrada.');
@@ -702,33 +799,32 @@
     const btn=document.getElementById('lxShareBtn'),small=btn?.querySelector('small');
     try{
       btn?.classList.add('busy');if(small)small.textContent='Escolha a tela…';
-      const stream=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:30,max:60},width:{ideal:1920},height:{ideal:1080}},audio:false});
+      const stream=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:30,max:60},width:{ideal:1920},height:{ideal:1080}},audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,suppressLocalAudioPlayback:true},systemAudio:'include',surfaceSwitching:'include',selfBrowserSurface:'exclude'});
       const track=stream.getVideoTracks()[0];if(!track)throw new Error('SCREEN_TRACK_MISSING');try{track.contentHint='detail'}catch{}
-      state.screenStream=stream;state.screenMode=mode;
+      state.screenStream=stream;state.screenMode=mode;const hasScreenAudio=await enableSharedScreenAudio(stream);
       if(mode==='dual'){
-        const sender=await ensureScreenSender();if(!sender)throw new Error('SCREEN_SENDER_UNAVAILABLE');await sender.replaceTrack(track);state.screenSender=sender;
-        if(!await ensureTransceiverCanSend(state.screenTransceiver,'screen-dual-enable-send'))throw new Error('SCREEN_SEND_DIRECTION_UNAVAILABLE');
-        const mid=currentScreenMid();await sendSignal('share',{active:true,mode:'dual',mid,displaySurface:track.getSettings?.().displaySurface||'screen'}).catch(()=>{});
+        const sender=await ensureScreenSender();if(!sender)throw new Error('SCREEN_SENDER_UNAVAILABLE');if(!await ensureTransceiverCanSend(state.screenTransceiver,'screen-dual-enable-send'))throw new Error('SCREEN_SEND_DIRECTION_UNAVAILABLE');await sender.replaceTrack(track);state.screenSender=sender;
+        const mid=currentScreenMid();await sendSignal('share',{active:true,mode:'dual',mid,v:3,build:'25.41',displaySurface:track.getSettings?.().displaySurface||'screen',screenAudio:hasScreenAudio}).catch(()=>{});await renegotiate('screen-dual-start');
         const prev=document.getElementById('lxLocalSharePreview'),wrap=document.getElementById('lxLocalShareWrap');if(prev){prev.srcObject=stream;prev.play?.().catch(()=>{})}wrap?.classList.remove('hidden');
       }else{
-        const sender=await ensureVideoSender();if(!sender)throw new Error('VIDEO_SENDER_UNAVAILABLE');await sender.replaceTrack(track);state.videoSender=sender;
-        if(!await ensureTransceiverCanSend(state.cameraTransceiver,'screen-replace-enable-send'))throw new Error('VIDEO_SEND_DIRECTION_UNAVAILABLE');
-        const mid=currentCameraMid();await sendSignal('share',{active:true,mode:'replace',mid,displaySurface:track.getSettings?.().displaySurface||'screen'}).catch(()=>{});
+        const sender=await ensureVideoSender();if(!sender)throw new Error('VIDEO_SENDER_UNAVAILABLE');if(!await ensureTransceiverCanSend(state.cameraTransceiver,'screen-replace-enable-send'))throw new Error('VIDEO_SEND_DIRECTION_UNAVAILABLE');await sender.replaceTrack(track);state.videoSender=sender;
+        const mid=currentCameraMid();await sendSignal('share',{active:true,mode:'replace',mid,v:3,build:'25.41',displaySurface:track.getSettings?.().displaySurface||'screen',screenAudio:hasScreenAudio}).catch(()=>{});await renegotiate('screen-replace-start');
         const local=document.getElementById('lxLocalVideo');if(local){local.srcObject=stream;local.classList.remove('hidden');local.play?.().catch(()=>{})}const label=document.getElementById('lxLocalLabel');if(label)label.textContent='SUA TELA';
       }
       document.getElementById('lxCallOverlay')?.classList.add('is-sharing');btn?.classList.remove('busy');btn?.classList.add('active');if(small)small.textContent='Parar tela';document.getElementById('lxShareBadge')?.classList.remove('hidden');
-      track.onended=()=>stopScreenShare();track.onmute=()=>updateCallStatus('Compartilhamento pausado pelo sistema');track.onunmute=()=>updateCallStatus('Compartilhando tela');updateCallStatus(mode==='dual'?'Compartilhando tela + câmera':'Compartilhando tela');(LX.toast||((m)=>console.log(m)))(mode==='dual'?'Tela e câmera compartilhadas.':'Tela compartilhada.');
+      track.onended=()=>stopScreenShare();track.onmute=()=>updateCallStatus('Compartilhamento pausado pelo sistema');track.onunmute=()=>updateCallStatus('Compartilhando tela');updateCallStatus(mode==='dual'?'Compartilhando tela + câmera':'Compartilhando tela');setCallNetwork('Conectado','connected');(LX.toast||((m)=>console.log(m)))(hasScreenAudio?(mode==='dual'?'Tela + câmera + áudio compartilhados.':'Tela e áudio compartilhados.'):'Tela compartilhada. Para transmitir o som, marque “Compartilhar áudio” na janela do navegador.');
     }catch(e){console.warn('LX screen share',e);for(const t of state.screenStream?.getTracks?.()||[])try{t.stop()}catch{}state.screenStream=null;state.screenMode=null;btn?.classList.remove('busy');if(small)small.textContent='Compartilhar';const msg=e?.name==='NotAllowedError'?'O compartilhamento foi cancelado ou bloqueado pelo navegador.':e?.name==='NotFoundError'?'Nenhuma tela ou janela disponível.':'Não foi possível compartilhar essa tela.';(LX.toast||((m)=>console.log(m)))(msg)}
   }
   async function stopScreenShare(){
     const mode=state.screenMode,camera=state.localStream?.getVideoTracks?.()[0]||null;
     try{
       if(mode==='dual'){
-        const sender=state.screenSender||state.screenTransceiver?.sender;if(sender)await sender.replaceTrack(state.screenPlaceholderTrack||null).catch(()=>{});await sendSignal('share',{active:false,mode:'dual',mid:currentScreenMid()}).catch(()=>{});
+        const sender=state.screenSender||state.screenTransceiver?.sender;if(sender)await sender.replaceTrack(state.screenPlaceholderTrack||null).catch(()=>{});await sendSignal('share',{active:false,mode:'dual',mid:currentScreenMid(),v:3,build:'25.41'}).catch(()=>{});await renegotiate('screen-dual-stop');
       }else{
-        const sender=await ensureVideoSender();if(sender)await sender.replaceTrack(camera||state.cameraPlaceholderTrack||null).catch(()=>{});await sendSignal('share',{active:false,mode:'replace',mid:currentCameraMid()}).catch(()=>{});
+        const sender=await ensureVideoSender();if(sender)await sender.replaceTrack(camera||state.cameraPlaceholderTrack||null).catch(()=>{});await sendSignal('share',{active:false,mode:'replace',mid:currentCameraMid(),v:3,build:'25.41'}).catch(()=>{});await renegotiate('screen-replace-stop');
       }
     }catch(e){console.warn('LX stop share',e)}
+    await restoreMicSender().catch(()=>{});
     for(const t of state.screenStream?.getTracks?.()||[])try{t.stop()}catch{}state.screenStream=null;state.screenMode=null;
     const local=document.getElementById('lxLocalVideo');if(local){local.srcObject=state.localStream;local.classList.toggle('hidden',!camera);local.play?.().catch(()=>{})}const preview=document.getElementById('lxLocalSharePreview');if(preview)preview.srcObject=null;document.getElementById('lxLocalShareWrap')?.classList.add('hidden');document.getElementById('lxCallOverlay')?.classList.remove('is-sharing');const btn=document.getElementById('lxShareBtn');btn?.classList.remove('active','busy');const small=btn?.querySelector('small');if(small)small.textContent='Compartilhar';const label=document.getElementById('lxLocalLabel');if(label)label.textContent='VOCÊ';document.getElementById('lxShareBadge')?.classList.add('hidden');updateCallStatus('Conectado');
   }
@@ -738,14 +834,14 @@
   function toggleCallFullscreen(){const el=document.getElementById('lxCallOverlay');if(!el)return;if(document.fullscreenElement)document.exitFullscreen?.();else el.requestFullscreen?.().catch(()=>{})}
   async function handleCallUpdate(call){
     if(state.incoming?.id===call.id&&call.status!=='ringing')hideIncoming();if(state.activeCall?.id!==call.id)return;state.activeCall.status=call.status;state.activeCall.answeredAt=call.answered_at||state.activeCall.answeredAt;
-    if(call.status==='accepted'){clearTimeout(state.callTimeout);state.callTimeout=null;if(!state.callStartedAt)startCallTimer(call.answered_at||Date.now());updateCallStatus('Conectando...');startCallPolling()}
+    if(call.status==='accepted'){clearTimeout(state.callTimeout);state.callTimeout=null;if(!state.callStartedAt)startCallTimer(call.answered_at||Date.now());setCallNetwork('Conectando mídia','connecting');updateCallStatus('Chamada atendida');startCallPolling()}
     if(['rejected','ended','missed'].includes(call.status)){updateCallStatus(call.status==='rejected'?'Chamada recusada.':call.status==='missed'?'Chamada não atendida.':'Chamada encerrada.');if(call.status==='missed')try{LX.chat?.pushRuntimeNotice?.({kind:'call',title:'Chamada não atendida',text:`${callPerson(state.activeCall.otherId).name||'Contato'} · ${state.activeCall.mode==='audio'?'áudio':'vídeo'}`,data:{call_id:call.id}})}catch{};setTimeout(()=>cleanupCall(false),300)}
   }
   async function boot(){
     const c=db(),id=uid();if(!c||!id)return false;if(state.booted){if(!state.presenceChannel)await setupPresence();return true}
     state.booted=true;
     try{
-      await syncMyProfile();await refreshDirectory();await setupPresence();
+      await syncMyProfile();await refreshDirectory();await setupPresence();await LX.groupCall?.boot?.();
       const ch=c.channel(`lx-social-core-${id}-${Date.now()}`)
         .on('postgres_changes',{event:'*',schema:'public',table:'lx_friendships'},async()=>{await refreshDirectory();if(state.drawerOpen)render(state.openTab)})
         .on('postgres_changes',{event:'*',schema:'public',table:'lx_profiles'},async()=>{await refreshDirectory();if(state.drawerOpen)render(state.openTab)})
@@ -765,7 +861,7 @@
     document.querySelectorAll('[data-mobile="Comunidade"],[data-open-community="1"]').forEach(el=>{if(!el.dataset.lxSocialBound){el.dataset.lxSocialBound='1';el.addEventListener('click',launch)}});
   }
   document.addEventListener('click',e=>{const b=e.target?.closest?.('[data-lx-hangup="1"]');if(b&&document.getElementById('lxCallOverlay')){e.preventDefault();e.stopPropagation();endCurrentCall()}},true);
-  LX.social={boot,shutdown,open,close,retry,openProfile,openSettings,commitSettings,refreshDirectory,syncMyProfile,add,respond,removeFriend,startCall,acceptIncoming,rejectIncoming,endCurrentCall,toggleMic,toggleCamera,shareScreen,toggleSharePicker,toggleReactions,sendReaction,toggleCallFullscreen,isOnline,presenceText,presenceVisible,setPresenceVisible,ready:true}; window.LXOpenCommunity=function(tab){return open(tab||'discover')};
+  LX.social={boot,shutdown,open,close,retry,openProfile,openSettings,commitSettings,refreshDirectory,syncMyProfile,add,respond,removeFriend,startCall,acceptIncoming,rejectIncoming,endCurrentCall,toggleMic,toggleCamera,shareScreen,toggleSharePicker,toggleReactions,sendReaction,toggleCallFullscreen,resumeCallAudio,isOnline,presenceText,presenceVisible,setPresenceVisible,ready:true}; window.LXOpenCommunity=function(tab){return open(tab||'discover')};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindLauncher,{once:true});else bindLauncher();
 })();
 
@@ -779,7 +875,60 @@
   </script>
 
 <script>
-/* LX CHAT INLINE v25.40.1 — Notifications + resilient realtime */
+/* LX GROUP CALLS v25.41 — persistent groups + small-group WebRTC mesh */
+(()=>{
+  const LX=window.LX=window.LX||{};
+  const db=()=>LX.cloud?.db?.(), me=()=>LX.cloud?.user?.()||LX.ui?.state?.user||null, uid=()=>String(me()?.id||'');
+  const esc=s=>LX.ui?.esc?LX.ui.esc(s):String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const st={booted:false,groups:[],channel:null,call:null,group:null,localStream:null,screenStream:null,screenAudioContext:null,screenAudioMixedTrack:null,peers:new Map(),signalChannel:null,memberChannel:null,heartbeat:null,timer:null,startedAt:null,creating:false};
+  const active=()=>!!st.call;
+  const initials=n=>String(n||'LX').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'LX';
+  const avatar=p=>p?.avatar_url?`<span class="lx-group-avatar has-image" style="background-image:url('${String(p.avatar_url).replace(/'/g,'%27')}')"></span>`:`<span class="lx-group-avatar">${esc(initials(p?.name))}</span>`;
+  const fmt=ms=>{const t=Math.max(0,Math.floor(ms/1000)),h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;return h?`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`};
+  async function refresh(){const c=db();if(!c||!uid())return[];const {data,error}=await c.rpc('lx_group_list');if(error){console.warn('LX groups',error);return st.groups}st.groups=data||[];return st.groups}
+  function findGroup(id){return st.groups.find(g=>String(g.group_id)===String(id))||null}
+  function nav(activeTab='groups'){return `<nav class="lx-community-tabs lx-groups-tabs"><button onclick="LX.social.open('friends')">Conversas</button><button onclick="LX.social.open('requests')">Solicitações</button><button onclick="LX.social.open('discover')">Pessoas</button><button class="${activeTab==='groups'?'active':''}" onclick="LX.social.open('groups')">Grupos</button></nav>`}
+  function groupCard(g){const members=Array.isArray(g.members)?g.members:[],stack=members.slice(0,4).map(avatar).join(''),activeCall=g.active_call_id?`<span class="lx-group-live">● EM CALL</span>`:'';return `<article class="lx-group-card"><div class="lx-group-card-main"><div class="lx-group-stack">${stack}</div><div><span>GRUPO LX ${activeCall}</span><h3>${esc(g.name)}</h3><small>${g.member_count||members.length} membros</small></div></div><div class="lx-group-card-actions">${g.active_call_id?`<button class="primary" onclick="LX.groupCall.join('${g.active_call_id}','${g.group_id}','${g.active_call_mode||'video'}')">Entrar na call</button>`:`<button onclick="LX.groupCall.start('${g.group_id}','audio')">Áudio</button><button class="primary" onclick="LX.groupCall.start('${g.group_id}','video')">Vídeo</button>`}<button onclick="LX.groupCall.openGroup('${g.group_id}')">Abrir</button></div></article>`}
+  async function renderIn(drawer){await refresh();drawer.innerHTML=`<header class="lx-community-head"><div><span>LX SOCIAL</span><h2>Grupos</h2><p>Crie salas com seus amigos e entre em call juntos.</p></div><button class="lx-community-close" onclick="LX.social.close()">×</button></header>${nav()}<div class="lx-groups-toolbar"><div><b>${st.groups.length}</b><span>grupos</span></div><button class="primary-btn" onclick="LX.groupCall.createForm()">+ Novo grupo</button></div><div class="lx-group-list">${st.groups.length?st.groups.map(groupCard).join(''):'<div class="lx-community-empty"><b>Nenhum grupo ainda</b><p>Crie um grupo com até 6 pessoas para conversar e fazer chamadas.</p><button onclick="LX.groupCall.createForm()">Criar primeiro grupo</button></div>'}</div><footer class="lx-community-footer"><span>Call em grupo · WebRTC mesh · até 6 participantes</span></footer>`;return true}
+  async function createForm(){const c=db();if(!c)return;const {data}=await c.rpc('lx_social_directory');const friends=(data||[]).filter(x=>x.relation==='accepted');const drawer=document.getElementById('lxCommunityDrawer');if(!drawer)return;drawer.innerHTML=`<header class="lx-community-head"><div><span>NOVO GRUPO</span><h2>Criar grupo</h2><p>Escolha até 5 amigos. Com você, a call pode ter 6 pessoas.</p></div><button class="lx-community-close" onclick="LX.social.close()">×</button></header><button class="lx-community-back" onclick="LX.social.open('groups')">← Voltar</button><div class="lx-group-create"><label><span>Nome do grupo</span><input id="lxGroupName" maxlength="42" placeholder="Ex.: Turma da faculdade"></label><div class="lx-group-friend-picker">${friends.map(p=>`<label><input type="checkbox" value="${p.user_id}" class="lxGroupFriend">${avatar(p)}<span><b>${esc(p.name||'Contato')}</b><small>${p.verified?'Verificado · ':''}${p.calls_enabled?'Disponível para call':'Chamadas desativadas'}</small></span></label>`).join('')||'<p>Você precisa adicionar amigos antes de criar um grupo.</p>'}</div><button class="lx-community-big primary" onclick="LX.groupCall.create()" ${friends.length?'':'disabled'}>Criar grupo</button></div>`}
+  async function create(){if(st.creating)return;const name=document.getElementById('lxGroupName')?.value?.trim(),members=[...document.querySelectorAll('.lxGroupFriend:checked')].map(x=>x.value);if(!name)return LX.toast?.('Digite um nome para o grupo.');if(!members.length)return LX.toast?.('Escolha pelo menos um amigo.');if(members.length>5)return LX.toast?.('A call em grupo suporta até 6 pessoas por enquanto.');st.creating=true;try{const {data,error}=await db().rpc('lx_group_create',{p_name:name,p_members:members});if(error)throw error;await refresh();LX.toast?.('Grupo criado.');await openGroup(data)}catch(e){console.warn(e);LX.toast?.('Não foi possível criar o grupo.')}finally{st.creating=false}}
+  async function openGroup(id){await refresh();const g=findGroup(id),drawer=document.getElementById('lxCommunityDrawer');if(!g||!drawer)return;const members=Array.isArray(g.members)?g.members:[];drawer.innerHTML=`<header class="lx-community-head"><div><span>GRUPO LX</span><h2>${esc(g.name)}</h2><p>${g.member_count||members.length} membros${g.active_call_id?' · call ativa':''}</p></div><button class="lx-community-close" onclick="LX.social.close()">×</button></header><button class="lx-community-back" onclick="LX.social.open('groups')">← Voltar</button><section class="lx-group-detail"><div class="lx-group-members">${members.map(p=>`<div>${avatar(p)}<span><b>${esc(p.name)}</b><small>${p.role==='owner'?'Criador do grupo':'Membro'}${p.verified?' · verificado':''}</small></span></div>`).join('')}</div><div class="lx-group-call-actions">${g.active_call_id?`<button class="lx-community-big primary" onclick="LX.groupCall.join('${g.active_call_id}','${g.group_id}','${g.active_call_mode||'video'}')">Entrar na call ativa</button>`:`<button class="lx-community-big" onclick="LX.groupCall.start('${g.group_id}','audio')">Iniciar call de áudio</button><button class="lx-community-big primary" onclick="LX.groupCall.start('${g.group_id}','video')">Iniciar call de vídeo</button>`}</div></section>`}
+  async function getMedia(mode){return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:mode==='video'?{width:{ideal:960},height:{ideal:540},frameRate:{ideal:24,max:30}}:false})}
+  function blankTrack(){try{const c=document.createElement('canvas');c.width=16;c.height=16;const x=c.getContext('2d');x.fillStyle='#02060b';x.fillRect(0,0,16,16);return c.captureStream(1).getVideoTracks()[0]}catch{return null}}
+  function mount(g,mode){document.getElementById('lxGroupCallOverlay')?.remove();const el=document.createElement('div');el.id='lxGroupCallOverlay';el.className='lx-group-call-overlay';el.innerHTML=`<header><div><span>CALL EM GRUPO</span><h2>${esc(g?.name||'Grupo LX')}</h2><small id="lxGroupCallState">Conectando participantes…</small></div><div class="lx-group-call-clock"><b id="lxGroupCallTimer">00:00</b><span id="lxGroupCallStart">agora</span></div></header><main id="lxGroupCallGrid" class="lx-group-call-grid"></main><button id="lxGroupAudioUnlock" class="lx-group-audio-unlock hidden" onclick="LX.groupCall.resumeAudio()">🔊 Ativar áudio da call</button><div class="lx-group-call-controls"><button id="lxGroupMic" onclick="LX.groupCall.toggleMic()">🎙<small>Microfone</small></button><button id="lxGroupCam" onclick="LX.groupCall.toggleCam()">📷<small>Câmera</small></button><button id="lxGroupShare" onclick="LX.groupCall.share()">🖥<small>Compartilhar</small></button><button class="hangup" onclick="LX.groupCall.leave()">☎<small>Sair</small></button></div></div>`;document.body.appendChild(el);document.documentElement.classList.add('lx-call-open');renderLocalTile();return el}
+  function personTileId(id){return `lxGroupTile-${String(id).replace(/[^a-z0-9_-]/gi,'')}`}
+  function renderLocalTile(){const grid=document.getElementById('lxGroupCallGrid');if(!grid)return;let tile=document.getElementById(personTileId(uid()));if(!tile){tile=document.createElement('article');tile.id=personTileId(uid());tile.className='lx-group-call-tile local';tile.innerHTML=`<video autoplay muted playsinline></video><div class="lx-group-tile-fallback"><span>${esc(initials(me()?.user_metadata?.name||me()?.email||'Você'))}</span></div><footer><b>Você</b><small id="lxGroupLocalBadge">${st.call?.mode==='video'?'Câmera':'Áudio'}</small></footer>`;grid.prepend(tile)}const v=tile.querySelector('video');if(v&&st.localStream){v.srcObject=st.screenStream||st.localStream;v.play?.().catch(()=>{});tile.classList.toggle('has-video',!!(st.screenStream||st.localStream).getVideoTracks().length)}}
+  function ensureRemoteTile(id,p={}){const grid=document.getElementById('lxGroupCallGrid');if(!grid)return null;let tile=document.getElementById(personTileId(id));if(!tile){tile=document.createElement('article');tile.id=personTileId(id);tile.className='lx-group-call-tile';tile.innerHTML=`<video autoplay muted playsinline></video><audio autoplay playsinline></audio><div class="lx-group-tile-fallback"><span>${esc(initials(p.name||'LX'))}</span></div><footer><b>${esc(p.name||'Participante')}</b><small>Conectando…</small></footer>`;grid.appendChild(tile)}return tile}
+  function setGroupState(t){const e=document.getElementById('lxGroupCallState');if(e)e.textContent=t}
+  function startTimer(ts){st.startedAt=new Date(ts||Date.now()).getTime();clearInterval(st.timer);const tick=()=>{const d=fmt(Date.now()-st.startedAt),a=document.getElementById('lxGroupCallTimer'),b=document.getElementById('lxGroupCallStart');if(a)a.textContent=d;if(b)b.textContent=`desde ${new Date(st.startedAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`};tick();st.timer=setInterval(tick,1000)}
+  async function sendSignal(to,kind,payload){const {error}=await db().from('lx_group_call_signals').insert({call_id:st.call.id,sender_id:uid(),recipient_id:to,kind,payload});if(error)throw error}
+  function peerObj(id,p){let x=st.peers.get(id);if(x)return x;x={id,person:p,pc:null,pending:[],processed:new Set(),cameraTr:null,audioTr:null,placeholder:null,makingOffer:false};st.peers.set(id,x);return x}
+  async function bindPeerLocal(x){const trs=x.pc.getTransceivers(),a=trs.find(t=>t.receiver.track.kind==='audio'),v=trs.find(t=>t.receiver.track.kind==='video'),mic=(st.screenAudioMixedTrack||st.localStream?.getAudioTracks()[0]||null),cam=(st.screenStream?.getVideoTracks()[0]||st.localStream?.getVideoTracks()[0]||x.placeholder||null);if(a){x.audioTr=a;try{a.direction='sendrecv'}catch{};await a.sender.replaceTrack(mic)}if(v){x.cameraTr=v;try{v.direction='sendrecv'}catch{};await v.sender.replaceTrack(cam)}}
+  async function makeOffer(x,reason='sync'){if(!x.pc||x.pc.signalingState!=='stable'||x.makingOffer)return;x.makingOffer=true;try{const o=await x.pc.createOffer();await x.pc.setLocalDescription(o);await sendSignal(x.id,'offer',{type:o.type,sdp:x.pc.localDescription.sdp,reason,build:'25.41'})}finally{x.makingOffer=false}}
+  async function ensurePeer(id,p={}){id=String(id);if(!id||id===uid())return null;const x=peerObj(id,p);if(x.pc)return x;const pc=x.pc=new RTCPeerConnection({iceServers:[{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']}],iceCandidatePoolSize:4});const tile=ensureRemoteTile(id,p);x.placeholder=blankTrack();pc.onicecandidate=e=>{if(e.candidate)sendSignal(id,'ice',e.candidate.toJSON()).catch(()=>{})};pc.ontrack=e=>{const tr=e.track;if(!tile)return;if(tr.kind==='audio'){const a=tile.querySelector('audio');a.srcObject=new MediaStream([tr]);a.play?.().catch(()=>document.getElementById('lxGroupAudioUnlock')?.classList.remove('hidden'))}else{const v=tile.querySelector('video');v.srcObject=new MediaStream([tr]);v.play?.().catch(()=>{});if(st.call?.mode==='video'){tr.onunmute=()=>tile.classList.add('has-video');if(!tr.muted)tile.classList.add('has-video')}}tile.querySelector('footer small').textContent='Conectado'};pc.onconnectionstatechange=()=>{if(!tile)return;const q=tile.querySelector('footer small');if(pc.connectionState==='connected')q.textContent='Conectado';else if(['failed','disconnected'].includes(pc.connectionState)){q.textContent='Reconectando…';try{pc.restartIce()}catch{};if(pc.signalingState==='stable')makeOffer(x,'ice-restart').catch(()=>{})}};if(uid()<id){const mic=st.screenAudioMixedTrack||st.localStream?.getAudioTracks()[0]||null,cam=st.screenStream?.getVideoTracks()[0]||st.localStream?.getVideoTracks()[0]||x.placeholder;if(mic)x.audioTr=pc.addTransceiver(mic,{direction:'sendrecv',streams:[st.localStream]});else x.audioTr=pc.addTransceiver('audio',{direction:'sendrecv'});x.cameraTr=pc.addTransceiver(cam||'video',{direction:'sendrecv',streams:cam?[new MediaStream([cam])]:[]});setTimeout(()=>makeOffer(x,'participant-join').catch(()=>{}),80)}return x}
+  async function process(row){if(!row||row.recipient_id!==uid()||row.sender_id===uid())return;const id=String(row.sender_id),p=(st.group?.members||[]).find(m=>String(m.user_id)===id)||{user_id:id,name:'Participante'},x=await ensurePeer(id,p);if(x.processed.has(row.id))return;x.processed.add(row.id);const pc=x.pc;try{if(row.kind==='offer'){if(pc.signalingState!=='stable'){try{await pc.setLocalDescription({type:'rollback'})}catch{}}await pc.setRemoteDescription({type:'offer',sdp:row.payload.sdp});await bindPeerLocal(x);for(const ice of x.pending.splice(0))await pc.addIceCandidate(ice).catch(()=>{});const a=await pc.createAnswer();await pc.setLocalDescription(a);await sendSignal(id,'answer',{type:'answer',sdp:pc.localDescription.sdp,build:'25.41'})}else if(row.kind==='answer'){if(pc.signalingState==='have-local-offer'){await pc.setRemoteDescription({type:'answer',sdp:row.payload.sdp});for(const ice of x.pending.splice(0))await pc.addIceCandidate(ice).catch(()=>{})}}else if(row.kind==='ice'){if(pc.remoteDescription)await pc.addIceCandidate(row.payload).catch(()=>{});else x.pending.push(row.payload)}else if(row.kind==='share'){const tile=ensureRemoteTile(id,p);tile?.classList.toggle('sharing',!!row.payload?.active);if(!row.payload?.active&&st.call?.mode!=='video')tile?.classList.remove('has-video');const sm=tile?.querySelector('footer small');if(sm)sm.textContent=row.payload?.active?'Compartilhando tela':'Conectado'}else if(row.kind==='media'){const tile=ensureRemoteTile(id,p);tile?.classList.toggle('has-video',!!row.payload?.camera);const sm=tile?.querySelector('footer small');if(sm)sm.textContent=row.payload?.camera?'Câmera ligada':'Conectado'}else if(row.kind==='hangup'){dropPeer(id)}}catch(e){console.warn('LX group signal',row.kind,e)}}
+  function dropPeer(id){const x=st.peers.get(String(id));if(!x)return;try{x.pc?.close()}catch{};try{x.placeholder?.stop?.()}catch{};document.getElementById(personTileId(id))?.remove();st.peers.delete(String(id))}
+  async function subscribe(){const c=db(),cid=st.call.id;if(st.signalChannel)await c.removeChannel(st.signalChannel).catch(()=>{});st.signalChannel=c.channel(`lx-group-signals-${cid}-${uid()}`).on('postgres_changes',{event:'INSERT',schema:'public',table:'lx_group_call_signals',filter:`call_id=eq.${cid}`},p=>process(p.new)).subscribe();if(st.memberChannel)await c.removeChannel(st.memberChannel).catch(()=>{});st.memberChannel=c.channel(`lx-group-members-${cid}-${uid()}`).on('postgres_changes',{event:'*',schema:'public',table:'lx_group_call_members',filter:`call_id=eq.${cid}`},()=>syncParticipants()).subscribe();const {data}=await c.from('lx_group_call_signals').select('*').eq('call_id',cid).eq('recipient_id',uid()).order('id',{ascending:true});for(const r of data||[])await process(r)}
+  async function syncParticipants(){if(!st.call)return;const {data,error}=await db().rpc('lx_group_call_heartbeat',{p_call_id:st.call.id});if(error){console.warn(error);return}if(!data||data.status!=='active'){cleanup();return}const parts=Array.isArray(data.participants)?data.participants:[],alive=new Set(parts.map(p=>String(p.user_id)));for(const p of parts)if(String(p.user_id)!==uid())await ensurePeer(String(p.user_id),p);for(const id of [...st.peers.keys()])if(!alive.has(id))dropPeer(id);setGroupState(`${parts.length} participante${parts.length===1?'':'s'} · conectado`)}
+  async function start(groupId,mode='video'){if(active()||document.getElementById('lxCallOverlay'))return LX.toast?.('Encerre a chamada atual antes de entrar no grupo.');await refresh();const g=findGroup(groupId);if(!g)return;try{st.localStream=await getMedia(mode);const {data,error}=await db().rpc('lx_group_start_call',{p_group_id:groupId,p_mode:mode});if(error)throw error;await enter(String(data),g,mode)}catch(e){console.warn(e);cleanup();LX.toast?.(e?.name==='NotAllowedError'?'Permita microfone e câmera para entrar na call.':'Não foi possível iniciar a call em grupo.')}}
+  async function join(callId,groupId,mode='video'){if(active()||document.getElementById('lxCallOverlay'))return LX.toast?.('Encerre a chamada atual antes de entrar no grupo.');await refresh();const g=findGroup(groupId);if(!g)return;try{st.localStream=await getMedia(mode);const {error}=await db().rpc('lx_group_join_call',{p_call_id:callId});if(error)throw error;await enter(callId,g,mode)}catch(e){console.warn(e);cleanup();LX.toast?.('Não foi possível entrar na call em grupo.')}}
+  async function enter(callId,g,mode){st.group=g;st.call={id:callId,groupId:g.group_id,mode};mount(g,mode);startTimer(g.active_call_created_at||Date.now());await subscribe();await syncParticipants();clearInterval(st.heartbeat);st.heartbeat=setInterval(syncParticipants,5000);LX.social?.close?.()}
+  async function resumeAudio(){let ok=true;for(const a of document.querySelectorAll('#lxGroupCallOverlay audio'))try{a.muted=false;a.volume=1;await a.play()}catch{ok=false}document.getElementById('lxGroupAudioUnlock')?.classList.toggle('hidden',ok);return ok}
+  async function toggleMic(){const t=st.localStream?.getAudioTracks()[0];if(!t)return;t.enabled=!t.enabled;document.getElementById('lxGroupMic')?.classList.toggle('off',!t.enabled)}
+  async function toggleCam(){let t=st.localStream?.getVideoTracks()[0];if(t){t.enabled=!t.enabled;document.getElementById('lxGroupCam')?.classList.toggle('off',!t.enabled);for(const id of st.peers.keys())sendSignal(id,'media',{camera:t.enabled}).catch(()=>{});renderLocalTile();return}try{const q=await navigator.mediaDevices.getUserMedia({video:true,audio:false});t=q.getVideoTracks()[0];st.localStream.addTrack(t);for(const x of st.peers.values()){if(x.cameraTr){await x.cameraTr.sender.replaceTrack(t);try{x.cameraTr.direction='sendrecv'}catch{};await makeOffer(x,'camera-on')}}for(const id of st.peers.keys())sendSignal(id,'media',{camera:true}).catch(()=>{});renderLocalTile()}catch{LX.toast?.('Não foi possível ativar a câmera.')}}
+  async function mixScreenAudio(stream){const sa=stream.getAudioTracks()[0];if(!sa)return false;const mic=st.localStream?.getAudioTracks()[0]||null,Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx){st.screenAudioMixedTrack=sa;return true}try{const ctx=new Ctx();const dest=ctx.createMediaStreamDestination();if(mic)ctx.createMediaStreamSource(new MediaStream([mic])).connect(dest);ctx.createMediaStreamSource(new MediaStream([sa])).connect(dest);st.screenAudioContext=ctx;st.screenAudioMixedTrack=dest.stream.getAudioTracks()[0];return true}catch{return false}}
+  async function applyGroupAudioTrack(track){for(const x of st.peers.values())if(x.audioTr?.sender)await x.audioTr.sender.replaceTrack(track).catch(()=>{})}
+  async function share(){if(st.screenStream){return stopShare()}try{const stream=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:24,max:30}},audio:true,systemAudio:'include',surfaceSwitching:'include'});const v=stream.getVideoTracks()[0];if(!v)return;st.screenStream=stream;const audioOk=await mixScreenAudio(stream);if(audioOk)await applyGroupAudioTrack(st.screenAudioMixedTrack);for(const x of st.peers.values()){if(x.cameraTr?.sender){await x.cameraTr.sender.replaceTrack(v);try{x.cameraTr.direction='sendrecv'}catch{};await makeOffer(x,'group-share')}}for(const id of st.peers.keys())sendSignal(id,'share',{active:true,screenAudio:audioOk}).catch(()=>{});renderLocalTile();document.getElementById('lxGroupShare')?.classList.add('active');document.getElementById('lxGroupLocalBadge').textContent=audioOk?'Tela + áudio':'Tela';v.onended=()=>stopShare();LX.toast?.(audioOk?'Tela e áudio compartilhados no grupo.':'Tela compartilhada. Marque “Compartilhar áudio” para transmitir o som.')}catch(e){if(e?.name!=='NotAllowedError')console.warn(e)}}
+  async function stopShare(){const cam=st.localStream?.getVideoTracks()[0]||null,mic=st.localStream?.getAudioTracks()[0]||null;for(const x of st.peers.values()){if(x.cameraTr?.sender){await x.cameraTr.sender.replaceTrack(cam||x.placeholder);await makeOffer(x,'group-share-stop')}if(x.audioTr?.sender)await x.audioTr.sender.replaceTrack(mic)}for(const id of st.peers.keys())sendSignal(id,'share',{active:false}).catch(()=>{});for(const t of st.screenStream?.getTracks()||[])try{t.stop()}catch{};st.screenStream=null;try{await st.screenAudioContext?.close?.()}catch{};st.screenAudioContext=null;st.screenAudioMixedTrack=null;renderLocalTile();document.getElementById('lxGroupShare')?.classList.remove('active');const b=document.getElementById('lxGroupLocalBadge');if(b)b.textContent=st.call?.mode==='video'?'Câmera':'Áudio'}
+  async function leave(){if(!st.call)return cleanup();const cid=st.call.id;for(const id of st.peers.keys())sendSignal(id,'hangup',{}).catch(()=>{});await db()?.rpc('lx_group_leave_call',{p_call_id:cid}).catch(()=>{});cleanup();LX.toast?.('Você saiu da call em grupo.')}
+  function cleanup(){clearInterval(st.heartbeat);clearInterval(st.timer);st.heartbeat=st.timer=null;for(const x of st.peers.values()){try{x.pc?.close()}catch{};try{x.placeholder?.stop?.()}catch{}}st.peers.clear();for(const t of st.localStream?.getTracks()||[])try{t.stop()}catch{};for(const t of st.screenStream?.getTracks()||[])try{t.stop()}catch{};try{st.screenAudioContext?.close?.()}catch{};const c=db();if(st.signalChannel&&c)c.removeChannel(st.signalChannel).catch(()=>{});if(st.memberChannel&&c)c.removeChannel(st.memberChannel).catch(()=>{});st.signalChannel=st.memberChannel=null;st.localStream=st.screenStream=null;st.screenAudioContext=null;st.screenAudioMixedTrack=null;st.call=st.group=null;st.startedAt=null;document.getElementById('lxGroupCallOverlay')?.remove();document.documentElement.classList.remove('lx-call-open')}
+  async function boot(){if(st.booted||!db()||!uid())return true;st.booted=true;await refresh();const c=db();st.channel=c.channel(`lx-groups-${uid()}`).on('postgres_changes',{event:'*',schema:'public',table:'lx_group_calls'},async p=>{await refresh();const g=st.groups.find(x=>String(x.active_call_id)===String(p.new?.id));if(g&&p.eventType==='INSERT'){LX.toast?.(`${g.name}: uma call em grupo começou.`);try{LX.chat?.pushRuntimeNotice?.({kind:'call',title:`Call em ${g.name}`,text:'O grupo está em chamada. Abra Grupos para entrar.',data:{group_id:g.group_id,call_id:p.new.id}})}catch{}}}).subscribe();return true}
+  LX.groupCall={boot,renderIn,createForm,create,openGroup,start,join,leave,toggleMic,toggleCam,share,stopShare,resumeAudio,active,refresh,cleanup};
+})();
+</script>
+
+<script>
+/* LX CHAT INLINE v25.41 — Notifications + resilient realtime */
 (()=>{
   const LX=window.LX=window.LX||{};
   const state={

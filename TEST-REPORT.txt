@@ -1,48 +1,52 @@
-LX Plus v25.40.1 — Symmetric Screen Share
-Data de QA: 2026-09-12
-Base: v25.40 Call Sync + Notifications
+LX Plus v25.41 — Shared Audio + Group Calls
+QA final — 12/09/2026
 
-BUG REAL CONFIRMADO NO BACKEND
-Foi inspecionada a chamada real entre as duas contas de teste.
-O sinal "share" da outra pessoa chegou corretamente ao Supabase, então o botão e a sinalização de compartilhamento estavam funcionando.
-Porém, no SDP negociado, os canais de vídeo da ponta que atendeu a chamada ficaram como recvonly.
-Resultado: essa ponta conseguia RECEBER sua tela, mas não tinha um caminho de vídeo SEND negociado para transmitir a tela de volta.
-Isso explica exatamente o comportamento assimétrico relatado: você -> outra pessoa funcionava; outra pessoa -> você não.
+ALTERAÇÕES PRINCIPAIS
+- Compartilhamento de tela 1:1 agora solicita áudio da tela/sistema e mistura esse áudio com o microfone antes de enviar.
+- Se o navegador não entregar um track de áudio de tela, o LX avisa para marcar “Compartilhar áudio” na caixa do navegador.
+- A barra da call separa o estado de rede do tempo da chamada: Conectado / Reconectando + cronômetro + horário de início.
+- Badge remoto diferencia “Tela compartilhada” de “Tela + áudio”.
+- Nova aba Grupos na Comunidade.
+- Grupos persistentes de até 6 participantes (você + 5 amigos).
+- Call em grupo de áudio ou vídeo com WebRTC mesh.
+- Compartilhamento de tela e áudio também disponível dentro da call em grupo.
+- Botão de desbloqueio de áudio caso o autoplay do navegador seja bloqueado.
+- Supabase recebeu tabelas, RPCs, RLS e Realtime para grupos e sinais de call.
 
-CORREÇÃO v25.40.1
-- A pessoa que inicia a chamada reserva desde o primeiro offer dois canais de vídeo estáveis:
-  1. câmera / tela principal;
-  2. tela dedicada para o modo Tela + câmera.
-- Os dois canais começam como sendrecv, usando tracks placeholder leves para não depender de uma câmera ativa.
-- Quem atende associa seus próprios senders aos mesmos transceivers ANTES de criar o answer.
-- O answer agora mantém câmera e tela como sendrecv dos dois lados.
-- replaceTrack passa a funcionar de forma simétrica: caller e callee podem transmitir tela.
-- Foi adicionado fallback: se o navegador indicar que um transceiver não possui direção de envio, o LX força sendrecv e renegocia antes de transmitir.
-- O modo Tela principal usa o canal de câmera; Tela + câmera usa o canal de tela dedicado.
-- Ao parar o compartilhamento, o LX volta para câmera/placeholder sem desmontar a sessão inteira.
+QA DE CÓDIGO
+- lxplus.js: node --check OK.
+- Todos os scripts inline do index.html: node --check OK.
+- IDs estáticos duplicados: 0.
+- Referências locais ausentes: 0.
+- Cache/build atualizado para 25.41.
 
-QA WEBRTC / SDP EM CHROMIUM — APROVADO
-Foi criado um teste isolado reproduzindo o defeito antigo e a correção:
-1. Build antigo reproduzido: answer do callee = recvonly, recvonly.
-2. Build corrigido: dois transceivers de vídeo encontrados no callee.
-3. Answer corrigido = sendrecv, sendrecv.
-4. currentDirection negociado = sendrecv nos quatro caminhos (caller câmera/tela + callee câmera/tela).
-5. Callee consegue substituir os dois tracks de saída mantendo signalingState=stable.
-6. Caller consegue substituir os dois tracks de saída mantendo signalingState=stable.
-7. Nenhuma renegociação extra é necessária no caminho normal; existe apenas fallback para sessões/navegadores que percam a direção SEND.
-Resultado: QA-SYMMETRIC-SDP.json = ok:true.
+QA DE MÍDIA / WEBRTC EM CHROMIUM
+- 3 negociações peer-to-peer independentes (A↔B, A↔C, B↔C): offer/answer com áudio e vídeo sendrecv OK.
+- Topologia de 3 participantes: 3 links WebRTC / 6 RTCPeerConnections preparada OK.
+- Mixer Web Audio microfone + áudio de compartilhamento: track live, RMS ~0.14 no teste.
+- Track mixado substitui o sender de áudio sem encerrar a call: OK.
+- Track de tela substitui o sender de vídeo: OK.
+- Page errors no QA de mídia: 0.
 
-QA ESTRUTURAL
-- lxplus.js: sintaxe JavaScript aprovada.
-- todos os scripts inline do index.html: sintaxe aprovada.
-- IDs HTML duplicados: 0.
-- referências locais ausentes: 0.
-- migrations da v25.40 continuam válidas; nenhuma nova migration é necessária para v25.40.1.
+QA DA INTERFACE DE GRUPOS
+- Render desktop 1100x850: OK, sem erro de página e sem overflow horizontal.
+- Render mobile 390x844: OK, sem erro de página e sem overflow horizontal.
+- Formulário Novo grupo no mobile: render OK com seleção de amigos.
 
-IMPORTANTE PARA O TESTE ENTRE DOIS DISPOSITIVOS
-As DUAS pessoas precisam carregar a v25.40.1. O código de compartilhamento roda no navegador de quem está transmitindo.
-Depois de publicar, ambos devem fechar/reabrir o site ou fazer atualização forçada. No desktop use Ctrl+F5.
-Se uma ponta continuar numa build antiga, ela ainda pode ficar recvonly e o problema parecer unilateral.
+QA REAL NO SUPABASE
+- Migração lx_group_calls_v2541 aplicada.
+- Correção de RLS contra recursão aplicada.
+- Limpeza de salas ativas antigas/stale aplicada.
+- Teste transacional com dois usuários aprovados: grupo criado, call criada, segundo usuário entrou, heartbeat retornou 2 participantes, grupo ficou visível. ROLLBACK executado; dados QA não ficaram persistidos.
+- Teste RLS de sinal direcionado entre os dois participantes: PASS.
+- Realtime confirmado para lx_group_calls, lx_group_call_members e lx_group_call_signals.
 
 LIMITAÇÃO DO AMBIENTE DE QA
-O ambiente automatizado desta sessão bloqueia o transporte ICE local, então não foi possível validar frames RTP de ponta a ponta entre dois processos reais aqui. A negociação SDP e a capacidade SEND dos dois lados foram testadas no Chromium, e o histórico real do Supabase confirmou a causa original. O teste final de mídia precisa ser feito pelos dois navegadores após ambos carregarem esta build.
+- O Chromium deste ambiente bloqueia a coleta de ICE candidates/rede real entre browsers, então o teste automatizado não consegue reproduzir literalmente dois computadores em provedores diferentes.
+- Por isso, a camada WebRTC foi validada por SDP/transceivers/replaceTrack/WebAudio, e a camada de sinalização/grupos foi validada no Supabase real com dois usuários.
+- O áudio de tela depende do navegador e da fonte escolhida. Em Chrome/Edge, para som de aba/sistema, o usuário precisa selecionar uma fonte que ofereça áudio e manter “Compartilhar áudio” marcado.
+
+PUBLICAÇÃO
+- Substituir juntos: index.html, app.css e lxplus.js.
+- Depois os participantes devem usar Ctrl+F5 / reabrir o site para garantir build 25.41.
+- GROUP-CALLS-V2541.sql é documentação: a migração já foi aplicada no Supabase deste projeto.
