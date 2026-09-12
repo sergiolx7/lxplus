@@ -1,0 +1,26 @@
+{
+  "build": "25.39.0",
+  "boot_error": null,
+  "r2_module": "25.39",
+  "r2_card": 1,
+  "r2_status": "R2 conectado · lxplus-media",
+  "upload_queue": 1,
+  "saved_secret_keys": [
+    "r2_access_key_id",
+    "r2_account_id",
+    "r2_bucket",
+    "r2_secret_access_key"
+  ],
+  "secret_fields_cleared": true,
+  "r2_status_after": "R2 conectado · lxplus-media",
+  "r2_put_route": "r2:media/qa/test.mp4",
+  "r2_get_route": "https://media.example.test/test.mp4",
+  "source_switch_buttons": 2,
+  "external_field_visible": true,
+  "upload_field_hidden": true,
+  "external_saved": true,
+  "free_media_copy": "↑ Enviar arquivo\n↗ Usar link externo\nArquivos grandes usam Cloudflare R2 quando configurado.",
+  "mobile_no_overflow": true,
+  "page_errors": [],
+  "console_errors": []
+}

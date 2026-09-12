@@ -1,73 +1,46 @@
-LX Plus v25.38 — Adaptive Identity
+LX Plus v25.39 — Free Media Storage
 QA FINAL — 12/09/2026
-Base: v25.37 Message Actions
+Base: v25.38 Adaptive Identity
 
 VALIDAÇÃO ESTÁTICA
-- lxplus.js: sintaxe JavaScript OK.
-- Scripts inline do index.html: sintaxe JavaScript OK.
+- lxplus.js: sintaxe JavaScript OK (node --check).
 - IDs HTML duplicados: 0.
-- Referências locais obrigatórias presentes.
-- Build carregada: 25.38.0.
+- Referências locais obrigatórias ausentes: 0.
+- Build: 25.39.0.
+- Nenhuma credencial R2 real embutida no frontend.
 
 QA AUTOMATIZADO — CHROMIUM
-Aprovados em render determinístico desktop + mobile:
+Cenário determinístico desktop + mobile aprovado:
 1. Boot sem window.__LX_BOOT_ERROR.
-2. Nenhum pageerror JavaScript durante a bateria final.
-3. Nenhum console.error durante a bateria final.
-4. Nome do usuário acompanha a cor de destaque.
-5. Troca validada de #8A2BE2 (roxo) para #2BBF8A (verde).
-6. Home adaptativa renderiza 4 recomendações inteligentes.
-7. Botão “Para você” aparece uma única vez.
-8. Indicadores de novidade aparecem sem duplicação.
-9. Ctrl+K leva o foco à busca universal.
-10. Busca universal encontra conteúdo e pessoas da Comunidade.
-11. Escape fecha a busca sem deixar o campo expandido no mobile.
-12. Menu rápido do perfil renderiza 8 ações no cenário ADM.
-13. Perfil adaptativo renderiza capa/status e conquistas.
-14. Salvar status atualiza corretamente a preferência local.
-15. Central de Notificações renderiza 4 abas e sinais de Comunidade.
-16. Central de Privacidade renderiza 5 controles.
-17. Aparência informa que a cor acompanha nome, botões, indicadores e progresso.
-18. Densidade “Amplo” foi refinada para “Confortável”.
-19. Página “Para você” criou 6 grupos no catálogo de QA.
-20. Painel ADM renderiza 4 indicadores ao vivo.
-21. Cabeçalho e cartões de saúde do ADM mostram v25.38.
-22. Layout mobile 390×844 sem overflow horizontal do documento.
+2. Módulo R2 v25.39 carregado.
+3. Painel Cloudflare R2 aparece em ADM > Mídia & Upload.
+4. Status de conexão renderiza corretamente.
+5. Fluxo "Salvar e testar R2" grava as 4 chaves via RPC administrativo no mock de QA.
+6. Access Key e Secret Access Key são apagadas dos campos após salvar.
+7. Roteamento de upload retorna chave no formato `r2:media/...`.
+8. Roteamento de playback resolve chave R2 para URL assinada.
+9. Editor oferece duas fontes: Enviar arquivo / Usar link externo.
+10. Modo link externo oculta upload e exibe campo HTTPS.
+11. Conteúdo com URL direta é salvo corretamente no catálogo do cenário QA.
+12. Layout 390x844 sem overflow horizontal.
+13. Dock global do ADM fica abaixo do modal e não cobre o editor no celular.
+14. page_errors: 0.
+15. console_errors: 0.
 
-RESULTADOS IMPORTANTES DA BATERIA FINAL
-- accent_initial: rgb(138, 43, 226)
-- accent_after_change: rgb(43, 191, 138)
-- smart_tiles: 4
-- search_people: 1
-- profile_menu_actions: 8
-- achievements: 4
-- notification_tabs: 4
-- privacy_toggles: 5
-- for_you_groups: 6
-- admin_live_cards: 4
+RESULTADOS QA
+- build: 25.39.0
+- r2_module: 25.39
+- r2_card: 1
+- source_switch_buttons: 2
+- external_saved: true
 - mobile_no_overflow: true
 - page_errors: []
 - console_errors: []
 
-SUPABASE — MIGRAÇÃO v25.38
-- lx_adaptive_identity_v2538 aplicada com sucesso no projeto atual.
-- As seis novas colunas de perfil foram confirmadas no schema.
-- lx_social_directory(): anon_execute = false.
-- lx_social_directory(): authenticated_execute = true.
-- A migração consta no histórico do projeto Supabase.
+SUPABASE REAL
+- Edge Function `lx-r2-media` implantada com verify_jwt=true e status ACTIVE.
+- A função usa SUPABASE_SERVICE_ROLE_KEY apenas como secret de ambiente do Edge Runtime; essa chave não está no frontend.
+- A tabela `lx_integrations` ainda não possui chaves `r2_*`, portanto a conexão Cloudflare depende apenas da configuração única descrita em R2-SETUP.txt.
 
-REGRESSÃO / BASE
-- A camada v25.38 foi construída sobre a v25.37 sem substituir o núcleo estável de mensagens.
-- Message Actions, presença, Community Glow e Arc Reveal permanecem no pacote.
-- Ações de chat da v25.37 não foram removidas ou reescritas nesta atualização.
-
-ARQUIVOS DE QA
-- QA-ADAPTIVE-HOME-V2538-FINAL.png
-- QA-ADMIN-V2538-FINAL.png
-- QA-MOBILE-V2538-FINAL.png
-- QA-PROFILE-V2538.png
-- qa-results-final.json
-
-OBSERVAÇÃO
-O QA de interface usa dados simulados determinísticos para evitar criação de conteúdo de teste em contas reais.
-A migração de perfil foi aplicada e verificada diretamente no Supabase real do projeto.
+LIMITE DE QA
+Não foi possível executar um PUT real no Cloudflare R2 porque a conta/bucket/credenciais Cloudflare ainda não foram fornecidos. O fluxo frontend, armazenamento seguro das chaves, função de assinatura e tratamento de erros estão prontos. O teste final de transferência real deve ser feito imediatamente após cadastrar as quatro credenciais no ADM.

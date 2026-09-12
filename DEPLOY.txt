@@ -1,39 +1,24 @@
-LX Plus v25.38 — Adaptive Identity
-
-BASE: v25.37 Message Actions
+LX Plus v25.39 — Free Media Storage
+BASE: v25.38 Adaptive Identity
 DATA: 12/09/2026
 
-O QUE ENTROU NESTA VERSÃO
-- A cor escolhida em Aparência agora acompanha o nome do usuário e os principais detalhes da interface.
-- Home adaptativa com saudação contextual, status do perfil e bloco “Escolhido para você agora”.
-- Nova página “Para você”, organizada por histórico, avaliações, gêneros e lista.
-- Busca universal de filmes, séries, animes, doramas, músicas, livros e pessoas da Comunidade.
-- Central de notificações separada por Tudo / Comunidade / Conteúdo / Sistema.
-- Perfil com status personalizado, capa, atividade recente, favoritos públicos e conquistas.
-- Menu rápido ao clicar no avatar: Perfil, Privacidade, Notificações, Aparência, Comunidade, Premium, ADM e Sair.
-- Central de privacidade com controles de presença, Comunidade, chamadas, atividade e favoritos.
-- Indicadores discretos de novidade nas categorias.
-- Mais diferença entre densidade Compacta / Equilibrada / Confortável.
-- Microanimações, skeletons e acabamento visual mais consistente.
-- Atalhos no desktop: Ctrl/Cmd+K ou / para busca; Esc fecha busca/menu; controles de música quando aplicável.
-- Painel ADM ganhou faixa de status com online agora, mensagens não lidas, erros da sessão e build atual.
-- Todas as funções de mensagens da v25.37 foram preservadas.
+O QUE ENTROU
+- Cloudflare R2 como storage gratuito para filmes, episódios e áudios grandes.
+- Edge Function privada `lx-r2-media` para URLs assinadas de upload/playback/delete.
+- Tela R2 em ADM > Mídia & Upload com salvar/testar credenciais.
+- O teste tenta configurar o CORS do bucket para o domínio atual.
+- Publicação agora oferece "Enviar arquivo" ou "Usar link externo".
+- Mensagens de erro explicam R2 não configurado, CORS, credencial recusada e URL externa inválida.
+- Fallback para Supabase apenas para arquivos pequenos quando R2 ainda não está configurado.
+- Player e música reconhecem chaves `r2:` e pedem URL temporária para reprodução.
+- Ajuste de z-index: o dock global do ADM não cobre mais o modal no celular.
 
-BACKEND / SUPABASE
-A migração lx_adaptive_identity_v2538 JÁ FOI APLICADA ao projeto Supabase atual.
-Ela adiciona ao perfil:
-- status_text
-- banner_url
-- activity_visible
-- favorites_visible
-- favorite_ids
-- last_activity
+BACKEND
+- Edge Function `lx-r2-media` JÁ FOI IMPLANTADA no projeto Supabase atual.
+- Nenhuma migração SQL nova é necessária.
+- As credenciais R2 ainda NÃO estão cadastradas porque dependem da conta Cloudflare do proprietário.
 
-Também atualiza lx_social_directory() para respeitar essas opções e mantém execução bloqueada para anon.
-Arquivo de referência: SUPABASE-ADAPTIVE-IDENTITY.sql
-NÃO aplique novamente no projeto atual.
-
-PUBLICAÇÃO
+PUBLICAÇÃO DO FRONTEND
 1. Substitua na raiz:
    - index.html
    - app.css
@@ -42,19 +27,10 @@ PUBLICAÇÃO
    - CNAME
    - assets/icon.svg
 3. Não reative sw.js nem a pasta js/ antiga.
-4. Confirme na autenticação:
-   LX Plus v25.38 · Adaptive Identity
-5. Faça uma validação rápida após publicar:
-   - entrar na conta
-   - trocar a cor em Aparência e confirmar que o nome acompanha
-   - abrir Para você
-   - testar busca universal
-   - abrir Perfil e salvar status
-   - abrir Notificações e Privacidade
-   - abrir Comunidade e uma conversa
-   - abrir ADM, se a conta tiver acesso
+4. Confirme na autenticação: LX Plus v25.39 · Free Media Storage
 
-ROLLBACK
-Se houver qualquer comportamento inesperado no frontend, volte para:
-LX Plus v25.37 — Message Actions.
-As colunas novas de perfil podem permanecer no Supabase sem afetar a v25.37.
+ATIVAÇÃO R2
+Depois de publicar, siga R2-SETUP.txt. Assim que aparecer "R2 conectado", você já pode enviar os filmes pelo ADM.
+
+ROLLBACK FRONTEND
+Se algo inesperado aparecer, volte para v25.38 Adaptive Identity. A Edge Function nova pode permanecer implantada sem afetar a v25.38.

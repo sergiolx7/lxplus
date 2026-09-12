@@ -1,0 +1,39 @@
+LX Plus v25.39 — Cloudflare R2 (configuração única)
+
+O frontend e a Edge Function já estão prontos.
+A Edge Function `lx-r2-media` já foi implantada no Supabase atual.
+Não coloque chaves do R2 dentro de index.html, lxplus.js ou GitHub.
+
+PARA ATIVAR OS UPLOADS GRANDES
+1. Entre na sua conta Cloudflare.
+2. Abra R2 Object Storage e crie um bucket chamado: lxplus-media
+3. Em R2 > Manage R2 API Tokens, crie uma chave S3 com permissão de leitura e gravação de objetos para esse bucket.
+4. Copie:
+   - Account ID
+   - Access Key ID
+   - Secret Access Key
+   - nome do bucket (lxplus-media)
+5. No LX Plus, entre como ADM > Mídia & Upload.
+6. Abra "Configurar armazenamento R2".
+7. Preencha os 4 campos e toque em "Salvar e testar R2".
+8. Se aparecer "R2 conectado", pronto. Os próximos filmes e episódios enviados pelo ADM usarão o R2 automaticamente.
+
+CORS
+Ao tocar em "Salvar e testar R2", a Edge Function tenta configurar automaticamente o CORS do bucket para o domínio atual do LX Plus. Se a credencial usada não permitir alterar CORS, a conexão pode funcionar mas o navegador pode impedir o PUT. Nesse caso, configure no bucket R2 uma regra permitindo o domínio do LX Plus com métodos GET, HEAD e PUT e headers `*`.
+
+COMO O LX PLUS DECIDE ONDE SALVAR
+- Filme / episódio / áudio do catálogo: R2 quando configurado.
+- Se o R2 ainda não estiver configurado e o arquivo tiver até ~45 MB: fallback para o Supabase Storage.
+- Arquivo maior que ~45 MB sem R2: o LX Plus para o envio e mostra a instrução correta, em vez de "Falha no Supabase" genérica.
+- Capa, avatar e assets pequenos continuam no Supabase.
+- Também existe "Usar link externo" para um link HTTPS direto do arquivo.
+
+SEGURANÇA
+- O bucket fica privado.
+- O navegador recebe URLs assinadas temporárias para upload e reprodução.
+- Apenas ADM pode gerar upload/delete.
+- Contas aprovadas podem gerar URL temporária de reprodução.
+- As credenciais são guardadas em `lx_integrations` no Supabase por RPC administrativo e lidas apenas pela Edge Function.
+
+LIMITE DA IMPLEMENTAÇÃO v25.39
+Upload direto usa PUT único e aceita até 5 GB por arquivo. Para arquivos maiores, uma versão futura pode adicionar multipart upload.
