@@ -1,0 +1,15 @@
+LX Plus v25.39.1 — Deploy Hotfix
+
+MOTIVO
+O print do site publicado mostra a mensagem de erro da v25.38, provando que o navegador/servidor ainda está carregando o lxplus.js antigo.
+
+PUBLICAR OS 3 ARQUIVOS JUNTOS
+- index.html
+- app.css
+- lxplus.js
+
+Depois faça Ctrl+F5.
+Confirme na tela de autenticação: LX Plus v25.39.1 · Deploy Hotfix.
+
+IMPORTANTE
+Arquivos grandes só irão para o Cloudflare R2 depois que Account ID, Bucket, Access Key ID e Secret Access Key forem cadastrados em ADM > Mídia & Upload e o status mostrar R2 conectado.
