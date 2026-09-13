@@ -1,1 +1,11 @@
-Sintaxe JS verificada com node --check.
+LX Plus v25.54 — QA
+
+PASS — lxplus.js: node --check
+PASS — service-worker.js: node --check
+PASS — HTML: 0 IDs duplicados
+PASS — splash: logo raster antiga removida do #splash
+PASS — splash: novo wordmark 3D em HTML/CSS presente
+PASS — cache PWA atualizado para lxplus-shell-2554
+PASS — assets CSS/JS/imagens agora usam network-first no Service Worker para reduzir cache visual antigo
+
+Visual browser QA: não executado porque o Chromium deste runtime não inicializou EGL/DBus e encerrou por timeout. Nenhum teste visual foi alegado como concluído.

@@ -1,13 +1,7 @@
-LX Plus v25.53 — 3D Interface Refresh
+LX Plus v25.54 — True 3D Intro
 
-Ajustes principais:
-- visual da interface reforçado com estilo 3D/cinematográfico
-- cards e pôsteres com mais profundidade, brilho e sombra
-- hero/banner principal com acabamento mais premium
-- splash/entrada refinada para combinar melhor com o wordmark 3D
-- melhoria da proporção visual no mobile
-- cache-busting atualizado para index, CSS, JS e wordmark
-
-Arquivos alterados:
-- index.html
-- app.css
+- A entrada não usa mais lxplus-wordmark.png como logo principal do splash.
+- Novo logo LX Plus é desenhado em HTML/CSS com profundidade/extrusão, metal, violeta/ciano, scan de luz e glint.
+- Mantido o arco cinematográfico da referência: preto quase total, arco luminoso por cima, marca central e transição suave.
+- Service Worker atualizado para cache 2554 e network-first em CSS/JS/imagens, evitando continuar exibindo interface visual antiga após publicação.
+- Cards e imagens recebem regras de proporção/cover para reduzir aparência esticada.

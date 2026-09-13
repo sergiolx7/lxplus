@@ -1726,3 +1726,50 @@ html[data-poster-size="large"],body[data-poster-size="large"]{--lx-poster-w:210p
   .card-badges{left:8px!important;top:8px!important}
   .progress-line{left:10px!important;right:10px!important;bottom:7px!important}
 }
+
+/* v25.54 — TRUE 3D INTRO: no raster wordmark in splash */
+.lx3d-lockup{width:min(760px,82vw)!important;display:grid!important;place-items:center!important;perspective:1300px!important;filter:none!important;animation:lx3dGroupReveal 5.6s cubic-bezier(.18,.72,.22,1) both!important}
+.lx3d-wordmark{position:relative;display:flex;align-items:center;justify-content:center;gap:.04em;transform-style:preserve-3d;transform:rotateX(8deg) rotateY(-5deg) translateZ(34px);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:800;line-height:.86;letter-spacing:-.075em;white-space:nowrap;filter:drop-shadow(0 24px 50px rgba(0,0,0,.55))}
+.lx3d-wordmark>span{position:relative;display:inline-block;transform-style:preserve-3d;isolation:isolate}
+.lx3d-l,.lx3d-x{font-size:clamp(82px,11.2vw,154px)}
+.lx3d-plusword{font-size:clamp(68px,9.8vw,136px);font-weight:430;letter-spacing:-.07em;margin-left:.08em}
+.lx3d-plus{font-size:clamp(72px,9.4vw,132px);font-weight:330;margin-left:.01em;color:#9a62ff;text-shadow:0 0 9px rgba(255,255,255,.95),0 0 22px rgba(155,94,255,.95),0 0 54px rgba(95,65,255,.72)}
+.lx3d-l,.lx3d-plusword{background:linear-gradient(180deg,#ffffff 0%,#eef2fb 22%,#aeb8ce 52%,#f7f8ff 76%,#8b91aa 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 1px 0 rgba(255,255,255,.5),0 4px 0 rgba(72,79,104,.52),0 8px 16px rgba(0,0,0,.3)}
+.lx3d-x{background:linear-gradient(135deg,#eae7ff 0%,#a57cff 22%,#4d38e8 47%,#4bbfff 69%,#efeaff 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 1px 0 rgba(255,255,255,.55),0 3px 0 rgba(72,46,159,.78),0 7px 0 rgba(38,27,87,.6),0 12px 28px rgba(74,54,190,.44)}
+.lx3d-l:before,.lx3d-x:before,.lx3d-plusword:before,.lx3d-plus:before{content:attr(data-text);position:absolute;inset:0;z-index:-2;color:rgba(15,19,31,.92);transform:translate3d(7px,9px,-24px);text-shadow:1px 1px 0 rgba(135,101,255,.18),2px 2px 0 rgba(60,48,120,.22),3px 3px 0 rgba(27,31,50,.42),4px 4px 0 rgba(17,19,30,.62),8px 10px 22px rgba(0,0,0,.7);-webkit-text-fill-color:rgba(22,26,42,.96)}
+.lx3d-x:after{content:"";position:absolute;left:9%;right:7%;top:48%;height:5px;border-radius:999px;background:linear-gradient(90deg,transparent,#fff 28%,#ba9cff 53%,#62d9ff 75%,transparent);box-shadow:0 0 9px #fff,0 0 24px rgba(121,91,255,.92),0 0 38px rgba(71,205,255,.48);opacity:.72;transform:rotate(-2deg) translateZ(18px)}
+.lx3d-wordmark:after{content:"";position:absolute;left:3%;right:3%;bottom:-21%;height:20%;border-radius:50%;background:radial-gradient(ellipse,rgba(123,90,255,.33) 0%,rgba(63,187,218,.2) 30%,transparent 70%);filter:blur(18px);transform:rotateX(79deg) translateZ(-46px);opacity:.9}
+.lx3d-scan{position:absolute;top:15%;bottom:15%;left:-20%;width:18%;z-index:7;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),rgba(255,255,255,.76),rgba(103,217,255,.28),transparent);filter:blur(2px);transform:skewX(-16deg);opacity:0;animation:lx3dScan 5.6s 1.12s ease both}
+.lx3d-lockup .lx-reference-glint{display:block!important;right:1.5%!important;top:49%!important;width:10px!important;height:10px!important;opacity:0;animation:lx3dGlint 5.6s 1.3s ease both!important;box-shadow:0 0 8px 2px #fff,0 0 25px 10px rgba(147,94,255,.84),0 0 70px 28px rgba(59,206,240,.30)!important}
+@keyframes lx3dGroupReveal{0%{opacity:0;transform:translate(-50%,-46%) scale(.78) rotateX(18deg);filter:blur(12px)}18%{opacity:.32;filter:blur(4px)}42%{opacity:1;transform:translate(-50%,-50%) scale(1.045) rotateX(3deg);filter:blur(0)}66%{transform:translate(-50%,-50%) scale(1) rotateX(0)}100%{opacity:1;transform:translate(-50%,-50%) scale(1) rotateX(0);filter:none}}
+@keyframes lx3dScan{0%,12%{left:-22%;opacity:0}23%{opacity:.84}55%{left:106%;opacity:.75}64%,100%{left:106%;opacity:0}}
+@keyframes lx3dGlint{0%,28%{opacity:0;transform:scale(.3)}44%{opacity:1;transform:scale(1.6)}53%{opacity:.55;transform:scale(.8)}67%,100%{opacity:0;transform:scale(.35)}}
+
+/* Fix the old splash copy so the logo is the focus, matching the user's reference video. */
+.lx-splash-copy-3d{top:74%!important;opacity:.52;animation:lx3dCopyIn 5.6s ease both}
+.lx-splash-copy-3d strong{font-size:clamp(13px,1.7vw,19px)!important;font-weight:560!important;letter-spacing:-.02em!important;color:rgba(224,235,245,.72)!important}
+.lx-splash-copy-3d span{font-size:8px!important;color:rgba(173,201,222,.48)!important}
+@keyframes lx3dCopyIn{0%,48%{opacity:0;transform:translate(-50%,8px)}68%,100%{opacity:.52;transform:translate(-50%,0)}}
+
+/* Force artwork to look intentional instead of stretched/broken. */
+.card-art,.lx-for-you-art,.lx-music-art,.lx-music-feature-art,.hero-bg{image-rendering:auto!important;background-repeat:no-repeat!important}
+.card-art,.lx-for-you-art{background-size:cover!important;background-position:center top!important}
+.lx-music-art,.lx-music-feature-art{background-size:cover!important;background-position:center!important}
+
+@media(max-width:700px){
+ .lx3d-lockup{width:min(91vw,420px)!important;top:54%!important}
+ .lx3d-wordmark{transform:rotateX(6deg) rotateY(-3deg) translateZ(22px)}
+ .lx3d-l,.lx3d-x{font-size:clamp(58px,20vw,96px)}
+ .lx3d-plusword{font-size:clamp(48px,17vw,84px)}
+ .lx3d-plus{font-size:clamp(50px,17vw,86px)}
+ .lx-arc-swoosh{top:45%!important;width:min(112vw,620px)!important}
+ .lx-splash-copy-3d{top:69%!important;width:86vw!important}
+ .lx-splash-copy-3d strong{font-size:13px!important}
+ .lx-splash-copy-3d span{font-size:7px!important}
+}
+@media(max-width:430px){
+ .lx3d-lockup{width:min(94vw,350px)!important}
+ .lx3d-wordmark{gap:.01em;letter-spacing:-.09em}
+ .lx3d-plusword{margin-left:.04em}
+}
+@media(prefers-reduced-motion:reduce){.lx3d-lockup,.lx3d-scan,.lx3d-lockup .lx-reference-glint,.lx-splash-copy-3d{animation-duration:.01ms!important;animation-delay:0ms!important}.lx3d-lockup{opacity:1!important;transform:translate(-50%,-50%)!important}}
