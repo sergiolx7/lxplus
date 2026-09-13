@@ -1,0 +1,10 @@
+LX Plus — Brand + Mobile + App
+
+- Logo aprovada aplicada no topo, abertura, autenticação, perfis e ADM.
+- Rótulos de versão removidos da interface pública.
+- Bloco duplicado “Escolhido para você agora” removido da Home; a aba Para você continua disponível.
+- Hero mobile compactado: imagem proporcional, descrição ocultada no celular, título/metadata/botões menores.
+- Topo, navegação inferior e player ajustados para celular.
+- Navegação inferior corrigida para 7 ações sem quebrar em duas linhas.
+- Opção “Baixar app” adicionada; instalação funciona como PWA quando suportada.
+- Google Drive continua usando o player oficial; controles LX de qualidade/próximo episódio permanecem.

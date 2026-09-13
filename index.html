@@ -6,16 +6,21 @@
   <meta name="theme-color" content="#03070c">
   <meta name="color-scheme" content="dark light">
   <meta name="description" content="LX Plus — Assistir, Ler e Ouvir em uma experiência premium.">
-  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/app-icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/app-icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LX Plus">
 
   <script>
   (function(){
-    var BUILD='25.46',KEY='lxplus_build_seen';
+    var BUILD='25.47',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
         if('caches' in window)caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))).catch(()=>{});
-        if('serviceWorker' in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});
+        if('serviceWorker' in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.update?.())).catch(()=>{});
       }
     }catch(e){}
   })();
@@ -39,8 +44,8 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=25.46">
-  <title>LX Plus v25.46 · Drive Quality + Next Episode</title>
+  <link rel="stylesheet" href="app.css?v=25.47">
+  <title>LX Plus</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -66,8 +71,8 @@
         <path class="lx-arc-path lx-arc-path-soft" d="M72 195 C 145 20, 398 -35, 548 175"/>
         <path class="lx-arc-path lx-arc-path-main" d="M72 195 C 145 20, 398 -35, 548 175"/>
       </svg>
-      <div class="lx-reference-lockup">
-        <span class="lx-reference-word"><b>LX</b><i>Plus</i><em>+</em></span>
+      <div class="lx-reference-lockup lx-approved-lockup">
+        <img src="assets/lxplus-wordmark.png" alt="LX Plus" class="lx-approved-logo lx-approved-logo-splash">
         <span class="lx-reference-glint" aria-hidden="true"></span>
       </div>
       <div class="lx-arc-floor-glow"></div>
@@ -78,7 +83,7 @@
 
   <section id="auth" class="screen auth hidden">
     <div class="auth-showcase">
-      <div class="brand brand-lg"><b>LX</b><span>Plus</span><i>+</i></div>
+      <div class="brand brand-lg brand-approved"><img src="assets/lxplus-wordmark.png" alt="LX Plus" class="lx-approved-logo"></div>
       <div class="auth-copy">
         <span class="eyebrow">UMA CONTA · QUATRO MODOS</span>
         <h1>Continue de onde parou, em qualquer formato.</h1>
@@ -111,20 +116,19 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.46 · Drive Quality + Next Episode</small>
       </div>
     </div>
   </section>
 
   <section id="profiles" class="screen profiles hidden">
-    <header><div class="brand brand-lg"><b>LX</b><span>Plus</span><i>+</i></div><button id="profileLogout" class="glass-btn">Sair</button></header>
+    <header><div class="brand brand-lg brand-approved"><img src="assets/lxplus-wordmark.png" alt="LX Plus" class="lx-approved-logo"></div><button id="profileLogout" class="glass-btn">Sair</button></header>
     <main><span class="eyebrow">PERFIS</span><h1>Quem está usando a LX Plus?</h1><div id="profileGrid" class="profile-grid"></div></main>
   </section>
 
   <section id="app" class="app hidden">
     <header id="topbar" class="topbar">
       <div class="topbar-row">
-        <a href="#" id="brandHome" class="brand brand-sm"><b>LX</b><span>Plus</span><i>+</i></a>
+        <a href="#" id="brandHome" class="brand brand-sm brand-approved" aria-label="LX Plus"><img src="assets/lxplus-wordmark.png" alt="LX Plus" class="lx-approved-logo"></a>
         <div id="modeSwitch" class="mode-switch">
           <button data-mode="Assistir" class="active"><span>▶</span>Assistir</button>
           <button data-mode="Ler"><span>▤</span>Ler</button>
@@ -137,6 +141,7 @@
           <button id="notifyBtn" class="icon-btn lx-top-icon" aria-label="Notificações" title="Notificações"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><i id="notifyCount">0</i></button>
           <button id="premiumBtn" class="premium-top-btn" aria-label="LX Plus Premium">PREMIUM</button>
           <button id="adminTopBtn" class="glass-btn admin-top-btn hidden" aria-label="Painel ADM">⚙ ADM</button>
+          <button id="installAppBtn" class="glass-btn install-app-btn" type="button" aria-label="Baixar aplicativo LX Plus" title="Baixar app">⇩ <span>App</span></button>
           <button id="themeBtn" class="icon-btn lx-top-icon" aria-label="Aparência" title="Aparência"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-1.1-.9-2-2-2h-2.2a2 2 0 0 1-1.7-3l1.1-1.9A9 9 0 0 0 12 3Z"/><circle cx="8" cy="10" r="1"/><circle cx="11" cy="7" r="1"/><circle cx="7" cy="14" r="1"/></svg></button>
           <button type="button" id="communityBtn" class="community-top-btn" aria-label="Comunidade, amigos e chamadas" onclick="window.LXOpenCommunity('discover'); return false;"><span class="community-top-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 11a4 4 0 1 0-3.3-6.2A5 5 0 1 0 7 13c-3.3 0-6 1.8-6 4v2h12v-2c0-1-.4-1.9-1.1-2.6A7 7 0 0 1 16 13c3.9 0 7 2.1 7 4.6V20h-8v-3c0-1.6-.7-3-1.8-4A4 4 0 0 0 16 11Z" fill="currentColor"/></svg></span><b>Comunidade</b><i id="socialCount" class="hidden">0</i></button>
           <button type="button" id="messageBtn" class="message-top-btn" aria-label="Mensagens" onclick="window.LXOpenCommunity('friends'); return false;"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 3v-3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm2 5h12v2H6V9Zm0 4h8v2H6v-2Z" fill="currentColor"/></svg><i id="messageCount" class="hidden">0</i></button>
@@ -153,9 +158,9 @@
 
   <section id="admin" class="admin hidden">
     <aside class="admin-side">
-      <div class="brand brand-sm"><b>LX</b><span>Plus</span><i>+</i></div>
-      <div class="admin-identity"><div class="admin-avatar">LX</div><div><b>Administrador</b><small>Production Console</small></div></div>
-      <div class="admin-console-label"><span></span> LX COMMAND CENTER</div>
+      <div class="brand brand-sm brand-approved"><img src="assets/lxplus-wordmark.png" alt="LX Plus" class="lx-approved-logo"></div>
+      <div class="admin-identity"><div class="admin-avatar">LX</div><div><b>Administrador</b><small>LX Plus</small></div></div>
+      <div class="admin-console-label"><span></span> LX PLUS</div>
       <nav id="adminNav">
         <button data-admin="dashboard" class="active"><i>⌂</i><span>Visão geral</span></button>
         <button data-admin="library"><i>▦</i><span>Biblioteca</span></button>
@@ -242,11 +247,11 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   })();
   </script>
-  <script src="lxplus.js?v=25.46"></script>
+  <script src="lxplus.js?v=25.47"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded',function(){
-/* LX SOCIAL EMBEDDED v25.46 — SHARED AUDIO + GROUP CALLS */
+/* LX SOCIAL EMBEDDED v25.47 — SHARED AUDIO + GROUP CALLS */
 (()=>{
   const LX=window.LX=window.LX||{};
   const U=LX.ui;
@@ -678,7 +683,7 @@
       state.makingOffer=true;
       const offer=await pc.createOffer(opts?.iceRestart?{iceRestart:true}:undefined);
       await pc.setLocalDescription(offer);state.lastLocalOfferAt=Date.now();
-      await sendSignal('offer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp,reason,iceRestart:!!opts?.iceRestart,build:'25.46'});return true;
+      await sendSignal('offer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp,reason,iceRestart:!!opts?.iceRestart,build:'25.47'});return true;
     }catch(e){console.warn('LX renegotiate',reason,e);return false}
     finally{
       state.makingOffer=false;state.negotiating=false;
@@ -691,7 +696,7 @@
       if(row.kind==='offer'){
         state.lastRemoteOfferAt=Date.now();
         if(pc.signalingState!=='stable'){try{await pc.setLocalDescription({type:'rollback'})}catch{};state.negotiating=false;state.makingOffer=false}
-        await pc.setRemoteDescription({type:row.payload?.type||'offer',sdp:row.payload?.sdp||''});await bindLocalMediaToOffer();for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{});const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await sendSignal('answer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp,build:'25.46'});
+        await pc.setRemoteDescription({type:row.payload?.type||'offer',sdp:row.payload?.sdp||''});await bindLocalMediaToOffer();for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{});const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await sendSignal('answer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp,build:'25.47'});
       }
       else if(row.kind==='answer'){if(pc.signalingState==='have-local-offer'||!pc.currentRemoteDescription){await pc.setRemoteDescription({type:row.payload?.type||'answer',sdp:row.payload?.sdp||''});for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{});resumeCallAudio().catch(()=>{})}}
       else if(row.kind==='ice'){if(pc.remoteDescription?.type)await pc.addIceCandidate(row.payload).catch(()=>{});else state.pendingIce.push(row.payload)}
@@ -804,11 +809,11 @@
       state.screenStream=stream;state.screenMode=mode;const hasScreenAudio=await enableSharedScreenAudio(stream);
       if(mode==='dual'){
         const sender=await ensureScreenSender();if(!sender)throw new Error('SCREEN_SENDER_UNAVAILABLE');if(!await ensureTransceiverCanSend(state.screenTransceiver,'screen-dual-enable-send'))throw new Error('SCREEN_SEND_DIRECTION_UNAVAILABLE');await sender.replaceTrack(track);state.screenSender=sender;
-        const mid=currentScreenMid();await sendSignal('share',{active:true,mode:'dual',mid,v:3,build:'25.46',displaySurface:track.getSettings?.().displaySurface||'screen',screenAudio:hasScreenAudio}).catch(()=>{});await renegotiate('screen-dual-start');
+        const mid=currentScreenMid();await sendSignal('share',{active:true,mode:'dual',mid,v:3,build:'25.47',displaySurface:track.getSettings?.().displaySurface||'screen',screenAudio:hasScreenAudio}).catch(()=>{});await renegotiate('screen-dual-start');
         const prev=document.getElementById('lxLocalSharePreview'),wrap=document.getElementById('lxLocalShareWrap');if(prev){prev.srcObject=stream;prev.play?.().catch(()=>{})}wrap?.classList.remove('hidden');
       }else{
         const sender=await ensureVideoSender();if(!sender)throw new Error('VIDEO_SENDER_UNAVAILABLE');if(!await ensureTransceiverCanSend(state.cameraTransceiver,'screen-replace-enable-send'))throw new Error('VIDEO_SEND_DIRECTION_UNAVAILABLE');await sender.replaceTrack(track);state.videoSender=sender;
-        const mid=currentCameraMid();await sendSignal('share',{active:true,mode:'replace',mid,v:3,build:'25.46',displaySurface:track.getSettings?.().displaySurface||'screen',screenAudio:hasScreenAudio}).catch(()=>{});await renegotiate('screen-replace-start');
+        const mid=currentCameraMid();await sendSignal('share',{active:true,mode:'replace',mid,v:3,build:'25.47',displaySurface:track.getSettings?.().displaySurface||'screen',screenAudio:hasScreenAudio}).catch(()=>{});await renegotiate('screen-replace-start');
         const local=document.getElementById('lxLocalVideo');if(local){local.srcObject=stream;local.classList.remove('hidden');local.play?.().catch(()=>{})}const label=document.getElementById('lxLocalLabel');if(label)label.textContent='SUA TELA';
       }
       document.getElementById('lxCallOverlay')?.classList.add('is-sharing');btn?.classList.remove('busy');btn?.classList.add('active');if(small)small.textContent='Parar tela';document.getElementById('lxShareBadge')?.classList.remove('hidden');
@@ -819,9 +824,9 @@
     const mode=state.screenMode,camera=state.localStream?.getVideoTracks?.()[0]||null;
     try{
       if(mode==='dual'){
-        const sender=state.screenSender||state.screenTransceiver?.sender;if(sender)await sender.replaceTrack(state.screenPlaceholderTrack||null).catch(()=>{});await sendSignal('share',{active:false,mode:'dual',mid:currentScreenMid(),v:3,build:'25.46'}).catch(()=>{});await renegotiate('screen-dual-stop');
+        const sender=state.screenSender||state.screenTransceiver?.sender;if(sender)await sender.replaceTrack(state.screenPlaceholderTrack||null).catch(()=>{});await sendSignal('share',{active:false,mode:'dual',mid:currentScreenMid(),v:3,build:'25.47'}).catch(()=>{});await renegotiate('screen-dual-stop');
       }else{
-        const sender=await ensureVideoSender();if(sender)await sender.replaceTrack(camera||state.cameraPlaceholderTrack||null).catch(()=>{});await sendSignal('share',{active:false,mode:'replace',mid:currentCameraMid(),v:3,build:'25.46'}).catch(()=>{});await renegotiate('screen-replace-stop');
+        const sender=await ensureVideoSender();if(sender)await sender.replaceTrack(camera||state.cameraPlaceholderTrack||null).catch(()=>{});await sendSignal('share',{active:false,mode:'replace',mid:currentCameraMid(),v:3,build:'25.47'}).catch(()=>{});await renegotiate('screen-replace-stop');
       }
     }catch(e){console.warn('LX stop share',e)}
     await restoreMicSender().catch(()=>{});
@@ -875,7 +880,7 @@
   </script>
 
 <script>
-/* LX GROUP CALLS v25.46 — persistent groups + small-group WebRTC mesh */
+/* LX GROUP CALLS v25.47 — persistent groups + small-group WebRTC mesh */
 (()=>{
   const LX=window.LX=window.LX||{};
   const db=()=>LX.cloud?.db?.(), me=()=>LX.cloud?.user?.()||LX.ui?.state?.user||null, uid=()=>String(me()?.id||'');
@@ -904,9 +909,9 @@
   async function sendSignal(to,kind,payload){const {error}=await db().from('lx_group_call_signals').insert({call_id:st.call.id,sender_id:uid(),recipient_id:to,kind,payload});if(error)throw error}
   function peerObj(id,p){let x=st.peers.get(id);if(x)return x;x={id,person:p,pc:null,pending:[],processed:new Set(),cameraTr:null,audioTr:null,placeholder:null,makingOffer:false};st.peers.set(id,x);return x}
   async function bindPeerLocal(x){const trs=x.pc.getTransceivers(),a=trs.find(t=>t.receiver.track.kind==='audio'),v=trs.find(t=>t.receiver.track.kind==='video'),mic=(st.screenAudioMixedTrack||st.localStream?.getAudioTracks()[0]||null),cam=(st.screenStream?.getVideoTracks()[0]||st.localStream?.getVideoTracks()[0]||x.placeholder||null);if(a){x.audioTr=a;try{a.direction='sendrecv'}catch{};await a.sender.replaceTrack(mic)}if(v){x.cameraTr=v;try{v.direction='sendrecv'}catch{};await v.sender.replaceTrack(cam)}}
-  async function makeOffer(x,reason='sync'){if(!x.pc||x.pc.signalingState!=='stable'||x.makingOffer)return;x.makingOffer=true;try{const o=await x.pc.createOffer();await x.pc.setLocalDescription(o);await sendSignal(x.id,'offer',{type:o.type,sdp:x.pc.localDescription.sdp,reason,build:'25.46'})}finally{x.makingOffer=false}}
+  async function makeOffer(x,reason='sync'){if(!x.pc||x.pc.signalingState!=='stable'||x.makingOffer)return;x.makingOffer=true;try{const o=await x.pc.createOffer();await x.pc.setLocalDescription(o);await sendSignal(x.id,'offer',{type:o.type,sdp:x.pc.localDescription.sdp,reason,build:'25.47'})}finally{x.makingOffer=false}}
   async function ensurePeer(id,p={}){id=String(id);if(!id||id===uid())return null;const x=peerObj(id,p);if(x.pc)return x;const pc=x.pc=new RTCPeerConnection({iceServers:[{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']}],iceCandidatePoolSize:4});const tile=ensureRemoteTile(id,p);x.placeholder=blankTrack();pc.onicecandidate=e=>{if(e.candidate)sendSignal(id,'ice',e.candidate.toJSON()).catch(()=>{})};pc.ontrack=e=>{const tr=e.track;if(!tile)return;if(tr.kind==='audio'){const a=tile.querySelector('audio');a.srcObject=new MediaStream([tr]);a.play?.().catch(()=>document.getElementById('lxGroupAudioUnlock')?.classList.remove('hidden'))}else{const v=tile.querySelector('video');v.srcObject=new MediaStream([tr]);v.play?.().catch(()=>{});if(st.call?.mode==='video'){tr.onunmute=()=>tile.classList.add('has-video');if(!tr.muted)tile.classList.add('has-video')}}tile.querySelector('footer small').textContent='Conectado'};pc.onconnectionstatechange=()=>{if(!tile)return;const q=tile.querySelector('footer small');if(pc.connectionState==='connected')q.textContent='Conectado';else if(['failed','disconnected'].includes(pc.connectionState)){q.textContent='Reconectando…';try{pc.restartIce()}catch{};if(pc.signalingState==='stable')makeOffer(x,'ice-restart').catch(()=>{})}};if(uid()<id){const mic=st.screenAudioMixedTrack||st.localStream?.getAudioTracks()[0]||null,cam=st.screenStream?.getVideoTracks()[0]||st.localStream?.getVideoTracks()[0]||x.placeholder;if(mic)x.audioTr=pc.addTransceiver(mic,{direction:'sendrecv',streams:[st.localStream]});else x.audioTr=pc.addTransceiver('audio',{direction:'sendrecv'});x.cameraTr=pc.addTransceiver(cam||'video',{direction:'sendrecv',streams:cam?[new MediaStream([cam])]:[]});setTimeout(()=>makeOffer(x,'participant-join').catch(()=>{}),80)}return x}
-  async function process(row){if(!row||row.recipient_id!==uid()||row.sender_id===uid())return;const id=String(row.sender_id),p=(st.group?.members||[]).find(m=>String(m.user_id)===id)||{user_id:id,name:'Participante'},x=await ensurePeer(id,p);if(x.processed.has(row.id))return;x.processed.add(row.id);const pc=x.pc;try{if(row.kind==='offer'){if(pc.signalingState!=='stable'){try{await pc.setLocalDescription({type:'rollback'})}catch{}}await pc.setRemoteDescription({type:'offer',sdp:row.payload.sdp});await bindPeerLocal(x);for(const ice of x.pending.splice(0))await pc.addIceCandidate(ice).catch(()=>{});const a=await pc.createAnswer();await pc.setLocalDescription(a);await sendSignal(id,'answer',{type:'answer',sdp:pc.localDescription.sdp,build:'25.46'})}else if(row.kind==='answer'){if(pc.signalingState==='have-local-offer'){await pc.setRemoteDescription({type:'answer',sdp:row.payload.sdp});for(const ice of x.pending.splice(0))await pc.addIceCandidate(ice).catch(()=>{})}}else if(row.kind==='ice'){if(pc.remoteDescription)await pc.addIceCandidate(row.payload).catch(()=>{});else x.pending.push(row.payload)}else if(row.kind==='share'){const tile=ensureRemoteTile(id,p);tile?.classList.toggle('sharing',!!row.payload?.active);if(!row.payload?.active&&st.call?.mode!=='video')tile?.classList.remove('has-video');const sm=tile?.querySelector('footer small');if(sm)sm.textContent=row.payload?.active?'Compartilhando tela':'Conectado'}else if(row.kind==='media'){const tile=ensureRemoteTile(id,p);tile?.classList.toggle('has-video',!!row.payload?.camera);const sm=tile?.querySelector('footer small');if(sm)sm.textContent=row.payload?.camera?'Câmera ligada':'Conectado'}else if(row.kind==='hangup'){dropPeer(id)}}catch(e){console.warn('LX group signal',row.kind,e)}}
+  async function process(row){if(!row||row.recipient_id!==uid()||row.sender_id===uid())return;const id=String(row.sender_id),p=(st.group?.members||[]).find(m=>String(m.user_id)===id)||{user_id:id,name:'Participante'},x=await ensurePeer(id,p);if(x.processed.has(row.id))return;x.processed.add(row.id);const pc=x.pc;try{if(row.kind==='offer'){if(pc.signalingState!=='stable'){try{await pc.setLocalDescription({type:'rollback'})}catch{}}await pc.setRemoteDescription({type:'offer',sdp:row.payload.sdp});await bindPeerLocal(x);for(const ice of x.pending.splice(0))await pc.addIceCandidate(ice).catch(()=>{});const a=await pc.createAnswer();await pc.setLocalDescription(a);await sendSignal(id,'answer',{type:'answer',sdp:pc.localDescription.sdp,build:'25.47'})}else if(row.kind==='answer'){if(pc.signalingState==='have-local-offer'){await pc.setRemoteDescription({type:'answer',sdp:row.payload.sdp});for(const ice of x.pending.splice(0))await pc.addIceCandidate(ice).catch(()=>{})}}else if(row.kind==='ice'){if(pc.remoteDescription)await pc.addIceCandidate(row.payload).catch(()=>{});else x.pending.push(row.payload)}else if(row.kind==='share'){const tile=ensureRemoteTile(id,p);tile?.classList.toggle('sharing',!!row.payload?.active);if(!row.payload?.active&&st.call?.mode!=='video')tile?.classList.remove('has-video');const sm=tile?.querySelector('footer small');if(sm)sm.textContent=row.payload?.active?'Compartilhando tela':'Conectado'}else if(row.kind==='media'){const tile=ensureRemoteTile(id,p);tile?.classList.toggle('has-video',!!row.payload?.camera);const sm=tile?.querySelector('footer small');if(sm)sm.textContent=row.payload?.camera?'Câmera ligada':'Conectado'}else if(row.kind==='hangup'){dropPeer(id)}}catch(e){console.warn('LX group signal',row.kind,e)}}
   function dropPeer(id){const x=st.peers.get(String(id));if(!x)return;try{x.pc?.close()}catch{};try{x.placeholder?.stop?.()}catch{};document.getElementById(personTileId(id))?.remove();st.peers.delete(String(id))}
   async function subscribe(){const c=db(),cid=st.call.id;if(st.signalChannel)await c.removeChannel(st.signalChannel).catch(()=>{});st.signalChannel=c.channel(`lx-group-signals-${cid}-${uid()}`).on('postgres_changes',{event:'INSERT',schema:'public',table:'lx_group_call_signals',filter:`call_id=eq.${cid}`},p=>process(p.new)).subscribe();if(st.memberChannel)await c.removeChannel(st.memberChannel).catch(()=>{});st.memberChannel=c.channel(`lx-group-members-${cid}-${uid()}`).on('postgres_changes',{event:'*',schema:'public',table:'lx_group_call_members',filter:`call_id=eq.${cid}`},()=>syncParticipants()).subscribe();const {data}=await c.from('lx_group_call_signals').select('*').eq('call_id',cid).eq('recipient_id',uid()).order('id',{ascending:true});for(const r of data||[])await process(r)}
   async function syncParticipants(){if(!st.call)return;const {data,error}=await db().rpc('lx_group_call_heartbeat',{p_call_id:st.call.id});if(error){console.warn(error);return}if(!data||data.status!=='active'){cleanup();return}const parts=Array.isArray(data.participants)?data.participants:[],alive=new Set(parts.map(p=>String(p.user_id)));for(const p of parts)if(String(p.user_id)!==uid())await ensurePeer(String(p.user_id),p);for(const id of [...st.peers.keys()])if(!alive.has(id))dropPeer(id);setGroupState(`${parts.length} participante${parts.length===1?'':'s'} · conectado`)}
@@ -928,7 +933,7 @@
 </script>
 
 <script>
-/* LX CHAT INLINE v25.46 — Notifications + resilient realtime */
+/* LX CHAT INLINE v25.47 — Notifications + resilient realtime */
 (()=>{
   const LX=window.LX=window.LX||{};
   const state={
@@ -1209,6 +1214,34 @@
   const start=()=>{boot().catch(()=>{});setInterval(()=>{if(uid()&&!state.booted)boot().catch(()=>{})},2500)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
 
+</script>
+
+<script>
+(function(){
+  const state={prompt:null};
+  const isStandalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
+  const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent);
+  function button(){return document.getElementById('installAppBtn')}
+  function refresh(){const b=button();if(!b)return;b.classList.toggle('hidden',isStandalone())}
+  function guide(){
+    if(window.LX?.ui?.$){
+      const overlay=document.getElementById('overlay'),modal=document.getElementById('modal');
+      if(overlay&&modal){overlay.classList.remove('hidden');modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page lx-install-guide"><div class="panel-head"><div><span class="eyebrow">LX PLUS</span><h2>Instalar aplicativo</h2><p>${isIOS()?'No iPhone/iPad, abra o menu Compartilhar e escolha “Adicionar à Tela de Início”.':'No navegador, abra o menu e escolha “Instalar LX Plus” ou “Adicionar à tela inicial”.'}</p></div></div><img src="assets/app-icon-192.png" alt="LX Plus"><strong>Abra o LX Plus como um app, em tela cheia e com acesso rápido.</strong></div>`;return;}
+    }
+    alert(isIOS()?'Use Compartilhar → Adicionar à Tela de Início.':'Abra o menu do navegador e escolha Instalar LX Plus.');
+  }
+  async function install(){
+    if(isStandalone()){window.LX?.toast?.('LX Plus já está instalado.');return;}
+    if(state.prompt){const p=state.prompt;state.prompt=null;await p.prompt();const choice=await p.userChoice.catch(()=>({outcome:'dismissed'}));if(choice.outcome==='accepted')window.LX?.toast?.('LX Plus instalado.');refresh();return;}
+    guide();
+  }
+  window.LXPWA={install};
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();state.prompt=e;refresh();});
+  window.addEventListener('appinstalled',()=>{state.prompt=null;refresh();window.LX?.toast?.('LX Plus instalado com sucesso.');});
+  document.addEventListener('click',e=>{if(e.target.closest?.('#installAppBtn'))install();});
+  if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js',{scope:'./'}).catch(err=>console.warn('LX PWA',err)));}
+  document.addEventListener('DOMContentLoaded',refresh);
+})();
 </script>
 
 </body>

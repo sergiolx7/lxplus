@@ -1295,3 +1295,55 @@ html[data-poster-size="large"],body[data-poster-size="large"]{--lx-poster-w:210p
 .drive-quality-field{display:grid;gap:12px;padding:14px;border:1px solid color-mix(in srgb,var(--accent) 24%,var(--line));border-radius:16px;background:linear-gradient(145deg,color-mix(in srgb,var(--accent) 7%,transparent),rgba(255,255,255,.012))}
 .drive-quality-field.hidden{display:none!important}.drive-quality-head{display:flex;align-items:flex-start;gap:16px;justify-content:space-between}.drive-quality-head strong{display:block;font-size:15px;margin:4px 0}.drive-quality-head small{display:block;max-width:760px;color:var(--muted);line-height:1.5}.drive-quality-auto{flex:0 0 auto;padding:6px 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent) 40%,var(--line));background:color-mix(in srgb,var(--accent) 12%,transparent);font-size:9px;font-weight:900;letter-spacing:.08em}.drive-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.drive-quality-grid.hidden,.drive-episode-quality-grid.hidden{display:none!important}.drive-quality-grid .field span,.drive-episode-quality-grid .field span{display:flex;gap:7px;align-items:center}.drive-quality-grid em,.drive-episode-quality-grid em{font-style:normal;font-size:8px;color:var(--muted);font-weight:700}.drive-episode-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.drive-episode-quality-grid textarea{min-height:120px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:10px;line-height:1.45}.drive-quality-note{padding:10px 11px;border-radius:11px;background:rgba(255,255,255,.025);color:var(--muted);font-size:10px;line-height:1.5}.drive-quality-note b{color:var(--text)}
 @media(max-width:720px){.drive-quality-grid,.drive-episode-quality-grid{grid-template-columns:1fr}.drive-quality-head{gap:9px}.drive-quality-head small{font-size:9px}.drive-episode-quality-grid textarea{min-height:150px}}
+
+
+/* ===== LX Plus · Brand + Mobile Polish + Install App ===== */
+.brand.brand-approved{align-items:center;padding:0;overflow:visible;line-height:0}
+.brand-approved .lx-approved-logo{display:block;width:auto;height:32px;max-width:132px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(119,76,255,.14))}
+.brand-lg.brand-approved .lx-approved-logo{height:52px;max-width:215px}
+.admin-side .brand-approved .lx-approved-logo{height:30px;max-width:128px}
+.lx-approved-lockup{width:min(760px,78vw);height:auto;display:grid;place-items:center}
+.lx-approved-logo-splash{display:block;width:100%;height:auto;object-fit:contain;filter:drop-shadow(0 0 28px rgba(115,76,255,.32))}
+.lx-approved-lockup .lx-reference-glint{display:none}
+.install-app-btn{height:39px;min-height:39px;padding:0 11px;font-weight:850;white-space:nowrap;border-color:color-mix(in srgb,var(--accent) 22%,var(--line2));background:color-mix(in srgb,var(--accent) 8%,rgba(255,255,255,.035))}
+.install-app-btn span{font-size:11px}
+.lx-install-guide{text-align:center;display:grid;justify-items:center;gap:14px}.lx-install-guide .panel-head{text-align:left;width:100%}.lx-install-guide img{width:104px;height:104px;border-radius:24px;box-shadow:0 16px 45px rgba(0,0,0,.35)}.lx-install-guide>strong{max-width:420px;line-height:1.5}
+/* The dedicated Para você tab remains; remove the oversized duplicate block from Home. */
+.lx-smart-home{display:none!important}
+/* Compact mobile hero. */
+@media(max-width:820px){
+  .topbar{left:6px;right:6px;top:6px;border-radius:15px;background:linear-gradient(180deg,rgba(4,9,15,.90),rgba(4,9,15,.74));backdrop-filter:blur(18px)}
+  .topbar-row{height:48px;padding:0 7px;gap:6px}
+  .brand-approved .lx-approved-logo{height:27px;max-width:92px}
+  .top-actions{gap:4px;min-width:0}.top-actions .icon-btn,.top-actions .avatar-btn,.message-top-btn,.community-top-btn{width:34px;height:34px;min-width:34px;border-radius:10px}
+  .top-actions .admin-top-btn{height:34px;min-height:34px;min-width:54px;padding:0 8px;font-size:9px}
+  .install-app-btn{height:34px;min-height:34px;padding:0 8px}.install-app-btn span{display:none}
+  .search-wrap button{width:34px;height:34px}.search-wrap.open input{position:fixed;left:12px;right:12px;top:61px;width:calc(100vw - 24px);height:40px;z-index:150;padding-right:44px}
+  .category-nav{padding:2px 7px 7px;gap:2px}.category-nav button{height:29px;padding:0 8px;font-size:10px;border-radius:9px}
+  .hero{height:min(68dvh,520px)!important;min-height:390px!important;max-height:520px!important}
+  .hero-bg{background-position:center 22%!important;transform:none!important}
+  .hero-bg.hero-bg-poster{background-size:cover!important;background-position:center 20%!important}
+  .hero-bg.hero-bg-poster:before{display:none!important}.hero-poster-focus{display:none!important}
+  .hero-bg:after{background:linear-gradient(180deg,rgba(2,5,9,.12) 0%,rgba(2,5,9,.12) 30%,rgba(2,5,9,.78) 68%,var(--bg) 100%)!important}
+  .hero-copy{width:100%!important;max-width:none!important;padding:0 14px 52px!important}
+  .hero-copy .eyebrow{font-size:7.5px}.hero-copy h1{font-size:clamp(32px,10vw,42px)!important;line-height:.94;margin:8px 0 10px;max-width:92vw}
+  .hero-copy p{display:none!important}
+  .hero-meta{gap:5px}.hero-meta span{padding:4px 6px;font-size:8px;border-radius:7px}
+  .hero-actions{margin-top:13px;gap:7px}.hero-actions .primary-btn,.hero-actions .secondary-btn{min-height:39px;height:39px;padding:0 13px;border-radius:11px;font-size:11px}
+  .hero-dots{left:14px;bottom:26px}.hero-dots button{width:18px}.hero-dots button.active{width:34px}
+  .welcome{margin-top:-14px!important;padding:0 12px 17px!important}
+  .welcome-card{padding:12px 13px!important;border-radius:16px;gap:10px}.welcome-card h2{font-size:19px}.welcome-card p{font-size:9px;line-height:1.35}.welcome-avatar{width:43px!important;height:43px!important}
+  .mode-summary{gap:8px}.mode-summary strong{font-size:15px}.mode-summary small{font-size:7px}
+  .experience-strip{gap:6px}.experience-strip>div{padding:9px}.experience-strip strong{font-size:10px}.experience-strip small{font-size:7px}
+  .rail-section{margin-bottom:25px}.rail-head h2{font-size:17px}.rail-head p{font-size:8px}
+  .mobile-nav{height:58px;left:6px;right:6px;bottom:max(6px,env(safe-area-inset-bottom));grid-template-columns:repeat(7,minmax(45px,1fr));overflow-x:auto;overflow-y:hidden;padding:4px;border-radius:17px;scrollbar-width:none}.mobile-nav::-webkit-scrollbar{display:none}.mobile-nav button{min-width:45px;font-size:7px}.mobile-nav button span{font-size:16px}
+  .player-modal,.player-stage,.watch-player,.watch-video-wrap{width:100vw!important;height:100dvh!important;min-height:100dvh!important;max-height:100dvh!important;border-radius:0!important}
+  .watch-topbar{padding:max(8px,env(safe-area-inset-top)) 8px 8px!important;gap:6px}.watch-title strong{font-size:12px!important}.watch-title small{display:none}.watch-icon-btn{width:35px!important;height:35px!important}.watch-center-controls{gap:14px!important}.watch-play-main{width:58px!important;height:58px!important}.watch-seek-btn{width:44px!important;height:44px!important}.watch-bottom{padding:0 8px max(10px,env(safe-area-inset-bottom))!important}.watch-text-btn{height:32px!important;padding:0 7px!important;font-size:8px!important}
+}
+@media(max-width:480px){
+  .top-actions #installAppBtn{display:none}
+  .top-actions #adminTopBtn{min-width:47px;padding:0 6px}
+  .hero{height:62dvh!important;min-height:360px!important;max-height:470px!important}.hero-copy{padding-bottom:46px!important}.hero-copy h1{font-size:clamp(29px,9.5vw,38px)!important}
+  .hero-actions .secondary-btn{padding:0 11px}.welcome-card{align-items:stretch}.mode-summary{justify-content:space-between}
+  .lx-for-you-page{padding-top:104px!important}
+}

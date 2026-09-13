@@ -1,0 +1,24 @@
+LX PLUS — QA Brand + Mobile + App
+Data: 2026-09-13
+
+RESULTADOS AUTOMATIZADOS
+- JavaScript principal (lxplus.js): sintaxe OK (node --check)
+- Service Worker: sintaxe OK (node --check)
+- Scripts inline do index.html: 8/8 com sintaxe OK
+- IDs HTML duplicados: 0
+- Referências locais ausentes: 0
+- Manifest PWA: JSON válido, display=standalone, 3 ícones
+- Logo aprovada presente no splash/topo/perfis/ADM: OK
+- Botão/fluxo de instalação PWA presente: OK
+- Bloco Home “Escolhido para você agora” desativado; aba Para você preservada: OK
+- Mobile hero: descrição escondida por CSS; altura compacta; botões/metadata reduzidos: OK
+- Navegação mobile: 7 ações em uma linha com fallback de rolagem: OK
+- Player mobile: 100dvh + controles compactados: OK
+- Drive player mobile: qualidade/próximo episódio compactados: OK
+- Texto público de versão removido da interface: OK
+
+LIMITAÇÃO DO QA VISUAL
+O Chromium do ambiente bloqueou navegação local com net::ERR_BLOCKED_BY_ADMINISTRATOR. Por isso não foi possível gerar uma captura visual automatizada nova nesta rodada. As verificações estruturais, de sintaxe, PWA, referências e regras responsivas acima passaram.
+
+OBSERVAÇÃO
+A instalação PWA exige publicação por HTTPS (ex.: GitHub Pages/domínio com HTTPS). Vídeos do Google Drive continuam dependendo de internet e do processamento do próprio Drive.

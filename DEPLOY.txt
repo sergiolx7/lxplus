@@ -1,6 +1,13 @@
-LX Plus v25.46 — Drive Quality + Next Episode
+PUBLICAÇÃO LX PLUS
 
-Publique juntos: index.html, app.css e lxplus.js.
-Depois faça Ctrl+F5.
-Confirme na entrada: “LX Plus v25.46 · Drive Quality + Next Episode”.
-Não há SQL obrigatório: as qualidades extras ficam no JSON do catálogo.
+Substitua/adicione na raiz do site:
+- index.html
+- app.css
+- lxplus.js
+- manifest.webmanifest
+- service-worker.js
+- pasta assets/
+- CNAME (se o domínio atual usa este arquivo)
+
+Depois publique e faça Ctrl+F5 uma vez.
+No celular, abra o menu do perfil e use “Baixar app”. Em navegadores compatíveis, o botão de instalação do navegador será usado; no iPhone/iPad, o LX mostra a orientação de “Adicionar à Tela de Início”.
