@@ -1,0 +1,10 @@
+LX Plus v25.44 — Poster Sizes + Seasons
+
+- Poster pequeno por padrão, com opções Pequeno / Médio / Grande em Aparência.
+- Selo LX+ discreto nos cards.
+- Série, anime e dorama passam a usar temporadas dentro do mesmo título.
+- ADM permite escolher a temporada antes de enviar episódios ou link externo.
+- Tela de episódios agrupa por temporada.
+- Continuar assistindo preserva temporada + episódio.
+- Próximo episódio atravessa automaticamente da última parte de uma temporada para a próxima.
+- Progresso de séries passa a considerar a série inteira, evitando sumir do Continuar assistindo no fim de um episódio intermediário.

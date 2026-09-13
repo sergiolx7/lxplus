@@ -1,0 +1,96 @@
+{
+  "results": [
+    {
+      "name": "poster_small_width",
+      "pass": true,
+      "detail": 148
+    },
+    {
+      "name": "lx_card_mark",
+      "pass": true,
+      "detail": 9
+    },
+    {
+      "name": "poster_size_switch",
+      "pass": true,
+      "detail": {
+        "small": 148,
+        "large": 210
+      }
+    },
+    {
+      "name": "season_buttons",
+      "pass": true,
+      "detail": [
+        "T1",
+        "T2"
+      ]
+    },
+    {
+      "name": "season1_default",
+      "pass": true,
+      "detail": "E01\nComeço\nTemporada 1\n▶ Reproduzir\nE02\nFinal T1\nTemporada 1\n▶ Reproduzir"
+    },
+    {
+      "name": "season2_switch",
+      "pass": true,
+      "detail": "E01\nComeço T2\nTemporada 2\n▶ Reproduzir\nE02\nFinal T2\nTemporada 2\n▶ Reproduzir"
+    },
+    {
+      "name": "player_season_exact",
+      "pass": true,
+      "detail": "S1:E2 · Final T1\nORIGINAL"
+    },
+    {
+      "name": "next_crosses_season",
+      "pass": true,
+      "detail": "S2:E1 · Começo T2"
+    },
+    {
+      "name": "series_overall_progress",
+      "pass": true,
+      "detail": {
+        "opened": 1789302963343,
+        "progress": 37.5,
+        "episodeProgress": 50,
+        "position": 50,
+        "duration": 100,
+        "context": "S1E2",
+        "episode": {
+          "season": 1,
+          "number": 2,
+          "title": "Final T1"
+        }
+      }
+    },
+    {
+      "name": "no_cross_episode_resume_leak",
+      "pass": true,
+      "detail": 0
+    },
+    {
+      "name": "admin_season_field",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "name": "admin_season_chips",
+      "pass": true,
+      "detail": "T1 · 2 ep.\nT2 · 2 ep."
+    },
+    {
+      "name": "mobile_small_width",
+      "pass": true,
+      "detail": 122
+    },
+    {
+      "name": "mobile_no_page_overflow",
+      "pass": true,
+      "detail": 0
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "passed": 14,
+  "total": 14
+}

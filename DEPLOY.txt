@@ -1,12 +1,16 @@
-LX Plus v25.42 — Free Media Hub
+LX Plus v25.44 — Poster Sizes + Seasons
 
 PUBLICAÇÃO
-1. Substitua index.html, app.css e lxplus.js juntos.
-2. Faça Ctrl+F5 nos navegadores após publicar.
-3. O Supabase continua sendo a fonte de verdade do catálogo.
-4. Cloudflare R2 é opcional; Google Drive, Dropbox, YouTube, OneDrive, Archive.org e HTTPS usam links externos e não exigem migração SQL.
-5. Google Drive precisa estar compartilhado como “Qualquer pessoa com o link / Leitor”.
-6. OneDrive exige o link gerado em “Incorporar”.
-7. Use somente mídia que você tenha autorização para distribuir.
+1. Substitua juntos na raiz do site: index.html, app.css e lxplus.js.
+2. Depois faça Ctrl + F5 nos navegadores usados no teste.
+3. Confirme na entrada: “LX Plus v25.44 · Poster Sizes + Seasons”.
 
-A Edge Function lx-r2-media do projeto já foi corrigida no backend para CORS; o arquivo local desta build também contém a versão corrigida para referência.
+BANCO
+Nenhuma migração nova é necessária nesta versão. Temporadas e episódios continuam dentro do payload JSON do catálogo já existente.
+
+PRINCIPAIS MUDANÇAS
+- Pôster pequeno por padrão; opções Pequeno / Médio / Grande em Aparência.
+- Marca LX+ discreta nos cards.
+- Série, anime e dorama organizados por temporadas dentro do mesmo título.
+- ADM escolhe a temporada antes de enviar episódios/link.
+- Continuar assistindo guarda temporada + episódio e o próximo episódio atravessa automaticamente para a temporada seguinte.

@@ -1,12 +1,11 @@
 {
-  "version": "25.43",
-  "name": "Cinema Poster Cards",
-  "base": "25.42.1",
-  "changes": [
-    "Google Drive always uses official embedded player",
-    "2:3 cinema poster cards",
-    "real cover used when auto banner is placeholder",
-    "Para voce fixed-nav overlap repair",
-    "ADM poster/banner format guidance"
-  ]
+  "version": "25.44",
+  "name": "Poster Sizes + Seasons",
+  "base": "25.43",
+  "files": [
+    "index.html",
+    "app.css",
+    "lxplus.js"
+  ],
+  "notes": "Small posters by default, LX+ card mark, season-aware series playback and admin upload."
 }

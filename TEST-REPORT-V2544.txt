@@ -1,0 +1,21 @@
+LX Plus v25.44 — QA final
+
+Resultado: 14/14 testes funcionais aprovados.
+Page errors: 0
+Console errors: 0
+
+Cenários validados:
+- pôster pequeno padrão no desktop;
+- troca Pequeno → Grande;
+- selo LX+ nos cards;
+- seletor T1/T2 e lista correta de episódios;
+- player abre a temporada/episódio exatos;
+- próximo episódio cruza T1 → T2;
+- progresso geral da série e progresso do episódio separados;
+- não reaproveita posição de um episódio em outro;
+- seletor de temporada no ADM e chips das temporadas existentes;
+- pôster pequeno no mobile;
+- sem overflow horizontal no mobile;
+- 0 IDs estáticos duplicados e 0 referências locais ausentes.
+
+Observação: QA do navegador foi executado com uma fixture local controlada para não alterar o catálogo real do Supabase.
