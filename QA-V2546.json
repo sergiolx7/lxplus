@@ -1,0 +1,133 @@
+{
+  "passed": 16,
+  "total": 16,
+  "results": [
+    {
+      "name": "build_2546",
+      "ok": true,
+      "detail": "LX Plus v25.46 · Drive Quality + Next Episode"
+    },
+    {
+      "name": "new_video_defaults_to_drive",
+      "ok": true,
+      "detail": {
+        "drive": true,
+        "quality": true
+      }
+    },
+    {
+      "name": "film_drive_quality_fields_preload",
+      "ok": true,
+      "detail": {
+        "1080": "https://drive.google.com/file/d/3Q1080DriveQAabcdefghijklmnopqrstu/view",
+        "720": "https://drive.google.com/file/d/4Q720DriveQAabcdefghijklmnopqrstuv/view"
+      }
+    },
+    {
+      "name": "film_drive_quality_save",
+      "ok": true,
+      "detail": {
+        "2160p": "gdrive:DNew4KDriveQAabcdefghijklmnopqrstuv",
+        "1080p": "gdrive:ENew1080DriveQAabcdefghijklmnopqrst",
+        "720p": "gdrive:4Q720DriveQAabcdefghijklmnopqrstuv"
+      }
+    },
+    {
+      "name": "series_quality_bulk_preloads",
+      "ok": true,
+      "detail": "E01 | Um | https://drive.google.com/file/d/9Ep11080QAabcdefghijklmnopqrstuvwx/view\nE02 | Dois | https://drive.google.com/file/d/AEp21080QAabcdefghijklmnopqrstuvwx/view"
+    },
+    {
+      "name": "quality_bulk_validation",
+      "ok": true,
+      "detail": "✓ 2 links principais válidos · 3 variantes de qualidade · T1 pronta para salvar"
+    },
+    {
+      "name": "series_quality_bulk_saved",
+      "ok": true,
+      "detail": {
+        "e1": {
+          "1080p": "gdrive:FNewEp11080QAabcdefghijklmnopqrstuvw",
+          "720p": "gdrive:CEp1720QAabcdefghijklmnopqrstuvwxy"
+        },
+        "e2": {
+          "1080p": "gdrive:GNewEp21080QAabcdefghijklmnopqrstuvw"
+        }
+      }
+    },
+    {
+      "name": "other_season_quality_preserved",
+      "ok": true,
+      "detail": {
+        "1080p": "gdrive:BEp31080QAabcdefghijklmnopqrstuvwx"
+      }
+    },
+    {
+      "name": "drive_player_quality_menu",
+      "ok": true,
+      "detail": {
+        "quality": true,
+        "buttons": [
+          "auto",
+          "2160p",
+          "1080p",
+          "720p"
+        ],
+        "src": "https://drive.google.com/file/d/1MainDriveQAabcdefghijklmnopqrstuv/preview"
+      }
+    },
+    {
+      "name": "drive_quality_switches_source",
+      "ok": true,
+      "detail": {
+        "src": "https://drive.google.com/file/d/ENew1080DriveQAabcdefghijklmnopqrst/preview",
+        "label": "Qualidade · 1080p",
+        "pref": "1080p"
+      }
+    },
+    {
+      "name": "drive_next_episode_button",
+      "ok": true,
+      "detail": {
+        "next": true,
+        "label": "Próximo · T1 E2 ›",
+        "title": "S1:E2 · Dois",
+        "meta": "S1:E1 · Um"
+      }
+    },
+    {
+      "name": "drive_next_moves_to_episode_2",
+      "ok": true,
+      "detail": "S1:E2 · Dois"
+    },
+    {
+      "name": "drive_next_crosses_to_next_season",
+      "ok": true,
+      "detail": "S2:E1 · Temporada dois"
+    },
+    {
+      "name": "mobile_drive_controls_fit",
+      "ok": true,
+      "detail": {
+        "topRight": 390,
+        "viewport": 390,
+        "qRight": 272.546875,
+        "nRight": 381,
+        "qLeft": 172.890625,
+        "nLeft": 282.546875
+      }
+    },
+    {
+      "name": "mobile_editor_no_horizontal_overflow",
+      "ok": true,
+      "detail": 0
+    },
+    {
+      "name": "no_duplicate_ids",
+      "ok": true,
+      "detail": []
+    }
+  ],
+  "page_errors": [],
+  "console_errors": []
+}

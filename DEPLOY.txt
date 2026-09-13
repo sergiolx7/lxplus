@@ -1,6 +1,6 @@
-LX Plus v25.45 — Link Editor + Bulk Episodes + Carousel
+LX Plus v25.46 — Drive Quality + Next Episode
 
 Publique juntos: index.html, app.css e lxplus.js.
 Depois faça Ctrl+F5.
-Confirme na entrada: “LX Plus v25.45 · Link Editor + Bulk Episodes + Carousel”.
-Não há SQL obrigatório nesta atualização; os novos campos ficam no JSON do catálogo.
+Confirme na entrada: “LX Plus v25.46 · Drive Quality + Next Episode”.
+Não há SQL obrigatório: as qualidades extras ficam no JSON do catálogo.

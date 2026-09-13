@@ -1,0 +1,15 @@
+LX Plus v25.46 — Drive Quality + Next Episode
+
+- Google Drive continua como player oficial dentro da LX Plus.
+- Novos filmes/séries/animes/doramas abrem com Drive selecionado por padrão; outras fontes continuam disponíveis.
+- O link principal é “Auto” e pode usar sozinho o controle de qualidade do próprio Drive.
+- ADM permite links opcionais separados para 4K/2160p, 1080p, 720p e 480p.
+- Filmes: qualidade extra por link individual.
+- Séries/Anime/Dorama: cole todos os links de cada qualidade da temporada de uma vez (E01, E02, E03...).
+- Player LX mostra seletor Qualidade quando a fonte é Drive e troca para o arquivo correspondente.
+- A preferência de qualidade é lembrada quando a mesma qualidade existir no próximo conteúdo.
+- Séries têm botão “Próximo · Tn En” no player do Drive e tecla N para avançar.
+- O botão atravessa temporadas automaticamente (ex.: T1 E10 → T2 E1).
+- Vídeos nativos continuam com cartão de próximo episódio e avanço automático após o término.
+
+Observação: o iframe oficial do Google Drive não fornece à LX Plus um evento confiável de “vídeo terminou”; por isso, no Drive o avanço é manual pelo botão Próximo.

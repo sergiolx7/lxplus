@@ -10,7 +10,7 @@
 
   <script>
   (function(){
-    var BUILD='25.45',KEY='lxplus_build_seen';
+    var BUILD='25.46',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -39,8 +39,8 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=25.45">
-  <title>LX Plus v25.45 · Link Editor + Bulk Episodes + Carousel</title>
+  <link rel="stylesheet" href="app.css?v=25.46">
+  <title>LX Plus v25.46 · Drive Quality + Next Episode</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
@@ -111,7 +111,7 @@
           <label class="check"><input id="regTerms" type="checkbox" required><span>Concordo com a criação da conta.</span></label>
           <button id="registerSubmit" class="primary-btn full" type="submit">Criar conta</button><small id="registerStatus" class="auth-status hidden"></small><button id="registerRetryBtn" class="secondary-btn full hidden" type="button">Corrigir dados e tentar novamente</button>
         </form>
-        <small class="auth-build-version">LX Plus v25.45 · Link Editor + Bulk Episodes + Carousel</small>
+        <small class="auth-build-version">LX Plus v25.46 · Drive Quality + Next Episode</small>
       </div>
     </div>
   </section>
@@ -242,11 +242,11 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   })();
   </script>
-  <script src="lxplus.js?v=25.45"></script>
+  <script src="lxplus.js?v=25.46"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded',function(){
-/* LX SOCIAL EMBEDDED v25.45 — SHARED AUDIO + GROUP CALLS */
+/* LX SOCIAL EMBEDDED v25.46 — SHARED AUDIO + GROUP CALLS */
 (()=>{
   const LX=window.LX=window.LX||{};
   const U=LX.ui;
@@ -678,7 +678,7 @@
       state.makingOffer=true;
       const offer=await pc.createOffer(opts?.iceRestart?{iceRestart:true}:undefined);
       await pc.setLocalDescription(offer);state.lastLocalOfferAt=Date.now();
-      await sendSignal('offer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp,reason,iceRestart:!!opts?.iceRestart,build:'25.45'});return true;
+      await sendSignal('offer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp,reason,iceRestart:!!opts?.iceRestart,build:'25.46'});return true;
     }catch(e){console.warn('LX renegotiate',reason,e);return false}
     finally{
       state.makingOffer=false;state.negotiating=false;
@@ -691,7 +691,7 @@
       if(row.kind==='offer'){
         state.lastRemoteOfferAt=Date.now();
         if(pc.signalingState!=='stable'){try{await pc.setLocalDescription({type:'rollback'})}catch{};state.negotiating=false;state.makingOffer=false}
-        await pc.setRemoteDescription({type:row.payload?.type||'offer',sdp:row.payload?.sdp||''});await bindLocalMediaToOffer();for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{});const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await sendSignal('answer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp,build:'25.45'});
+        await pc.setRemoteDescription({type:row.payload?.type||'offer',sdp:row.payload?.sdp||''});await bindLocalMediaToOffer();for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{});const ans=await pc.createAnswer();await pc.setLocalDescription(ans);await sendSignal('answer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp,build:'25.46'});
       }
       else if(row.kind==='answer'){if(pc.signalingState==='have-local-offer'||!pc.currentRemoteDescription){await pc.setRemoteDescription({type:row.payload?.type||'answer',sdp:row.payload?.sdp||''});for(const x of state.pendingIce.splice(0))await pc.addIceCandidate(x).catch(()=>{});resumeCallAudio().catch(()=>{})}}
       else if(row.kind==='ice'){if(pc.remoteDescription?.type)await pc.addIceCandidate(row.payload).catch(()=>{});else state.pendingIce.push(row.payload)}
@@ -804,11 +804,11 @@
       state.screenStream=stream;state.screenMode=mode;const hasScreenAudio=await enableSharedScreenAudio(stream);
       if(mode==='dual'){
         const sender=await ensureScreenSender();if(!sender)throw new Error('SCREEN_SENDER_UNAVAILABLE');if(!await ensureTransceiverCanSend(state.screenTransceiver,'screen-dual-enable-send'))throw new Error('SCREEN_SEND_DIRECTION_UNAVAILABLE');await sender.replaceTrack(track);state.screenSender=sender;
-        const mid=currentScreenMid();await sendSignal('share',{active:true,mode:'dual',mid,v:3,build:'25.45',displaySurface:track.getSettings?.().displaySurface||'screen',screenAudio:hasScreenAudio}).catch(()=>{});await renegotiate('screen-dual-start');
+        const mid=currentScreenMid();await sendSignal('share',{active:true,mode:'dual',mid,v:3,build:'25.46',displaySurface:track.getSettings?.().displaySurface||'screen',screenAudio:hasScreenAudio}).catch(()=>{});await renegotiate('screen-dual-start');
         const prev=document.getElementById('lxLocalSharePreview'),wrap=document.getElementById('lxLocalShareWrap');if(prev){prev.srcObject=stream;prev.play?.().catch(()=>{})}wrap?.classList.remove('hidden');
       }else{
         const sender=await ensureVideoSender();if(!sender)throw new Error('VIDEO_SENDER_UNAVAILABLE');if(!await ensureTransceiverCanSend(state.cameraTransceiver,'screen-replace-enable-send'))throw new Error('VIDEO_SEND_DIRECTION_UNAVAILABLE');await sender.replaceTrack(track);state.videoSender=sender;
-        const mid=currentCameraMid();await sendSignal('share',{active:true,mode:'replace',mid,v:3,build:'25.45',displaySurface:track.getSettings?.().displaySurface||'screen',screenAudio:hasScreenAudio}).catch(()=>{});await renegotiate('screen-replace-start');
+        const mid=currentCameraMid();await sendSignal('share',{active:true,mode:'replace',mid,v:3,build:'25.46',displaySurface:track.getSettings?.().displaySurface||'screen',screenAudio:hasScreenAudio}).catch(()=>{});await renegotiate('screen-replace-start');
         const local=document.getElementById('lxLocalVideo');if(local){local.srcObject=stream;local.classList.remove('hidden');local.play?.().catch(()=>{})}const label=document.getElementById('lxLocalLabel');if(label)label.textContent='SUA TELA';
       }
       document.getElementById('lxCallOverlay')?.classList.add('is-sharing');btn?.classList.remove('busy');btn?.classList.add('active');if(small)small.textContent='Parar tela';document.getElementById('lxShareBadge')?.classList.remove('hidden');
@@ -819,9 +819,9 @@
     const mode=state.screenMode,camera=state.localStream?.getVideoTracks?.()[0]||null;
     try{
       if(mode==='dual'){
-        const sender=state.screenSender||state.screenTransceiver?.sender;if(sender)await sender.replaceTrack(state.screenPlaceholderTrack||null).catch(()=>{});await sendSignal('share',{active:false,mode:'dual',mid:currentScreenMid(),v:3,build:'25.45'}).catch(()=>{});await renegotiate('screen-dual-stop');
+        const sender=state.screenSender||state.screenTransceiver?.sender;if(sender)await sender.replaceTrack(state.screenPlaceholderTrack||null).catch(()=>{});await sendSignal('share',{active:false,mode:'dual',mid:currentScreenMid(),v:3,build:'25.46'}).catch(()=>{});await renegotiate('screen-dual-stop');
       }else{
-        const sender=await ensureVideoSender();if(sender)await sender.replaceTrack(camera||state.cameraPlaceholderTrack||null).catch(()=>{});await sendSignal('share',{active:false,mode:'replace',mid:currentCameraMid(),v:3,build:'25.45'}).catch(()=>{});await renegotiate('screen-replace-stop');
+        const sender=await ensureVideoSender();if(sender)await sender.replaceTrack(camera||state.cameraPlaceholderTrack||null).catch(()=>{});await sendSignal('share',{active:false,mode:'replace',mid:currentCameraMid(),v:3,build:'25.46'}).catch(()=>{});await renegotiate('screen-replace-stop');
       }
     }catch(e){console.warn('LX stop share',e)}
     await restoreMicSender().catch(()=>{});
@@ -875,7 +875,7 @@
   </script>
 
 <script>
-/* LX GROUP CALLS v25.45 — persistent groups + small-group WebRTC mesh */
+/* LX GROUP CALLS v25.46 — persistent groups + small-group WebRTC mesh */
 (()=>{
   const LX=window.LX=window.LX||{};
   const db=()=>LX.cloud?.db?.(), me=()=>LX.cloud?.user?.()||LX.ui?.state?.user||null, uid=()=>String(me()?.id||'');
@@ -904,9 +904,9 @@
   async function sendSignal(to,kind,payload){const {error}=await db().from('lx_group_call_signals').insert({call_id:st.call.id,sender_id:uid(),recipient_id:to,kind,payload});if(error)throw error}
   function peerObj(id,p){let x=st.peers.get(id);if(x)return x;x={id,person:p,pc:null,pending:[],processed:new Set(),cameraTr:null,audioTr:null,placeholder:null,makingOffer:false};st.peers.set(id,x);return x}
   async function bindPeerLocal(x){const trs=x.pc.getTransceivers(),a=trs.find(t=>t.receiver.track.kind==='audio'),v=trs.find(t=>t.receiver.track.kind==='video'),mic=(st.screenAudioMixedTrack||st.localStream?.getAudioTracks()[0]||null),cam=(st.screenStream?.getVideoTracks()[0]||st.localStream?.getVideoTracks()[0]||x.placeholder||null);if(a){x.audioTr=a;try{a.direction='sendrecv'}catch{};await a.sender.replaceTrack(mic)}if(v){x.cameraTr=v;try{v.direction='sendrecv'}catch{};await v.sender.replaceTrack(cam)}}
-  async function makeOffer(x,reason='sync'){if(!x.pc||x.pc.signalingState!=='stable'||x.makingOffer)return;x.makingOffer=true;try{const o=await x.pc.createOffer();await x.pc.setLocalDescription(o);await sendSignal(x.id,'offer',{type:o.type,sdp:x.pc.localDescription.sdp,reason,build:'25.45'})}finally{x.makingOffer=false}}
+  async function makeOffer(x,reason='sync'){if(!x.pc||x.pc.signalingState!=='stable'||x.makingOffer)return;x.makingOffer=true;try{const o=await x.pc.createOffer();await x.pc.setLocalDescription(o);await sendSignal(x.id,'offer',{type:o.type,sdp:x.pc.localDescription.sdp,reason,build:'25.46'})}finally{x.makingOffer=false}}
   async function ensurePeer(id,p={}){id=String(id);if(!id||id===uid())return null;const x=peerObj(id,p);if(x.pc)return x;const pc=x.pc=new RTCPeerConnection({iceServers:[{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']}],iceCandidatePoolSize:4});const tile=ensureRemoteTile(id,p);x.placeholder=blankTrack();pc.onicecandidate=e=>{if(e.candidate)sendSignal(id,'ice',e.candidate.toJSON()).catch(()=>{})};pc.ontrack=e=>{const tr=e.track;if(!tile)return;if(tr.kind==='audio'){const a=tile.querySelector('audio');a.srcObject=new MediaStream([tr]);a.play?.().catch(()=>document.getElementById('lxGroupAudioUnlock')?.classList.remove('hidden'))}else{const v=tile.querySelector('video');v.srcObject=new MediaStream([tr]);v.play?.().catch(()=>{});if(st.call?.mode==='video'){tr.onunmute=()=>tile.classList.add('has-video');if(!tr.muted)tile.classList.add('has-video')}}tile.querySelector('footer small').textContent='Conectado'};pc.onconnectionstatechange=()=>{if(!tile)return;const q=tile.querySelector('footer small');if(pc.connectionState==='connected')q.textContent='Conectado';else if(['failed','disconnected'].includes(pc.connectionState)){q.textContent='Reconectando…';try{pc.restartIce()}catch{};if(pc.signalingState==='stable')makeOffer(x,'ice-restart').catch(()=>{})}};if(uid()<id){const mic=st.screenAudioMixedTrack||st.localStream?.getAudioTracks()[0]||null,cam=st.screenStream?.getVideoTracks()[0]||st.localStream?.getVideoTracks()[0]||x.placeholder;if(mic)x.audioTr=pc.addTransceiver(mic,{direction:'sendrecv',streams:[st.localStream]});else x.audioTr=pc.addTransceiver('audio',{direction:'sendrecv'});x.cameraTr=pc.addTransceiver(cam||'video',{direction:'sendrecv',streams:cam?[new MediaStream([cam])]:[]});setTimeout(()=>makeOffer(x,'participant-join').catch(()=>{}),80)}return x}
-  async function process(row){if(!row||row.recipient_id!==uid()||row.sender_id===uid())return;const id=String(row.sender_id),p=(st.group?.members||[]).find(m=>String(m.user_id)===id)||{user_id:id,name:'Participante'},x=await ensurePeer(id,p);if(x.processed.has(row.id))return;x.processed.add(row.id);const pc=x.pc;try{if(row.kind==='offer'){if(pc.signalingState!=='stable'){try{await pc.setLocalDescription({type:'rollback'})}catch{}}await pc.setRemoteDescription({type:'offer',sdp:row.payload.sdp});await bindPeerLocal(x);for(const ice of x.pending.splice(0))await pc.addIceCandidate(ice).catch(()=>{});const a=await pc.createAnswer();await pc.setLocalDescription(a);await sendSignal(id,'answer',{type:'answer',sdp:pc.localDescription.sdp,build:'25.45'})}else if(row.kind==='answer'){if(pc.signalingState==='have-local-offer'){await pc.setRemoteDescription({type:'answer',sdp:row.payload.sdp});for(const ice of x.pending.splice(0))await pc.addIceCandidate(ice).catch(()=>{})}}else if(row.kind==='ice'){if(pc.remoteDescription)await pc.addIceCandidate(row.payload).catch(()=>{});else x.pending.push(row.payload)}else if(row.kind==='share'){const tile=ensureRemoteTile(id,p);tile?.classList.toggle('sharing',!!row.payload?.active);if(!row.payload?.active&&st.call?.mode!=='video')tile?.classList.remove('has-video');const sm=tile?.querySelector('footer small');if(sm)sm.textContent=row.payload?.active?'Compartilhando tela':'Conectado'}else if(row.kind==='media'){const tile=ensureRemoteTile(id,p);tile?.classList.toggle('has-video',!!row.payload?.camera);const sm=tile?.querySelector('footer small');if(sm)sm.textContent=row.payload?.camera?'Câmera ligada':'Conectado'}else if(row.kind==='hangup'){dropPeer(id)}}catch(e){console.warn('LX group signal',row.kind,e)}}
+  async function process(row){if(!row||row.recipient_id!==uid()||row.sender_id===uid())return;const id=String(row.sender_id),p=(st.group?.members||[]).find(m=>String(m.user_id)===id)||{user_id:id,name:'Participante'},x=await ensurePeer(id,p);if(x.processed.has(row.id))return;x.processed.add(row.id);const pc=x.pc;try{if(row.kind==='offer'){if(pc.signalingState!=='stable'){try{await pc.setLocalDescription({type:'rollback'})}catch{}}await pc.setRemoteDescription({type:'offer',sdp:row.payload.sdp});await bindPeerLocal(x);for(const ice of x.pending.splice(0))await pc.addIceCandidate(ice).catch(()=>{});const a=await pc.createAnswer();await pc.setLocalDescription(a);await sendSignal(id,'answer',{type:'answer',sdp:pc.localDescription.sdp,build:'25.46'})}else if(row.kind==='answer'){if(pc.signalingState==='have-local-offer'){await pc.setRemoteDescription({type:'answer',sdp:row.payload.sdp});for(const ice of x.pending.splice(0))await pc.addIceCandidate(ice).catch(()=>{})}}else if(row.kind==='ice'){if(pc.remoteDescription)await pc.addIceCandidate(row.payload).catch(()=>{});else x.pending.push(row.payload)}else if(row.kind==='share'){const tile=ensureRemoteTile(id,p);tile?.classList.toggle('sharing',!!row.payload?.active);if(!row.payload?.active&&st.call?.mode!=='video')tile?.classList.remove('has-video');const sm=tile?.querySelector('footer small');if(sm)sm.textContent=row.payload?.active?'Compartilhando tela':'Conectado'}else if(row.kind==='media'){const tile=ensureRemoteTile(id,p);tile?.classList.toggle('has-video',!!row.payload?.camera);const sm=tile?.querySelector('footer small');if(sm)sm.textContent=row.payload?.camera?'Câmera ligada':'Conectado'}else if(row.kind==='hangup'){dropPeer(id)}}catch(e){console.warn('LX group signal',row.kind,e)}}
   function dropPeer(id){const x=st.peers.get(String(id));if(!x)return;try{x.pc?.close()}catch{};try{x.placeholder?.stop?.()}catch{};document.getElementById(personTileId(id))?.remove();st.peers.delete(String(id))}
   async function subscribe(){const c=db(),cid=st.call.id;if(st.signalChannel)await c.removeChannel(st.signalChannel).catch(()=>{});st.signalChannel=c.channel(`lx-group-signals-${cid}-${uid()}`).on('postgres_changes',{event:'INSERT',schema:'public',table:'lx_group_call_signals',filter:`call_id=eq.${cid}`},p=>process(p.new)).subscribe();if(st.memberChannel)await c.removeChannel(st.memberChannel).catch(()=>{});st.memberChannel=c.channel(`lx-group-members-${cid}-${uid()}`).on('postgres_changes',{event:'*',schema:'public',table:'lx_group_call_members',filter:`call_id=eq.${cid}`},()=>syncParticipants()).subscribe();const {data}=await c.from('lx_group_call_signals').select('*').eq('call_id',cid).eq('recipient_id',uid()).order('id',{ascending:true});for(const r of data||[])await process(r)}
   async function syncParticipants(){if(!st.call)return;const {data,error}=await db().rpc('lx_group_call_heartbeat',{p_call_id:st.call.id});if(error){console.warn(error);return}if(!data||data.status!=='active'){cleanup();return}const parts=Array.isArray(data.participants)?data.participants:[],alive=new Set(parts.map(p=>String(p.user_id)));for(const p of parts)if(String(p.user_id)!==uid())await ensurePeer(String(p.user_id),p);for(const id of [...st.peers.keys()])if(!alive.has(id))dropPeer(id);setGroupState(`${parts.length} participante${parts.length===1?'':'s'} · conectado`)}
@@ -928,7 +928,7 @@
 </script>
 
 <script>
-/* LX CHAT INLINE v25.45 — Notifications + resilient realtime */
+/* LX CHAT INLINE v25.46 — Notifications + resilient realtime */
 (()=>{
   const LX=window.LX=window.LX||{};
   const state={
