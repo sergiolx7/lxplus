@@ -1,11 +1,11 @@
 {
-  "version": "25.44",
-  "name": "Poster Sizes + Seasons",
-  "base": "25.43",
+  "version": "25.45",
+  "name": "Link Editor + Bulk Episodes + Carousel",
+  "base": "25.44",
   "files": [
     "index.html",
     "app.css",
     "lxplus.js"
   ],
-  "notes": "Small posters by default, LX+ card mark, season-aware series playback and admin upload."
+  "notes": "Fix external-link editing with cloud confirmation, bulk season episode links with in-place replacement, and dedicated high-quality carousel artwork."
 }

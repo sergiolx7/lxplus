@@ -1,0 +1,9 @@
+LX Plus v25.45 — Link Editor + Bulk Episodes + Carousel
+
+- Corrige edição de links externos: salvar substitui o link e confirma o valor retornado pela nuvem antes de fechar.
+- Séries/Anime/Dorama: cola vários links de episódios de uma temporada de uma vez.
+- E01/E02/etc. existentes são atualizados em vez de duplicados.
+- Ao selecionar uma temporada existente, os links atuais são carregados para edição.
+- Novo upload “Imagem do carrossel / Destaque Home” (16:9, recomendado 1920×1080+).
+- O carrossel usa carouselImage > banner > capa, preservando capa/poster independente.
+- Mantém cards pequenos por padrão, tamanhos Pequeno/Médio/Grande, LX+ nos cards e player oficial do Drive.

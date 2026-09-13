@@ -1,16 +1,6 @@
-LX Plus v25.44 — Poster Sizes + Seasons
+LX Plus v25.45 — Link Editor + Bulk Episodes + Carousel
 
-PUBLICAÇÃO
-1. Substitua juntos na raiz do site: index.html, app.css e lxplus.js.
-2. Depois faça Ctrl + F5 nos navegadores usados no teste.
-3. Confirme na entrada: “LX Plus v25.44 · Poster Sizes + Seasons”.
-
-BANCO
-Nenhuma migração nova é necessária nesta versão. Temporadas e episódios continuam dentro do payload JSON do catálogo já existente.
-
-PRINCIPAIS MUDANÇAS
-- Pôster pequeno por padrão; opções Pequeno / Médio / Grande em Aparência.
-- Marca LX+ discreta nos cards.
-- Série, anime e dorama organizados por temporadas dentro do mesmo título.
-- ADM escolhe a temporada antes de enviar episódios/link.
-- Continuar assistindo guarda temporada + episódio e o próximo episódio atravessa automaticamente para a temporada seguinte.
+Publique juntos: index.html, app.css e lxplus.js.
+Depois faça Ctrl+F5.
+Confirme na entrada: “LX Plus v25.45 · Link Editor + Bulk Episodes + Carousel”.
+Não há SQL obrigatório nesta atualização; os novos campos ficam no JSON do catálogo.

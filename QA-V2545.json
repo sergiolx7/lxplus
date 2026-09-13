@@ -1,0 +1,121 @@
+{
+  "passed": 14,
+  "total": 14,
+  "results": [
+    {
+      "name": "build_2545",
+      "ok": true,
+      "detail": "LX Plus v25.45 · Link Editor + Bulk Episodes + Carousel"
+    },
+    {
+      "name": "poster_vertical_small",
+      "ok": true,
+      "detail": {
+        "w": 148,
+        "h": 222,
+        "ratio": 0.6666666666666666,
+        "size": "small"
+      }
+    },
+    {
+      "name": "film_editor_loads_existing_drive_link",
+      "ok": true,
+      "detail": "https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz12345/view"
+    },
+    {
+      "name": "film_drive_link_replaced",
+      "ok": true,
+      "detail": "gdrive:9ZyXwVuTsRqPoNmLkJiHgFeDcBa98765"
+    },
+    {
+      "name": "series_bulk_editor_preloads_season",
+      "ok": true,
+      "detail": "E01 | Piloto | https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz12345/view\nE02 | Segundo | https://drive.google.com/file/d/2AbCdEfGhIjKlMnOpQrStUvWxYz12345/view"
+    },
+    {
+      "name": "bulk_links_validate_together",
+      "ok": true,
+      "detail": "✓ 3 links válidos · T1 pronta para salvar"
+    },
+    {
+      "name": "bulk_episode_links_update_without_duplicates",
+      "ok": true,
+      "detail": [
+        {
+          "season": 1,
+          "number": 1,
+          "title": "Piloto corrigido",
+          "mediaKey": "gdrive:7ZyXwVuTsRqPoNmLkJiHgFeDcBa98765",
+          "qualityMode": "external",
+          "sourceProvider": "gdrive"
+        },
+        {
+          "season": 1,
+          "number": 2,
+          "title": "Segundo corrigido",
+          "mediaKey": "gdrive:6ZyXwVuTsRqPoNmLkJiHgFeDcBa98765",
+          "qualityMode": "external",
+          "sourceProvider": "gdrive"
+        },
+        {
+          "season": 1,
+          "number": 3,
+          "title": "Terceiro novo",
+          "mediaKey": "gdrive:5ZyXwVuTsRqPoNmLkJiHgFeDcBa98765",
+          "qualityMode": "external",
+          "sourceProvider": "gdrive"
+        }
+      ]
+    },
+    {
+      "name": "bulk_edit_preserves_other_seasons",
+      "ok": true,
+      "detail": [
+        {
+          "season": 2,
+          "number": 1,
+          "title": "T2 início",
+          "mediaKey": "gdrive:2AbCdEfGhIjKlMnOpQrStUvWxYz12345",
+          "qualityMode": "external",
+          "sourceProvider": "gdrive"
+        }
+      ]
+    },
+    {
+      "name": "season_chip_loads_selected_season_links",
+      "ok": true,
+      "detail": "E01 | T2 início | https://drive.google.com/file/d/2AbCdEfGhIjKlMnOpQrStUvWxYz12345/view"
+    },
+    {
+      "name": "carousel_art_saved_separately",
+      "ok": true,
+      "detail": {
+        "carousel": "data:image/png;base64,iVBORw0KGgoAAA...",
+        "banner": "data:image/svg+xml;charset=UTF-8,%3C...",
+        "cover": "data:image/svg+xml;charset=UTF-8,%3C..."
+      }
+    },
+    {
+      "name": "hero_prefers_dedicated_carousel_art",
+      "ok": true,
+      "detail": "url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Z8"
+    },
+    {
+      "name": "carousel_quality_guidance",
+      "ok": true,
+      "detail": "Imagem do carrossel / Destaque Home opcionalUse uma imagem horizontal em alta qualidade, preferencialmente 1920×1080 ou maior. Ela é usada somente no carrossel principal; capa e banner continuam independentes.✓ Imagem de carrossel já cadastrada. Envie outra para substituir."
+    },
+    {
+      "name": "no_duplicate_ids_in_editor",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "mobile_no_horizontal_overflow",
+      "ok": true,
+      "detail": 0
+    }
+  ],
+  "page_errors": [],
+  "console_errors": []
+}
