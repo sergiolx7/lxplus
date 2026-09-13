@@ -1,0 +1,8 @@
+LX Plus v25.43 — Cinema Poster Cards
+
+- Google Drive usa sempre o player oficial incorporado.
+- Cards de filmes/séries/animes/doramas em formato vertical 2:3.
+- Badges e hover de reprodução refinados.
+- Quando o banner automático era apenas texto, a Home passa a usar a capa real como fundo cinematográfico.
+- Para você não fica mais escondido/espremido sob o menu fixo.
+- ADM orienta capa 2:3 e banner 16:9.

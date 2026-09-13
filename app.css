@@ -1204,3 +1204,60 @@ html[data-density="compact"] .rail{grid-auto-columns:minmax(195px,15vw)}html[dat
 .media-source-switch-v2542{align-items:center;gap:7px!important}.media-source-switch-v2542 button{min-width:auto!important;padding:0 11px!important;white-space:nowrap}.media-source-switch-v2542 button:disabled{opacity:.34;cursor:not-allowed;filter:saturate(.4)}.media-source-switch-v2542 small{flex-basis:100%;margin-top:3px!important}.external-media-assist{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-top:7px}.external-media-assist small{flex:1;line-height:1.45}.external-media-assist .glass-btn{height:32px;min-width:92px;padding:0 10px;font-size:10px;flex:0 0 auto}
 @media(max-width:760px){.free-media-hub-head{flex-direction:column}.free-media-zero{white-space:normal}.free-media-provider-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.media-source-switch-v2542{overflow-x:auto;flex-wrap:nowrap!important;padding-bottom:4px;scrollbar-width:thin}.media-source-switch-v2542 small{display:none}.external-media-assist{flex-direction:column}.external-media-assist .glass-btn{width:100%}}
 @media(max-width:420px){.free-media-provider-grid{grid-template-columns:1fr}}
+
+
+/* ===== LX Plus v25.43 · Cinema Poster Cards ===== */
+/* Poster-first catalog: 2:3 covers across Watch rails. */
+.rail{grid-auto-columns:clamp(148px,11.5vw,188px);gap:14px;padding-bottom:22px}
+.card{min-width:0}
+.card-art{aspect-ratio:2/3;border-radius:17px;background-position:center top;box-shadow:0 16px 42px rgba(0,0,0,.34);isolation:isolate}
+.card-art:after{background:linear-gradient(180deg,rgba(2,5,9,.04) 42%,rgba(2,5,9,.42) 65%,rgba(2,5,9,.96) 100%)}
+.card-copy{left:11px;right:11px;bottom:12px}
+.card-title{font-size:12px;line-height:1.2;text-shadow:0 2px 12px #000}
+.card-meta{font-size:8px;line-height:1.25;color:#cad5e1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-badges{left:8px;top:8px;right:auto;max-width:calc(100% - 16px);flex-wrap:wrap}
+.card-badges span,.card-corner-badge,.lx-poster-chip{padding:4px 6px;border-radius:999px;background:rgba(4,8,13,.78);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.12);font-size:7px;font-weight:900;letter-spacing:.04em;color:#fff;box-shadow:0 5px 14px rgba(0,0,0,.2)}
+.card-corner-badge{position:absolute;z-index:4;right:8px;top:8px;color:#ffd76a}
+.card-play,.lx-poster-play{position:absolute;z-index:4;left:50%;top:50%;transform:translate(-50%,-45%) scale(.86);width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.93);color:#090b0e;font-size:16px;padding-left:2px;box-shadow:0 12px 35px rgba(0,0,0,.36);opacity:0;transition:.18s ease}
+.card:hover .card-play,.lx-for-you-card:hover .lx-poster-play{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.progress-line{left:9px;right:9px;bottom:5px}
+body.compact-mode .rail,body[data-density="compact"] .rail{grid-auto-columns:clamp(132px,10vw,168px)}
+
+/* If the ADM generated a title-only SVG banner, show the actual poster instead. */
+.hero-bg.hero-bg-poster{background-size:cover;background-position:center 24%;filter:none;transform:scale(1.025)}
+.hero-bg.hero-bg-poster:before{content:"";position:absolute;inset:-7%;background-image:var(--hero-art);background-size:cover;background-position:center;filter:blur(22px) brightness(.54) saturate(.88);transform:scale(1.08);opacity:.95}
+.hero-poster-focus{position:absolute;z-index:1;right:6vw;top:8%;bottom:8%;width:min(33vw,370px);border-radius:22px;background-repeat:no-repeat;background-size:contain;background-position:center;filter:drop-shadow(0 28px 55px rgba(0,0,0,.55));opacity:.96}
+.hero-bg.hero-bg-poster:after{z-index:2}
+.hero-slide .hero-copy{z-index:5}
+
+/* Personalized page no longer slides under the fixed navigation. */
+body.lx-for-you-active .topbar{border-color:var(--line);background:rgba(5,10,17,.92);backdrop-filter:blur(22px);box-shadow:0 16px 45px rgba(0,0,0,.22)}
+.lx-for-you-page{padding:132px 4.2vw 120px}
+.lx-for-you-hero{margin-bottom:30px;overflow:hidden}
+.lx-for-you-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,188px));justify-content:start;gap:18px 14px}
+.lx-for-you-card{min-width:0;transition:transform .18s ease}
+.lx-for-you-card:hover{transform:translateY(-4px)}
+.lx-for-you-art{aspect-ratio:2/3;border-radius:17px;background-position:center top;box-shadow:0 16px 42px rgba(0,0,0,.30)}
+.lx-for-you-art:after{background:linear-gradient(180deg,transparent 54%,rgba(0,0,0,.7))}
+.lx-for-you-card strong{font-size:11px;margin-top:9px}
+.lx-for-you-card small{font-size:8px;margin-top:3px}
+.lx-poster-chip{position:absolute;z-index:3;left:8px;top:8px;font-style:normal}
+.lx-poster-chip-right{left:auto;right:8px;color:#ffd76a}
+
+/* Detail pages use the same real artwork when no custom banner exists. */
+.detail-hero{background-position:center 28%;background-size:cover}
+
+@media(max-width:900px){
+ .rail{grid-auto-columns:clamp(140px,23vw,176px)}
+ .hero-poster-focus{right:3vw;width:min(38vw,320px);opacity:.78}
+ .lx-for-you-grid{grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:16px 12px}
+}
+@media(max-width:640px){
+ .lx-for-you-page{padding:122px 14px 100px}
+ .rail{grid-auto-columns:132px;gap:10px}
+ .card-art,.lx-for-you-art{border-radius:14px}
+ .card-title{font-size:10.5px}.card-meta{font-size:7.5px}
+ .lx-for-you-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 10px}
+ .hero-poster-focus{right:-4vw;width:50vw;opacity:.45}
+}
+@media(max-width:380px){.rail{grid-auto-columns:124px}.lx-for-you-page{padding-left:10px;padding-right:10px}}

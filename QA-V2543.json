@@ -1,0 +1,104 @@
+{
+  "passed": 12,
+  "total": 12,
+  "results": [
+    {
+      "name": "build_2543",
+      "ok": true,
+      "detail": "LX Plus v25.43 · Cinema Poster Cards"
+    },
+    {
+      "name": "hero_uses_real_cover",
+      "ok": true,
+      "detail": {
+        "cls": "hero-bg hero-bg-poster",
+        "bg": "url(\"data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20width%3D%27600%27%20height%3D%27900%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20x2%3D%271%27%3E%3Cstop%20stop-color%3D%27%23e9802c%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23332052%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%27600%27%20height%3D%27900%27%20fill%3D%27url%28%23g%29%27/%3E%3Ccircle%20cx%3D%27300%27%20cy%3D%27300%27%20r%3D%27150%27%20fill%3D%27%23fff%27%20opacity%3D%27.2%27/%3E%3Ctext%20x%3D%27300%27%20y%3D%27690%27%20fill%3D%27white%27%20font-size%3D%2755%27%20text-anchor%3D%27middle%27%3EFILME%20QA%3C/text%3E%3C/svg%3E\")",
+        "focus": true
+      }
+    },
+    {
+      "name": "catalog_poster_ratio_2_3",
+      "ok": true,
+      "detail": {
+        "w": 165.59375,
+        "h": 248.390625,
+        "ratio": 0.6666666666666666
+      }
+    },
+    {
+      "name": "drive_official_embed",
+      "ok": true,
+      "detail": {
+        "kind": "embed",
+        "provider": "Google Drive",
+        "label": "Google Drive Player",
+        "src": "https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz12345/preview",
+        "previewSrc": "https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz12345/preview",
+        "openUrl": "https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz12345/view",
+        "driveId": "1AbCdEfGhIjKlMnOpQrStUvWxYz12345"
+      }
+    },
+    {
+      "name": "drive_player_has_no_native_video",
+      "ok": true,
+      "detail": {
+        "iframe": "https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz12345/preview",
+        "video": false
+      }
+    },
+    {
+      "name": "for_you_no_header_overlap",
+      "ok": true,
+      "detail": {
+        "topBottom": 124,
+        "pageTop": 132,
+        "welcomeHidden": true,
+        "heroHidden": true,
+        "artRatio": 0.6666666666666666,
+        "bodyClass": "lx-for-you-active"
+      }
+    },
+    {
+      "name": "for_you_vertical_posters",
+      "ok": true,
+      "detail": 0.6666666666666666
+    },
+    {
+      "name": "mobile_no_overflow",
+      "ok": true,
+      "detail": {
+        "overflow": 0,
+        "ratio": 0.6666666666666666,
+        "topbar": 113.046875,
+        "page": 122
+      }
+    },
+    {
+      "name": "mobile_for_you_clear_of_nav",
+      "ok": true,
+      "detail": {
+        "overflow": 0,
+        "ratio": 0.6666666666666666,
+        "topbar": 113.046875,
+        "page": 122
+      }
+    },
+    {
+      "name": "admin_poster_guidance",
+      "ok": true,
+      "detail": true
+    },
+    {
+      "name": "no_duplicate_ids",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "boot_error_empty",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "page_errors": [],
+  "console_errors": []
+}

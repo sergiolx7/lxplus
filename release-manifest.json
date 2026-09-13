@@ -1,16 +1,12 @@
 {
-  "version": "25.42.1",
-  "name": "Drive Instant Stream",
-  "features": [
-    "Google Drive direct-stream-first playback using drive.usercontent.google.com",
-    "automatic compatibility fallback button to Google Drive preview",
-    "admin guidance for MP4 H.264 + AAC immediate playback",
-    "Dropbox shared-link normalization to raw=1",
-    "YouTube public/unlisted embed support",
-    "OneDrive generated embed support",
-    "Internet Archive details/embed support",
-    "direct HTTPS media support",
-    "Cloudflare R2 upload path retained",
-    "v25.41 group calls and shared-audio call system retained"
+  "version": "25.43",
+  "name": "Cinema Poster Cards",
+  "base": "25.42.1",
+  "changes": [
+    "Google Drive always uses official embedded player",
+    "2:3 cinema poster cards",
+    "real cover used when auto banner is placeholder",
+    "Para voce fixed-nav overlap repair",
+    "ADM poster/banner format guidance"
   ]
 }

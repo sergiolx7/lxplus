@@ -1,0 +1,22 @@
+LX Plus v25.43 — Cinema Poster Cards
+
+QA FINAL
+========
+Automated checks: 12/12 passed
+Page errors: 0
+Console errors: 0
+
+Validated:
+- Google Drive is always opened with the official embedded Drive player.
+- No native video element is used for Drive sources.
+- Catalog cards use vertical 2:3 poster proportions.
+- Auto-generated text banners no longer hide the real movie poster in the Home hero.
+- Para você hides Hero/Welcome correctly and starts below the fixed top navigation.
+- Para você cards also use 2:3 posters.
+- Mobile 390x844 has no horizontal overflow and clears the fixed top navigation.
+- ADM shows 2:3 cover and 16:9 banner guidance.
+- No duplicate runtime IDs in tested flow.
+- No boot error, pageerror, or console.error in the QA flow.
+
+Provider note:
+Google Drive controls its own video processing. If Drive says a newly uploaded file is still being processed, LX Plus cannot bypass Google's processing state; once Drive makes the preview available, it plays inside the LX Plus embedded Drive player.
