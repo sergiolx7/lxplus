@@ -1,0 +1,16 @@
+LX Plus v25.42.1 — Drive Instant Stream
+
+QA estático/comportamental: 8/8 PASS
+
+PASS — JavaScript syntax
+PASS — Duplicate HTML IDs — []
+PASS — Local references — []
+PASS — Drive direct endpoint
+PASS — Drive preview fallback
+PASS — MKV compatibility warning
+PASS — Build cache bust
+PASS — Drive adapter behavior — {"kind": "direct", "provider": "Google Drive", "label": "Google Drive · Instant Stream", "src": "https://drive.usercontent.google.com/download?id=1AbCdEfGhIjKlMnOpQrStUvWxYz12345&export=download&confirm=t", "previewSrc": "https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz12345/preview", "openUrl": "https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz12345/view", "driveId": "1AbCdEfGhIjKlMnOpQrStUvWxYz12345"}
+
+Limitação do ambiente: Chromium local ficou bloqueado por política do runtime nesta rodada, então não foi possível repetir o teste visual automatizado dentro do navegador. A sintaxe, estrutura, adaptador do Drive, fallback e referências locais foram validados.
+
+Comportamento esperado: MP4 H.264 + AAC pode usar Stream Direto do Google Drive sem esperar o preview. MKV pode falhar no navegador; nesse caso o botão de compatibilidade abre o preview do Drive, que depende do processamento do Google.

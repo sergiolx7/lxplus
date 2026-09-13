@@ -1,0 +1,46 @@
+{
+  "passed": 8,
+  "total": 8,
+  "results": [
+    {
+      "name": "JavaScript syntax",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Duplicate HTML IDs",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "name": "Local references",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "name": "Drive direct endpoint",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Drive preview fallback",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "MKV compatibility warning",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Build cache bust",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Drive adapter behavior",
+      "ok": true,
+      "detail": "{\"kind\": \"direct\", \"provider\": \"Google Drive\", \"label\": \"Google Drive · Instant Stream\", \"src\": \"https://drive.usercontent.google.com/download?id=1AbCdEfGhIjKlMnOpQrStUvWxYz12345&export=download&confirm=t\", \"previewSrc\": \"https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz12345/preview\", \"openUrl\": \"https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz12345/view\", \"driveId\": \"1AbCdEfGhIjKlMnOpQrStUvWxYz12345\"}"
+    }
+  ]
+}

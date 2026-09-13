@@ -1,16 +1,16 @@
 {
-  "version": "25.42",
-  "name": "Free Media Hub",
+  "version": "25.42.1",
+  "name": "Drive Instant Stream",
   "features": [
-    "Google Drive public-link playback through embedded preview",
+    "Google Drive direct-stream-first playback using drive.usercontent.google.com",
+    "automatic compatibility fallback button to Google Drive preview",
+    "admin guidance for MP4 H.264 + AAC immediate playback",
     "Dropbox shared-link normalization to raw=1",
     "YouTube public/unlisted embed support",
     "OneDrive generated embed support",
     "Internet Archive details/embed support",
     "direct HTTPS media support",
     "Cloudflare R2 upload path retained",
-    "provider-aware validation and friendly publication errors",
-    "provider labels in ADM library",
     "v25.41 group calls and shared-audio call system retained"
   ]
 }
