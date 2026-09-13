@@ -10,12 +10,18 @@ import {
 } from "npm:@aws-sdk/client-s3@3";
 import { getSignedUrl } from "npm:@aws-sdk/s3-request-presigner@3";
 
-const headers = {"Content-Type":"application/json","Cache-Control":"no-store"};
+const corsHeaders = {
+  "Access-Control-Allow-Origin":"*",
+  "Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods":"POST, OPTIONS",
+};
+const headers = {...corsHeaders,"Content-Type":"application/json","Cache-Control":"no-store"};
 const out=(data:any,status=200)=>new Response(JSON.stringify(data),{status,headers});
 const fail=(error:string,status=400,message?:string)=>out({error,message:message||error},status);
 const safe=(name:string)=>String(name||"media").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9._-]+/g,"_").slice(-160) || "media";
 
 Deno.serve(async(req:Request)=>{
+  if(req.method==="OPTIONS") return new Response("ok",{headers:corsHeaders});
   if(req.method!=="POST") return fail("METHOD_NOT_ALLOWED",405);
   let body:any={};
   try{ body=await req.json(); }catch{ return fail("INVALID_JSON",400); }

@@ -1,0 +1,103 @@
+{
+  "passed": 13,
+  "total": 13,
+  "results": [
+    {
+      "name": "gdrive",
+      "ok": true,
+      "detail": {
+        "key": "gdrive:1AbCdEfGhIjKlMnOpQrStUvWxYz12345",
+        "kind": "embed",
+        "provider": "Google Drive",
+        "src": "https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz12345/preview"
+      }
+    },
+    {
+      "name": "dropbox",
+      "ok": true,
+      "detail": {
+        "key": "dropbox:https%3A%2F%2Fwww.dropbox.com%2Fscl%2Ffi%2Fabc123%2Fmovie.mp4%3Frlkey%3Dxyz%26raw%3D1",
+        "kind": "direct",
+        "provider": "Dropbox",
+        "src": "https://www.dropbox.com/scl/fi/abc123/movie.mp4?rlkey=xyz&raw=1"
+      }
+    },
+    {
+      "name": "youtube",
+      "ok": true,
+      "detail": {
+        "key": "youtube:dQw4w9WgXcQ",
+        "kind": "embed",
+        "provider": "YouTube",
+        "src": "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0&playsinline=1"
+      }
+    },
+    {
+      "name": "onedrive",
+      "ok": true,
+      "detail": {
+        "key": "onedrive:https%3A%2F%2Fonedrive.live.com%2Fembed%3Fresid%3DABC%2521123%26authkey%3D%2521XYZ%26em%3D2",
+        "kind": "embed",
+        "provider": "OneDrive",
+        "src": "https://onedrive.live.com/embed?resid=ABC%21123&authkey=%21XYZ&em=2"
+      }
+    },
+    {
+      "name": "archive",
+      "ok": true,
+      "detail": {
+        "key": "archive:test_identifier",
+        "kind": "embed",
+        "provider": "Internet Archive",
+        "src": "https://archive.org/embed/test_identifier?autoplay=1"
+      }
+    },
+    {
+      "name": "direct",
+      "ok": true,
+      "detail": {
+        "key": "https://cdn.example.com/movie.mp4",
+        "kind": "direct",
+        "provider": "Link HTTPS",
+        "src": "https://cdn.example.com/movie.mp4"
+      }
+    },
+    {
+      "name": "invalid_drive_rejected",
+      "ok": true,
+      "detail": "GDRIVE_LINK_INVALID"
+    },
+    {
+      "name": "editor_provider_buttons",
+      "ok": true,
+      "detail": 7
+    },
+    {
+      "name": "drive_help_visible",
+      "ok": true,
+      "detail": "No Drive: Compartilhar → Acesso geral → Qualquer pessoa com o link → Leitor. O vídeo abre dentro da LX Plus pelo preview do Drive."
+    },
+    {
+      "name": "editor_save_drive",
+      "ok": true,
+      "detail": "gdrive:1AbCdEfGhIjKlMnOpQrStUvWxYz12345"
+    },
+    {
+      "name": "drive_embed_player",
+      "ok": true,
+      "detail": "https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQrStUvWxYz12345/preview"
+    },
+    {
+      "name": "mobile_no_page_overflow",
+      "ok": true,
+      "detail": 0
+    },
+    {
+      "name": "boot_error_empty",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "page_errors": [],
+  "console_errors": []
+}

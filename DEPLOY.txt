@@ -1,18 +1,12 @@
-LX Plus v25.41 — Shared Audio + Group Calls
+LX Plus v25.42 — Free Media Hub
 
-Publicar juntos:
-- index.html
-- app.css
-- lxplus.js
+PUBLICAÇÃO
+1. Substitua index.html, app.css e lxplus.js juntos.
+2. Faça Ctrl+F5 nos navegadores após publicar.
+3. O Supabase continua sendo a fonte de verdade do catálogo.
+4. Cloudflare R2 é opcional; Google Drive, Dropbox, YouTube, OneDrive, Archive.org e HTTPS usam links externos e não exigem migração SQL.
+5. Google Drive precisa estar compartilhado como “Qualquer pessoa com o link / Leitor”.
+6. OneDrive exige o link gerado em “Incorporar”.
+7. Use somente mídia que você tenha autorização para distribuir.
 
-Supabase:
-- A migração de grupos foi aplicada no projeto durante esta atualização.
-- Não rode GROUP-CALLS-V2541.sql novamente no mesmo projeto.
-
-Teste recomendado:
-1. Ambos Ctrl+F5 e confirmam v25.41.
-2. Chamada 1:1: microfone, câmera, timer, compartilhar tela marcando “Compartilhar áudio”.
-3. Grupo: crie um grupo, inicie call e entre com 3 contas.
-4. Teste microfone, câmera, saída/entrada e compartilhamento dentro do grupo.
-
-Observação: o navegador só fornece áudio da tela quando a fonte escolhida suporta áudio e a opção “Compartilhar áudio” está habilitada na caixa do navegador.
+A Edge Function lx-r2-media do projeto já foi corrigida no backend para CORS; o arquivo local desta build também contém a versão corrigida para referência.

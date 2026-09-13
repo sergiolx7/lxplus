@@ -1,12 +1,16 @@
 {
-  "version": "25.41",
-  "name": "Shared Audio + Group Calls",
+  "version": "25.42",
+  "name": "Free Media Hub",
   "features": [
-    "screen share system/tab audio mixed with microphone",
-    "call duration and start clock separated from network status",
-    "persistent groups up to 6 members",
-    "small-group audio/video WebRTC mesh",
-    "group screen share with optional shared audio",
-    "one-to-one Stable Calls retained"
+    "Google Drive public-link playback through embedded preview",
+    "Dropbox shared-link normalization to raw=1",
+    "YouTube public/unlisted embed support",
+    "OneDrive generated embed support",
+    "Internet Archive details/embed support",
+    "direct HTTPS media support",
+    "Cloudflare R2 upload path retained",
+    "provider-aware validation and friendly publication errors",
+    "provider labels in ADM library",
+    "v25.41 group calls and shared-audio call system retained"
   ]
 }

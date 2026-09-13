@@ -1,52 +1,61 @@
-LX Plus v25.41 — Shared Audio + Group Calls
-QA final — 12/09/2026
+LX Plus v25.42 — Free Media Hub
+QA report — 2026-09-13
 
-ALTERAÇÕES PRINCIPAIS
-- Compartilhamento de tela 1:1 agora solicita áudio da tela/sistema e mistura esse áudio com o microfone antes de enviar.
-- Se o navegador não entregar um track de áudio de tela, o LX avisa para marcar “Compartilhar áudio” na caixa do navegador.
-- A barra da call separa o estado de rede do tempo da chamada: Conectado / Reconectando + cronômetro + horário de início.
-- Badge remoto diferencia “Tela compartilhada” de “Tela + áudio”.
-- Nova aba Grupos na Comunidade.
-- Grupos persistentes de até 6 participantes (você + 5 amigos).
-- Call em grupo de áudio ou vídeo com WebRTC mesh.
-- Compartilhamento de tela e áudio também disponível dentro da call em grupo.
-- Botão de desbloqueio de áudio caso o autoplay do navegador seja bloqueado.
-- Supabase recebeu tabelas, RPCs, RLS e Realtime para grupos e sinais de call.
+RESULTADO FINAL
+- 13 / 13 testes funcionais do Free Media Hub passaram.
+- 0 page errors no Chromium.
+- 0 console.error no cenário de QA.
+- 0 IDs HTML duplicados.
+- 0 referências locais ausentes.
+- lxplus.js: sintaxe JavaScript validada com node --check.
+- Todos os scripts inline do index.html: sintaxe validada.
+- Mobile 390x844: 0 px de overflow horizontal da página no formulário testado.
 
-QA DE CÓDIGO
-- lxplus.js: node --check OK.
-- Todos os scripts inline do index.html: node --check OK.
-- IDs estáticos duplicados: 0.
-- Referências locais ausentes: 0.
-- Cache/build atualizado para 25.41.
+FONTES TESTADAS
+1. Google Drive
+   - extração do ID do link /file/d/.../view
+   - geração de https://drive.google.com/file/d/<id>/preview
+   - salvamento completo pelo formulário ADM
+   - abertura pelo player incorporado LX
 
-QA DE MÍDIA / WEBRTC EM CHROMIUM
-- 3 negociações peer-to-peer independentes (A↔B, A↔C, B↔C): offer/answer com áudio e vídeo sendrecv OK.
-- Topologia de 3 participantes: 3 links WebRTC / 6 RTCPeerConnections preparada OK.
-- Mixer Web Audio microfone + áudio de compartilhamento: track live, RMS ~0.14 no teste.
-- Track mixado substitui o sender de áudio sem encerrar a call: OK.
-- Track de tela substitui o sender de vídeo: OK.
-- Page errors no QA de mídia: 0.
+2. Dropbox
+   - validação de domínio
+   - remoção de dl=0/dl=1
+   - normalização para raw=1
+   - classificação como fonte direta
 
-QA DA INTERFACE DE GRUPOS
-- Render desktop 1100x850: OK, sem erro de página e sem overflow horizontal.
-- Render mobile 390x844: OK, sem erro de página e sem overflow horizontal.
-- Formulário Novo grupo no mobile: render OK com seleção de amigos.
+3. YouTube
+   - reconhecimento de youtu.be/watch/embed/shorts
+   - geração do embed seguro
 
-QA REAL NO SUPABASE
-- Migração lx_group_calls_v2541 aplicada.
-- Correção de RLS contra recursão aplicada.
-- Limpeza de salas ativas antigas/stale aplicada.
-- Teste transacional com dois usuários aprovados: grupo criado, call criada, segundo usuário entrou, heartbeat retornou 2 participantes, grupo ficou visível. ROLLBACK executado; dados QA não ficaram persistidos.
-- Teste RLS de sinal direcionado entre os dois participantes: PASS.
-- Realtime confirmado para lx_group_calls, lx_group_call_members e lx_group_call_signals.
+4. OneDrive
+   - leitura do src de iframe
+   - aceitação somente de onedrive.live.com/embed
+   - erro amigável quando não é um link de Incorporar
 
-LIMITAÇÃO DO AMBIENTE DE QA
-- O Chromium deste ambiente bloqueia a coleta de ICE candidates/rede real entre browsers, então o teste automatizado não consegue reproduzir literalmente dois computadores em provedores diferentes.
-- Por isso, a camada WebRTC foi validada por SDP/transceivers/replaceTrack/WebAudio, e a camada de sinalização/grupos foi validada no Supabase real com dois usuários.
-- O áudio de tela depende do navegador e da fonte escolhida. Em Chrome/Edge, para som de aba/sistema, o usuário precisa selecionar uma fonte que ofereça áudio e manter “Compartilhar áudio” marcado.
+5. Archive.org
+   - reconhecimento de /details/ e /embed/
+   - geração de player incorporado
 
-PUBLICAÇÃO
-- Substituir juntos: index.html, app.css e lxplus.js.
-- Depois os participantes devem usar Ctrl+F5 / reabrir o site para garantir build 25.41.
-- GROUP-CALLS-V2541.sql é documentação: a migração já foi aplicada no Supabase deste projeto.
+6. HTTPS direto
+   - validação HTTPS
+   - reprodução pelo player LX quando a origem permite
+
+VALIDAÇÕES DE SEGURANÇA / UX
+- Link inválido do Drive é rejeitado antes de salvar.
+- Fontes não compatíveis com Música/Livro são bloqueadas no formulário.
+- O site salva somente IDs/URLs externos; não salva senha de Drive/Dropbox/YouTube/OneDrive.
+- Cloudflare R2 continua opcional.
+- A Edge Function local de referência lx-r2-media inclui tratamento CORS/OPTIONS; o backend do projeto já recebeu essa correção na versão anterior.
+
+LIMITAÇÕES EXTERNAS (não são bugs da LX Plus)
+- O arquivo precisa continuar disponível e compartilhado no provedor.
+- Google Drive/YouTube/OneDrive/Archive usam iframe; por isolamento entre domínios, a LX Plus não consegue ler o segundo exato do vídeo nesses players.
+- Cada provedor aplica seus próprios limites de armazenamento, tráfego, processamento e compartilhamento.
+- Dropbox/HTTPS precisam devolver um arquivo que o navegador consiga reproduzir.
+- Para vídeo, MP4 H.264 + AAC continua sendo o formato mais compatível. MKV depende do provedor/player.
+
+ARQUIVOS DE QA
+- QA-V2542.json
+- QA-FREE-MEDIA-DESKTOP-V2542.png
+- QA-FREE-MEDIA-MOBILE-V2542.png

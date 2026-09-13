@@ -1,0 +1,43 @@
+LX Plus v25.42 — Free Media Hub
+
+FONTES SUPORTADAS NA PUBLICAÇÃO RÁPIDA
+
+1) Arquivo/R2
+- Continua funcionando como antes.
+- Arquivos grandes precisam do Cloudflare R2 configurado.
+
+2) Google Drive
+- Envie o vídeo para o Drive.
+- Compartilhar > Acesso geral > Qualquer pessoa com o link > Leitor.
+- Cole o link do arquivo no LX Plus.
+- O LX abre o preview do Drive dentro do site.
+
+3) Dropbox
+- Crie um link compartilhado do arquivo.
+- Cole o link no LX Plus.
+- O LX converte o link automaticamente para raw=1.
+
+4) YouTube
+- Use vídeo público ou não listado que você tenha autorização para publicar.
+- Cole o link watch, youtu.be, shorts ou embed.
+
+5) OneDrive
+- No OneDrive, abra Mais > Incorporar > Gerar.
+- Cole no LX o URL do src ou o iframe gerado.
+
+6) Archive.org
+- Cole um link https://archive.org/details/IDENTIFICADOR ou /embed/IDENTIFICADOR.
+
+7) HTTPS direto
+- Cole a URL direta do arquivo MP4/WebM/áudio/PDF.
+- O servidor externo precisa permitir reprodução pelo navegador.
+
+RECOMENDAÇÃO DE VÍDEO
+- Para maior compatibilidade: MP4, H.264 no vídeo e AAC no áudio.
+- MKV pode depender do player/transcodificação do provedor e não é o formato mais seguro para navegador.
+
+LIMITAÇÕES
+- Cada serviço gratuito mantém seus próprios limites de espaço, tráfego, processamento e compartilhamento.
+- Google Drive/YouTube/OneDrive/Archive usam player incorporado; nesses casos o LX Plus não consegue ler o segundo exato do vídeo por causa do isolamento entre domínios.
+- Dropbox/HTTPS/R2 usam o player LX quando a URL é reproduzível diretamente.
+- Use somente conteúdo que você tenha autorização para hospedar/distribuir.
