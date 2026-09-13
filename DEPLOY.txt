@@ -1,11 +1,9 @@
 PUBLICAÇÃO LX PLUS
 
-Substitua TODOS os arquivos desta pasta no host, principalmente:
-- index.html
-- app.css
-- lxplus.js
-- service-worker.js
-- manifest.webmanifest
-- ícones e assets
+Envie TODOS os arquivos desta pasta para o host, substituindo os existentes.
+Arquivos principais: index.html, app.css, lxplus.js, service-worker.js, manifest.webmanifest, logo e ícones.
 
-Depois: Ctrl+F5 no desktop. Em PWA instalado, feche e reabra o app para o Service Worker atualizar.
+Depois:
+- Desktop: Ctrl+F5.
+- Celular/PWA: feche o app e abra novamente.
+- Se o ícone antigo persistir, reinstale o PWA uma vez.

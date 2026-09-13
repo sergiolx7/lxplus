@@ -1,23 +1,32 @@
-LX Plus v25.46 — Drive Quality + Next Episode
+LX PLUS — QA DA ATUALIZAÇÃO DE MÚSICA
 
-Resultado: 16/16 testes aprovados.
-Page errors: 0
-Console errors: 0
+RESULTADO DOS TESTES LOCAIS
 
-- PASS · build_2546: LX Plus v25.46 · Drive Quality + Next Episode
-- PASS · new_video_defaults_to_drive: {'drive': True, 'quality': True}
-- PASS · film_drive_quality_fields_preload: {'1080': 'https://drive.google.com/file/d/3Q1080DriveQAabcdefghijklmnopqrstu/view', '720': 'https://drive.google.com/file/d/4Q720DriveQAabcdefghijklmnopqrstuv/view'}
-- PASS · film_drive_quality_save: {'2160p': 'gdrive:DNew4KDriveQAabcdefghijklmnopqrstuv', '1080p': 'gdrive:ENew1080DriveQAabcdefghijklmnopqrst', '720p': 'gdrive:4Q720DriveQAabcdefghijklmnopqrstuv'}
-- PASS · series_quality_bulk_preloads: E01 | Um | https://drive.google.com/file/d/9Ep11080QAabcdefghijklmnopqrstuvwx/view
-E02 | Dois | https://drive.google.com/file/d/AEp21080QAabcdefghijklmnopqrstuvwx/view
-- PASS · quality_bulk_validation: ✓ 2 links principais válidos · 3 variantes de qualidade · T1 pronta para salvar
-- PASS · series_quality_bulk_saved: {'e1': {'1080p': 'gdrive:FNewEp11080QAabcdefghijklmnopqrstuvw', '720p': 'gdrive:CEp1720QAabcdefghijklmnopqrstuvwxy'}, 'e2': {'1080p': 'gdrive:GNewEp21080QAabcdefghijklmnopqrstuvw'}}
-- PASS · other_season_quality_preserved: {'1080p': 'gdrive:BEp31080QAabcdefghijklmnopqrstuvwx'}
-- PASS · drive_player_quality_menu: {'quality': True, 'buttons': ['auto', '2160p', '1080p', '720p'], 'src': 'https://drive.google.com/file/d/1MainDriveQAabcdefghijklmnopqrstuv/preview'}
-- PASS · drive_quality_switches_source: {'src': 'https://drive.google.com/file/d/ENew1080DriveQAabcdefghijklmnopqrst/preview', 'label': 'Qualidade · 1080p', 'pref': '1080p'}
-- PASS · drive_next_episode_button: {'next': True, 'label': 'Próximo · T1 E2 ›', 'title': 'S1:E2 · Dois', 'meta': 'S1:E1 · Um'}
-- PASS · drive_next_moves_to_episode_2: S1:E2 · Dois
-- PASS · drive_next_crosses_to_next_season: S2:E1 · Temporada dois
-- PASS · mobile_drive_controls_fit: {'topRight': 390, 'viewport': 390, 'qRight': 272.546875, 'nRight': 381, 'qLeft': 172.890625, 'nLeft': 282.546875}
-- PASS · mobile_editor_no_horizontal_overflow: 0
-- PASS · no_duplicate_ids: []
+PASSOU
+- JavaScript principal: sintaxe válida (node --check).
+- Service Worker: sintaxe válida.
+- 8 scripts inline do index.html: sintaxe válida.
+- CSS: 2345 regras analisadas pelo tinycss2, 0 erros de parsing.
+- HTML: 108 IDs analisados, 0 IDs duplicados.
+- Referências locais do index: 0 arquivos ausentes.
+- Manifest PWA válido e ícones referenciados presentes.
+- Cache do Service Worker atualizado e limpeza antiga não desinstala mais o próprio PWA a cada carregamento.
+- Adaptador Spotify reconhece tanto links open.spotify.com quanto spotify:track:...
+- Link testado: open.spotify.com/intl-pt/track/... foi normalizado corretamente para spotify:track:2wwEjucN8zj8MuZ7ZYoxiH.
+- Embed oficial gerado corretamente em open.spotify.com/embed/track/...
+- Integração inclui Spotify iFrame API oficial, createController, loadEntity, togglePlay, playback_started e playback_update.
+- Clicar novamente na mesma faixa usa play/pause em vez de recriar a música.
+- Player persistente mantém a faixa selecionada ao navegar pelas áreas do LX Plus.
+- Layout mobile possui dock Spotify compacto e logo do topo proporcional.
+
+LIMITAÇÃO DE QA DESTE AMBIENTE
+- O Chromium do ambiente bloqueia localhost e file:// por política administrativa (ERR_BLOCKED_BY_ADMINISTRATOR). Por isso não foi possível fazer uma rodada final de captura visual automatizada da página real.
+- A rede do container também não resolve open.spotify.com, então o áudio real do Spotify não pôde ser ouvido aqui.
+- A integração foi implementada contra a API oficial do Spotify e validada estruturalmente/por lógica local. O teste final de áudio deve ser feito no navegador publicado, onde o Spotify está acessível.
+
+COMPORTAMENTO ESPERADO
+1. Clicar numa música do Spotify carrega a entidade no único player oficial persistente.
+2. O botão central do LX Plus passa a controlar play/pause via iFrame API quando o navegador permitir.
+3. O estado Tocando/Pausado atualiza cards e a faixa Tocando agora.
+4. Se o navegador bloquear a primeira reprodução automática, o player oficial abre como fallback para um toque direto do usuário.
+5. Trocar de música reaproveita o mesmo player e chama loadEntity; não abre uma página nova.

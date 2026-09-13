@@ -1,12 +1,16 @@
-LX Plus — Music Playback + Intro Fix
+LX PLUS — MUSIC UX / SPOTIFY CONTROLLER
 
-- Abertura LX Plus com logo nítida durante todo o reveal; removido blur da marca.
-- Compatibilidade retroativa com links antigos do Spotify salvos como URL HTTPS.
-- Links Spotify agora abrem como Embed oficial interativo em vez de serem tratados como arquivo de áudio.
-- Player externo ganhou altura adequada para controles reais do Spotify e permissões encrypted-media/autoplay/fullscreen.
-- Cards de música não esticam quando existe só uma música no catálogo.
-- Clique no card musical abre diretamente a reprodução.
-- Fundo da área musical foi suavizado para não virar uma foto gigante.
-- Reconhecimento adicional de URLs antigas do YouTube, Drive e SoundCloud.
+- Player oficial do Spotify controlado pela Spotify iFrame API.
+- Play/Pause real pelo botão central do LX Plus quando suportado pelo navegador.
+- Clique na mesma música alterna entre tocar e pausar.
+- Troca de faixa reaproveita o mesmo player oficial via loadEntity.
+- Barra Tocando agora e estados visuais nos cards.
+- Player continua disponível enquanto o usuário navega pelo LX Plus.
+- Drawer opcional com o player oficial do Spotify.
+- Fallback automático abre o player oficial quando o navegador bloqueia a primeira reprodução.
+- Área de música mais compacta, escura e organizada, inspirada em apps modernos de streaming sem copiar a identidade visual do Spotify.
+- Logo do topo ajustada para ficar mais proporcional no desktop e no celular.
+- Splash mantém a logo nítida.
+- Correção importante do PWA: o app não desinstala mais o próprio Service Worker a cada carregamento.
 
-Observação: navegadores podem bloquear autoplay. No Spotify, o usuário pode precisar tocar no botão Play dentro do Embed oficial.
+Para publicar: envie todos os arquivos desta pasta. Depois use Ctrl+F5 no desktop; no app/PWA, feche e abra novamente.
