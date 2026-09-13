@@ -1,10 +1,18 @@
-LX Plus — Brand + Mobile + App
+LX Plus — Music Hub + Mobile Fix
 
-- Logo aprovada aplicada no topo, abertura, autenticação, perfis e ADM.
-- Rótulos de versão removidos da interface pública.
-- Bloco duplicado “Escolhido para você agora” removido da Home; a aba Para você continua disponível.
-- Hero mobile compactado: imagem proporcional, descrição ocultada no celular, título/metadata/botões menores.
-- Topo, navegação inferior e player ajustados para celular.
-- Navegação inferior corrigida para 7 ações sem quebrar em duas linhas.
-- Opção “Baixar app” adicionada; instalação funciona como PWA quando suportada.
-- Google Drive continua usando o player oficial; controles LX de qualidade/próximo episódio permanecem.
+Principais mudanças
+- Área de música refeita em um layout escuro, compacto e inspirado em apps de streaming musical, mantendo identidade LX Plus.
+- Música por link: Spotify, YouTube/YouTube Music, playlist do YouTube, SoundCloud, Google Drive, Dropbox, OneDrive, Archive.org e HTTPS direto quando compatível.
+- Spotify aceita links de faixa, álbum, playlist, episódio e show.
+- Players oficiais incorporados para Spotify, YouTube, SoundCloud e Drive.
+- Cards de música mostram a fonte do conteúdo e continuam integrados à biblioteca, fila e histórico LX.
+- ADM agora oferece botões Spotify e SoundCloud para conteúdo do tipo Música.
+- Novo conteúdo de Música começa com Spotify selecionado por padrão; o administrador ainda pode trocar a fonte.
+- Splash corrigido com logo LX Plus embutida no HTML para não quebrar se a pasta de assets falhar no cache/publicação.
+- Ícones PWA também foram duplicados na raiz e o manifest aponta para a raiz, reduzindo falhas de ícone no app instalado.
+- Topo mobile compactado e reorganizado; ações secundárias saem do topo em telas pequenas e continuam acessíveis pelos menus/navegação inferior.
+- Player externo mobile vira um dock compacto acima da navegação inferior.
+
+Observações
+- Players externos seguem as regras do próprio provedor. Autoplay com som pode ser bloqueado pelo navegador até o usuário tocar no player.
+- Um link HTTPS genérico só toca diretamente quando o servidor de origem permite reprodução/embedding no navegador.

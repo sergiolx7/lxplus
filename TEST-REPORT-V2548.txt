@@ -1,0 +1,21 @@
+LX Plus — QA Music Hub + Mobile Fix
+
+PASSOU
+- lxplus.js: node --check
+- service-worker.js: node --check
+- 8 scripts inline do index.html: node --check
+- IDs duplicados no HTML: 0
+- Referências locais do index.html faltando: 0
+- Manifest PWA: JSON válido e 3 ícones presentes na raiz
+- Logo inline resiliente presente em 5 pontos da interface
+- Adaptador Spotify: faixa reconhecida, embed gerado e link reversível
+- Adaptador YouTube Music: vídeo reconhecido
+- Adaptador YouTube playlist: playlist reconhecida
+- Adaptador SoundCloud: link público reconhecido e widget gerado
+- Adaptador Google Drive continua reconhecido para Música
+- Spotify/YouTube/SoundCloud/Drive marcados como fontes aceitas para Música
+- Player externo e controles anterior/próximo adicionados
+- CSS mobile possui topo compacto, splash proporcional e dock externo compacto
+
+LIMITAÇÃO DO AMBIENTE DE QA
+- O Chromium headless deste ambiente não encerrou corretamente por limitação do runtime/DBus, então a captura visual automatizada final não foi usada como evidência. A validação desta rodada foi estrutural, de sintaxe e por testes unitários dos adaptadores de link.

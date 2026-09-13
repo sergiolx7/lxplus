@@ -1,0 +1,5 @@
+PASS spotify => spotify:track:4cOdK2wGLETKBW3PvgPWqT | Spotify | musicAllowed= true
+PASS youtube => youtube:dQw4w9WgXcQ | YouTube | musicAllowed= true
+PASS youtube => youtube-playlist:PL1234567890ABCDE | YouTube | musicAllowed= true
+PASS soundcloud => soundcloud:https%3A%2F%2Fsoundcloud.com%2Fexample%2Fsong | SoundCloud | musicAllowed= true
+PASS gdrive => gdrive:1YvCy6QsUgErKeCPEQSf6WJQW7OMF6Leh | Google Drive | musicAllowed= true

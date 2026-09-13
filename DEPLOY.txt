@@ -1,13 +1,20 @@
 PUBLICAÇÃO LX PLUS
 
-Substitua/adicione na raiz do site:
+Publique/substitua TODOS os arquivos desta pasta na raiz do site, incluindo:
 - index.html
 - app.css
 - lxplus.js
 - manifest.webmanifest
 - service-worker.js
+- app-icon-192.png
+- app-icon-512.png
+- app-icon-maskable-512.png
+- lxplus-wordmark.webp
 - pasta assets/
 - CNAME (se o domínio atual usa este arquivo)
 
-Depois publique e faça Ctrl+F5 uma vez.
-No celular, abra o menu do perfil e use “Baixar app”. Em navegadores compatíveis, o botão de instalação do navegador será usado; no iPhone/iPad, o LX mostra a orientação de “Adicionar à Tela de Início”.
+Depois da publicação:
+1. Abra o site.
+2. Faça Ctrl+F5 uma vez no computador.
+3. No celular, feche e abra o app/site novamente.
+4. Se o PWA antigo continuar com ícone antigo, remova o atalho/app instalado e instale novamente pelo botão “Baixar app”.
