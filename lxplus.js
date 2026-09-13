@@ -469,21 +469,21 @@ function musicAlbumCard(x){const tracks=x.tracks?.length||1,provider=musicProvid
 function renderMusicExperience(){
  const a=items(),h=D.history(),userName=String(state.profile?.name||state.user?.name||'').trim().split(/\s+/)[0]||'você';
  $('hero').innerHTML='';$('welcome').innerHTML='';
- if(!a.length){$('homeContent').innerHTML=`<div class="lx-music-app-shell"><aside class="lx-music-side"><b>♫ LX Music</b><button class="active">⌂ Início</button><button onclick="document.querySelector('[data-cat=\\'Música\\']')?.click()">⌕ Explorar</button><button>♡ Sua biblioteca</button></aside><main class="lx-music-main"><section class="official-empty lx-mode-empty"><span class="eyebrow">LX MUSIC</span><h2>${state.user?.admin?'Sua biblioteca musical está pronta':'Músicas em breve'}</h2><p>${state.user?.admin?'Cole links do Spotify, YouTube, SoundCloud, Drive ou envie seus próprios áudios.':'A biblioteca musical está sendo preparada.'}</p>${state.user?.admin?'<button class="primary-btn" onclick="LX.openAdmin()">Adicionar música</button>':''}</section></main></div>`;return}
+ if(!a.length){$('homeContent').innerHTML=`<div class="lx-music-app-shell"><aside class="lx-music-side"><b>♫ LX Music</b><button class="active">⌂ Início</button><button onclick="document.querySelector("[data-cat='Música']")?.click()">⌕ Explorar</button><button>♡ Sua biblioteca</button></aside><main class="lx-music-main"><section class="official-empty lx-mode-empty"><span class="eyebrow">LX MUSIC</span><h2>${state.user?.admin?'Sua biblioteca musical está pronta':'Músicas em breve'}</h2><p>${state.user?.admin?'Cole links do Spotify, YouTube, SoundCloud, Drive ou envie seus próprios áudios.':'A biblioteca musical está sendo preparada.'}</p>${state.user?.admin?'<button class="primary-btn" onclick="LX.openAdmin()">Adicionar música</button>':''}</section></main></div>`;return}
  const recent=[...a].filter(x=>h[x.id]?.opened).sort((x,y)=>(h[y.id]?.opened||0)-(h[x.id]?.opened||0)).slice(0,6),featured=a.find(x=>x.featured)||recent[0]||a[0],saved=a.filter(x=>D.myList().includes(x.id)),newest=[...a].sort((x,y)=>+new Date(y.publishedAt||y.createdAt||0)-+new Date(x.publishedAt||x.createdAt||0)).slice(0,12),quick=(recent.length?recent:a).slice(0,6);
  const provider=musicProvider(featured);
- if(state.query||state.category!=='Início'){$('homeContent').innerHTML=`<div class="lx-music-app-shell"><aside class="lx-music-side"><b>♫ LX Music</b><button onclick="document.querySelector('[data-cat=\'Início\']')?.click()">⌂ Início</button><button class="active">⌕ Explorar</button><button>♡ Sua biblioteca</button></aside><main class="lx-music-main"><section class="lx-music-search-head"><span class="eyebrow">LX MUSIC</span><h1>${state.query?`Resultados para “${esc(state.query)}”`:esc(state.category)}</h1><p>${a.length} ${a.length===1?'resultado':'resultados'}</p></section><section class="lx-music-section"><div class="lx-music-grid">${a.map(musicAlbumCard).join('')}</div></section></main></div>`;return}
+ if(state.query||state.category!=='Início'){$('homeContent').innerHTML=`<div class="lx-music-app-shell"><aside class="lx-music-side"><b>♫ LX Music</b><button onclick="document.querySelector("[data-cat='Início']")?.click()">⌂ Início</button><button class="active">⌕ Explorar</button><button>♡ Sua biblioteca</button></aside><main class="lx-music-main"><section class="lx-music-search-head"><span class="eyebrow">LX MUSIC</span><h1>${state.query?`Resultados para “${esc(state.query)}”`:esc(state.category)}</h1><p>${a.length} ${a.length===1?'resultado':'resultados'}</p></section><section class="lx-music-section"><div class="lx-music-grid">${a.map(musicAlbumCard).join('')}</div></section></main></div>`;return}
  const quickHtml=quick.map(x=>`<button class="lx-music-quick" data-music-id="${x.id}" onclick="LX.music(${x.id},0)"><span style="background-image:url('${musicArt(x)}')"></span><strong>${esc(x.title)}</strong><small>${esc(x.artist||'LX Music')}</small><i data-music-play-icon>▶</i></button>`).join('');
  $('homeContent').innerHTML=`<div class="lx-music-app-shell">
-  <aside class="lx-music-side"><b>♫ LX Music</b><button class="active">⌂ Início</button><button onclick="document.querySelector('[data-cat=\\'Música\\']')?.click()">⌕ Explorar</button><button onclick="LX.openProfile()">♡ Sua biblioteca</button><div class="lx-music-side-note"><span>Fontes</span><small>Spotify · YouTube · SoundCloud · Drive · HTTPS</small></div></aside>
-  <main class="lx-music-main">
-   <div class="lx-music-mobile-tabs"><button class="active">Início</button><button onclick="document.querySelector('[data-cat=\\'Música\\']')?.click()">Explorar</button><button onclick="LX.openProfile()">Biblioteca</button></div>
+  <aside class="lx-music-side"><b>♫ LX Music</b><button class="active">⌂ Início</button><button onclick="document.querySelector("[data-cat='Música']")?.click()">⌕ Explorar</button><button onclick="LX.openProfile()">♡ Sua biblioteca</button><div class="lx-music-side-note"><span>Fontes</span><small>Spotify · YouTube · SoundCloud · Drive · HTTPS</small></div></aside>
+  <main class="lx-music-main lx-music-main-spotify">
+   <div class="lx-music-mobile-tabs"><button class="active">Início</button><button onclick="document.querySelector("[data-cat='Música']")?.click()">Explorar</button><button onclick="LX.openProfile()">Biblioteca</button></div>
    <section id="lxMusicNow" class="lx-music-now hidden"><div id="lxMusicNowCover" class="lx-music-now-cover"></div><div><span>TOCANDO AGORA</span><strong id="lxMusicNowTitle">Música</strong><small id="lxMusicNowArtist">LX Music</small></div><button id="lxMusicNowToggle" onclick="LX.toggleCurrentMusic()">▶</button></section>
-   <section class="lx-music-top"><div class="lx-music-gradient" style="--music-bg:url('${musicArt(featured)}')"></div><div class="lx-music-greeting"><span class="eyebrow">LX MUSIC</span><h1>Boa ${new Date().getHours()<12?'manhã':new Date().getHours()<18?'tarde':'noite'}, ${esc(userName)}</h1><p>Seu som, suas playlists e seus links em um só lugar.</p></div><div class="lx-music-feature"><div class="lx-music-feature-art" style="background-image:url('${musicArt(featured)}')"></div><div><span class="lx-music-provider">${esc(provider)}</span><h2>${esc(featured.title)}</h2><p>${esc(featured.artist||'LX Music')} · ${esc(featured.genre||'Música')}</p><div><button class="lx-music-play-big" data-music-id="${featured.id}" data-music-play-icon onclick="LX.music(${featured.id},0)">▶</button><button class="secondary-btn" onclick="LX.openMusicAlbum(${featured.id})">Abrir</button></div></div></div></section>
-   <section class="lx-music-section lx-music-quick-section"><div class="lx-section-title"><div><h2>${recent.length?'Ouça novamente':'Escolhidas para você'}</h2></div></div><div class="lx-music-quick-grid-v48">${quickHtml}</div></section>
-   <section class="lx-music-section"><div class="lx-section-title"><div><h2>Feito para você</h2><p>Álbuns, músicas e playlists da sua biblioteca.</p></div><button class="lx-text-btn" onclick="document.querySelector('[data-cat=\\'Música\\']')?.click()">Ver tudo</button></div><div class="lx-music-grid">${a.slice(0,12).map(musicAlbumCard).join('')}</div></section>
-   ${saved.length?`<section class="lx-music-section"><div class="lx-section-title"><div><h2>Sua biblioteca</h2></div></div><div class="lx-music-grid compact">${saved.slice(0,10).map(musicAlbumCard).join('')}</div></section>`:''}
-   <section class="lx-music-section"><div class="lx-section-title"><div><h2>Lançamentos</h2></div></div><div class="lx-music-grid compact">${newest.map(musicAlbumCard).join('')}</div></section>
+   <section class="lx-music-top lx-music-top-premium"><div class="lx-music-gradient" style="--music-bg:url('${musicArt(featured)}')"></div><div class="lx-music-top-overlay"></div><div class="lx-music-greeting"><span class="eyebrow">LX MUSIC · PLAYBACK</span><h1>Boa ${new Date().getHours()<12?'manhã':new Date().getHours()<18?'tarde':'noite'}, ${esc(userName)}</h1><p>Sua área de música agora ficou mais parecida com Spotify, com capa grande, playback central e acesso rápido aos links.</p></div><div class="lx-music-top-chips"><button class="active">Para você</button><button onclick="document.querySelector("[data-cat='Música']")?.click()">Descobrir</button><button onclick="LX.openProfile()">Sua biblioteca</button><button onclick="LX.openMusicQueue()">Fila</button></div><div class="lx-music-feature"><div class="lx-music-feature-art" style="background-image:url('${musicArt(featured)}')"></div><div class="lx-music-feature-copy"><span class="lx-music-provider">${esc(provider)}</span><h2>${esc(featured.title)}</h2><p>${esc(featured.artist||'LX Music')} · ${esc(featured.genre||'Música')}</p><div class="lx-music-feature-stats"><span>${featured.tracks?.length||1} ${(featured.tracks?.length||1)===1?'faixa':'faixas'}</span><span>${esc(featured.year||'Agora')}</span><span>${esc(featured.genre||'Música')}</span></div><div class="lx-music-feature-actions"><button class="lx-music-play-big" data-music-id="${featured.id}" data-music-play-icon onclick="LX.music(${featured.id},0)">▶</button><button class="secondary-btn" onclick="LX.openMusicAlbum(${featured.id})">Abrir</button></div></div></div></section>
+   <section class="lx-music-section lx-music-quick-section"><div class="lx-section-title"><div><h2>${recent.length?'Ouça novamente':'Escolhidas para você'}</h2><p>Acesso rápido às faixas e playlists mais práticas do seu catálogo.</p></div></div><div class="lx-music-quick-grid-v48">${quickHtml}</div></section>
+   <section class="lx-music-section"><div class="lx-section-title"><div><h2>Feito para você</h2><p>Álbuns, músicas e playlists da sua biblioteca com capa, artista e acesso imediato.</p></div><button class="lx-text-btn" onclick="document.querySelector("[data-cat='Música']")?.click()">Ver tudo</button></div><div class="lx-music-grid">${a.slice(0,12).map(musicAlbumCard).join('')}</div></section>
+   ${saved.length?`<section class="lx-music-section"><div class="lx-section-title"><div><h2>Sua biblioteca</h2><p>Conteúdos que você marcou ou ouviu recentemente.</p></div></div><div class="lx-music-grid compact">${saved.slice(0,10).map(musicAlbumCard).join('')}</div></section>`:''}
+   <section class="lx-music-section"><div class="lx-section-title"><div><h2>Lançamentos</h2><p>Os itens adicionados mais recentemente no catálogo musical.</p></div></div><div class="lx-music-grid compact">${newest.map(musicAlbumCard).join('')}</div></section>
   </main>
  </div>`;queueMicrotask(syncMusicCardState);
 }
@@ -1493,4 +1493,57 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['app']='25.35';
   // Sync public profile extras when the account becomes available.
   let syncAttempts=0;const syncTimer=setInterval(()=>{if(U.state?.user){clearInterval(syncTimer);syncProfileExtras().catch(()=>{})}else if(++syncAttempts>40)clearInterval(syncTimer)},500);
   scheduleDecorate();
+})();
+
+/* v25.51 — mini canvas visualizer */
+(function(){
+  let raf=0;
+  function visState(){
+    try{
+      const t=currentMusic?.();
+      if(!t) return {active:false,phase:0,boost:.18};
+      const sp=isSpotifyTrack?.(t);
+      const active=sp ? (spotifyPlayback?.paused===false) : !($('musicAudio')?.paused ?? true);
+      const pos=sp ? ((spotifyPlayback?.position||0)/1000) : ($('musicAudio')?.currentTime||0);
+      return {active,phase:pos,boost:active?1:.22};
+    }catch(e){return {active:false,phase:0,boost:.18}}
+  }
+  function draw(){
+    const c=$('musicViz');
+    if(!c){raf=requestAnimationFrame(draw);return}
+    const x=c.getContext('2d');
+    const w=c.width,h=c.height;
+    const st=visState();
+    x.clearRect(0,0,w,h);
+    const bg=x.createLinearGradient(0,0,0,h);
+    bg.addColorStop(0,'rgba(31,34,42,.95)');
+    bg.addColorStop(1,'rgba(10,12,17,.98)');
+    x.fillStyle=bg; x.fillRect(0,0,w,h);
+    x.save();
+    x.translate(0.5,0.5);
+    const bars=11, gap=3, barW=3;
+    const baseY=h-6;
+    for(let i=0;i<bars;i++){
+      const p=(st.phase*2.8)+(i*.63);
+      const wave=(Math.sin(p)+Math.sin(p*.54+1.3)+Math.sin(p*1.8+.5))/3;
+      const lift=st.active?(0.55+Math.abs(wave)*0.9):(0.14+((i%3)/12));
+      const bh=Math.max(4, Math.min(h-10, (h-10)*lift*st.boost + 5));
+      const bx=7+i*(barW+gap);
+      const by=baseY-bh;
+      const grad=x.createLinearGradient(0,by,0,baseY);
+      grad.addColorStop(0, st.active?'rgba(120,86,255,1)':'rgba(102,124,149,.55)');
+      grad.addColorStop(.55, st.active?'rgba(74,214,236,.92)':'rgba(97,120,138,.42)');
+      grad.addColorStop(1, 'rgba(255,255,255,.16)');
+      x.fillStyle=grad;
+      x.shadowBlur=st.active?10:0;
+      x.shadowColor=st.active?'rgba(108,190,255,.42)':'transparent';
+      x.beginPath();
+      x.roundRect(bx,by,barW,bh,2);
+      x.fill();
+    }
+    x.restore();
+    raf=requestAnimationFrame(draw);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', ()=>{cancelAnimationFrame(raf);draw()},{once:true});
+  else draw();
 })();
