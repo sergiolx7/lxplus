@@ -1,18 +1,12 @@
-LX Plus — Music Hub + Mobile Fix
+LX Plus — Music Playback + Intro Fix
 
-Principais mudanças
-- Área de música refeita em um layout escuro, compacto e inspirado em apps de streaming musical, mantendo identidade LX Plus.
-- Música por link: Spotify, YouTube/YouTube Music, playlist do YouTube, SoundCloud, Google Drive, Dropbox, OneDrive, Archive.org e HTTPS direto quando compatível.
-- Spotify aceita links de faixa, álbum, playlist, episódio e show.
-- Players oficiais incorporados para Spotify, YouTube, SoundCloud e Drive.
-- Cards de música mostram a fonte do conteúdo e continuam integrados à biblioteca, fila e histórico LX.
-- ADM agora oferece botões Spotify e SoundCloud para conteúdo do tipo Música.
-- Novo conteúdo de Música começa com Spotify selecionado por padrão; o administrador ainda pode trocar a fonte.
-- Splash corrigido com logo LX Plus embutida no HTML para não quebrar se a pasta de assets falhar no cache/publicação.
-- Ícones PWA também foram duplicados na raiz e o manifest aponta para a raiz, reduzindo falhas de ícone no app instalado.
-- Topo mobile compactado e reorganizado; ações secundárias saem do topo em telas pequenas e continuam acessíveis pelos menus/navegação inferior.
-- Player externo mobile vira um dock compacto acima da navegação inferior.
+- Abertura LX Plus com logo nítida durante todo o reveal; removido blur da marca.
+- Compatibilidade retroativa com links antigos do Spotify salvos como URL HTTPS.
+- Links Spotify agora abrem como Embed oficial interativo em vez de serem tratados como arquivo de áudio.
+- Player externo ganhou altura adequada para controles reais do Spotify e permissões encrypted-media/autoplay/fullscreen.
+- Cards de música não esticam quando existe só uma música no catálogo.
+- Clique no card musical abre diretamente a reprodução.
+- Fundo da área musical foi suavizado para não virar uma foto gigante.
+- Reconhecimento adicional de URLs antigas do YouTube, Drive e SoundCloud.
 
-Observações
-- Players externos seguem as regras do próprio provedor. Autoplay com som pode ser bloqueado pelo navegador até o usuário tocar no player.
-- Um link HTTPS genérico só toca diretamente quando o servidor de origem permite reprodução/embedding no navegador.
+Observação: navegadores podem bloquear autoplay. No Spotify, o usuário pode precisar tocar no botão Play dentro do Embed oficial.

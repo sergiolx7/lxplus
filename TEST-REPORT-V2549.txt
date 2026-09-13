@@ -1,0 +1,20 @@
+LX Plus — QA v25.49
+
+PASS — IDs únicos — []
+PASS — Logo externa nítida aplicada — 5 logos
+PASS — Sem logo antiga base64
+PASS — Iframe musical oficial presente
+PASS — Permissões do iframe musical
+PASS — Spotify URL legada reconhecida
+PASS — Spotify normalizado
+PASS — Spotify embed oficial
+PASS — Player externo com altura Spotify
+PASS — Card musical reproduz ao clicar
+PASS — Intro sem blur na marca
+PASS — Service Worker cacheia logo
+PASS — Manifest PWA válido
+PASS — Arquivos locais referenciados existem — []
+
+Resultado: 14/14 verificações aprovadas.
+
+Observação: o player do Spotify usa o Embed oficial. Autoplay pode ser bloqueado pelo navegador/Spotify; o usuário pode precisar tocar no ▶ dentro do player oficial.

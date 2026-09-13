@@ -1,9 +1,9 @@
-window.__LX_JS_BUILD='25.48';
+window.__LX_JS_BUILD='25.49';
 
-/* ===== config.js · LX Plus v25.48 ===== */
+/* ===== config.js · LX Plus v25.49 ===== */
 window.LX=window.LX||{};
 LX.config={
-  version:'25.48',
+  version:'25.49',
   environment:'cloud-ready',
   production:true,
   apiBase:'',
@@ -21,9 +21,9 @@ LX.config={
   features:{recommendations:true,preferenceProfile:true,premium:true,fuzzySearch:true,qualityGate:true,requests:true,ratings:true,analytics:true,tv:true,pwa:false,profileIdentity:true,appMode:true,cloudSync:true,realtime:true,cloudMedia:true,freeMediaStorage:true}
 };
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['config']='25.48';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['config']='25.49';
 
-/* ===== LX v25.48 resilient SDK loader ===== */
+/* ===== LX v25.49 resilient SDK loader ===== */
 (()=>{
   const LX=window.LX=window.LX||{};
   let sdkPromise=null;
@@ -35,7 +35,7 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['config']='25.48
   try{if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});if('caches'in window)caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))).catch(()=>{})}catch{}
 })();
 
-/* ===== store.js · LX Plus v25.48 ===== */
+/* ===== store.js · LX Plus v25.49 ===== */
 (()=>{const LX=window.LX;const PREFIX='lx16_',memory=new Map();
 const keys={accounts:'accounts',users:'users',catalog:'catalog',session:'session',history:'history',list:'list',theme:'theme',accent:'accent',notices:'notices',requests:'requests',ratings:'ratings',analytics:'analytics',publicLists:'publicLists',noticeReads:'noticeReads',preferences:'preferences',subscriptions:'subscriptions',profileStyles:'profileStyles',layoutMode:'layoutMode',motion:'motion',playerPrefs:'playerPrefs',globalBranding:'globalBranding',chatThreads:'chatThreads',stickers:'stickers',uiPrefs:'uiPrefs',chatPrefs:'chatPrefs'};
 const read=(k,d)=>{const key=PREFIX+k;try{const raw=localStorage.getItem(key);if(raw!=null){const x=JSON.parse(raw);memory.set(key,raw);return x??d}}catch{}try{if(memory.has(key)){const x=JSON.parse(memory.get(key));return x??d}}catch{}return d};
@@ -58,9 +58,9 @@ async function getMedia(key){if(!key)return null;const raw=String(key);if(raw.st
 async function putAsset(key,file,folder='assets'){if(LX.cloud?.enabled?.()){const mediaKey=await LX.cloud.uploadFile(key,file,folder);return LX.cloud.publicUrl(String(mediaKey).replace(/^cloud:/,''),LX.config.supabase?.assetBucket||'lx-assets')}return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
 LX.store={keys,read,write,writeLocal,putMedia,getMedia,putAsset,removeLocal,reset(){Object.values(keys).forEach(removeLocal)}}})();
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['store']='25.48';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['store']='25.49';
 
-/* ===== cloud.js · LX Plus v25.48 ===== */
+/* ===== cloud.js · LX Plus v25.49 ===== */
 (()=>{
 const LX=window.LX,S=LX.store;
 let client=null,currentAuth=null,currentProfile=null,adminDirectory=[],syncTimer=null,channels=[],catalogPollTimer=null,catalogSig='',userStateChannel=null;
@@ -208,9 +208,9 @@ function status(){return {configured:enabled(),connected:!!client,user:currentAu
 LX.cloud={enabled,db,user,profile,isAdmin,initPublic,signUp,resendConfirmation,signIn,resume,signOut,resetPassword,updatePassword,isRecoveryFlow,onLocalWrite,syncUserState,saveCatalog,upsertCatalogItem,deleteCatalogItem,saveUsers,saveBranding,requestOrVote,refreshRequests,updateRequestStatus,publishNotices,approveUser,setVerified,commitAdminChanges,rejectUser,deletePendingUser,setPremium,track,uploadFile,publicUrl,mediaUrl,removeUploadedPath,migrateLocalCatalog,status,hydrateUser,refreshBranding};
 })();
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['cloud']='25.48';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['cloud']='25.49';
 
-/* ===== r2-media.js · LX Plus v25.48 ===== */
+/* ===== r2-media.js · LX Plus v25.49 ===== */
 (()=>{
  const LX=window.LX=window.LX||{};
  let cachedStatus=null,statusAt=0;
@@ -244,10 +244,10 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['cloud']='25.48'
  function explain(e){const code=String(e?.code||e?.message||'');if(/R2_NOT_CONFIGURED|R2_INTEGRATION_INCOMPLETE/.test(code))return 'Configure o Cloudflare R2 em Mídia & Upload antes de enviar arquivos grandes.';if(/R2_UPLOAD_NETWORK/.test(code))return 'O R2 recusou o upload pelo navegador. Revise o CORS do bucket e teste a integração novamente.';if(/R2_UPLOAD_HTTP_403/.test(code))return 'O R2 recusou a gravação. Confira Access Key, Secret Key e permissão Object Read & Write.';if(/R2_UPLOAD_HTTP_/.test(code))return 'Falha ao enviar o arquivo para o R2.';return 'Falha no armazenamento de mídia.'}
  LX.r2={invoke,status,configured,uploadFile,mediaUrl,deleteFile,test,explain};
 })();
-window.__LX_MODULES['r2-media']='25.48';
+window.__LX_MODULES['r2-media']='25.49';
 
 
-/* ===== free-media-hub.js · LX Plus v25.48 =====
+/* ===== free-media-hub.js · LX Plus v25.49 =====
    Link adapters only. No provider password/token is ever stored in the public build. */
 (()=>{
  const LX=window.LX=window.LX||{};
@@ -258,7 +258,8 @@ window.__LX_MODULES['r2-media']='25.48';
  const driveId=v=>{v=clean(v);const a=v.match(/\/file\/d\/([a-zA-Z0-9_-]{10,})/),b=v.match(/[?&]id=([a-zA-Z0-9_-]{10,})/),c=v.match(/\/d\/([a-zA-Z0-9_-]{10,})/);return (a||b||c)?.[1]||''};
  const youtubeId=v=>{v=clean(v);let m=v.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/i)||v.match(/[?&]v=([a-zA-Z0-9_-]{11})/i)||v.match(/youtube(?:-nocookie)?\.com\/(?:embed|shorts)\/([a-zA-Z0-9_-]{11})/i);return m?.[1]||(/^[a-zA-Z0-9_-]{11}$/.test(v)?v:'')};
  const youtubePlaylistId=v=>{try{const u=new URL(clean(v));return u.searchParams.get('list')||''}catch{return''}};
- const spotifyRef=v=>{v=clean(v);let m=v.match(/^spotify:(track|album|playlist|episode|show):([A-Za-z0-9]+)$/i);if(m)return {type:m[1].toLowerCase(),id:m[2]};m=v.match(/open\.spotify\.com\/(?:intl-[^/]+\/)?(track|album|playlist|episode|show)\/([A-Za-z0-9]+)/i);return m?{type:m[1].toLowerCase(),id:m[2]}:null};
+ const spotifyRef=v=>{v=clean(v);let m=v.match(/^spotify:(track|album|playlist|episode|show|artist):([A-Za-z0-9]+)$/i);if(m)return {type:m[1].toLowerCase(),id:m[2]};m=v.match(/open\.spotify\.com\/(?:intl-[^/]+\/)?(track|album|playlist|episode|show|artist)\/([A-Za-z0-9]+)/i);return m?{type:m[1].toLowerCase(),id:m[2]}:null};
+ const spotifyDesc=r=>{const type=r?.type||'track',id=r?.id||'',height=['track','episode'].includes(type)?152:352;return {kind:'embed',provider:'Spotify',label:'Spotify',src:`https://open.spotify.com/embed/${encodeURIComponent(type)}/${encodeURIComponent(id)}?utm_source=generator&theme=0`,openUrl:`https://open.spotify.com/${encodeURIComponent(type)}/${encodeURIComponent(id)}`,embedHeight:height,spotifyUri:`spotify:${type}:${id}`}};
  const soundcloudUrl=v=>{const u=https(v);if(!u||!/(^|\.)soundcloud\.com$/i.test(u.hostname)&&!/(^|\.)on\.soundcloud\.com$/i.test(u.hostname))return'';return u.toString()};
  const archiveId=v=>{v=clean(v);const m=v.match(/archive\.org\/(?:details|embed)\/([^/?#]+)/i);return m?.[1]||''};
  function normalize(provider,value){
@@ -276,7 +277,7 @@ window.__LX_MODULES['r2-media']='25.48';
    return id?`youtube:${id}`:`youtube-playlist:${list}`;
   }
   if(provider==='spotify'){
-   const r=spotifyRef(value);if(!r)fail('SPOTIFY_LINK_INVALID','Cole um link do Spotify para música, álbum, playlist, episódio ou show.');
+   const r=spotifyRef(value);if(!r)fail('SPOTIFY_LINK_INVALID','Cole um link do Spotify para música, álbum, playlist, artista, episódio ou show.');
    return `spotify:${r.type}:${r.id}`;
   }
   if(provider==='soundcloud'){
@@ -298,13 +299,22 @@ window.__LX_MODULES['r2-media']='25.48';
  }
  function describe(ref){
   const raw=clean(ref);if(!raw)return {kind:'missing',provider:'Sem mídia',label:'Sem mídia'};
-  if(raw.startsWith('gdrive:')){const id=raw.slice(7),src=`https://drive.google.com/file/d/${encodeURIComponent(id)}/preview`;return {kind:'embed',provider:'Google Drive',label:'Google Drive Player',src,previewSrc:src,openUrl:`https://drive.google.com/file/d/${encodeURIComponent(id)}/view`,driveId:id}};
-  if(raw.startsWith('youtube-playlist:')){const id=raw.slice(17);return {kind:'embed',provider:'YouTube',label:'YouTube Playlist',src:`https://www.youtube.com/embed/videoseries?list=${encodeURIComponent(id)}&autoplay=1&rel=0&playsinline=1`,openUrl:`https://www.youtube.com/playlist?list=${encodeURIComponent(id)}`}};
-  if(raw.startsWith('youtube:')){const id=raw.slice(8);return {kind:'embed',provider:'YouTube',label:'YouTube',src:`https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1`,openUrl:`https://www.youtube.com/watch?v=${encodeURIComponent(id)}`}};
-  if(raw.startsWith('spotify:')){const [,type,id]=raw.split(':');return {kind:'embed',provider:'Spotify',label:'Spotify',src:`https://open.spotify.com/embed/${encodeURIComponent(type||'track')}/${encodeURIComponent(id||'')}?utm_source=generator&theme=0`,openUrl:`https://open.spotify.com/${encodeURIComponent(type||'track')}/${encodeURIComponent(id||'')}`}};
-  if(raw.startsWith('soundcloud:')){const openUrl=decodeURIComponent(raw.slice(11));return {kind:'embed',provider:'SoundCloud',label:'SoundCloud',src:`https://w.soundcloud.com/player/?url=${encodeURIComponent(openUrl)}&color=%238a2be2&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=false`,openUrl}};
-  if(raw.startsWith('onedrive:')){const src=decodeURIComponent(raw.slice(9));return {kind:'embed',provider:'OneDrive',label:'OneDrive',src,openUrl:src}};
-  if(raw.startsWith('archive:')){const id=decodeURIComponent(raw.slice(8));return {kind:'embed',provider:'Internet Archive',label:'Archive.org',src:`https://archive.org/embed/${encodeURIComponent(id)}?autoplay=1`,openUrl:`https://archive.org/details/${encodeURIComponent(id)}`}};
+  // Backward compatibility: older catalog rows may contain the original provider URL
+  // instead of the normalized lx media key. Detect those URLs before treating HTTPS as direct audio.
+  if(/^https?:\/\//i.test(raw)){
+   const sp=spotifyRef(raw);if(sp)return spotifyDesc(sp);
+   const yid=youtubeId(raw),ylist=youtubePlaylistId(raw);if(yid)return {kind:'embed',provider:'YouTube',label:'YouTube',src:`https://www.youtube.com/embed/${encodeURIComponent(yid)}?autoplay=1&rel=0&playsinline=1`,openUrl:`https://www.youtube.com/watch?v=${encodeURIComponent(yid)}`,embedHeight:152};
+   if(ylist&&/(?:youtube\.com|youtu\.be|music\.youtube\.com)/i.test(raw))return {kind:'embed',provider:'YouTube',label:'YouTube Playlist',src:`https://www.youtube.com/embed/videoseries?list=${encodeURIComponent(ylist)}&autoplay=1&rel=0&playsinline=1`,openUrl:`https://www.youtube.com/playlist?list=${encodeURIComponent(ylist)}`,embedHeight:220};
+   const did=driveId(raw);if(did&&/drive\.google\.com/i.test(raw)){const src=`https://drive.google.com/file/d/${encodeURIComponent(did)}/preview`;return {kind:'embed',provider:'Google Drive',label:'Google Drive Player',src,previewSrc:src,openUrl:`https://drive.google.com/file/d/${encodeURIComponent(did)}/view`,driveId:did,embedHeight:180}};
+   const scu=soundcloudUrl(raw);if(scu)return {kind:'embed',provider:'SoundCloud',label:'SoundCloud',src:`https://w.soundcloud.com/player/?url=${encodeURIComponent(scu)}&color=%238a2be2&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=false`,openUrl:scu,embedHeight:166};
+  }
+  if(raw.startsWith('gdrive:')){const id=raw.slice(7),src=`https://drive.google.com/file/d/${encodeURIComponent(id)}/preview`;return {kind:'embed',provider:'Google Drive',label:'Google Drive Player',src,previewSrc:src,openUrl:`https://drive.google.com/file/d/${encodeURIComponent(id)}/view`,driveId:id,embedHeight:180}};
+  if(raw.startsWith('youtube-playlist:')){const id=raw.slice(17);return {kind:'embed',provider:'YouTube',label:'YouTube Playlist',src:`https://www.youtube.com/embed/videoseries?list=${encodeURIComponent(id)}&autoplay=1&rel=0&playsinline=1`,openUrl:`https://www.youtube.com/playlist?list=${encodeURIComponent(id)}`,embedHeight:220}};
+  if(raw.startsWith('youtube:')){const id=raw.slice(8);return {kind:'embed',provider:'YouTube',label:'YouTube',src:`https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1`,openUrl:`https://www.youtube.com/watch?v=${encodeURIComponent(id)}`,embedHeight:152}};
+  if(raw.startsWith('spotify:')){const [,type,id]=raw.split(':');return spotifyDesc({type,id})};
+  if(raw.startsWith('soundcloud:')){const openUrl=decodeURIComponent(raw.slice(11));return {kind:'embed',provider:'SoundCloud',label:'SoundCloud',src:`https://w.soundcloud.com/player/?url=${encodeURIComponent(openUrl)}&color=%238a2be2&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=false`,openUrl,embedHeight:166}};
+  if(raw.startsWith('onedrive:')){const src=decodeURIComponent(raw.slice(9));return {kind:'embed',provider:'OneDrive',label:'OneDrive',src,openUrl:src,embedHeight:180}};
+  if(raw.startsWith('archive:')){const id=decodeURIComponent(raw.slice(8));return {kind:'embed',provider:'Internet Archive',label:'Archive.org',src:`https://archive.org/embed/${encodeURIComponent(id)}?autoplay=1`,openUrl:`https://archive.org/details/${encodeURIComponent(id)}`,embedHeight:220}};
   if(raw.startsWith('dropbox:')){const src=decodeURIComponent(raw.slice(8));return {kind:'direct',provider:'Dropbox',label:'Dropbox',src,openUrl:src}};
   if(raw.startsWith('r2:'))return {kind:'native',provider:'Cloudflare R2',label:'Cloudflare R2'};
   if(raw.startsWith('cloud:'))return {kind:'native',provider:'Supabase',label:'Supabase Storage'};
@@ -314,13 +324,13 @@ window.__LX_MODULES['r2-media']='25.48';
  function directUrl(ref){const d=describe(ref);return d.kind==='direct'?d.src:null}
  function label(ref){return describe(ref).label}
  function toInput(ref){const raw=clean(ref);if(raw.startsWith('gdrive:'))return `https://drive.google.com/file/d/${raw.slice(7)}/view`;if(raw.startsWith('youtube-playlist:'))return `https://www.youtube.com/playlist?list=${raw.slice(17)}`;if(raw.startsWith('youtube:'))return `https://www.youtube.com/watch?v=${raw.slice(8)}`;if(raw.startsWith('spotify:')){const [,type,id]=raw.split(':');return `https://open.spotify.com/${type}/${id}`}if(raw.startsWith('soundcloud:'))return decodeURIComponent(raw.slice(11));if(raw.startsWith('onedrive:'))return decodeURIComponent(raw.slice(9));if(raw.startsWith('archive:'))return `https://archive.org/details/${decodeURIComponent(raw.slice(8))}`;if(raw.startsWith('dropbox:'))return decodeURIComponent(raw.slice(8)).replace(/([?&])raw=1(?:&|$)/,'$1').replace(/[?&]$/,'');return /^https:\/\//i.test(raw)?raw:''}
- function modeFor(ref){const raw=clean(ref);if(raw.startsWith('gdrive:'))return'gdrive';if(raw.startsWith('dropbox:'))return'dropbox';if(raw.startsWith('youtube:')||raw.startsWith('youtube-playlist:'))return'youtube';if(raw.startsWith('spotify:'))return'spotify';if(raw.startsWith('soundcloud:'))return'soundcloud';if(raw.startsWith('onedrive:'))return'onedrive';if(raw.startsWith('archive:'))return'archive';if(/^https:\/\//i.test(raw))return'direct';return'upload'}
+ function modeFor(ref){const raw=clean(ref);if(raw.startsWith('gdrive:'))return'gdrive';if(raw.startsWith('dropbox:'))return'dropbox';if(raw.startsWith('youtube:')||raw.startsWith('youtube-playlist:'))return'youtube';if(raw.startsWith('spotify:'))return'spotify';if(raw.startsWith('soundcloud:'))return'soundcloud';if(raw.startsWith('onedrive:'))return'onedrive';if(raw.startsWith('archive:'))return'archive';if(/^https?:\/\//i.test(raw)){if(spotifyRef(raw))return'spotify';if(youtubeId(raw)||youtubePlaylistId(raw))return'youtube';if(driveId(raw)&&/drive\.google\.com/i.test(raw))return'gdrive';if(soundcloudUrl(raw))return'soundcloud';return'direct'}return'upload'}
  const info={
   upload:{label:'Enviar arquivo',placeholder:'',help:'Upload pelo LX. Arquivos grandes usam R2 quando o R2 estiver configurado.'},
   gdrive:{label:'Google Drive',placeholder:'https://drive.google.com/file/d/.../view',help:'No Drive: Compartilhar → Acesso geral → Qualquer pessoa com o link → Leitor. Conteúdos do Drive usam sempre o player oficial do Google dentro da LX Plus, com melhor compatibilidade. O Google ainda pode precisar processar arquivos recém-enviados.'},
   dropbox:{label:'Dropbox',placeholder:'https://www.dropbox.com/scl/fi/...',help:'Cole o link compartilhado. A LX Plus converte automaticamente para raw=1 para reprodução direta quando o navegador permitir.'},
   youtube:{label:'YouTube / YouTube Music',placeholder:'https://youtu.be/... ou https://music.youtube.com/watch?v=...',help:'Aceita vídeo, YouTube Music e playlist pública/não listada. A reprodução usa o player oficial do YouTube.'},
-  spotify:{label:'Spotify',placeholder:'https://open.spotify.com/track/...',help:'Cole um link de música, álbum, playlist, episódio ou show. A reprodução usa o player oficial incorporado do Spotify.'},
+  spotify:{label:'Spotify',placeholder:'https://open.spotify.com/track/...',help:'Cole um link de música, álbum, playlist, artista, episódio ou show. A LX Plus abre o player oficial interativo do Spotify; não tenta reproduzir a página do Spotify como se fosse um arquivo de áudio.'},
   soundcloud:{label:'SoundCloud',placeholder:'https://soundcloud.com/artista/faixa',help:'Cole um link público do SoundCloud. A reprodução usa o player oficial incorporado.'},
   onedrive:{label:'OneDrive',placeholder:'Cole o URL de Incorporar ou o <iframe ...>',help:'No OneDrive: Mais → Incorporar → Gerar. Cole o URL do src ou o iframe inteiro.'},
   archive:{label:'Archive.org',placeholder:'https://archive.org/details/identificador',help:'Aceita links details ou embed do Internet Archive. Use somente conteúdo permitido pela fonte.'},
@@ -330,7 +340,7 @@ window.__LX_MODULES['r2-media']='25.48';
  function preview(provider,value){const key=normalize(provider,value),d=describe(key);return {key,...d}}
  LX.mediaSources={normalize,describe,directUrl,label,toInput,modeFor,info,allowedFor,preview,providers:['upload','gdrive','dropbox','youtube','spotify','soundcloud','onedrive','archive','direct']};
 })();
-window.__LX_MODULES['free-media-hub']='25.48';
+window.__LX_MODULES['free-media-hub']='25.49';
 
 /* ===== services.js · LX Plus v25.36 ===== */
 (()=>{const LX=window.LX,S=LX.store,$=id=>document.getElementById(id);
@@ -448,7 +458,7 @@ function rail(title,sub,a,progress=false,top10=false){if(!a.length)return'';cons
 
 function musicArt(x){return x.cover||x.banner||''}
 function musicProvider(x){const ref=x?.tracks?.find?.(t=>t.mediaKey)?.mediaKey||x?.mediaKey||'';return LX.mediaSources?.label?.(ref)||'LX Music'}
-function musicAlbumCard(x){const tracks=x.tracks?.length||1,provider=musicProvider(x);return `<button class="lx-music-album" onclick="LX.openMusicAlbum(${x.id})"><span class="lx-music-art" style="background-image:url('${musicArt(x)}')"><em>${esc(provider)}</em><i>▶</i></span><strong>${esc(x.title)}</strong><small>${esc(x.artist||'LX Music')} · ${tracks} ${tracks===1?'faixa':'faixas'}</small></button>`}
+function musicAlbumCard(x){const tracks=x.tracks?.length||1,provider=musicProvider(x);return `<button class="lx-music-album" onclick="LX.music(${x.id},0)" title="Reproduzir ${esc(x.title)}"><span class="lx-music-art" style="background-image:url('${musicArt(x)}')"><em>${esc(provider)}</em><i>▶</i></span><strong>${esc(x.title)}</strong><small>${esc(x.artist||'LX Music')} · ${tracks} ${tracks===1?'faixa':'faixas'}</small></button>`}
 function renderMusicExperience(){
  const a=items(),h=D.history(),userName=String(state.profile?.name||state.user?.name||'').trim().split(/\s+/)[0]||'você';
  $('hero').innerHTML='';$('welcome').innerHTML='';
@@ -1142,10 +1152,10 @@ async function read(id,ch=0){
 let musicObjectUrl=null,musicRepeatMode=0,musicShuffleMode=false,musicSaveAt=0;
 function openMusicAlbum(id){const x=D.catalog().find(i=>i.id===id);if(!x)return;const tracks=(x.tracks?.length?x.tracks:(x.mediaKey?[{title:x.title,mediaKey:x.mediaKey,duration:0}]:[]));$('modal').innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="lx-album-page"><header><div class="lx-album-cover" style="background-image:url('${x.cover||''}')"></div><div><span class="eyebrow">${tracks.length>1?'ÁLBUM':'MÚSICA'} · LX MUSIC</span><h2>${esc(x.title)}</h2><p>${esc(x.artist||'LX Music')} · ${x.year||''} · ${esc(x.genre||'Música')}</p><div class="hero-actions"><button class="primary-btn" onclick="LX.music(${id},0)">▶ Reproduzir</button><button class="secondary-btn" onclick="LX.musicShuffleAlbum(${id})">⇄ Embaralhar</button></div></div></header><div class="lx-track-list">${tracks.map((t,i)=>`<button onclick="LX.music(${id},${i})"><b>${i+1}</b><span><strong>${esc(t.title||`Faixa ${i+1}`)}</strong><small>${esc(t.artist||x.artist||'LX Music')}</small></span><em>${LX.fmt(t.duration||0)}</em><i>▶</i></button>`).join('')||'<div class="notice">Nenhuma faixa enviada ainda.</div>'}</div></div>`;$('overlay').classList.remove('hidden')}
 function music(id,index=0,autoplay=true){const x=D.catalog().find(i=>i.id===id);if(!x)return;D.track('music',{id,title:x.title});const tracks=x.tracks?.length?x.tracks:(x.mediaKey?[{number:1,title:x.title,duration:0,mediaKey:x.mediaKey}]:[]);state.musicQueue=tracks.map((t,i)=>({...t,contentId:id,index:i,artist:t.artist||x.artist||'LX Music',cover:t.cover||x.cover||'',album:x.title}));state.musicIndex=Math.max(0,Math.min(index,state.musicQueue.length-1));$('musicDock').classList.remove('hidden');loadTrack(autoplay)}
-function resetMusicProvider(){const dock=$('musicDock'),panel=$('musicProviderPanel'),frame=$('musicProviderFrame');dock?.classList.remove('external-provider');panel?.classList.add('hidden');if(frame)frame.removeAttribute('src')}
+function resetMusicProvider(){const dock=$('musicDock'),panel=$('musicProviderPanel'),frame=$('musicProviderFrame');dock?.classList.remove('external-provider','provider-spotify','provider-youtube','provider-soundcloud','provider-drive');panel?.classList.add('hidden');panel?.style.removeProperty('--provider-height');if(frame){frame.removeAttribute('src');frame.style.removeProperty('height');frame.removeAttribute('data-provider')}}
 async function loadTrack(autoplay=false){const t=state.musicQueue[state.musicIndex];if(!t)return;const a=$('musicAudio'),dock=$('musicDock'),panel=$('musicProviderPanel'),frame=$('musicProviderFrame'),providerLabel=$('musicProviderLabel');$('musicTitle').textContent=t.title||'Faixa';$('musicArtist').textContent=t.artist||'LX Music';$('musicCover').style.backgroundImage=`url('${t.cover||''}')`;dock?.style.setProperty('--music-cover',`url("${String(t.cover||'').replace(/"/g,'%22')}")`);$('musicProgress').value=0;$('musicTime').textContent='0:00';$('musicDuration').textContent=LX.fmt(t.duration||0);a.pause();a.removeAttribute('src');if(musicObjectUrl?.startsWith?.('blob:'))try{URL.revokeObjectURL(musicObjectUrl)}catch{}musicObjectUrl=null;resetMusicProvider();
  const source=LX.mediaSources?.describe?.(t.mediaKey||'');
- if(source?.kind==='embed'&&source.src){dock?.classList.add('external-provider');panel?.classList.remove('hidden');if(frame){frame.src=source.src;frame.title=`${source.provider} · ${t.title||'Música'}`}if(providerLabel)providerLabel.textContent=`Reproduzindo pelo player oficial · ${source.provider}`;$('musicDuration').textContent=source.provider;updateMusicUI();return}
+ if(source?.kind==='embed'&&source.src){const h=Math.max(120,Math.min(352,+source.embedHeight||152)),cls=String(source.provider||'').toLowerCase().includes('spotify')?'provider-spotify':String(source.provider||'').toLowerCase().includes('youtube')?'provider-youtube':String(source.provider||'').toLowerCase().includes('soundcloud')?'provider-soundcloud':String(source.provider||'').toLowerCase().includes('drive')?'provider-drive':'';dock?.classList.add('external-provider');if(cls)dock?.classList.add(cls);panel?.classList.remove('hidden');panel?.style.setProperty('--provider-height',`${h}px`);if(frame){frame.style.height=`${h}px`;frame.dataset.provider=source.provider||'';frame.src=source.src;frame.title=`${source.provider} · ${t.title||'Música'}`;frame.setAttribute('allow','autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture')}if(providerLabel)providerLabel.textContent=source.provider==='Spotify'?'Player oficial do Spotify · toque em ▶ para ouvir':`Player oficial · ${source.provider}`;$('musicDuration').textContent=source.provider;updateMusicUI();return}
  if(t.mediaKey){try{const b=await S.getMedia(t.mediaKey);if(b){const src=typeof b==='string'?b:URL.createObjectURL(b);musicObjectUrl=src.startsWith?.('blob:')?src:null;a.src=src;a.load();if(autoplay)await a.play().catch(()=>{})}}catch(err){console.warn(err);LX.toast('Não foi possível carregar esta faixa.')}}else if(t.previewUrl){a.src=t.previewUrl;a.load();if(autoplay)await a.play().catch(()=>{})}updateMusicUI()}
 function updateMusicUI(){const a=$('musicAudio'),external=$('musicDock')?.classList.contains('external-provider');$('musicPlay').textContent=external?'♫':(a.paused?'▶':'❚❚');$('musicPlay').title=external?'Use o player oficial acima':'Reproduzir';$('musicShuffle').classList.toggle('active',musicShuffleMode);$('musicRepeat').classList.toggle('active',musicRepeatMode>0);$('musicRepeat').textContent=musicRepeatMode===2?'↻1':'↻'}
 function musicNext(auto=true){if(!state.musicQueue.length)return;if(musicShuffleMode&&state.musicQueue.length>1){let n=state.musicIndex;while(n===state.musicIndex)n=Math.floor(Math.random()*state.musicQueue.length);state.musicIndex=n}else state.musicIndex=(state.musicIndex+1)%state.musicQueue.length;loadTrack(auto)}
@@ -1153,7 +1163,7 @@ function musicPrev(){if(!state.musicQueue.length)return;state.musicIndex=(state.
 function openMusicQueue(){$('modal').innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page lx-queue-page"><div class="panel-head"><div><span class="eyebrow">LX MUSIC</span><h2>Fila de reprodução</h2><p>${state.musicQueue.length} faixas na fila.</p></div></div><div class="lx-track-list">${state.musicQueue.map((t,i)=>`<button class="${i===state.musicIndex?'active':''}" onclick="LX.musicQueuePlay(${i})"><b>${i+1}</b><span><strong>${esc(t.title)}</strong><small>${esc(t.artist)}</small></span><em>${LX.fmt(t.duration||0)}</em><i>${i===state.musicIndex?'♫':'▶'}</i></button>`).join('')}</div></div>`;$('overlay').classList.remove('hidden')}
 function saveMusicProgress(){const a=$('musicAudio'),t=state.musicQueue[state.musicIndex];if(!t||!a.duration)return;const h=D.history();h[t.contentId]={...(h[t.contentId]||{}),progress:a.currentTime/a.duration*100,position:a.currentTime,duration:a.duration,musicIndex:state.musicIndex,opened:Date.now()};S.write(S.keys.history,h)}
 
-$('musicPlay').onclick=()=>{if($('musicDock')?.classList.contains('external-provider'))return LX.toast('Use o player oficial incorporado para reproduzir ou pausar.');const a=$('musicAudio');if(!a.src)return LX.toast('Esta faixa não possui áudio enviado nem preview oficial disponível.');a.paused?a.play().catch(()=>{}):a.pause()};$('musicPrev').onclick=musicPrev;$('musicNext').onclick=()=>musicNext(true);$('musicProviderPrev')&&($('musicProviderPrev').onclick=musicPrev);$('musicProviderNext')&&($('musicProviderNext').onclick=()=>musicNext(true));$('musicClose').onclick=()=>{$('musicAudio').pause();resetMusicProvider();$('musicDock').classList.add('hidden')};$('musicShuffle').onclick=()=>{musicShuffleMode=!musicShuffleMode;updateMusicUI()};$('musicRepeat').onclick=()=>{musicRepeatMode=(musicRepeatMode+1)%3;updateMusicUI()};$('musicQueueBtn').onclick=openMusicQueue;$('musicCoverBtn').onclick=()=>{const t=state.musicQueue[state.musicIndex];if(t)LX.openMusicAlbum(t.contentId)};$('musicVolume').oninput=()=>{$('musicAudio').volume=+$('musicVolume').value};$('musicAudio').onloadedmetadata=()=>{$('musicDuration').textContent=LX.fmt($('musicAudio').duration||0)};$('musicAudio').onplay=updateMusicUI;$('musicAudio').onpause=()=>{saveMusicProgress();updateMusicUI()};$('musicAudio').ontimeupdate=()=>{const a=$('musicAudio');if(a.duration){$('musicProgress').value=a.currentTime/a.duration*100;$('musicTime').textContent=LX.fmt(a.currentTime);$('musicDuration').textContent=LX.fmt(a.duration);if(Date.now()-musicSaveAt>5000){musicSaveAt=Date.now();saveMusicProgress()}}};$('musicAudio').onended=()=>{saveMusicProgress();if(musicRepeatMode===2){$('musicAudio').currentTime=0;$('musicAudio').play().catch(()=>{})}else if(musicRepeatMode===1||state.musicIndex<state.musicQueue.length-1)musicNext(true);else updateMusicUI()};$('musicProgress').oninput=()=>{const a=$('musicAudio');if(a.duration)a.currentTime=+$('musicProgress').value/100*a.duration};
+$('musicPlay').onclick=()=>{if($('musicDock')?.classList.contains('external-provider')){const panel=$('musicProviderPanel'),frame=$('musicProviderFrame');panel?.scrollIntoView?.({behavior:'smooth',block:'nearest'});frame?.focus?.();return LX.toast(frame?.dataset?.provider==='Spotify'?'Toque no ▶ do player do Spotify para iniciar a música.':'Use o player oficial incorporado para reproduzir ou pausar.')}const a=$('musicAudio');if(!a.src)return LX.toast('Esta faixa não possui áudio enviado nem preview oficial disponível.');a.paused?a.play().catch(()=>{}):a.pause()};$('musicPrev').onclick=musicPrev;$('musicNext').onclick=()=>musicNext(true);$('musicProviderPrev')&&($('musicProviderPrev').onclick=musicPrev);$('musicProviderNext')&&($('musicProviderNext').onclick=()=>musicNext(true));$('musicClose').onclick=()=>{$('musicAudio').pause();resetMusicProvider();$('musicDock').classList.add('hidden')};$('musicShuffle').onclick=()=>{musicShuffleMode=!musicShuffleMode;updateMusicUI()};$('musicRepeat').onclick=()=>{musicRepeatMode=(musicRepeatMode+1)%3;updateMusicUI()};$('musicQueueBtn').onclick=openMusicQueue;$('musicCoverBtn').onclick=()=>{const t=state.musicQueue[state.musicIndex];if(t)LX.openMusicAlbum(t.contentId)};$('musicVolume').oninput=()=>{$('musicAudio').volume=+$('musicVolume').value};$('musicAudio').onloadedmetadata=()=>{$('musicDuration').textContent=LX.fmt($('musicAudio').duration||0)};$('musicAudio').onplay=updateMusicUI;$('musicAudio').onpause=()=>{saveMusicProgress();updateMusicUI()};$('musicAudio').ontimeupdate=()=>{const a=$('musicAudio');if(a.duration){$('musicProgress').value=a.currentTime/a.duration*100;$('musicTime').textContent=LX.fmt(a.currentTime);$('musicDuration').textContent=LX.fmt(a.duration);if(Date.now()-musicSaveAt>5000){musicSaveAt=Date.now();saveMusicProgress()}}};$('musicAudio').onended=()=>{saveMusicProgress();if(musicRepeatMode===2){$('musicAudio').currentTime=0;$('musicAudio').play().catch(()=>{})}else if(musicRepeatMode===1||state.musicIndex<state.musicQueue.length-1)musicNext(true);else updateMusicUI()};$('musicProgress').oninput=()=>{const a=$('musicAudio');if(a.duration)a.currentTime=+$('musicProgress').value/100*a.duration};
 function openRequests(){const mine=D.requests().filter(x=>(x.voters||[]).includes(state.user?.email)||x.userEmail===state.user?.email).sort((a,b)=>b.created-a.created);$('modal').innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page"><div class="panel-head"><div><span class="eyebrow">CENTRAL LX</span><h2>Pedidos & Problemas</h2><p>Pedidos iguais são agrupados para mostrar ao ADM o que a comunidade mais quer.</p></div></div><div class="request-grid"><div class="request-card"><strong>Novo pedido</strong><small>Filme, série, anime, dorama, livro ou música.</small><form id="reqForm" class="request-form"><label>Tipo<select id="reqMedia"><option>Filme</option><option>Série</option><option>Anime</option><option>Dorama</option><option>Livro</option><option>Música</option></select></label><label>Nome<input id="reqTitle" required></label><label>Observação<textarea id="reqMsg" rows="3"></textarea></label><button class="primary-btn">Enviar pedido</button></form></div><div class="request-card"><strong>Relatar problema</strong><small>Vídeo, episódio, livro, música, conta ou outro erro.</small><form id="problemForm" class="request-form"><label>Área<select id="problemMedia"><option>Filme</option><option>Série</option><option>Anime</option><option>Dorama</option><option>Livro</option><option>Música</option><option>Conta / Perfil</option><option>Outro</option></select></label><label>Onde está o problema?<input id="problemTitle" required></label><label>Descrição<textarea id="problemMsg" required rows="3"></textarea></label><button class="primary-btn">Enviar problema</button></form></div></div><h3>Minhas solicitações</h3><div class="user-request-list">${mine.length?mine.map(x=>`<div class="user-request-row"><span>${x.kind==='Pedido'?'＋':'!'}</span><div><strong>${esc(x.title)}</strong><small style="display:block;color:var(--muted)">${esc(x.kind)} · ${esc(x.mediaType)} · ▲ ${x.votes||1}</small></div><b>${esc(x.status)}</b></div>`).join(''):'<div class="notice">Você ainda não enviou solicitações.</div>'}</div></div>`;$('overlay').classList.remove('hidden');$('reqForm').onsubmit=e=>{e.preventDefault();addRequest('Pedido',$('reqMedia').value,$('reqTitle').value,$('reqMsg').value);openRequests()};$('problemForm').onsubmit=e=>{e.preventDefault();addRequest('Problema',$('problemMedia').value,$('problemTitle').value,$('problemMsg').value);openRequests()}}
 function addRequest(kind,mediaType,title,message){const r={id:Date.now(),kind,mediaType,title:title.trim(),message:(message||'').trim(),status:'Novo',created:Date.now(),userEmail:state.user?.email||'',userName:state.profile?.name||state.user?.name||'Usuário'};const z=D.addOrVoteRequest(r);D.track('request',{kind,mediaType,title:r.title,merged:z.merged});LX.toast(z.merged?'Esse pedido já existia: seu voto foi somado.':kind==='Pedido'?'Pedido enviado ao ADM.':'Problema enviado ao ADM.')}
 function openRanking(){const u=D.users().filter(x=>x.visible!==false),score=x=>state.rankingKind==='Assistiu'?x.watched:state.rankingKind==='Ouviu'?x.listened:state.rankingKind==='Leu'?x.read*10:(x.watched+x.listened+x.read*6),rows=[...u].sort((a,b)=>score(b)-score(a));$('modal').innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page"><div class="panel-head"><div><span class="eyebrow">COMUNIDADE</span><h2>Ranking LX</h2><p>Participação opcional e controlada pelo usuário.</p></div></div><div class="tabs">${['Semanal','Mensal','Geral'].map(x=>`<button class="${x===state.rankingPeriod?'active':''}" onclick="LX.rankPeriod('${x}')">${x}</button>`).join('')}</div><div class="tabs">${['Geral','Assistiu','Ouviu','Leu'].map(x=>`<button class="${x===state.rankingKind?'active':''}" onclick="LX.rankKind('${x}')">${x}</button>`).join('')}</div><div class="ranking-table">${rows.map((x,i)=>`<div class="rank-row"><span class="position">#${i+1}</span><div><strong>${LX.verified(x.name,x.verified)}</strong><small style="display:block;color:var(--muted)">${x.streak||0} dias seguidos</small></div><b>${Math.round(score(x))} pts</b></div>`).join('')}</div></div>`;$('overlay').classList.remove('hidden')}
@@ -1198,7 +1208,7 @@ try{const u=new URL(location.href);if(u.searchParams.has('lxbuild')||u.searchPar
 window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['app']='25.35';
 
 /* =====================================================================
-   LX Plus v25.48 — Drive Quality + Next Episode
+   LX Plus v25.49 — Drive Quality + Next Episode
    Non-destructive enhancement layer over the stable v25.37 core.
    ===================================================================== */
 (()=>{
@@ -1206,7 +1216,7 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['app']='25.35';
   if(!U||!D||!S||window.__LX_V2538)return;
   window.__LX_V2538=true;
   const $=id=>document.getElementById(id), esc=s=>U.esc?U.esc(s):String(s??'');
-  const V={version:'25.48',errors:[],searchSeq:0,decorateQueued:false};
+  const V={version:'25.49',errors:[],searchSeq:0,decorateQueued:false};
   LX.v2538=V;
 
   // Keep a short, local diagnostic trail for the ADM health card. Never ships logs anywhere.

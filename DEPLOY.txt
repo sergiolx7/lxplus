@@ -1,20 +1,11 @@
 PUBLICAÇÃO LX PLUS
 
-Publique/substitua TODOS os arquivos desta pasta na raiz do site, incluindo:
+Substitua TODOS os arquivos desta pasta no host, principalmente:
 - index.html
 - app.css
 - lxplus.js
-- manifest.webmanifest
 - service-worker.js
-- app-icon-192.png
-- app-icon-512.png
-- app-icon-maskable-512.png
-- lxplus-wordmark.webp
-- pasta assets/
-- CNAME (se o domínio atual usa este arquivo)
+- manifest.webmanifest
+- ícones e assets
 
-Depois da publicação:
-1. Abra o site.
-2. Faça Ctrl+F5 uma vez no computador.
-3. No celular, feche e abra o app/site novamente.
-4. Se o PWA antigo continuar com ícone antigo, remova o atalho/app instalado e instale novamente pelo botão “Baixar app”.
+Depois: Ctrl+F5 no desktop. Em PWA instalado, feche e reabra o app para o Service Worker atualizar.
