@@ -1,14 +1,17 @@
-LX Plus v25.57 — Testes locais
+LX Plus v25.58 — Relatório de validação
 
 OK — node --check lxplus.js
 OK — node --check service-worker.js
 OK — HTML sem IDs duplicados
 OK — referências locais do HTML sem arquivos ausentes
 OK — chaves CSS balanceadas
-OK — service worker/cache atualizado para lxplus-shell-2557
-OK — desktop rail presente
-OK — right music rail presente
-OK — splash orbital presente
+OK — versões e cache alinhados em 25.58 / lxplus-shell-2558
+OK — syncPremiumShell exportada e protegida contra falha opcional
+OK — fluxo simulado: abertura > login aprovado > tela principal
+OK — navegação simulada da barra lateral: Assistir > Ouvir
+OK — visualizador canvas inicializa sem ReferenceError
+OK — somente uma logo do app permanece visível no desktop largo
+OK — logo da abertura usa arquivo transparente em alta resolução
 
-Limitação do ambiente
-O Chromium headless deste ambiente ficou preso em erros de DBus e não gerou a captura visual automatizada. Por isso, não afirmo teste visual automatizado de navegador nesta build.
+Validação visual automatizada
+O navegador Chromium não pôde ser baixado neste ambiente. A composição foi validada por estrutura, dimensões responsivas e carregamento dos arquivos; o fluxo funcional foi executado em DOM de navegador simulado.

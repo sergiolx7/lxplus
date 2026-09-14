@@ -1,14 +1,21 @@
-LX Plus v25.57 — Premium Shell + Spotify Music
+LX Plus v25.58 — Login + Brand Stability
 
-Principais mudanças
-- Entrada antes do login refeita com fundo escuro, arco luminoso, bolinha/carinha orbitando e logo LX Plus surgindo em 3D.
-- Desktop ganhou barra lateral esquerda para escolher formato: Assistir, Ouvir, Ler e Ao vivo.
-- Desktop ganhou painel lateral direito focado em música, inspirado na organização de apps como Spotify, mas mantendo identidade LX Plus.
-- Painel direito mostra capa, faixa atual, artista, progresso, controles e atalhos musicais.
-- Modais de filmes/séries ficaram mais limpos, com tipografia menor e leitura mais próxima de apps premium de streaming.
-- Modal musical/álbum ficou mais compacto e organizado.
-- Mobile preservado: as duas barras laterais só aparecem em telas grandes.
-- Cache atualizado para v25.57.
+Correções principais
+- Corrigido o erro “syncPremiumShell is not defined” que impedia a entrada após o login.
+- A sincronização da barra lateral premium agora é isolada: um erro visual opcional não bloqueia mais a conta nem a tela principal.
+- Corrigidos os botões da barra lateral de desktop que chamavam uma função fora do próprio módulo.
+- Corrigido o visualizador de música que usava identificadores privados fora do escopo e podia interromper o restante do JavaScript.
 
-Observação
-A reprodução de Spotify continua usando o player/controle oficial do provedor quando aplicável. O navegador pode exigir um primeiro toque do usuário para iniciar áudio.
+Logo e abertura
+- A logo superior foi padronizada com o wordmark oficial, em tamanho menor e proporção estável.
+- Em telas grandes há somente uma logo visível no topo, eliminando duplicação entre a barra lateral e o cabeçalho.
+- A abertura mantém fundo escuro, arco luminoso e a bolinha pequena com carinha; a bolinha percorre o arco primeiro e a logo surge depois.
+- A antiga composição de letras 3D em CSS foi substituída pela arte oficial nítida, com profundidade e brilho mais discretos.
+- Ajustes próprios para computador e celular, sem estouro horizontal.
+
+Cache
+- HTML, CSS, JavaScript e service worker atualizados para v25.58.
+- O novo cache lxplus-shell-2558 substitui versões anteriores automaticamente.
+
+Publicação
+Envie todos os arquivos da pasta, inclusive service-worker.js, manifest.webmanifest, logos e ícones.
