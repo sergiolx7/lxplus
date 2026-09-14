@@ -1,4 +1,4 @@
-LX Plus v26.1 — Social Direct + Daily Streak + White Intro
+LX Plus v26.2 — Novo logo + Intro X Reveal + Equipe ADM
 
 ENTRADA
 - A abertura pré-login foi refeita do zero.
@@ -22,11 +22,11 @@ CONEXÃO / ROUTER SOCIAL
 
 SEQUÊNCIA 🔥
 - Check-in diário real: mesmo dia não soma duas vezes; dia consecutivo soma 1; quebra de mais de um dia reinicia em 1.
-- Preserva o streak que já existia na migração para v26.1 em vez de fabricar um dia extra.
+- Preserva o streak que já existia na migração para v26.2 em vez de fabricar um dia extra.
 - Metadados ficam em uiPrefs, que já participa do sync de estado do usuário.
 - O número também é gravado no campo streak do perfil Supabase quando a sessão está disponível.
 - Indicador 🔥 aparece na navegação e no cabeçalho da Comunidade.
 
 ESTABILIDADE
 - Catálogo, Atomic Cloud Sync, autenticação/aprovação, LX Music, player, R2/Supabase e demais módulos da v26.0 foram preservados.
-- Cache atualizado para lxplus-shell-2610.
+- Cache atualizado para lxplus-shell-2620.

@@ -1,4 +1,4 @@
-PUBLICAÇÃO LX PLUS — BUILD 26.1
+PUBLICAÇÃO LX PLUS — BUILD 26.2
 
 Base: v26.0 Professional Experience.
 Esta build mantém Supabase, catálogo, mídia, autenticação, música e sync da versão anterior.
@@ -6,7 +6,7 @@ Esta build mantém Supabase, catálogo, mídia, autenticação, música e sync d
 Envie TODOS os arquivos desta pasta para o host, substituindo os existentes.
 Arquivos principais: index.html, app.css, lxplus.js, service-worker.js, manifest.webmanifest, lxplus-brand-v26.svg, pasta assets e ícones.
 
-Mudanças principais da 26.1:
+Mudanças principais da 26.2:
 - Nova entrada pré-login com apenas “LX Plus” branco, sem o logo/orbe antigo.
 - Comunidade redesenhada como Direct moderno (mistura visual Instagram/TikTok), sem Stories.
 - Reconexão automática da sessão social antes de acusar “não conectado”.
@@ -16,4 +16,4 @@ Mudanças principais da 26.1:
 Depois da publicação:
 - Desktop: Ctrl+F5.
 - Celular/PWA: feche o app e abra novamente.
-- O service worker 26.1 remove caches lxplus-shell antigos automaticamente.
+- O service worker 26.2 remove caches lxplus-shell antigos automaticamente.

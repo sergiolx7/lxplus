@@ -1,4 +1,4 @@
-LX Plus v26.1 — Relatório de validação
+LX Plus v26.2 — Relatório de validação
 
 Estrutura e sintaxe
 OK — node --check em lxplus.js
@@ -8,7 +8,7 @@ OK — 122 IDs estáticos verificados sem duplicações
 OK — 8 blocos JavaScript inline compilados individualmente sem erro de sintaxe
 OK — referências locais de script, CSS e imagens sem arquivos ausentes
 OK — chaves CSS balanceadas (4030 pares na validação executada antes do empacotamento)
-OK — build público 26.1 e cache lxplus-shell-2610 alinhados
+OK — build público 26.2 e cache lxplus-shell-2620 alinhados
 
 Entrada pré-login
 OK — #splash não contém nenhuma tag <img>
@@ -23,7 +23,7 @@ OK — ensureCloudIdentity() incluída antes de declarar falha de sessão
 OK — recuperação tenta LX.cloud.resume() e Supabase auth.getSession()
 OK — refreshDirectory(), open() e boot() usam a validação resiliente
 OK — status da nuvem separa clientReady de sessionReady/connected
-OK — nenhuma camada de Stories foi criada na v26.1
+OK — nenhuma camada de Stories foi criada na v26.2
 
 Sequência diária 🔥
 OK — mesmo dia: 4 permanece 4
