@@ -1,21 +1,37 @@
-LX Plus v25.58 — Login + Brand Stability
+LX Plus v26.0 — Professional Experience
 
-Correções principais
-- Corrigido o erro “syncPremiumShell is not defined” que impedia a entrada após o login.
-- A sincronização da barra lateral premium agora é isolada: um erro visual opcional não bloqueia mais a conta nem a tela principal.
-- Corrigidos os botões da barra lateral de desktop que chamavam uma função fora do próprio módulo.
-- Corrigido o visualizador de música que usava identificadores privados fora do escopo e podia interromper o restante do JavaScript.
+Identidade e abertura
+- Nova marca LX Plus criada em SVG, com margem interna segura, proporção horizontal fixa e alta nitidez em qualquer resolução.
+- Abertura refeita para mostrar primeiro a pequena esfera com rosto e depois revelar a marca completa, sem texto extra.
+- A logo agora usa object-fit: contain e limites próprios para computador, tablet e celular, evitando cortes e estouro horizontal.
+- Logo atualizada no login, seleção de perfil, cabeçalho, barra lateral e painel ADM, incluindo uma aplicação própria acima do formulário em telas menores.
+- Novos ícones PWA de 192 px, 512 px e versão maskable com fundo de ponta a ponta.
 
-Logo e abertura
-- A logo superior foi padronizada com o wordmark oficial, em tamanho menor e proporção estável.
-- Em telas grandes há somente uma logo visível no topo, eliminando duplicação entre a barra lateral e o cabeçalho.
-- A abertura mantém fundo escuro, arco luminoso e a bolinha pequena com carinha; a bolinha percorre o arco primeiro e a logo surge depois.
-- A antiga composição de letras 3D em CSS foi substituída pela arte oficial nítida, com profundidade e brilho mais discretos.
-- Ajustes próprios para computador e celular, sem estouro horizontal.
+LX Music
+- Nova navegação inspirada em aplicativos musicais modernos: Início, Buscar, Sua biblioteca, Músicas curtidas e Tocadas recentemente.
+- Home musical com destaque, retomada rápida, mixes por gênero, recomendações, populares e lançamentos.
+- Busca interna por música, artista, álbum ou gênero, com filtros e ordenação por data, título ou artista.
+- Biblioteca unificada com itens salvos e histórico recente.
+- Cards de álbum refeitos sem botões aninhados e com estados de tocando, pausado e salvo.
+- Player persistente com fila, curtir/salvar, letra, embaralhar, repetir, volume e compatibilidade com players oficiais.
+- Suporte à Media Session do sistema para play, pause, faixa anterior e próxima faixa.
+- Atalhos: espaço para tocar/pausar, Alt + setas para trocar faixa, M para silenciar e / ou Ctrl/Cmd + K para busca.
+- Tocar novamente na mesma música agora alterna corretamente entre reprodução e pausa.
+- Integração existente com Spotify, YouTube, SoundCloud, Drive e áudio próprio foi preservada.
 
-Cache
-- HTML, CSS, JavaScript e service worker atualizados para v25.58.
-- O novo cache lxplus-shell-2558 substitui versões anteriores automaticamente.
+Experiência geral
+- Navegação mobile reorganizada em seis destinos úteis, sem largura mínima que cause overflow.
+- Busca global preserva a tela musical ao confirmar ou limpar uma pesquisa.
+- Foco de teclado, rótulos acessíveis e controles do player revisados.
+- Superfícies, contraste, estados ativos, espaçamento e microinterações receberam acabamento visual.
+- Cache offline atualizado para lxplus-shell-2600 e preparado para substituir versões anteriores.
+
+Correções de estabilidade
+- Mantida a correção que impede “syncPremiumShell is not defined” de bloquear o login.
+- Corrigidas chamadas entre módulos na tela musical e no detalhe do álbum.
+- Corrigido o botão de letra que interpretava o evento de clique como ID de conteúdo.
+- Removido o conflito de dois controladores de teclado que anulava o play/pause pelo espaço.
+- Corrigido um seletor CSS corrompido e removida a interferência da página legada “Para você” dentro do LX Music.
 
 Publicação
-Envie todos os arquivos da pasta, inclusive service-worker.js, manifest.webmanifest, logos e ícones.
+Envie todos os arquivos desta pasta para o host, inclusive service-worker.js, manifest.webmanifest, SVGs e ícones. Depois da publicação, faça Ctrl+F5 no computador; no PWA, feche e abra novamente.

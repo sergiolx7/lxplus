@@ -1,7 +1,7 @@
-PUBLICAÇÃO LX PLUS
+PUBLICAÇÃO LX PLUS — BUILD 26.0
 
 Envie TODOS os arquivos desta pasta para o host, substituindo os existentes.
-Arquivos principais: index.html, app.css, lxplus.js, service-worker.js, manifest.webmanifest, logo e ícones.
+Arquivos principais: index.html, app.css, lxplus.js, service-worker.js, manifest.webmanifest, lxplus-brand-v26.svg, pasta assets e ícones.
 
 Depois:
 - Desktop: Ctrl+F5.

@@ -1,12 +1,12 @@
 {
   "name": "LX Plus",
   "short_name": "LX Plus",
-  "description": "Filmes, séries, livros e música em uma experiência LX Plus.",
+  "description": "Assista, leia e ouça em uma experiência LX Plus profissional e personalizada.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#03070c",
-  "theme_color": "#090814",
+  "background_color": "#020306",
+  "theme_color": "#080b12",
   "orientation": "any",
   "icons": [
     {
