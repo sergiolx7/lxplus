@@ -15,7 +15,7 @@
 
   <script>
   (function(){
-    var BUILD='26.0',KEY='lxplus_build_seen';
+    var BUILD='26.1',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -44,49 +44,31 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=26.0">
+  <link rel="stylesheet" href="app.css?v=26.1">
   <title>LX Plus</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
 
-  <section id="splash" class="screen splash lx-splash-v257 lx-splash-v258 lx-splash-v260" aria-label="Abertura LX Plus">
-    <div class="lx257-stage" aria-hidden="true">
-      <div class="lx257-haze"></div>
-      <svg class="lx257-arc" viewBox="0 0 920 360" preserveAspectRatio="xMidYMid meet">
-        <defs>
-          <linearGradient id="lx257ArcGradient" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#482479" stop-opacity="0"/>
-            <stop offset=".22" stop-color="#7043ba" stop-opacity=".52"/>
-            <stop offset=".62" stop-color="#69b7e8" stop-opacity=".78"/>
-            <stop offset="1" stop-color="#f5ffff" stop-opacity="1"/>
-          </linearGradient>
-          <filter id="lx257ArcGlow" x="-30%" y="-70%" width="160%" height="240%">
-            <feGaussianBlur stdDeviation="4.5" result="blur"/>
-            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-        <path class="lx257-arc-soft" d="M62 245 C 195 25, 640 -30, 852 218"/>
-        <path class="lx257-arc-main" d="M62 245 C 195 25, 640 -30, 852 218"/>
-      </svg>
-      <div class="lx257-orbit-track">
-        <div class="lx257-orb">
-          <i class="lx257-eye eye-a"></i><i class="lx257-eye eye-b"></i><span class="lx257-smile"></span>
-        </div>
+  <section id="splash" class="screen splash lx-splash-v261" aria-label="Abertura LX Plus">
+    <div class="lx261-intro" aria-hidden="true">
+      <div class="lx261-ambient lx261-ambient-a"></div>
+      <div class="lx261-ambient lx261-ambient-b"></div>
+      <div class="lx261-intro-grid"></div>
+      <div class="lx261-wordmark-wrap">
+        <div class="lx261-wordmark" aria-label="LX Plus"><span>LX</span><span>Plus</span></div>
+        <i class="lx261-light-sweep"></i>
+        <i class="lx261-baseline"></i>
       </div>
-      <div class="lx257-brand lx258-brand lx260-brand">
-        <img src="lxplus-brand-v26.svg?v=26.0" class="lx258-splash-wordmark lx260-splash-wordmark" alt="LX Plus">
-        <span class="lx257-brand-flare"></span>
-      </div>
-      <div class="lx257-floor"></div>
+      <div class="lx261-depth-word" aria-hidden="true">LX Plus</div>
     </div>
-    <button id="skipSplash" class="splash-skip-reference lx257-skip" type="button">Pular</button>
+    <button id="skipSplash" class="lx261-skip" type="button">Pular</button>
     <button id="enterSplash" class="lx-splash-hidden-enter" type="button" tabindex="-1" aria-hidden="true">Entrar na LX Plus</button>
   </section>
 
   <section id="auth" class="screen auth hidden">
     <div class="auth-showcase">
-      <div class="brand brand-lg brand-approved"><img src="lxplus-brand-v26.svg?v=26.0" alt="LX Plus" class="lx-approved-logo"></div>
+      <div class="brand brand-lg brand-approved"><img src="lxplus-brand-v26.svg?v=26.1" alt="LX Plus" class="lx-approved-logo"></div>
       <div class="auth-copy">
         <span class="eyebrow">UMA CONTA · QUATRO MODOS</span>
         <h1>Continue de onde parou, em qualquer formato.</h1>
@@ -100,7 +82,7 @@
       </div>
     </div>
     <div class="auth-panel">
-      <div class="auth-mobile-brand brand brand-approved" aria-hidden="true"><img src="lxplus-brand-v26.svg?v=26.0" alt="" class="lx-approved-logo"></div>
+      <div class="auth-mobile-brand brand brand-approved" aria-hidden="true"><img src="lxplus-brand-v26.svg?v=26.1" alt="" class="lx-approved-logo"></div>
       <div class="auth-box">
         <div class="auth-tabs"><button id="tabLogin" class="active">Entrar</button><button id="tabRegister">Criar conta</button></div>
         <form id="loginForm" class="auth-form">
@@ -125,13 +107,13 @@
   </section>
 
   <section id="profiles" class="screen profiles hidden">
-    <header><div class="brand brand-lg brand-approved"><img src="lxplus-brand-v26.svg?v=26.0" alt="LX Plus" class="lx-approved-logo"></div><button id="profileLogout" class="glass-btn">Sair</button></header>
+    <header><div class="brand brand-lg brand-approved"><img src="lxplus-brand-v26.svg?v=26.1" alt="LX Plus" class="lx-approved-logo"></div><button id="profileLogout" class="glass-btn">Sair</button></header>
     <main><span class="eyebrow">PERFIS</span><h1>Quem está usando a LX Plus?</h1><div id="profileGrid" class="profile-grid"></div></main>
   </section>
 
   <section id="app" class="app hidden">
     <aside id="lxDesktopRail" class="lx-desktop-rail" aria-label="Navegação principal">
-      <button class="lx-shell-brand" type="button" onclick="document.getElementById('brandHome')?.click()" aria-label="Ir para o início da LX Plus"><img src="lxplus-brand-v26.svg?v=26.0" class="lx-shell-logo" alt="LX Plus"></button>
+      <button class="lx-shell-brand" type="button" onclick="document.getElementById('brandHome')?.click()" aria-label="Ir para o início da LX Plus"><img src="lxplus-brand-v26.svg?v=26.1" class="lx-shell-logo" alt="LX Plus"></button>
       <nav class="lx-shell-primary">
         <button data-shell-category="Início" class="active"><span>⌂</span><b>Início</b></button>
         <button data-shell-category="Filmes"><span>▣</span><b>Filmes</b></button>
@@ -172,7 +154,7 @@
     </aside>
     <header id="topbar" class="topbar">
       <div class="topbar-row">
-        <a href="#" id="brandHome" class="brand brand-sm brand-approved" aria-label="Ir para o início da LX Plus"><img src="lxplus-brand-v26.svg?v=26.0" alt="LX Plus" class="lx-approved-logo"></a>
+        <a href="#" id="brandHome" class="brand brand-sm brand-approved" aria-label="Ir para o início da LX Plus"><img src="lxplus-brand-v26.svg?v=26.1" alt="LX Plus" class="lx-approved-logo"></a>
         <div id="modeSwitch" class="mode-switch">
           <button data-mode="Assistir" class="active"><span>▶</span>Assistir</button>
           <button data-mode="Ler"><span>▤</span>Ler</button>
@@ -187,7 +169,7 @@
           <button id="adminTopBtn" class="glass-btn admin-top-btn hidden" aria-label="Painel ADM">⚙ ADM</button>
           <button id="installAppBtn" class="glass-btn install-app-btn" type="button" aria-label="Baixar aplicativo LX Plus" title="Baixar app">⇩ <span>App</span></button>
           <button id="themeBtn" class="icon-btn lx-top-icon" aria-label="Aparência" title="Aparência"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-1.1-.9-2-2-2h-2.2a2 2 0 0 1-1.7-3l1.1-1.9A9 9 0 0 0 12 3Z"/><circle cx="8" cy="10" r="1"/><circle cx="11" cy="7" r="1"/><circle cx="7" cy="14" r="1"/></svg></button>
-          <button type="button" id="communityBtn" class="community-top-btn" aria-label="Comunidade, amigos e chamadas" onclick="window.LXOpenCommunity('discover'); return false;"><span class="community-top-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 11a4 4 0 1 0-3.3-6.2A5 5 0 1 0 7 13c-3.3 0-6 1.8-6 4v2h12v-2c0-1-.4-1.9-1.1-2.6A7 7 0 0 1 16 13c3.9 0 7 2.1 7 4.6V20h-8v-3c0-1.6-.7-3-1.8-4A4 4 0 0 0 16 11Z" fill="currentColor"/></svg></span><b>Comunidade</b><i id="socialCount" class="hidden">0</i></button>
+          <button type="button" id="communityBtn" class="community-top-btn" aria-label="Comunidade, amigos e chamadas" onclick="window.LXOpenCommunity('friends'); return false;"><span class="community-top-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 11a4 4 0 1 0-3.3-6.2A5 5 0 1 0 7 13c-3.3 0-6 1.8-6 4v2h12v-2c0-1-.4-1.9-1.1-2.6A7 7 0 0 1 16 13c3.9 0 7 2.1 7 4.6V20h-8v-3c0-1.6-.7-3-1.8-4A4 4 0 0 0 16 11Z" fill="currentColor"/></svg></span><b>Comunidade</b><i id="socialCount" class="hidden">0</i></button>
           <button type="button" id="messageBtn" class="message-top-btn" aria-label="Mensagens" onclick="window.LXOpenCommunity('friends'); return false;"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 3v-3a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm2 5h12v2H6V9Zm0 4h8v2H6v-2Z" fill="currentColor"/></svg><i id="messageCount" class="hidden">0</i></button>
           <button id="profileBtn" class="avatar-btn">LX</button>
         </div>
@@ -202,7 +184,7 @@
 
   <section id="admin" class="admin hidden">
     <aside class="admin-side">
-      <div class="brand brand-sm brand-approved"><img src="lxplus-brand-v26.svg?v=26.0" alt="LX Plus" class="lx-approved-logo"></div>
+      <div class="brand brand-sm brand-approved"><img src="lxplus-brand-v26.svg?v=26.1" alt="LX Plus" class="lx-approved-logo"></div>
       <div class="admin-identity"><div class="admin-avatar">LX</div><div><b>Administrador</b><small>LX Plus</small></div></div>
       <div class="admin-console-label"><span></span> LX PLUS</div>
       <nav id="adminNav">
@@ -252,7 +234,7 @@
     <audio id="musicAudio" preload="metadata"></audio>
   </div>
   <script>
-  /* LX SHELL v26.0 — funciona mesmo se o núcleo atrasar ou falhar */
+  /* LX SHELL v26.1 — funciona mesmo se o núcleo atrasar ou falhar */
   (function(){
     function byId(id){return document.getElementById(id)}
     function show(id){
@@ -278,7 +260,7 @@
       if(skip) skip.onclick=openAfterIntro;
       if(splash){
         clearTimeout(window.__LX_SPLASH_TIMER);
-        window.__LX_SPLASH_TIMER=setTimeout(openAfterIntro,5200);
+        window.__LX_SPLASH_TIMER=setTimeout(openAfterIntro,4300);
       }
       var tl=byId('tabLogin'),tr=byId('tabRegister');
       if(tl) tl.onclick=function(){authTab('login')};
@@ -293,7 +275,7 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   })();
   </script>
-  <script src="lxplus.js?v=26.0"></script>
+  <script src="lxplus.js?v=26.1"></script>
   <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 
 <script>
@@ -400,8 +382,9 @@
     document.documentElement.classList.toggle('lx-community-open',!!on);
   }
   function close(){setDrawerOpen(false)}
-  function shellHeader(title='Comunidade',subtitle='Amigos, chamadas e compartilhamento de tela'){
-    return `<header class="lx-community-head"><div><span>LX SOCIAL</span><h2>${esc(title)}</h2><p>${esc(subtitle)}</p></div><button class="lx-community-close" onclick="LX.social.close()" aria-label="Fechar">×</button></header>`;
+  function shellHeader(title='Comunidade',subtitle='Mensagens, pessoas e chamadas em um só lugar'){
+    const streak=Number(LX.streak?.current?.()||0);
+    return `<header class="lx-community-head lx261-social-head"><div class="lx261-social-title"><span>LX SOCIAL</span><h2>${esc(title)}</h2><p>${esc(subtitle)}</p></div>${streak?`<button class="lx261-social-streak" type="button" onclick="LX.streak?.open?.()" title="Sua sequência diária">🔥 <b>${streak}</b></button>`:''}<button class="lx-community-close" onclick="LX.social.close()" aria-label="Fechar">×</button></header>`;
   }
   function sectionData(){
     const friends=state.directory.filter(x=>x.relation==='accepted');
@@ -437,8 +420,35 @@
     const {data,error}=await c.from('lx_profiles').select('social_visible,calls_enabled,bio,avatar_url,name,verified').eq('user_id',id).maybeSingle();
     if(error){console.warn(error);return null} return data;
   }
+  async function ensureCloudIdentity(timeout=2800){
+    const started=Date.now();
+    while(Date.now()-started<timeout){
+      const current=me();
+      if(current?.id)return current;
+      try{
+        const resumed=await LX.cloud?.resume?.();
+        if(resumed?.user?.id){
+          if(U?.state)U.state.user={...(U.state.user||{}),...resumed.user};
+          return resumed.user;
+        }
+      }catch(e){console.warn('LX social resume',e)}
+      try{
+        const c=db();
+        if(c?.auth){
+          const {data}=await c.auth.getSession();
+          const sessionUser=data?.session?.user;
+          if(sessionUser?.id){
+            if(U?.state)U.state.user={...(U.state.user||{}),id:sessionUser.id,email:sessionUser.email,user_metadata:sessionUser.user_metadata||{}};
+            return sessionUser;
+          }
+        }
+      }catch(e){console.warn('LX social session probe',e)}
+      await new Promise(r=>setTimeout(r,180));
+    }
+    return me();
+  }
   async function refreshDirectory(){
-    const c=db(); if(!c||!uid()){state.lastError='Sua sessão não está conectada à nuvem.';return []}
+    const identity=await ensureCloudIdentity(1800),c=db(); if(!c||!identity?.id){state.lastError='A conexão da sua conta com a Comunidade ainda não ficou pronta. Tente novamente em instantes.';return []}
     state.loading=true; state.lastError='';
     try{
       const {data,error}=await c.rpc('lx_social_directory');
@@ -485,16 +495,18 @@
     let list=tab==='requests'?[...s.incoming,...s.outgoing]:tab==='discover'?s.discover:[...s.friends];
     if(tab==='friends')list.sort((a,b)=>String(LX.chat?.summary?.(b.user_id)?.created_at||'').localeCompare(String(LX.chat?.summary?.(a.user_id)?.created_at||'')));
     const settings=await getOwnSocialSettings();
-    drawer.innerHTML=`${shellHeader('Comunidade','Contatos, chamadas e presença LX em um só lugar')}<div class="lx-community-status"><div><b>${s.friends.length}</b><span>CONTATOS</span></div><div><b>${s.incoming.length}</b><span>PEDIDOS</span></div><div><b>${settings?.calls_enabled!==false?'ON':'OFF'}</b><span>CHAMADAS</span></div></div><nav class="lx-community-tabs"><button class="${tab==='friends'?'active':''}" onclick="LX.social.open('friends')">Conversas</button><button class="${tab==='requests'?'active':''}" onclick="LX.social.open('requests')">Solicitações${s.incoming.length?` <i>${s.incoming.length}</i>`:''}</button><button class="${tab==='discover'?'active':''}" onclick="LX.social.open('discover')">Pessoas</button><button class="${tab==='groups'?'active':''}" onclick="LX.social.open('groups')">Grupos</button></nav><div class="lx-community-search">${icon('search')}<input id="lxCommunitySearch" placeholder="Pesquisar contato..."></div><div id="lxCommunityList" class="lx-community-list">${state.loading?'<div class="lx-community-loading">Carregando contatos...</div>':list.length?list.map(personCard).join(''):emptyCard(tab)}</div><footer class="lx-community-footer"><div class="lx-community-footer-actions"><button onclick="LX.social.openSettings()">${icon('settings')} Privacidade e chamadas</button></div><span>WebRTC · LX Social · grupos</span></footer>`;
+    const online=s.friends.filter(x=>isOnline(x.user_id)).length;
+    drawer.innerHTML=`${shellHeader('Comunidade','Direct, chamadas e pessoas do LX Plus')}<div class="lx261-social-overview"><div><span class="lx261-live-dot"></span><b>${online}</b><small>online</small></div><div><b>${s.friends.length}</b><small>conversas</small></div><div><b>${s.incoming.length}</b><small>pedidos</small></div><button onclick="LX.social.openSettings()" title="Privacidade e chamadas">${icon('settings')}</button></div><nav class="lx-community-tabs lx261-social-tabs"><button class="${tab==='friends'?'active':''}" onclick="LX.social.open('friends')">Conversas</button><button class="${tab==='discover'?'active':''}" onclick="LX.social.open('discover')">Pessoas</button><button class="${tab==='requests'?'active':''}" onclick="LX.social.open('requests')">Pedidos${s.incoming.length?` <i>${s.incoming.length}</i>`:''}</button><button class="${tab==='groups'?'active':''}" onclick="LX.social.open('groups')">Grupos</button></nav><div class="lx-community-search lx261-social-search">${icon('search')}<input id="lxCommunitySearch" placeholder="Buscar no LX Social"></div><div id="lxCommunityList" class="lx-community-list lx261-social-list">${state.loading?'<div class="lx-community-loading">Carregando conversas...</div>':list.length?list.map(personCard).join(''):emptyCard(tab)}</div><footer class="lx-community-footer lx261-social-footer"><span>Mensagens em tempo real · chamadas WebRTC</span><button onclick="LX.social.openSettings()">Privacidade</button></footer>`;
     const q=document.getElementById('lxCommunitySearch');
     q?.addEventListener('input',()=>{const term=q.value.trim().toLowerCase();document.querySelectorAll('#lxCommunityList .lx-community-person').forEach(el=>el.classList.toggle('hidden',!!term&&!el.dataset.name.includes(term)))})
   }
-  async function open(tab=state.openTab||'discover'){
+  async function open(tab=state.openTab||'friends'){
     ensureShell(); setDrawerOpen(true);
     const drawer=document.getElementById('lxCommunityDrawer');
-    if(drawer)drawer.innerHTML=`${shellHeader()}<div class="lx-community-loading"><span></span>Carregando pessoas e chamadas...</div>`;
-    if(!uid()){
-      if(drawer)drawer.innerHTML=`${shellHeader()}<div class="lx-community-empty error"><b>Sessão ainda não conectada</b><p>A Comunidade abriu normalmente, mas sua sessão da nuvem ainda não ficou disponível. Aguarde alguns segundos ou entre novamente na conta.</p><button onclick="LX.social.open('discover')">Tentar novamente</button></div>`;
+    if(drawer)drawer.innerHTML=`${shellHeader('Comunidade','Conectando sua conta ao LX Social…')}<div class="lx-community-loading lx-community-reconnect"><span></span>Sincronizando conversas e presença...</div>`;
+    const identity=await ensureCloudIdentity(3200);
+    if(!identity?.id){
+      if(drawer)drawer.innerHTML=`${shellHeader()}<div class="lx-community-empty error"><b>Não consegui validar sua sessão</b><p>O site continua conectado ao LX Plus, mas a autenticação da Comunidade não respondeu agora. Use o botão abaixo para tentar a reconexão sem sair da conta.</p><button onclick="LX.social.open('${tab}')">Reconectar Comunidade</button></div>`;
       return false;
     }
     try{await boot();await syncMyProfile();await refreshDirectory();await render(tab);return true}catch(e){console.warn(e);state.lastError='Ocorreu um erro ao abrir a Comunidade.';await render(tab);return false}
@@ -912,7 +924,7 @@
     if(['rejected','ended','missed'].includes(call.status)){updateCallStatus(call.status==='rejected'?'Chamada recusada.':call.status==='missed'?'Chamada não atendida.':'Chamada encerrada.');if(call.status==='missed')try{LX.chat?.pushRuntimeNotice?.({kind:'call',title:'Chamada não atendida',text:`${callPerson(state.activeCall.otherId).name||'Contato'} · ${state.activeCall.mode==='audio'?'áudio':'vídeo'}`,data:{call_id:call.id}})}catch{};setTimeout(()=>cleanupCall(false),300)}
   }
   async function boot(){
-    const c=db(),id=uid();if(!c||!id)return false;if(state.booted){if(!state.presenceChannel)await setupPresence();return true}
+    const identity=await ensureCloudIdentity(2200),c=db(),id=identity?.id||uid();if(!c||!id)return false;if(state.booted){if(!state.presenceChannel)await setupPresence();return true}
     state.booted=true;
     try{
       await syncMyProfile();await refreshDirectory();await setupPresence();await LX.groupCall?.boot?.();
@@ -929,15 +941,15 @@
   }
   async function shutdown(){close();hideIncoming();await touchLastSeen(true);await cleanupCall(false);if(state.lastSeenTimer){clearInterval(state.lastSeenTimer);state.lastSeenTimer=null}const c=db();if(state.presenceChannel&&c){try{await state.presenceChannel.untrack()}catch{}await c.removeChannel(state.presenceChannel).catch(()=>{})}if(state.coreChannel&&c)await c.removeChannel(state.coreChannel).catch(()=>{});state.presenceChannel=null;state.presenceMap={};state.presenceReady=false;state.coreChannel=null;state.booted=false;state.directory=[];updateBadge();applyPresenceUI()}
   function bindLauncher(){
-    const launch=e=>{e?.preventDefault?.();open('discover')};
+    const launch=e=>{e?.preventDefault?.();open('friends')};
     const btn=document.getElementById('communityBtn');
-    if(btn&&!btn.dataset.lxBound){btn.dataset.lxBound='1';btn.addEventListener('click',launch)}
+    if(btn&&!btn.dataset.lxBound&&!btn.hasAttribute('onclick')){btn.dataset.lxBound='1';btn.addEventListener('click',launch)}
     document.querySelectorAll('[data-mobile="Comunidade"],[data-open-community="1"]').forEach(el=>{if(!el.dataset.lxSocialBound){el.dataset.lxSocialBound='1';el.addEventListener('click',launch)}});
   }
   document.addEventListener('click',e=>{const b=e.target?.closest?.('[data-lx-hangup="1"]');if(b&&document.getElementById('lxCallOverlay')){e.preventDefault();e.stopPropagation();endCurrentCall()}},true);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){touchLastSeen(true);refreshDirectory().then(applyPresenceUI).catch(()=>{})}else touchLastSeen(true)});
   window.addEventListener('pagehide',()=>{touchLastSeen(true);if(state.lastSeenTimer){clearInterval(state.lastSeenTimer);state.lastSeenTimer=null}});
-  LX.social={boot,shutdown,open,close,retry,openProfile,openSettings,commitSettings,refreshDirectory,syncMyProfile,add,respond,removeFriend,startCall,acceptIncoming,rejectIncoming,endCurrentCall,toggleMic,toggleCamera,shareScreen,toggleSharePicker,toggleReactions,sendReaction,toggleCallFullscreen,resumeCallAudio,isOnline,presenceText,presenceVisible,setPresenceVisible,ready:true}; window.LXOpenCommunity=function(tab){return open(tab||'discover')};
+  LX.social={boot,shutdown,open,close,retry,openProfile,openSettings,commitSettings,refreshDirectory,syncMyProfile,add,respond,removeFriend,startCall,acceptIncoming,rejectIncoming,endCurrentCall,toggleMic,toggleCamera,shareScreen,toggleSharePicker,toggleReactions,sendReaction,toggleCallFullscreen,resumeCallAudio,isOnline,presenceText,presenceVisible,setPresenceVisible,ready:true}; window.LXOpenCommunity=function(tab){return open(tab||'friends')};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindLauncher,{once:true});else bindLauncher();
 })();
 

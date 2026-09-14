@@ -1,45 +1,45 @@
-LX Plus v26.0 — Relatório de validação
+LX Plus v26.1 — Relatório de validação
 
-Estrutura e arquivos
+Estrutura e sintaxe
 OK — node --check em lxplus.js
 OK — node --check em service-worker.js
 OK — manifest.webmanifest analisado como JSON válido
-OK — HTML sem IDs estáticos duplicados
-OK — DOM renderizado sem IDs duplicados
-OK — DOM renderizado sem botões aninhados
-OK — atributos onclick renderizados compilam sem erro de sintaxe
-OK — referências locais do HTML, manifest e cache sem arquivos ausentes
-OK — chaves CSS balanceadas e varredura sem tokens corrompidos conhecidos
-OK — build público 26.0 e cache lxplus-shell-2600 alinhados
+OK — 122 IDs estáticos verificados sem duplicações
+OK — 8 blocos JavaScript inline compilados individualmente sem erro de sintaxe
+OK — referências locais de script, CSS e imagens sem arquivos ausentes
+OK — chaves CSS balanceadas (4030 pares na validação executada antes do empacotamento)
+OK — build público 26.1 e cache lxplus-shell-2610 alinhados
 
-Logo, splash e PWA
-OK — sete aplicações principais da marca apontam para lxplus-brand-v26.svg
-OK — SVG horizontal com viewBox 1120 × 320 e área segura
-OK — splash usa object-fit: contain e limites responsivos
-OK — renderização raster da nova marca inspecionada
-OK — ícones 192 × 192 e 512 × 512 regenerados
-OK — ícone maskable 512 × 512 com fundo completo e conteúdo na área segura
+Entrada pré-login
+OK — #splash não contém nenhuma tag <img>
+OK — antiga composição de orbe/logo foi removida do HTML da abertura
+OK — nova wordmark textual “LX Plus” presente
+OK — animações possuem fallback para prefers-reduced-motion
+OK — tempo automático da abertura reduzido para 4,3 s
 
-Conta e navegação
-OK — fluxo simulado: abertura > login aprovado > tela principal
-OK — syncPremiumShell continua exportada e não bloqueia o login
-OK — navegação de desktop abre Ouvir
-OK — navegação mobile abre Ouvir e mantém a nova tela musical
-OK — busca global confirma resultados sem desmontar o LX Music
-OK — ação Catálogo online muda para a fonte musical online
+Comunidade / conexão
+OK — rota principal da Comunidade abre Conversas
+OK — ensureCloudIdentity() incluída antes de declarar falha de sessão
+OK — recuperação tenta LX.cloud.resume() e Supabase auth.getSession()
+OK — refreshDirectory(), open() e boot() usam a validação resiliente
+OK — status da nuvem separa clientReady de sessionReady/connected
+OK — nenhuma camada de Stories foi criada na v26.1
 
-LX Music
-OK — Home, Buscar, Biblioteca, Curtidas e Recentes renderizam
-OK — busca musical encontra o álbum esperado
-OK — player persistente abre e recebe título/artista
-OK — nova reprodução entra no histórico recente
-OK — selecionar a mesma faixa alterna para pausa
-OK — tecla Espaço altera o player uma única vez, sem conflito legado
-OK — salvar música atualiza Minha Lista, coração do player e página Curtidas
-OK — botão de letra abre a letra da faixa atual
-OK — detalhe do álbum abre e lista todas as faixas sem erro de módulo
-OK — Media Session registra play, pause, anterior e próxima
-OK — nenhuma exceção relevante ou aviso de ReferenceError durante o fluxo testado
+Sequência diária 🔥
+OK — mesmo dia: 4 permanece 4
+OK — dia consecutivo: 4 vira 5
+OK — quebra de sequência: 4 reinicia em 1
+OK — migração: streak existente 6 permanece 6
+OK — proteção cross-device: cloud já em 5 não vira 6 novamente
+OK — metadados usam uiPrefs, já incluído no sync de estado da conta
 
-Ambiente de validação
-O fluxo funcional foi executado em um DOM de navegador simulado com armazenamento local, IndexedDB, áudio e Media Session controlados. Não havia navegador Chromium/Firefox instalado neste ambiente; por isso, a verificação visual foi feita pela renderização direta dos SVGs/PNGs e pela inspeção das regras responsivas.
+Servidor local
+OK — HTTP 200 para /
+OK — HTTP 200 para /index.html
+OK — HTTP 200 para /app.css
+OK — HTTP 200 para /lxplus.js
+OK — HTTP 200 para /service-worker.js
+OK — HTTP 200 para /manifest.webmanifest
+
+Limitação do ambiente
+Não havia Chromium/Firefox disponível para inspeção visual pixel a pixel. A validação desta build cobriu sintaxe, estrutura, referências, servidor local, lógica do streak e regras responsivas/CSS. Teste final em navegador real deve ser feito após publicar ou abrir a pasta em um navegador moderno.

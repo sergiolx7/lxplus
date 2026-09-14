@@ -1,9 +1,9 @@
-window.__LX_JS_BUILD='26.0';
+window.__LX_JS_BUILD='26.1';
 
 /* ===== config.js · LX Plus v25.50 ===== */
 window.LX=window.LX||{};
 LX.config={
-  version:'26.0',
+  version:'26.1',
   environment:'cloud-ready',
   production:true,
   apiBase:'',
@@ -211,7 +211,7 @@ async function migrateLocalCatalog(){if(!isAdmin())throw new Error('ADMIN_REQUIR
  const migrateAsset=async(value,label)=>{if(!value||!String(value).startsWith('data:'))return value;const blob=await dataUriBlob(value);const k=await uploadFile(label,blob,'assets');assets++;return publicUrl(k.replace(/^cloud:/,''),cfg().assetBucket||'lx-assets')};
  for(const x of items){x.cover=await migrateAsset(x.cover,`cover_${x.id}`);x.banner=await migrateAsset(x.banner,`banner_${x.id}`);x.carouselImage=await migrateAsset(x.carouselImage,`carousel_${x.id}`);x.mediaKey=await migrateKey(x.mediaKey,`main_${x.id}`);x.trailerKey=await migrateKey(x.trailerKey,`trailer_${x.id}`);for(const e of x.episodes||[])e.mediaKey=await migrateKey(e.mediaKey,`episode_${x.id}_S${e.season||1}E${e.number||0}`);for(const t of x.tracks||[])t.mediaKey=await migrateKey(t.mediaKey,`track_${x.id}_${t.number||t.title||'audio'}`)}
  cache(S.keys.catalog,items);await saveCatalog(items);await publishNotices(S.read(S.keys.notices,[]));return {titles:items.length,media,assets}}
-function status(){return {configured:enabled(),connected:!!client,user:currentAuth?.email||null,admin:isAdmin(),approved:!!currentProfile?.approved||isAdmin(),approvalStatus:currentProfile?.approval_status||null,mediaBucket:cfg().mediaBucket||'lx-media',assetBucket:cfg().assetBucket||'lx-assets',catalogWriteMode:'RPC'}}
+function status(){return {configured:enabled(),connected:!!currentAuth,clientReady:!!client,sessionReady:!!currentAuth,user:currentAuth?.email||null,admin:isAdmin(),approved:!!currentProfile?.approved||isAdmin(),approvalStatus:currentProfile?.approval_status||null,mediaBucket:cfg().mediaBucket||'lx-media',assetBucket:cfg().assetBucket||'lx-assets',catalogWriteMode:'RPC'}}
 LX.cloud={enabled,db,user,profile,isAdmin,initPublic,signUp,resendConfirmation,signIn,resume,signOut,resetPassword,updatePassword,isRecoveryFlow,onLocalWrite,syncUserState,saveCatalog,upsertCatalogItem,deleteCatalogItem,saveUsers,saveBranding,requestOrVote,refreshRequests,updateRequestStatus,publishNotices,approveUser,setVerified,commitAdminChanges,rejectUser,deletePendingUser,setPremium,track,uploadFile,publicUrl,mediaUrl,removeUploadedPath,migrateLocalCatalog,status,hydrateUser,refreshBranding};
 })();
 
@@ -397,7 +397,7 @@ LX.data={P,DEMO,seed,catalog,users,notices,requests,ratings,history,myList,prefe
 
 window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['services']='25.35';
 
-/* ===== ui.js · LX Plus v26.0 ===== */
+/* ===== ui.js · LX Plus v26.1 ===== */
 (()=>{const LX=window.LX,D=LX.data,S=LX.store,$=id=>document.getElementById(id),$$=s=>Array.from(document.querySelectorAll(s));
 const state=LX.state={screen:'splash',mode:'Assistir',category:'Início',query:'',user:null,profile:null,hero:0,heroTimer:null,musicQueue:[],musicIndex:0,musicView:'home',musicGenre:'Todos',musicSort:'recent',rankingPeriod:'Mensal',rankingKind:'Geral',readerSize:20,readerPaper:false,readerTheme:'night',libraryType:'Todos'};
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));LX.esc=esc;
@@ -531,7 +531,7 @@ function updateNoticeCount(){const system=D.notices().filter(x=>!x.read).length,
 LX.ui={$, $$, state, esc, show, toast, initials, posterWalls, authTab, renderProfiles, renderApp, renderHome, renderCategories, items, close, closePlayer, closeReader, scroll, updateNoticeCount};
 })();
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['ui']='26.0';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['ui']='26.1';
 
 /* ===== catalog-importer.js · LX Plus v25.36 ===== */
 (()=>{
@@ -1052,7 +1052,7 @@ LX.admin={render,edit,del,verify,saveChanges,discardPending,approveUser,rejectUs
 
 window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.admin='25.35';
 
-/* ===== app.js · LX Plus v26.0 ===== */
+/* ===== app.js · LX Plus v26.1 ===== */
 /* LX APP CORE */
 (async()=>{const LX=window.LX,D=LX.data,S=LX.store,U=LX.ui,$=U.$,$$=U.$$ ,state=U.state,esc=U.esc;
 // Critical shell is bound before any optional initialization step.
@@ -1292,7 +1292,7 @@ let __lxWasOffline=!navigator.onLine;window.addEventListener('offline',()=>{__lx
 try{const u=new URL(location.href);if(u.searchParams.has('lxbuild')||u.searchParams.has('_')){u.searchParams.delete('lxbuild');u.searchParams.delete('_');history.replaceState(null,'',u.pathname+(u.search?u.search:'')+u.hash)}}catch(e){}
 })();
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['app']='26.0';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['app']='26.1';
 
 /* =====================================================================
    LX Plus v25.50 — Drive Quality + Next Episode
@@ -1625,3 +1625,104 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['app']='26.0';
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', ()=>{cancelAnimationFrame(raf);draw()},{once:true});
   else draw();
 })();
+
+/* ===== streak.js · LX Plus v26.1 ===== */
+(()=>{
+  const LX=window.LX=window.LX||{};
+  const DAY=86400000;
+  let count=0,longest=0,lastDate='',busy=false;
+  const pad=n=>String(n).padStart(2,'0');
+  const dayKey=(d=new Date())=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const dayNumber=k=>{const [y,m,d]=String(k||'').split('-').map(Number);return y&&m&&d?Math.floor(Date.UTC(y,m-1,d)/DAY):null};
+  const currentUser=()=>LX.cloud?.user?.()||LX.ui?.state?.user||LX.state?.user||null;
+  function readMeta(){
+    try{
+      const S=LX.store,k=S?.keys?.uiPrefs;if(!S||!k)return {};
+      const prefs=S.read(k,{})||{};return prefs.streakMeta||{};
+    }catch{return {}}
+  }
+  function writeMeta(meta){
+    try{
+      const S=LX.store,k=S?.keys?.uiPrefs;if(!S||!k)return;
+      const prefs=S.read(k,{})||{};S.write(k,{...prefs,streakMeta:meta});
+    }catch(e){console.warn('LX streak local sync',e)}
+  }
+  function cloudProfileStreak(){
+    try{
+      const u=currentUser(),users=LX.data?.users?.()||[];
+      const row=users.find(x=>String(x.id)===String(u?.id)||String(x.email||'').toLowerCase()===String(u?.email||'').toLowerCase());
+      return Number(row?.streak||0);
+    }catch{return 0}
+  }
+  function updateLocalUser(n){
+    try{
+      const S=LX.store,k=S?.keys?.users,u=currentUser();if(!S||!k||!u)return;
+      const rows=S.read(k,[])||[];let changed=false;
+      const next=rows.map(x=>{
+        const same=String(x.id)===String(u.id)||String(x.email||'').toLowerCase()===String(u.email||'').toLowerCase();
+        if(!same)return x;changed=true;return {...x,streak:n};
+      });
+      if(changed)S.writeLocal(k,next);
+    }catch{}
+  }
+  async function persistProfile(n){
+    const c=LX.cloud?.db?.(),u=currentUser();if(!c||!u?.id)return;
+    try{await c.from('lx_profiles').update({streak:n,updated_at:new Date().toISOString()}).eq('user_id',u.id)}catch(e){console.warn('LX streak cloud sync',e)}
+  }
+  function paint(){
+    const label=`${count} ${count===1?'dia':'dias'}`;
+    document.querySelectorAll('[data-lx-streak-count]').forEach(el=>{el.textContent=String(count)});
+    let el=document.getElementById('lxStreakIndicator');
+    const anchor=document.getElementById('communityBtn')||document.querySelector('.top-actions')||document.querySelector('.lx-shell-actions');
+    if(!anchor||!currentUser())return;
+    if(!el){
+      el=document.createElement('button');el.id='lxStreakIndicator';el.type='button';el.className='lx261-streak-indicator';el.onclick=open;
+      if(anchor.parentElement&&anchor.id==='communityBtn')anchor.parentElement.insertBefore(el,anchor);else anchor.prepend(el);
+    }
+    el.innerHTML=`<span aria-hidden="true">🔥</span><b>${count}</b>`;
+    el.title=`Sequência LX: ${label}`;el.setAttribute('aria-label',`Sequência LX: ${label}`);
+    const stat=document.querySelector('.welcome-card .mode-summary');
+    if(stat&&!document.getElementById('lxStreakWelcome')){
+      const d=document.createElement('div');d.id='lxStreakWelcome';d.className='lx261-streak-stat';d.innerHTML=`<strong>🔥 <span data-lx-streak-count>${count}</span></strong><small>SEQUÊNCIA</small>`;stat.appendChild(d);
+    }
+  }
+  function open(){
+    const msg=count>1?`🔥 Você está há ${count} dias seguidos no LX Plus. Seu recorde atual é ${Math.max(longest,count)} dias.`:`🔥 Sua sequência LX começou hoje. Volte amanhã para chegar a 2 dias.`;
+    LX.toast?.(msg);
+  }
+  async function checkIn(force=false){
+    if(busy)return count;const u=currentUser();if(!u?.id&&!u?.email)return count;busy=true;
+    try{
+      const today=dayKey(),meta=readMeta(),cloud=Math.max(0,cloudProfileStreak()),metaCount=Math.max(0,Number(meta.count||0));
+      const previous=String(meta.date||''),priorCount=Math.max(metaCount,cloud),priorLongest=Math.max(0,Number(meta.longest||0),priorCount);
+      if(previous===today){count=Math.max(priorCount,1);longest=Math.max(priorLongest,count);lastDate=today}
+      else if(previous){
+        const diff=(dayNumber(today)??0)-(dayNumber(previous)??0);
+        // If another device already advanced the cloud streak, reuse it instead of adding twice.
+        if(cloud>metaCount)count=cloud;
+        else count=diff===1?Math.max(metaCount,cloud,0)+1:1;
+        longest=Math.max(priorLongest,count);lastDate=today;
+      }else{
+        // First v26.1 check-in preserves any streak already present instead of fabricating an extra day.
+        count=Math.max(priorCount,1);longest=Math.max(priorLongest,count);lastDate=today;
+      }
+      writeMeta({date:lastDate,count,longest,checkedAt:new Date().toISOString()});updateLocalUser(count);paint();
+      if(force||previous!==today||cloud!==count)await persistProfile(count);
+      return count;
+    }finally{busy=false}
+  }
+  function current(){return count||Math.max(0,Number(readMeta().count||0),cloudProfileStreak())}
+  LX.streak={checkIn,current,open,meta:()=>({count:current(),longest,lastDate})};
+  const start=()=>{
+    setTimeout(()=>checkIn().catch(()=>{}),700);
+    let seenUser='';
+    setInterval(()=>{
+      const u=currentUser(),sig=String(u?.id||u?.email||'');
+      if(sig&&sig!==seenUser){seenUser=sig;checkIn(true).catch(()=>{})}
+    },2200);
+    setInterval(()=>{if(document.visibilityState==='visible')checkIn().catch(()=>{})},30*60*1000);
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkIn().catch(()=>{})});
+})();
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='26.1';
