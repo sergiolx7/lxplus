@@ -44,7 +44,7 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=25.54">
+  <link rel="stylesheet" href="app.css?v=25.55">
   <title>LX Plus</title>
 </head>
 <body>
@@ -254,7 +254,7 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   })();
   </script>
-  <script src="lxplus.js?v=25.54"></script>
+  <script src="lxplus.js?v=25.55"></script>
   <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 
 <script>
@@ -268,7 +268,7 @@
     booted:false,directory:[],coreChannel:null,presenceChannel:null,presenceMap:{},presenceReady:false,signalChannel:null,activeCall:null,incoming:null,
     pc:null,localStream:null,remoteStream:null,remoteAudioStream:null,remoteCameraStream:null,remoteScreenStream:null,screenStream:null,audioTransceiver:null,screenSender:null,screenTransceiver:null,cameraTransceiver:null,videoSender:null,cameraPlaceholderTrack:null,screenPlaceholderTrack:null,placeholderCanvases:[],processed:new Set(),pendingIce:[],remoteTracks:new Map(),remoteScreenMid:null,remoteShareMode:null,remoteSharing:false,screenMode:null,makingOffer:false,negotiating:false,pendingNegotiation:null,lastRemoteOfferAt:0,lastLocalOfferAt:0,remoteShareRecoveryTimer:null,
     reconnectTimer:null,reconnectAttempts:0,reconnectInFlight:false,callTimeout:null,callTimer:null,callStartedAt:null,callStartedClock:null,networkState:'idle',callPollTimer:null,callPollBusy:false,openTab:'discover',drawerOpen:false,lastError:'',loading:false,
-    screenAudioTrack:null,screenAudioContext:null,screenAudioDestination:null,screenAudioMixedTrack:null,screenAudioSources:[]
+    screenAudioTrack:null,screenAudioContext:null,screenAudioDestination:null,screenAudioMixedTrack:null,screenAudioSources:[],lastSeenTimer:null,lastSeenBusy:false
   };
   const db=()=>LX.cloud?.db?.();
   const me=()=>LX.cloud?.user?.()||U?.state?.user||null;
@@ -297,10 +297,31 @@
   const presencePrefKey=()=>`lx_presence_visible_v2536_${uid()||'anon'}`;
   function presenceVisible(){try{return (LX.store?.read?.(presencePrefKey(),true))!==false}catch{return true}}
   function isOnline(id){return !!state.presenceMap[String(id||'')]}
-  function presenceText(id){return isOnline(id)?'Online agora':'Offline'}
+  function personById(id){return state.directory.find(p=>String(p.user_id)===String(id))||null}
+  function fmtLastSeen(value){
+    if(!value)return 'Visto por último há pouco';
+    const d=new Date(value);if(Number.isNaN(+d))return 'Visto por último há pouco';
+    const now=new Date(),diff=Math.max(0,Date.now()-d.getTime());
+    if(diff<60000)return 'Visto por último agora';
+    if(diff<3600000)return `Visto por último há ${Math.max(1,Math.floor(diff/60000))} min`;
+    if(now.toDateString()===d.toDateString())return `Visto por último hoje às ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`;
+    const y=new Date(now);y.setDate(now.getDate()-1);
+    if(y.toDateString()===d.toDateString())return `Visto por último ontem às ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`;
+    return `Visto por último em ${d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} às ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`;
+  }
+  function presenceText(id){if(isOnline(id))return 'Online agora';return fmtLastSeen(personById(id)?.last_seen)}
   function applyPresenceUI(){
     document.querySelectorAll('[data-lx-presence-user]').forEach(el=>{const id=el.getAttribute('data-lx-presence-user'),on=isOnline(id),dot=el.querySelector('[data-lx-presence-dot]');if(dot){dot.classList.toggle('online',on);dot.classList.toggle('offline',!on);dot.setAttribute('aria-label',on?'Online':'Offline')}});
-    document.querySelectorAll('[data-lx-presence-label]').forEach(el=>{const id=el.getAttribute('data-lx-presence-label'),on=isOnline(id);el.textContent=on?'Online agora':'Offline';el.classList.toggle('online',on);el.classList.toggle('offline',!on)});
+    document.querySelectorAll('[data-lx-presence-label]').forEach(el=>{const id=el.getAttribute('data-lx-presence-label'),on=isOnline(id);el.textContent=presenceText(id);el.classList.toggle('online',on);el.classList.toggle('offline',!on)});
+  }
+  async function touchLastSeen(force=false){
+    const c=db(),id=uid();if(!c||!id||state.lastSeenBusy)return;
+    if(!force&&document.visibilityState==='hidden')return;
+    state.lastSeenBusy=true;try{await c.from('lx_profiles').update({last_seen:new Date().toISOString()}).eq('user_id',id)}catch(e){console.warn('LX last seen',e)}finally{state.lastSeenBusy=false}
+  }
+  function startLastSeenHeartbeat(){
+    if(state.lastSeenTimer)clearInterval(state.lastSeenTimer);
+    touchLastSeen(true);state.lastSeenTimer=setInterval(()=>touchLastSeen(false),45000);
   }
   async function syncPresenceTracking(){const ch=state.presenceChannel,id=uid();if(!ch||!id)return;try{if(presenceVisible())await ch.track({user_id:String(id),visible:true,at:new Date().toISOString()});else await ch.untrack()}catch(e){console.warn('LX presence track',e)}}
   async function setPresenceVisible(v){try{LX.store?.write?.(presencePrefKey(),!!v)}catch{}await syncPresenceTracking();applyPresenceUI()}
@@ -312,7 +333,7 @@
         .on('presence',{event:'join'},()=>setTimeout(applyPresenceUI,0))
         .on('presence',{event:'leave'},()=>setTimeout(applyPresenceUI,0));
       state.presenceChannel=ch;
-      ch.subscribe(async status=>{if(status==='SUBSCRIBED'){state.presenceReady=true;await syncPresenceTracking()}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'){state.presenceReady=false}});
+      ch.subscribe(async status=>{if(status==='SUBSCRIBED'){state.presenceReady=true;await syncPresenceTracking();startLastSeenHeartbeat()}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'){state.presenceReady=false}});
     }catch(e){console.warn('LX presence boot',e);state.presenceReady=false}
   }
 
@@ -365,7 +386,8 @@
       name:String(stableName).slice(0,40),
       bio:String(extra.bio??st.bio??'').slice(0,160),
       avatar_url:hasAvatar?extra.avatar_url:(st.image??null),
-      updated_at:new Date().toISOString()
+      updated_at:new Date().toISOString(),
+      last_seen:new Date().toISOString()
     };
     const {error}=await c.from('lx_profiles').update(row).eq('user_id',u.id);
     if(error){console.warn('LX social profile sync',error);return false}
@@ -866,7 +888,7 @@
       updateBadge();return true;
     }catch(e){state.booted=false;console.warn('LX social boot',e);state.lastError='Não foi possível conectar a Comunidade.';return false}
   }
-  async function shutdown(){close();hideIncoming();await cleanupCall(false);const c=db();if(state.presenceChannel&&c){try{await state.presenceChannel.untrack()}catch{}await c.removeChannel(state.presenceChannel).catch(()=>{})}if(state.coreChannel&&c)await c.removeChannel(state.coreChannel).catch(()=>{});state.presenceChannel=null;state.presenceMap={};state.presenceReady=false;state.coreChannel=null;state.booted=false;state.directory=[];updateBadge();applyPresenceUI()}
+  async function shutdown(){close();hideIncoming();await touchLastSeen(true);await cleanupCall(false);if(state.lastSeenTimer){clearInterval(state.lastSeenTimer);state.lastSeenTimer=null}const c=db();if(state.presenceChannel&&c){try{await state.presenceChannel.untrack()}catch{}await c.removeChannel(state.presenceChannel).catch(()=>{})}if(state.coreChannel&&c)await c.removeChannel(state.coreChannel).catch(()=>{});state.presenceChannel=null;state.presenceMap={};state.presenceReady=false;state.coreChannel=null;state.booted=false;state.directory=[];updateBadge();applyPresenceUI()}
   function bindLauncher(){
     const launch=e=>{e?.preventDefault?.();open('discover')};
     const btn=document.getElementById('communityBtn');
@@ -874,6 +896,8 @@
     document.querySelectorAll('[data-mobile="Comunidade"],[data-open-community="1"]').forEach(el=>{if(!el.dataset.lxSocialBound){el.dataset.lxSocialBound='1';el.addEventListener('click',launch)}});
   }
   document.addEventListener('click',e=>{const b=e.target?.closest?.('[data-lx-hangup="1"]');if(b&&document.getElementById('lxCallOverlay')){e.preventDefault();e.stopPropagation();endCurrentCall()}},true);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){touchLastSeen(true);refreshDirectory().then(applyPresenceUI).catch(()=>{})}else touchLastSeen(true)});
+  window.addEventListener('pagehide',()=>{touchLastSeen(true);if(state.lastSeenTimer){clearInterval(state.lastSeenTimer);state.lastSeenTimer=null}});
   LX.social={boot,shutdown,open,close,retry,openProfile,openSettings,commitSettings,refreshDirectory,syncMyProfile,add,respond,removeFriend,startCall,acceptIncoming,rejectIncoming,endCurrentCall,toggleMic,toggleCamera,shareScreen,toggleSharePicker,toggleReactions,sendReaction,toggleCallFullscreen,resumeCallAudio,isOnline,presenceText,presenceVisible,setPresenceVisible,ready:true}; window.LXOpenCommunity=function(tab){return open(tab||'discover')};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindLauncher,{once:true});else bindLauncher();
 })();
