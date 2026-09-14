@@ -15,7 +15,7 @@
 
   <script>
   (function(){
-    var BUILD='25.56',KEY='lxplus_build_seen';
+    var BUILD='25.57',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -44,61 +44,49 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=25.56">
+  <link rel="stylesheet" href="app.css?v=25.57">
   <title>LX Plus</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
 
-  <section id="splash" class="screen splash splash-cinematic splash-arc-reveal" aria-label="Abertura LX Plus">
-    <div class="lx-arc-scene" aria-hidden="true">
-      <div class="lx-arc-vignette"></div>
-      <div class="lx-arc-bloom bloom-main"></div>
-      <div class="lx-arc-bloom bloom-low"></div>
-      <svg class="lx-arc-swoosh" viewBox="0 0 620 300" role="presentation" focusable="false">
+  <section id="splash" class="screen splash lx-splash-v257" aria-label="Abertura LX Plus">
+    <div class="lx257-stage" aria-hidden="true">
+      <div class="lx257-haze"></div>
+      <svg class="lx257-arc" viewBox="0 0 920 360" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <linearGradient id="lxArcGradient" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#4b191d" stop-opacity="0"/>
-            <stop offset=".28" stop-color="#a65f44" stop-opacity=".44"/>
-            <stop offset=".62" stop-color="#9de8f3" stop-opacity=".76"/>
-            <stop offset="1" stop-color="#f4ffff" stop-opacity="1"/>
+          <linearGradient id="lx257ArcGradient" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#6e2e22" stop-opacity="0"/>
+            <stop offset=".22" stop-color="#a9664b" stop-opacity=".52"/>
+            <stop offset=".62" stop-color="#73b9ce" stop-opacity=".72"/>
+            <stop offset="1" stop-color="#f5ffff" stop-opacity="1"/>
           </linearGradient>
-          <filter id="lxArcGlow" x="-30%" y="-60%" width="160%" height="220%">
-            <feGaussianBlur stdDeviation="3.8" result="blur"/>
+          <filter id="lx257ArcGlow" x="-30%" y="-70%" width="160%" height="240%">
+            <feGaussianBlur stdDeviation="4.5" result="blur"/>
             <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
         </defs>
-        <path class="lx-arc-path lx-arc-path-soft" d="M72 195 C 145 20, 398 -35, 548 175"/>
-        <path class="lx-arc-path lx-arc-path-main" d="M72 195 C 145 20, 398 -35, 548 175"/>
+        <path class="lx257-arc-soft" d="M62 245 C 195 25, 640 -30, 852 218"/>
+        <path class="lx257-arc-main" d="M62 245 C 195 25, 640 -30, 852 218"/>
       </svg>
-      <div class="lx-reference-lockup lx-approved-lockup lx3d-lockup" role="img" aria-label="LX Plus">
-        <div class="lx3d-wordmark" aria-hidden="true">
-          <span class="lx3d-l" data-text="L">L</span><span class="lx3d-x" data-text="X">X</span>
-          <span class="lx3d-plusword" data-text="Plus">Plus</span><span class="lx3d-plus" data-text="+">+</span>
-        </div>
-        <span class="lx3d-scan" aria-hidden="true"></span>
-        <span class="lx-reference-glint" aria-hidden="true"></span>
-      </div>
-      <div class="lx-orbit-mascot" aria-hidden="true">
-        <div class="lx-orbit-ring"></div>
-        <div class="lx-orbit-sprite">
-          <div class="lx-orbit-face">
-            <i class="eye left"></i>
-            <i class="eye right"></i>
-            <span class="smile"></span>
-          </div>
+      <div class="lx257-orbit-track">
+        <div class="lx257-orb">
+          <i class="lx257-eye eye-a"></i><i class="lx257-eye eye-b"></i><span class="lx257-smile"></span>
         </div>
       </div>
-      <div class="lx-splash-copy-3d"><span>STREAM · MUSIC · BOOKS</span><strong>Entre na sua experiência premium</strong></div>
-      <div class="lx-arc-floor-glow"></div>
+      <div class="lx257-brand" role="img" aria-label="LX Plus">
+        <div class="lx257-brand-text"><span class="lx257-l">L</span><span class="lx257-x">X</span><span class="lx257-plusword">Plus</span><span class="lx257-plus">+</span></div>
+        <span class="lx257-brand-flare"></span>
+      </div>
+      <div class="lx257-floor"></div>
     </div>
-    <button id="skipSplash" class="splash-skip-reference" type="button">Pular</button>
+    <button id="skipSplash" class="splash-skip-reference lx257-skip" type="button">Pular</button>
     <button id="enterSplash" class="lx-splash-hidden-enter" type="button" tabindex="-1" aria-hidden="true">Entrar na LX Plus</button>
   </section>
 
   <section id="auth" class="screen auth hidden">
     <div class="auth-showcase">
-      <div class="brand brand-lg brand-approved"><img src="lxplus-wordmark.png?v=25.56" alt="LX Plus" class="lx-approved-logo"></div>
+      <div class="brand brand-lg brand-approved"><img src="lxplus-wordmark.png?v=25.57" alt="LX Plus" class="lx-approved-logo"></div>
       <div class="auth-copy">
         <span class="eyebrow">UMA CONTA · QUATRO MODOS</span>
         <h1>Continue de onde parou, em qualquer formato.</h1>
@@ -136,14 +124,54 @@
   </section>
 
   <section id="profiles" class="screen profiles hidden">
-    <header><div class="brand brand-lg brand-approved"><img src="lxplus-wordmark.png?v=25.56" alt="LX Plus" class="lx-approved-logo"></div><button id="profileLogout" class="glass-btn">Sair</button></header>
+    <header><div class="brand brand-lg brand-approved"><img src="lxplus-wordmark.png?v=25.57" alt="LX Plus" class="lx-approved-logo"></div><button id="profileLogout" class="glass-btn">Sair</button></header>
     <main><span class="eyebrow">PERFIS</span><h1>Quem está usando a LX Plus?</h1><div id="profileGrid" class="profile-grid"></div></main>
   </section>
 
   <section id="app" class="app hidden">
+    <aside id="lxDesktopRail" class="lx-desktop-rail" aria-label="Navegação principal">
+      <button class="lx-shell-brand" type="button" onclick="document.getElementById('brandHome')?.click()" aria-label="LX Plus"><span>LX</span><small>Plus+</small></button>
+      <nav class="lx-shell-primary">
+        <button data-shell-category="Início" class="active"><span>⌂</span><b>Início</b></button>
+        <button data-shell-category="Filmes"><span>▣</span><b>Filmes</b></button>
+        <button data-shell-category="Séries"><span>▤</span><b>Séries</b></button>
+        <button data-shell-mode="Ouvir"><span>♫</span><b>Músicas</b></button>
+        <button data-shell-mode="Ler"><span>▥</span><b>Livros</b></button>
+        <button data-shell-community="1"><span>◎</span><b>Comunidade</b></button>
+        <button data-shell-category="Minha Lista"><span>♡</span><b>Minha Lista</b></button>
+      </nav>
+      <div class="lx-shell-format">
+        <span>FORMATO</span>
+        <div>
+          <button data-shell-mode="Assistir">Assistir</button>
+          <button data-shell-mode="Ouvir">Ouvir</button>
+          <button data-shell-mode="Ler">Ler</button>
+          <button data-shell-mode="Ao vivo">Ao vivo</button>
+        </div>
+      </div>
+      <button class="lx-shell-user" type="button" onclick="document.getElementById('profileBtn')?.click()"><span id="lxShellAvatar">LX</span><div><b id="lxShellName">LX Plus</b><small>Meu perfil</small></div><i>›</i></button>
+    </aside>
+    <aside id="lxRightRail" class="lx-right-rail" aria-label="Música e atalhos">
+      <section class="lx-right-music">
+        <div class="lx-right-title"><span>Tocando agora</span><button type="button" onclick="document.getElementById('musicClose')?.click()">×</button></div>
+        <div id="lxRightMusicCover" class="lx-right-cover"><span>♫</span></div>
+        <div class="lx-right-track"><strong id="lxRightMusicTitle">LX Music</strong><small id="lxRightMusicArtist">Escolha uma música</small></div>
+        <input id="lxRightMusicProgress" type="range" min="0" max="100" value="0" step="0.1" aria-label="Progresso da música">
+        <div class="lx-right-times"><span id="lxRightMusicTime">0:00</span><span id="lxRightMusicDuration">0:00</span></div>
+        <div class="lx-right-controls"><button type="button" onclick="document.getElementById('musicShuffle')?.click()">⇄</button><button type="button" onclick="document.getElementById('musicPrev')?.click()">‹</button><button id="lxRightMusicPlay" class="main" type="button" onclick="document.getElementById('musicPlay')?.click()">▶</button><button type="button" onclick="document.getElementById('musicNext')?.click()">›</button><button type="button" onclick="document.getElementById('musicRepeat')?.click()">↻</button></div>
+      </section>
+      <section class="lx-right-shortcuts">
+        <div class="lx-right-title"><span>Para você</span><button type="button" data-shell-mode="Ouvir">Ver tudo</button></div>
+        <div id="lxRightMusicList" class="lx-right-list"></div>
+      </section>
+      <section class="lx-right-community">
+        <div class="lx-right-title"><span>Comunidade</span><button type="button" data-shell-community="1">Abrir</button></div>
+        <button data-shell-community="1"><span>◎</span><div><b>Conversas</b><small>Amigos, grupos e chamadas</small></div><i>›</i></button>
+      </section>
+    </aside>
     <header id="topbar" class="topbar">
       <div class="topbar-row">
-        <a href="#" id="brandHome" class="brand brand-sm brand-approved" aria-label="LX Plus"><img src="lxplus-wordmark.png?v=25.56" alt="LX Plus" class="lx-approved-logo"></a>
+        <a href="#" id="brandHome" class="brand brand-sm brand-approved" aria-label="LX Plus"><img src="lxplus-wordmark.png?v=25.57" alt="LX Plus" class="lx-approved-logo"></a>
         <div id="modeSwitch" class="mode-switch">
           <button data-mode="Assistir" class="active"><span>▶</span>Assistir</button>
           <button data-mode="Ler"><span>▤</span>Ler</button>
@@ -173,7 +201,7 @@
 
   <section id="admin" class="admin hidden">
     <aside class="admin-side">
-      <div class="brand brand-sm brand-approved"><img src="lxplus-wordmark.png?v=25.56" alt="LX Plus" class="lx-approved-logo"></div>
+      <div class="brand brand-sm brand-approved"><img src="lxplus-wordmark.png?v=25.57" alt="LX Plus" class="lx-approved-logo"></div>
       <div class="admin-identity"><div class="admin-avatar">LX</div><div><b>Administrador</b><small>LX Plus</small></div></div>
       <div class="admin-console-label"><span></span> LX PLUS</div>
       <nav id="adminNav">

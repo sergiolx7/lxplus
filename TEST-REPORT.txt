@@ -1,5 +1,14 @@
-Testes locais
-- node --check lxplus.js: OK
-- Verificação de service-worker.js: OK
-- Estrutura HTML preservada
-- Atualização de cache: OK
+LX Plus v25.57 — Testes locais
+
+OK — node --check lxplus.js
+OK — node --check service-worker.js
+OK — HTML sem IDs duplicados
+OK — referências locais do HTML sem arquivos ausentes
+OK — chaves CSS balanceadas
+OK — service worker/cache atualizado para lxplus-shell-2557
+OK — desktop rail presente
+OK — right music rail presente
+OK — splash orbital presente
+
+Limitação do ambiente
+O Chromium headless deste ambiente ficou preso em erros de DBus e não gerou a captura visual automatizada. Por isso, não afirmo teste visual automatizado de navegador nesta build.

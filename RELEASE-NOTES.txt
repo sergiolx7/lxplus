@@ -1,6 +1,14 @@
-LX Plus v25.56 — Experience Refresh
-- Intro de entrada redesenhada com visual mais cinematográfico/clean
-- Modal de filmes e séries mais próximo de apps premium de streaming
-- Álbum/música reorganizados com leitura inspirada no Spotify
-- Comunidade com layout mais limpo e conversável
-- Cache do service worker atualizado para evitar carregar visual antigo
+LX Plus v25.57 — Premium Shell + Spotify Music
+
+Principais mudanças
+- Entrada antes do login refeita com fundo escuro, arco luminoso, bolinha/carinha orbitando e logo LX Plus surgindo em 3D.
+- Desktop ganhou barra lateral esquerda para escolher formato: Assistir, Ouvir, Ler e Ao vivo.
+- Desktop ganhou painel lateral direito focado em música, inspirado na organização de apps como Spotify, mas mantendo identidade LX Plus.
+- Painel direito mostra capa, faixa atual, artista, progresso, controles e atalhos musicais.
+- Modais de filmes/séries ficaram mais limpos, com tipografia menor e leitura mais próxima de apps premium de streaming.
+- Modal musical/álbum ficou mais compacto e organizado.
+- Mobile preservado: as duas barras laterais só aparecem em telas grandes.
+- Cache atualizado para v25.57.
+
+Observação
+A reprodução de Spotify continua usando o player/controle oficial do provedor quando aplicável. O navegador pode exigir um primeiro toque do usuário para iniciar áudio.
