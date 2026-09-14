@@ -15,7 +15,7 @@
 
   <script>
   (function(){
-    var BUILD='25.50',KEY='lxplus_build_seen';
+    var BUILD='25.56',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -44,7 +44,7 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=25.55">
+  <link rel="stylesheet" href="app.css?v=25.56">
   <title>LX Plus</title>
 </head>
 <body>
@@ -79,7 +79,17 @@
         <span class="lx3d-scan" aria-hidden="true"></span>
         <span class="lx-reference-glint" aria-hidden="true"></span>
       </div>
-      <div class="lx-splash-copy-3d"><span>STREAM · MUSIC · BOOKS</span><strong>Uma entrada mais cinematográfica para a sua LX Plus</strong></div>
+      <div class="lx-orbit-mascot" aria-hidden="true">
+        <div class="lx-orbit-ring"></div>
+        <div class="lx-orbit-sprite">
+          <div class="lx-orbit-face">
+            <i class="eye left"></i>
+            <i class="eye right"></i>
+            <span class="smile"></span>
+          </div>
+        </div>
+      </div>
+      <div class="lx-splash-copy-3d"><span>STREAM · MUSIC · BOOKS</span><strong>Entre na sua experiência premium</strong></div>
       <div class="lx-arc-floor-glow"></div>
     </div>
     <button id="skipSplash" class="splash-skip-reference" type="button">Pular</button>
@@ -88,7 +98,7 @@
 
   <section id="auth" class="screen auth hidden">
     <div class="auth-showcase">
-      <div class="brand brand-lg brand-approved"><img src="lxplus-wordmark.png?v=25.53" alt="LX Plus" class="lx-approved-logo"></div>
+      <div class="brand brand-lg brand-approved"><img src="lxplus-wordmark.png?v=25.56" alt="LX Plus" class="lx-approved-logo"></div>
       <div class="auth-copy">
         <span class="eyebrow">UMA CONTA · QUATRO MODOS</span>
         <h1>Continue de onde parou, em qualquer formato.</h1>
@@ -126,14 +136,14 @@
   </section>
 
   <section id="profiles" class="screen profiles hidden">
-    <header><div class="brand brand-lg brand-approved"><img src="lxplus-wordmark.png?v=25.53" alt="LX Plus" class="lx-approved-logo"></div><button id="profileLogout" class="glass-btn">Sair</button></header>
+    <header><div class="brand brand-lg brand-approved"><img src="lxplus-wordmark.png?v=25.56" alt="LX Plus" class="lx-approved-logo"></div><button id="profileLogout" class="glass-btn">Sair</button></header>
     <main><span class="eyebrow">PERFIS</span><h1>Quem está usando a LX Plus?</h1><div id="profileGrid" class="profile-grid"></div></main>
   </section>
 
   <section id="app" class="app hidden">
     <header id="topbar" class="topbar">
       <div class="topbar-row">
-        <a href="#" id="brandHome" class="brand brand-sm brand-approved" aria-label="LX Plus"><img src="lxplus-wordmark.png?v=25.53" alt="LX Plus" class="lx-approved-logo"></a>
+        <a href="#" id="brandHome" class="brand brand-sm brand-approved" aria-label="LX Plus"><img src="lxplus-wordmark.png?v=25.56" alt="LX Plus" class="lx-approved-logo"></a>
         <div id="modeSwitch" class="mode-switch">
           <button data-mode="Assistir" class="active"><span>▶</span>Assistir</button>
           <button data-mode="Ler"><span>▤</span>Ler</button>
@@ -163,7 +173,7 @@
 
   <section id="admin" class="admin hidden">
     <aside class="admin-side">
-      <div class="brand brand-sm brand-approved"><img src="lxplus-wordmark.png?v=25.53" alt="LX Plus" class="lx-approved-logo"></div>
+      <div class="brand brand-sm brand-approved"><img src="lxplus-wordmark.png?v=25.56" alt="LX Plus" class="lx-approved-logo"></div>
       <div class="admin-identity"><div class="admin-avatar">LX</div><div><b>Administrador</b><small>LX Plus</small></div></div>
       <div class="admin-console-label"><span></span> LX PLUS</div>
       <nav id="adminNav">

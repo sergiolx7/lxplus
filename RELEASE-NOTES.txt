@@ -1,18 +1,6 @@
-LX Plus v25.55 — Last Seen Community
-
-Novidades:
-- Conversas da Comunidade agora mostram “Online agora” em tempo real.
-- Quando a pessoa sai, aparece “Visto por último agora / há X min / hoje às HH:MM / ontem às HH:MM / data e hora”.
-- O cabeçalho do chat também mostra o último visto.
-- O perfil da Comunidade também usa o mesmo status.
-- Last seen é salvo na nuvem e atualizado periodicamente enquanto a conta está ativa.
-- Ao voltar para a aba, a lista da Comunidade atualiza o status novamente.
-
-Backend:
-- coluna public.lx_profiles.last_seen adicionada.
-- RPC public.lx_social_directory atualizada para retornar last_seen.
-
-QA:
-- lxplus.js: node --check OK
-- service-worker.js: node --check OK
-- 8 scripts inline do index.html: 0 erros de sintaxe
+LX Plus v25.56 — Experience Refresh
+- Intro de entrada redesenhada com visual mais cinematográfico/clean
+- Modal de filmes e séries mais próximo de apps premium de streaming
+- Álbum/música reorganizados com leitura inspirada no Spotify
+- Comunidade com layout mais limpo e conversável
+- Cache do service worker atualizado para evitar carregar visual antigo

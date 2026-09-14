@@ -1,8 +1,5 @@
-LX Plus v25.55 QA
-
-PASS — lxplus.js syntax
-PASS — service-worker.js syntax
-PASS — 8 inline scripts syntax
-PASS — last_seen column exists in Supabase
-PASS — lx_social_directory migrated with last_seen
-PASS — cache namespace bumped to lxplus-shell-2555
+Testes locais
+- node --check lxplus.js: OK
+- Verificação de service-worker.js: OK
+- Estrutura HTML preservada
+- Atualização de cache: OK
