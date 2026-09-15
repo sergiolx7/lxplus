@@ -32,7 +32,7 @@ img{max-width:100%}
 .secondary-btn,.glass-btn{background:rgba(255,255,255,.055)!important;border:1px solid var(--lx27-line)!important;color:#fff!important}
 .toast{z-index:2147483647!important;background:rgba(16,16,18,.96)!important;border-color:var(--lx27-line-strong)!important;color:#fff!important;font-size:.875rem!important}
 
-/* Exact user-supplied identity */
+/* User-supplied identity — transparent mark */
 .lx-logo-v27{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;filter:none!important}
 .brand-approved{background:none!important;box-shadow:none!important;overflow:visible!important}
 .brand-approved:before,.brand-approved:after{display:none!important}
@@ -47,7 +47,7 @@ img{max-width:100%}
 .lx27-intro:before{content:"";position:absolute;inset:-20%;background:conic-gradient(from 210deg at 50% 50%,transparent,rgba(255,255,255,.018),transparent 26%);animation:lx27Ambient 6s linear infinite}
 .lx27-halo{position:absolute;width:min(52vw,620px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.055),rgba(91,76,255,.028) 34%,transparent 68%);filter:blur(22px);opacity:0;animation:lx27Halo 2.2s .15s ease both}
 .lx27-logo-stage{position:relative;z-index:2;width:min(520px,78vw);display:grid;justify-items:center;transform-style:preserve-3d;animation:lx27Stage 2.35s cubic-bezier(.16,.75,.18,1) both}
-.lx27-logo-stage img{width:clamp(92px,15vw,142px);height:auto;aspect-ratio:399/501;object-fit:contain;filter:drop-shadow(0 22px 28px rgba(0,0,0,.9));animation:lx27Mark 2.1s .08s cubic-bezier(.2,.75,.2,1) both}
+.lx27-logo-stage img{width:clamp(92px,15vw,142px);height:auto;aspect-ratio:auto;object-fit:contain;filter:drop-shadow(0 22px 28px rgba(0,0,0,.9));animation:lx27Mark 2.1s .08s cubic-bezier(.2,.75,.2,1) both}
 .lx27-wordmark{display:flex;align-items:baseline;gap:.18em;margin-top:-2px;color:#fff;font-size:clamp(2.2rem,6.2vw,4.8rem);font-weight:900;letter-spacing:-.075em;line-height:.9;text-shadow:0 1px 0 #fff,0 2px 0 #b8b8bd,0 4px 0 #5f6068,0 12px 28px #000;transform:translateZ(30px)}
 .lx27-wordmark span:last-child{font-weight:590;letter-spacing:-.055em;color:#d8d8dc}
 .lx27-lightline{position:absolute;left:50%;bottom:17%;width:min(520px,62vw);height:1px;transform:translateX(-50%) scaleX(0);background:linear-gradient(90deg,transparent,#fff,transparent);box-shadow:0 0 18px rgba(255,255,255,.38);animation:lx27Line 1.5s .55s ease both}

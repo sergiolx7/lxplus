@@ -1,3 +1,18 @@
+LX Plus v27.3 — correção visual da identidade
+
+LOGO TRANSPARENTE (27.3)
+- Removido o retângulo/fundo preto da marca enviada pelo Sérgio. A arte branca foi preservada e agora usa transparência real.
+- A imagem foi recortada ao conteúdo da marca para não carregar uma grande área vazia e para encaixar melhor no splash, login, topo, painel ADM, PWA e componentes dinâmicos.
+- Favicon, apple-touch-icon e ícone do PWA foram atualizados para a mesma identidade sem fundo preto.
+- Todos os usos ativos da marca agora apontam para ?v=27.3, e o service worker usa lxplus-shell-v2703 para impedir que o cache antigo continue exibindo o quadrado preto.
+- Corrigida a proporção forçada do logo no splash para respeitar o novo PNG transparente.
+
+VALIDAÇÃO 27.3
+- JavaScript principal e service worker passaram em node --check.
+- 10 verificações estáticas passaram sem falhas.
+- Regressões da abertura automática/Pular e do MutationObserver passaram.
+- Verificação do PNG confirmou canal alfa real e nenhum pixel RGB escuro visível na marca.
+
 LX Plus v27.2 — atualização premium
 
 CORREÇÃO DO TRAVAMENTO (27.2)

@@ -66,4 +66,4 @@ assert.equal(fixed.window.__LX_INTRO_DONE,true);
 fixed.window.LX.state={user:{adminRole:'owner'}};fixed.trigger();
 assert.equal(fixed.settle(),1,'changing the role must also settle');
 assert.equal(fixed.identity.textContent,'Dono');
-console.log('PASS — reproduz o loop da v27.1 e confirma que a v27.2 permite aos timers abrir o login.');
+console.log('PASS — reproduz o loop da v27.1 e confirma que a correção permanece estável na v27.3 e permite aos timers abrir o login.');

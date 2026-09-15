@@ -16,7 +16,7 @@ const check = (name, fn) => {
 const html = read('index.html');
 const cssFiles = ['app.css', 'app-v27.css'];
 const jsFiles = ['lxplus.js', 'lxplus-v27.js', 'service-worker.js'];
-const expectedLogoHash = '261c79d8db27ba40d9b3020ceb58a0abff25a1ef7825f9dde85708b1a20d050d';
+const expectedLogoHash = 'd53ef410bfa9f66b6220adc21d50ceacff85a4abecfb1ba6dbd2d80c5ffdcf51';
 
 check('HTML static ids are unique', () => {
   const counts = new Map();
@@ -78,11 +78,11 @@ check('manifest and v27 cache agree', () => {
   assert.equal(manifest.theme_color, '#050506');
   assert.deepEqual(manifest.icons.map(icon => icon.src), ['assets/icon-v27.svg']);
   const sw = read('service-worker.js');
-  assert.match(sw, /lxplus-shell-v2702/);
+  assert.match(sw, /lxplus-shell-v2703/);
   for (const file of ['app-v27.css', 'lxplus-v27.js', 'assets/lxplus-logo-v27.png', 'assets/icon-v27.svg']) assert.ok(sw.includes(file));
 });
 
-check('new logo remains byte-identical', () => {
+check('transparent logo and favicon remain byte-identical', () => {
   for (const file of ['assets/lxplus-logo-v27.png', 'lxplus-logo-v27.png']) {
     const hash = crypto.createHash('sha256').update(fs.readFileSync(path.join(dist, file))).digest('hex');
     assert.equal(hash, expectedLogoHash, file);
