@@ -1,68 +1,30 @@
-LX Plus v27.0 — Premium Complete
-Base de continuidade: handoff do Work / build v26.2.
+LX Plus v27.0 — atualização premium
 
-Esta versão continua a base existente sem substituir Supabase, catálogo, contas, aprovação, mídia, histórico, sincronização e comunidade.
+IDENTIDADE E INTERFACE
+- Logo enviada pelo Sérgio incorporada sem alteração de bytes no splash, login, topo e componentes dinâmicos; favicon e ícone instalável usam a mesma imagem.
+- Abertura escura e cinematográfica, curta, com saída automática e suporte a movimento reduzido.
+- Camada visual v27 para Home, perfis, comunidade, painel ADM, player e dock de música, com ajustes para desktop, tablet e celular; temas escuro e claro.
+- Capas carregadas de modo preguiçoso quando possível. A base da v26 foi preservada para não perder módulos existentes; app-v27.css organiza as novas regras.
 
-ENTRADA E IDENTIDADE
-- Abertura premium curta, escura e limpa, usando a identidade oficial LX Plus já presente no handoff.
-- Reveal com profundidade/3D discreto e transição rápida: ~2,1 s + saída de 0,26 s.
-- Botão para pular a abertura.
-- Referências ativas de logos antigos removidas.
-- Ícones PWA 192/512/maskable regenerados a partir da identidade atual.
-- Build pública atualizada para 27.0 e cache para lxplus-shell-2700.
+MÚSICA
+- Dock compacto, painel Tocando agora e controles de fila (adicionar, mover e remover).
+- Busca oficial de faixas, artistas, álbuns e playlists por função de servidor Spotify; páginas de artista, álbum e playlist.
+- Player oficial/serviço de origem quando aplicável. Metadados do Spotify não equivalem a licença ou áudio integral; nenhuma prévia é anunciada como faixa completa.
+- Prévias de Apple/iTunes têm aviso explícito e duração do trecho. Faixas próprias podem tocar integralmente com mídia licenciada cadastrada. Posição local de faixas completas é separada por conta e faixa; prévias voltam ao início.
+- A integração Spotify precisa de Client ID e Client Secret definidos pelo Dono em ADM > Produção & Nuvem. Sem isso, a busca existente por prévias oficiais continua disponível e identificada.
 
-COMUNIDADE E CHAT — FOGO 🔥 CORRIGIDO
-- O fogo não é mais sequência de login diário.
-- Agora é uma sequência independente por conversa entre duas pessoas.
-- Um dia só conta quando os dois participantes enviam pelo menos uma mensagem naquele dia.
-- O mesmo dia conta apenas uma vez.
-- A sequência continua enquanto os dias bilaterais forem consecutivos.
-- Um dia completo sem troca bilateral quebra a sequência.
-- A↔B e A↔C são sequências separadas.
-- Indicador discreto no cabeçalho da conversa.
-- Fallback local com histórico já carregado + RPC cloud `lx_chat_pair_streak` para sincronização no Supabase.
-- A antiga visualização de “dias seguidos” foi removida do perfil.
+FILMES, SÉRIES E COMUNIDADE
+- Player com fonte HLS/DASH adaptativa quando a mídia oferece rendições reais; seletor mostra apenas qualidades disponíveis. Fonte única não é rotulada como 4K fictício.
+- Próximo episódio com contagem de 5 segundos e botão para cancelar; melhoria perceptual moderada de imagem sem prometer aumento real de resolução.
+- Fogo compartilhado por conversa e sincronizado na nuvem: cada dia só conta após mensagens enviadas nos dois sentidos. O antigo contador diário de login foi desativado.
+- Catálogo, histórico, comunidade, aprovações, uploads R2 e sincronização Supabase da versão anterior foram mantidos.
 
-PLAYER DE FILMES E SÉRIES
-- Próximo episódio automático em 5 segundos quando a preferência de autoplay estiver ligada.
-- Botão Cancelar interrompe a contagem.
-- Próximo episódio continua disponível para ação manual quando autoplay está desligado.
-- Metadados/título no player ficaram mais legíveis, inclusive no celular.
-- Controles desaparecem mais rápido durante a reprodução.
-- Qualidade manual só aparece quando existem fontes reais 2160p/1080p/720p/480p cadastradas.
-- “Melhorar imagem · visual” aplica somente contraste/cor/brightness leve e informa claramente que não aumenta a resolução original.
-- Pré-aquecimento leve da próxima fonte direta quando possível, sem baixar o vídeo inteiro antecipadamente.
-- Legendas, velocidade, PiP, volume, tela cheia e transmissão existentes foram preservados.
+SEGURANÇA, ADM E APP
+- Cargos Dono, Administrador, Editor e Moderador com restrições aplicadas também no banco; somente Dono pode gerenciar cargos e integrações sensíveis.
+- Convite PWA só mediante ação do usuário; some no modo instalado e respeita 14 dias de pausa após dispensa.
+- Cache v27 limpa shells antigos para não exibir CSS, logo e player desatualizados.
+- Migrações SQL e funções de servidor incluídas na pasta backend/supabase deste ZIP, como registro da atualização já aplicada ao projeto Supabase conectado.
 
-LX MUSIC
-- Prévia online identificada explicitamente como “Prévia”.
-- Prévia não grava progresso como se fosse faixa completa.
-- Estado visual “Prévia” é limpo ao trocar para Spotify/arquivo completo.
-- Tela “Tocando agora”.
-- Página de artista e navegação por álbum/artista.
-- Fila com adicionar álbum, mover faixa para cima/baixo, remover e reproduzir.
-- Integrações oficiais já existentes foram preservadas; nenhum conteúdo completo externo é fingido a partir de prévias.
-
-PAPÉIS ADM
-- Interface com quatro papéis: Dono, Administrador, Editor e Moderador.
-- Dono: controle total e alteração da equipe/papéis.
-- Administrador: operação ampla, sem páginas sensíveis de papéis/segurança.
-- Editor: catálogo, importação e uploads.
-- Moderador: solicitações, comunidade e notificações.
-- Alterações de papéis são bloqueadas na interface para quem não é Dono.
-- A camada cloud existente continua sendo a fonte de verdade; a v27 não sobrescreve as regras administrativas já configuradas no seu Supabase.
-
-PWA
-- Convite de instalação elegante somente quando o navegador disponibiliza instalação.
-- Nunca instala automaticamente.
-- Fecha com cooldown de 7 dias quando dispensado.
-- Some quando o app já está instalado/standalone.
-- Lifecycle `beforeinstallprompt` e `appinstalled` consolidado em um único fluxo.
-
-SUPABASE
-- Novo arquivo incremental: `supabase/V27_PREMIUM_COMPLETE.sql`.
-- Ele cria somente o RPC seguro necessário ao fogo por conversa.
-- Não apaga nem recria seu catálogo, contas, mensagens ou objetos administrativos existentes.
-
-IMPORTANTE
-Antes de publicar a v27, execute `supabase/V27_PREMIUM_COMPLETE.sql` UMA VEZ no SQL Editor do mesmo projeto Supabase usado pela LX Plus.
+PENDÊNCIAS PARA OPERAÇÃO
+- Configurar credenciais Spotify no painel do Dono para ativar a busca oficial. Reprodução integral do Spotify depende de acesso/autorização do serviço de origem; a LX Plus não a simula.
+- Realizar aceite com contas existentes e novas, pares de usuários, dispositivos reais e mídias HLS/DASH do catálogo após publicação. Veja TEST-REPORT.txt para a distinção entre verificações executadas e testes ainda necessários.

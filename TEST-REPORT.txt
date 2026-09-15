@@ -1,43 +1,19 @@
-LX Plus v27.0 — Relatório de validação
-Data da build: 2026-09-14
+LX Plus v27.0 — relatório de validação, 15/09/2026
 
-VALIDAÇÕES EXECUTADAS E APROVADAS
-OK — `node --check` em lxplus.js.
-OK — `node --check` em service-worker.js.
-OK — 8 blocos JavaScript inline de index.html compilados individualmente sem erro de sintaxe.
-OK — manifest.webmanifest analisado como JSON válido.
-OK — 122 IDs estáticos no HTML, sem duplicações.
-OK — referências locais de HTML sem arquivos ausentes.
-OK — referências locais `url(...)` do CSS sem arquivos ausentes.
-OK — lista CORE do Service Worker sem arquivos ausentes.
-OK — chaves CSS balanceadas: 4160 `{` / 4160 `}`.
-OK — ícones PWA com dimensões 192×192, 512×512 e maskable 512×512.
-OK — build 27.0 alinhada com cache `lxplus-shell-2700`.
-OK — referências ativas de logos/cache antigos verificadas e removidas.
-OK — UI antiga de fogo por login diário removida.
-OK — fogo por conversa presente com fallback local + RPC `lx_chat_pair_streak`.
-OK — próximo episódio configurado para 5 s + botão Cancelar.
-OK — qualidade manual baseada somente em `qualitySources` reais.
-OK — “Melhorar imagem” identificado como ajuste visual e sem alegação de upscaling de resolução.
-OK — música: marcação/limpeza de Prévia, fila, Tocando Agora, artista e álbum presentes.
-OK — papéis Dono/Administrador/Editor/Moderador e bloqueio de alteração por não-Dono na interface.
-OK — lifecycle PWA: beforeinstallprompt, appinstalled e cooldown de dispensa.
-OK — migração incremental v27 presente em `supabase/V27_PREMIUM_COMPLETE.sql`.
+EXECUTADO — PASSOU
+- Backup da build v26.2 criado antes das alterações e incluído no pacote final.
+- 10 verificações automatizadas de estrutura: IDs HTML sem duplicações estáticas, JavaScript inline e externo compilável, referências locais existentes, CSS balanceado, manifest/cache v27, logo e favicon byte a byte idênticos à imagem recebida, ausência de logos antigos ativos, contratos das funcionalidades v27 e ausência de credenciais privadas embutidas na build pública.
+- node --check em lxplus.js, lxplus-v27.js e service-worker.js; sintaxe das funções Edge também validada.
+- Migrações de cargos, fogo bilateral, chaves de integração e proteção de perfis aplicadas ao Supabase conectado; funções de catálogo Spotify e mídia R2 publicadas e ativas. Conferência de esquemas, índices, políticas, guardas e revogação do acesso anônimo aos RPCs sociais sensíveis feita em consultas de leitura.
+- Funções de servidor exigem JWT; Client Secret do Spotify fica em configuração protegida no banco e não na build entregue.
+- Arquivos essenciais respondem HTTP 200 em servidor estático local: página, CSS v27, JavaScript v27, logo, ícone, manifest e service worker.
 
-SERVIDOR LOCAL
-OK — HTTP 200 para `/`.
-OK — HTTP 200 para `/index.html`.
-OK — HTTP 200 para `/app.css`.
-OK — HTTP 200 para `/lxplus.js`.
-OK — HTTP 200 para `/service-worker.js`.
-OK — HTTP 200 para `/manifest.webmanifest`.
-OK — HTTP 200 para `/lxplus-brand-v262.png`.
+NÃO EXECUTADO NESTE AMBIENTE
+- Inspeção visual de telas, console e interação em Chromium/Firefox: não havia binário de navegador e a instalação automática falhou por limite de rede. tests/smoke.mjs contém o roteiro automatizado para desktop/tablet/mobile, prévia, painel Tocando agora, cargos e PWA, mas seus resultados não foram marcados como PASS.
+- Login/cadastro/aprovação reais de conta existente e nova; comparação da posição musical entre contas e dispositivos; par bilateral do fogo com duas sessões; chats/chamadas/denúncias; teste de episódios até o fim; qualidade automática em HLS/DASH reais; instalação PWA em Android/iPhone. Essas etapas exigem contas de teste aprovadas, conteúdo adequado e navegadores/dispositivos reais.
+- Busca Spotify com credenciais reais: Client ID e Client Secret ainda não foram fornecidos. A recuperação para prévias oficiais foi mantida, sem fingir reprodução integral.
 
-LIMITAÇÕES DESTE AMBIENTE DE TESTE
-- A automação Chromium/headless deste ambiente não conseguiu concluir a renderização visual por limitações do runtime isolado; por isso não foi possível fazer comparação visual pixel a pixel aqui.
-- Não foi feita autenticação real com credenciais de usuários da LX Plus em produção.
-- A migração SQL não foi aplicada automaticamente ao seu projeto Supabase; ela precisa ser executada pelo administrador no SQL Editor.
-- Fluxos que dependem de sessão real, RLS, duas contas, Realtime, Spotify/provider externo, PWA do dispositivo e mídia hospedada precisam de um smoke test no domínio publicado.
-
-CONCLUSÃO
-A build passou nas validações estáticas, de sintaxe, integridade de referências, estrutura PWA e servidor local disponíveis neste ambiente. O pacote está pronto para publicação controlada após aplicar a migração SQL e executar o checklist de produção acima.
+OBSERVAÇÕES
+- O Supabase mantém avisos de auditoria preexistentes e funções privilegiadas necessárias a operações ADM/comunidade; não houve uma limpeza total dos advisors. Proteção contra senha vazada é configuração de projeto ainda a confirmar pelo proprietário.
+- Uma fonte SD não vira 4K. Qualidades reais aparecem somente quando há rendições fornecidas; o recurso de aprimorar imagem é perceptual.
+- A prévia publicada no novo Site é privada e separada do domínio original. O pacote ZIP mantém CNAME e configuração da instância original para publicação pelo administrador do domínio após aceite.

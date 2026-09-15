@@ -1,31 +1,10 @@
-PUBLICAÇÃO — LX PLUS v27.0 PREMIUM COMPLETE
+PUBLICAÇÃO LX PLUS — BUILD 27.0
 
-1. Mantenha um backup da versão atual. Um backup da v26.2 foi criado antes desta atualização.
-2. No mesmo projeto Supabase da LX Plus, abra o SQL Editor.
-3. Execute UMA VEZ: `supabase/V27_PREMIUM_COMPLETE.sql`.
-4. Publique TODOS os arquivos desta pasta no mesmo local do site atual, substituindo os arquivos da versão anterior.
-5. Confirme que estes arquivos estão presentes no host:
-   - index.html
-   - app.css
-   - lxplus.js
-   - service-worker.js
-   - manifest.webmanifest
-   - lxplus-brand-v262.png
-   - app-icon-192.png
-   - app-icon-512.png
-   - app-icon-maskable-512.png
-   - pasta assets/
-6. Abra o site e faça um hard refresh. O cache desta versão é `lxplus-shell-2700` e caches LX Plus antigos são removidos na ativação do novo Service Worker.
-7. Em celular/PWA, feche e reabra o app depois da atualização se uma aba antiga continuar carregada.
+1. Antes da troca no domínio original, leia TEST-REPORT.txt e faça o aceite em contas/dispositivos reais. O pacote inclui o backup v26.2 para reversão.
+2. Os arquivos da RAIZ deste ZIP são o site estático: index.html, app.css, app-v27.css, lxplus.js, lxplus-v27.js, service-worker.js, manifest.webmanifest, CNAME, lxplus-logo-v27.png e assets/. Envie toda a raiz para o host original, substituindo a build anterior sem apagar os dados de usuário.
+3. A pasta backend/supabase contém migrações e funções como registro; não envie backend/, tests/ ou backup/ ao diretório público do host. As migrações e funções já foram aplicadas ao Supabase da configuração existente; confirme o mesmo projeto antes de qualquer reaplicação.
+4. O Dono deve inserir Spotify Client ID e Client Secret em ADM > Produção & Nuvem. Sem essas credenciais, a busca oficial não é ativa e as prévias Apple/iTunes seguem explicitamente rotuladas.
+5. Para validar: login/cadastro, aprovações, catálogo, reprodução de música e vídeo, fogo com dois usuários, cargos ADM, uploads R2, PWA instalado, temas e tamanhos desktop/tablet/celular.
+6. Após publicar, atualize a página e reinicie o PWA. O service worker v27 elimina caches lxplus-shell mais antigos. Não limpe armazenamento de contas sem autorização: histórico e configurações existentes devem permanecer.
 
-CHECK RÁPIDO DE PRODUÇÃO
-- Entrar com duas contas aprovadas.
-- Abrir uma conversa A↔B e enviar pelo menos uma mensagem de cada lado no mesmo dia; verificar 🔥 1.
-- Validar o comportamento novamente em um dia seguinte para confirmar 🔥 2 e sincronização entre dispositivos.
-- Abrir uma série com próximo episódio e confirmar contador de 5 s + Cancelar.
-- Abrir uma música de prévia e depois uma faixa/Spotify para confirmar que “Prévia” não permanece presa.
-- Validar os quatro papéis ADM usando contas de teste e as políticas cloud já existentes.
-- Confirmar que o convite PWA não aparece quando o app já está instalado.
-
-NOTA DE SEGURANÇA
-A v27 não recria nem relaxa as políticas de segurança/RLS administrativas já existentes. O frontend limita páginas por papel, mas a autorização definitiva para alterações sensíveis deve continuar sendo garantida pelas regras/RPCs do Supabase configurado em produção.
+ATENÇÃO: a prévia privada LX Plus v27 é um ambiente de visualização separado. Este ZIP não altera automaticamente o domínio original.
