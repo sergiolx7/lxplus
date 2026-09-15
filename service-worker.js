@@ -1,4 +1,4 @@
-const CACHE='lxplus-shell-v2810';
+const CACHE='lxplus-shell-v2820';
 const CORE=[
   './','./index.html',
   './app.css?v=28.1','./app-v27.css?v=28.1','./app-v28.css?v=28.1',

@@ -255,3 +255,43 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
+
+
+/* LX PLUS v28.2 — anti-empty music hero guard */
+(function(){
+  const LX=window.LX=window.LX||{};
+  function coverFromCurrent(){
+    const current=document.getElementById("musicCover");
+    if(current){
+      const bg=(current.style && current.style.backgroundImage) || "";
+      if(bg && bg !== "none") return bg;
+    }
+    const art=document.querySelector('.lx-music-album .lx-music-art');
+    return (art && art.style && art.style.backgroundImage) || "";
+  }
+  function text(el){return String((el && el.textContent) || '').trim();}
+  function buildCompactHero(top){
+    const dockTitle=text(document.getElementById('musicTitle'))||text(document.querySelector('.lx-music-album strong'))||'Sua música';
+    const dockArtist=text(document.getElementById('musicArtist'))||text(document.querySelector('.lx-music-album small'))||'LX Music';
+    const cover=coverFromCurrent();
+    top.innerHTML='<div class="lx-music-greeting"><span class="eyebrow">LX MUSIC</span><h1>Seu som, do seu jeito.</h1><p>Descubra, curta e continue ouvindo sem perder sua fila.</p></div>'+
+      '<div class="lx-music-feature lx-music-feature-v260"><div class="lx-music-feature-art" style="background-image:' + (cover || 'none') + '"></div><div class="lx-music-feature-copy"><span class="lx-music-provider">DESTAQUE</span><h2>' + dockTitle + '</h2><p>' + dockArtist + '</p><div class="lx-music-feature-actions"><button type="button" class="lx-music-play-big" onclick="document.getElementById('musicPlay') && document.getElementById('musicPlay').click()">▶</button><button type="button" class="secondary-btn" onclick="document.querySelector('[data-cat=\"Música\"]') && document.querySelector('[data-cat=\"Música\"]').click()">Explorar</button></div></div></div>'+
+      '<div class="lx-music-top-chips"><button type="button" class="active" onclick="window.LX && LX.musicSetView && LX.musicSetView('home')">Tudo</button><button type="button" onclick="window.LX && LX.musicSetView && LX.musicSetView('liked')">Curtidas</button><button type="button" onclick="window.LX && LX.musicSetView && LX.musicSetView('recent')">Recentes</button><button type="button" onclick="window.LX && LX.openMusicQueue && LX.openMusicQueue()">Fila</button></div>';
+    top.classList.add('lx-music-top-premium');
+  }
+  function fixMusicHero(){
+    const top=document.querySelector('.lx-music-top-v260');
+    if(!top) return;
+    const greeting=text(top.querySelector('.lx-music-greeting h1'));
+    const feature=text(top.querySelector('.lx-music-feature h2'));
+    if(!greeting && !feature) buildCompactHero(top);
+    const rect=top.getBoundingClientRect();
+    if(rect.height>360 && (!feature || !greeting)) top.style.minHeight='240px';
+  }
+  function schedule(){ setTimeout(fixMusicHero,0); setTimeout(fixMusicHero,120); setTimeout(fixMusicHero,600); }
+  document.addEventListener('DOMContentLoaded',schedule,{once:true});
+  window.addEventListener('load',schedule,{once:true});
+  const obs=new MutationObserver(function(){ if(document.querySelector('.lx-music-top-v260')) schedule(); });
+  document.addEventListener('DOMContentLoaded',function(){ obs.observe(document.body,{childList:true,subtree:true}); },{once:true});
+  LX.v282={fixMusicHero:fixMusicHero};
+})();

@@ -2327,3 +2327,34 @@ body:not(.light){background:radial-gradient(circle at 14% -8%,rgba(112,72,221,.1
 .lx261-social-tabs button.active{background:rgba(255,255,255,.045)!important;color:#f4f7fb!important;border-color:rgba(255,255,255,.08)!important}.lx261-social-tabs button.active:after{left:22%!important;right:22%!important;bottom:3px!important;background:#b8c5d4!important}.lx261-social-tabs button:before{content:none!important}
 
 .admin-team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:12px}.admin-team-card{padding:16px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.024)}.admin-team-card h3{margin:6px 0 2px;font-size:18px}.admin-team-card p{margin:0;color:var(--muted);font-size:11px;line-height:1.5}.admin-team-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.admin-team-actions button,.admin-team-actions select{height:38px;border-radius:10px}.admin-role-badge{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:999px;background:rgba(80,154,255,.11);border:1px solid rgba(95,171,255,.18);font-size:10px;font-weight:800;color:#ddebff}.admin-role-badge.helper{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08);color:#d7dee6}.admin-help-note{margin-top:12px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);color:#9fb0c0;font-size:11px;line-height:1.55}.admin-team-table td .approval-actions{display:flex;flex-wrap:wrap;gap:8px}.admin-team-table select{min-width:122px;height:34px;border:1px solid var(--line);border-radius:9px;background:#0d1a27;color:#fff;padding:0 10px}.admin-team-table .danger{background:rgba(239,71,111,.08)}
+
+
+/* LX PLUS v28.2 — music layout hard fix + visual polish */
+.lx-music-top-v260{min-height:260px!important;padding:26px clamp(18px,3vw,40px) 18px!important;display:grid!important;grid-template-columns:minmax(280px,1fr) minmax(360px,560px)!important;align-items:end!important;gap:18px!important}
+.lx-music-top-v260 .lx-music-greeting{margin-bottom:0!important;align-self:end!important;max-width:680px!important}
+.lx-music-top-v260 .lx-music-greeting h1{font-size:clamp(24px,2.8vw,40px)!important;line-height:.95!important;margin:4px 0 6px!important}
+.lx-music-top-v260 .lx-music-greeting p{font-size:13px!important;max-width:560px!important}
+.lx-music-top-v260 .lx-music-top-chips{grid-column:1 / -1!important;order:3!important;margin:0!important}
+.lx-music-feature-v260{width:100%!important;max-width:none!important;min-height:auto!important;align-self:end!important;padding:14px!important;gap:14px!important}
+.lx-music-feature-v260 .lx-music-feature-art{width:110px!important}
+.lx-music-feature-v260 h2{font-size:clamp(18px,2.3vw,32px)!important;line-height:1.02!important;margin:4px 0 2px!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
+.lx-music-feature-v260 p{font-size:12px!important;margin:0 0 10px!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
+.lx-music-feature-v260 .lx-music-feature-stats{margin:0 0 10px!important}
+.lx-music-main-v260 .lx-music-section:first-of-type{padding-top:14px!important}
+.lx-v27-now-copy h2,.lx-v27-now-playing h1{font-size:clamp(28px,4.4vw,68px)!important;line-height:.93!important;word-break:break-word!important;hyphens:auto!important}
+.lx-v27-now-copy p{font-size:14px!important}
+#lxRightMusicTitle,#lxRightMusicArtist{word-break:break-word!important}
+.lx-social-name-streak,.lx-streak-pill,.lx-fire-pill{display:inline-flex!important;align-items:center!important;gap:4px!important;max-width:max-content!important}
+@media(max-width:1180px){
+  .lx-music-top-v260{grid-template-columns:1fr!important;min-height:220px!important;padding:20px 12px 14px!important;gap:12px!important}
+  .lx-music-feature-v260{grid-template-columns:84px minmax(0,1fr)!important;padding:11px!important}
+  .lx-music-feature-v260 .lx-music-feature-art{width:84px!important}
+  .lx-music-top-v260 .lx-music-greeting h1{font-size:clamp(22px,5vw,32px)!important}
+}
+@media(max-width:640px){
+  .lx-music-top-v260{min-height:180px!important;padding:16px 10px 10px!important}
+  .lx-music-feature-v260{grid-template-columns:72px minmax(0,1fr)!important;gap:10px!important}
+  .lx-music-feature-v260 .lx-music-feature-art{width:72px!important}
+  .lx-music-feature-v260 h2{font-size:18px!important}
+  .lx-music-top-v260 .lx-music-greeting p{display:none!important}
+}
