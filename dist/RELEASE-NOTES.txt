@@ -1,0 +1,41 @@
+LX Plus v27.2 — atualização premium
+
+CORREÇÃO DO TRAVAMENTO (27.2)
+- Corrigido o ciclo do MutationObserver que atualizava sem parar o rótulo de cargo ADM, impedindo a passagem da abertura para o login mesmo com o timer independente da 27.1.
+- A mensagem da Home também só atualiza seu texto quando de fato muda, evitando outro ciclo de observação após o login.
+- Regressão nova simula o observador da aplicação, reproduz o travamento da 27.1 como controle negativo e confirma que a 27.2 encerra o ciclo e abre o login.
+- CSS e JavaScript passam a usar ?v=27.2; o service worker usa lxplus-shell-v2702.
+
+CORREÇÃO DE ABERTURA (27.1)
+- A passagem automática da intro para o login agora é preparada assim que o HTML está disponível, sem depender de DOMContentLoaded nem do carregamento do núcleo.
+- “Pular” abre o login mesmo com módulos atrasados; o início tardio do núcleo não volta a mostrar a abertura.
+- A passagem depende de timers locais e pode ser acionada por “Pular”.
+
+IDENTIDADE E INTERFACE
+- Logo enviada pelo Sérgio incorporada sem alteração de bytes no splash, login, topo e componentes dinâmicos; favicon e ícone instalável usam a mesma imagem.
+- Abertura escura e cinematográfica, curta, com saída automática e suporte a movimento reduzido.
+- Camada visual v27 para Home, perfis, comunidade, painel ADM, player e dock de música, com ajustes para desktop, tablet e celular; temas escuro e claro.
+- Capas carregadas de modo preguiçoso quando possível. A base da v26 foi preservada para não perder módulos existentes; app-v27.css organiza as novas regras.
+
+MÚSICA
+- Dock compacto, painel Tocando agora e controles de fila (adicionar, mover e remover).
+- Busca oficial de faixas, artistas, álbuns e playlists por função de servidor Spotify; páginas de artista, álbum e playlist.
+- Player oficial/serviço de origem quando aplicável. Metadados do Spotify não equivalem a licença ou áudio integral; nenhuma prévia é anunciada como faixa completa.
+- Prévias de Apple/iTunes têm aviso explícito e duração do trecho. Faixas próprias podem tocar integralmente com mídia licenciada cadastrada. Posição local de faixas completas é separada por conta e faixa; prévias voltam ao início.
+- A integração Spotify precisa de Client ID e Client Secret definidos pelo Dono em ADM > Produção & Nuvem. Sem isso, a busca existente por prévias oficiais continua disponível e identificada.
+
+FILMES, SÉRIES E COMUNIDADE
+- Player com fonte HLS/DASH adaptativa quando a mídia oferece rendições reais; seletor mostra apenas qualidades disponíveis. Fonte única não é rotulada como 4K fictício.
+- Próximo episódio com contagem de 5 segundos e botão para cancelar; melhoria perceptual moderada de imagem sem prometer aumento real de resolução.
+- Fogo compartilhado por conversa e sincronizado na nuvem: cada dia só conta após mensagens enviadas nos dois sentidos. O antigo contador diário de login foi desativado.
+- Catálogo, histórico, comunidade, aprovações, uploads R2 e sincronização Supabase da versão anterior foram mantidos.
+
+SEGURANÇA, ADM E APP
+- Cargos Dono, Administrador, Editor e Moderador com restrições aplicadas também no banco; somente Dono pode gerenciar cargos e integrações sensíveis.
+- Convite PWA só mediante ação do usuário; some no modo instalado e respeita 14 dias de pausa após dispensa.
+- Cache v27 limpa shells antigos para não exibir CSS, logo e player desatualizados.
+- Migrações SQL e funções de servidor incluídas na pasta backend/supabase deste ZIP, como registro da atualização já aplicada ao projeto Supabase conectado.
+
+PENDÊNCIAS PARA OPERAÇÃO
+- Configurar credenciais Spotify no painel do Dono para ativar a busca oficial. Reprodução integral do Spotify depende de acesso/autorização do serviço de origem; a LX Plus não a simula.
+- Realizar aceite com contas existentes e novas, pares de usuários, dispositivos reais e mídias HLS/DASH do catálogo após publicação. Veja TEST-REPORT.txt para a distinção entre verificações executadas e testes ainda necessários.

@@ -1,0 +1,20 @@
+{
+  "name": "LX Plus",
+  "short_name": "LX Plus",
+  "description": "Filmes, séries, música, livros e comunidade em uma experiência premium.",
+  "start_url": "./?v=28.3",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#020306",
+  "theme_color": "#050506",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "assets/icon-v27.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "version": "28.3"
+}

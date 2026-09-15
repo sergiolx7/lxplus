@@ -1,0 +1,10 @@
+PUBLICAÇÃO LX PLUS — BUILD 27.2
+
+1. Antes da troca no domínio original, leia TEST-REPORT.txt e faça o aceite em contas/dispositivos reais. O pacote inclui o backup v26.2 para reversão.
+2. Os arquivos da RAIZ deste ZIP são o site estático: index.html, app.css, app-v27.css, lxplus.js, lxplus-v27.js, service-worker.js, manifest.webmanifest, CNAME, lxplus-logo-v27.png e assets/. Envie toda a raiz para o host original, substituindo a build anterior sem apagar os dados de usuário.
+3. A pasta backend/supabase contém migrações e funções como registro; não envie backend/, tests/ ou backup/ ao diretório público do host. As migrações e funções já foram aplicadas ao Supabase da configuração existente; confirme o mesmo projeto antes de qualquer reaplicação.
+4. O Dono deve inserir Spotify Client ID e Client Secret em ADM > Produção & Nuvem. Sem essas credenciais, a busca oficial não é ativa e as prévias Apple/iTunes seguem explicitamente rotuladas.
+5. Para validar: login/cadastro, aprovações, catálogo, reprodução de música e vídeo, fogo com dois usuários, cargos ADM, uploads R2, PWA instalado, temas e tamanhos desktop/tablet/celular.
+6. Após publicar, atualize a página e reinicie o PWA. O service worker v27.2 elimina caches lxplus-shell mais antigos. Não limpe armazenamento de contas sem autorização: histórico e configurações existentes devem permanecer.
+
+ATENÇÃO: a prévia privada LX Plus v27 é um ambiente de visualização separado. Este ZIP não altera automaticamente o domínio original.
