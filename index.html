@@ -15,7 +15,7 @@
 
   <script>
   (function(){
-    var BUILD='27.0',KEY='lxplus_build_seen';
+    var BUILD='27.1',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -44,8 +44,8 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=27.0">
-  <link rel="stylesheet" href="app-v27.css?v=27.0">
+  <link rel="stylesheet" href="app.css?v=27.1">
+  <link rel="stylesheet" href="app-v27.css?v=27.1">
   <title>LX Plus</title>
 </head>
 <body>
@@ -248,19 +248,31 @@
     }
     function toast(msg){var t=byId('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(t.__x);t.__x=setTimeout(function(){t.classList.remove('show')},3200)}
     window.LXShell={show:show,authTab:authTab,toast:toast};
-    function bind(){
+    function finishSplash(immediate){
+      var splash=byId('splash');
+      if(!splash || splash.classList.contains('hidden') || window.__LX_INTRO_DONE) return;
+      window.__LX_INTRO_DONE=true;
+      clearTimeout(window.__LX_SPLASH_TIMER);
+      if(!immediate)splash.classList.add('lx-splash-exit');
+      setTimeout(function(){
+        try{if(window.LX?.ui?.show)window.LX.ui.show('auth');else show('auth')}
+        catch(_){show('auth')}
+        authTab('login');
+        splash.classList.add('hidden');
+        splash.classList.remove('lx-splash-exit');
+      },immediate?0:280);
+    }
+    function bindSplash(){
       var enter=byId('enterSplash'),skip=byId('skipSplash'),splash=byId('splash');
-      var openAfterIntro=function(){
-        if(!splash || splash.classList.contains('hidden')) return;
-        splash.classList.add('lx-splash-exit');
-        setTimeout(function(){show('auth');authTab('login');splash.classList.remove('lx-splash-exit')},360);
-      };
-      if(enter) enter.onclick=openAfterIntro;
-      if(skip) skip.onclick=openAfterIntro;
+      if(enter)enter.addEventListener('click',function(){finishSplash(true)},true);
+      if(skip)skip.addEventListener('click',function(){finishSplash(true)},true);
       if(splash){
         clearTimeout(window.__LX_SPLASH_TIMER);
-        window.__LX_SPLASH_TIMER=setTimeout(openAfterIntro,2600);
+        window.__LX_SPLASH_TIMER=setTimeout(function(){finishSplash(false)},2300);
       }
+    }
+    bindSplash(); // já há HTML suficiente; não depende de DOMContentLoaded nem do núcleo
+    function bind(){
       var tl=byId('tabLogin'),tr=byId('tabRegister');
       if(tl) tl.onclick=function(){authTab('login')};
       if(tr) tr.onclick=function(){authTab('register')};
@@ -274,8 +286,8 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   })();
   </script>
-  <script src="lxplus.js?v=27.0"></script>
-  <script src="lxplus-v27.js?v=27.0"></script>
+  <script src="lxplus.js?v=27.1"></script>
+  <script src="lxplus-v27.js?v=27.1"></script>
   <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 
 <script>

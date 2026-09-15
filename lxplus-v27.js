@@ -16,7 +16,7 @@
   const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   const standalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true;
 
-  LX.v27={version:'27.0',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
+  LX.v27={version:'27.1',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
 
   function syncBranding(root=document){
     root.querySelectorAll?.('img').forEach(img=>{
@@ -290,5 +290,5 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire,{once:true});else wire();
   setInterval(heartbeat,1200);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){heartbeat();refreshConversationStreak()}});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!ensureNowPlaying().classList.contains('hidden'))closeNowPlaying()});
-  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='27.0';
+  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='27.1';
 })();

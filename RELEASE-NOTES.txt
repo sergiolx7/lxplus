@@ -1,4 +1,9 @@
-LX Plus v27.0 — atualização premium
+LX Plus v27.1 — atualização premium
+
+CORREÇÃO DE ABERTURA (27.1)
+- A passagem automática da intro para o login agora é preparada assim que o HTML está disponível, sem depender de DOMContentLoaded nem do carregamento do núcleo.
+- “Pular” abre o login mesmo com módulos atrasados; o início tardio do núcleo não volta a mostrar a abertura.
+- Arquivos JavaScript/CSS usam novo identificador de versão e cache lxplus-shell-v2701 para evitar conteúdo antigo no navegador/PWA.
 
 IDENTIDADE E INTERFACE
 - Logo enviada pelo Sérgio incorporada sem alteração de bytes no splash, login, topo e componentes dinâmicos; favicon e ícone instalável usam a mesma imagem.

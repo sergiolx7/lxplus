@@ -1132,7 +1132,7 @@ function enterMainApp(user,notify=true){
 }
 const authHash=new URLSearchParams(location.hash.replace(/^#/,'')),authError=authHash.get('error_code'),authErrorDesc=authHash.get('error_description');
 // Render immediately. Session restore happens after the controls are already interactive.
-if(authError){U.show('auth');setTimeout(()=>LX.toast(authError==='otp_expired'?'Esse link expirou. Você também pode aguardar a aprovação manual do ADM.':(authErrorDesc||'Não foi possível validar esse link.')),250);history.replaceState(null,'',location.pathname+location.search)}else U.show('splash');
+if(authError){U.show('auth');setTimeout(()=>LX.toast(authError==='otp_expired'?'Esse link expirou. Você também pode aguardar a aprovação manual do ADM.':(authErrorDesc||'Não foi possível validar esse link.')),250);history.replaceState(null,'',location.pathname+location.search)}else U.show(window.__LX_INTRO_DONE?'auth':'splash');
 setTimeout(async()=>{
   if(state.user)return;
   const resumed=await Promise.race([D.auth.resume?.().catch(()=>null),new Promise(r=>setTimeout(()=>r(null),4500))]);
