@@ -78,7 +78,7 @@ check('manifest and v27 cache agree', () => {
   assert.equal(manifest.theme_color, '#050506');
   assert.deepEqual(manifest.icons.map(icon => icon.src), ['assets/icon-v27.svg']);
   const sw = read('service-worker.js');
-  assert.match(sw, /lxplus-shell-v2701/);
+  assert.match(sw, /lxplus-shell-v2702/);
   for (const file of ['app-v27.css', 'lxplus-v27.js', 'assets/lxplus-logo-v27.png', 'assets/icon-v27.svg']) assert.ok(sw.includes(file));
 });
 

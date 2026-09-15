@@ -1,9 +1,15 @@
-LX Plus v27.1 — atualização premium
+LX Plus v27.2 — atualização premium
+
+CORREÇÃO DO TRAVAMENTO (27.2)
+- Corrigido o ciclo do MutationObserver que atualizava sem parar o rótulo de cargo ADM, impedindo a passagem da abertura para o login mesmo com o timer independente da 27.1.
+- A mensagem da Home também só atualiza seu texto quando de fato muda, evitando outro ciclo de observação após o login.
+- Regressão nova simula o observador da aplicação, reproduz o travamento da 27.1 como controle negativo e confirma que a 27.2 encerra o ciclo e abre o login.
+- CSS e JavaScript passam a usar ?v=27.2; o service worker usa lxplus-shell-v2702.
 
 CORREÇÃO DE ABERTURA (27.1)
 - A passagem automática da intro para o login agora é preparada assim que o HTML está disponível, sem depender de DOMContentLoaded nem do carregamento do núcleo.
 - “Pular” abre o login mesmo com módulos atrasados; o início tardio do núcleo não volta a mostrar a abertura.
-- Arquivos JavaScript/CSS usam novo identificador de versão e cache lxplus-shell-v2701 para evitar conteúdo antigo no navegador/PWA.
+- A passagem depende de timers locais e pode ser acionada por “Pular”.
 
 IDENTIDADE E INTERFACE
 - Logo enviada pelo Sérgio incorporada sem alteração de bytes no splash, login, topo e componentes dinâmicos; favicon e ícone instalável usam a mesma imagem.

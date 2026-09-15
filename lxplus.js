@@ -1379,12 +1379,12 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['app']='27.0';
       const copy=U.state.mode==='Ler'?(pending?`Você tem ${pending} leitura${pending===1?'':'s'} para continuar.`:'Que tal abrir uma nova história hoje?'):
         U.state.mode==='Ouvir'?(pending?'Sua trilha está pronta para continuar.':'Descubra uma faixa nova para o seu momento.'):
         pending?`${pending} história${pending===1?'':'s'} esperando por você.`:(hour<12?'Comece o dia com algo que combina com você.':hour<18?'Tem coisa nova para descobrir nesta tarde.':'Sua noite pode começar por aqui.');
-      p.textContent=copy;
+      if(p.textContent!==copy)p.textContent=copy;
     }
     const text=String(style.status||'').trim();
     const host=box.querySelector('.welcome-user>div:last-child');
     let line=box.querySelector('.lx-user-status-line');
-    if(text){if(!line){line=document.createElement('div');line.className='lx-user-status-line';host?.appendChild(line)}line.textContent=text}
+    if(text){if(!line){line=document.createElement('div');line.className='lx-user-status-line';host?.appendChild(line)}if(line.textContent!==text)line.textContent=text}
     else line?.remove();
     box.setAttribute('aria-label',`Olá, ${name}`);
   }

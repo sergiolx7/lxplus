@@ -1,4 +1,4 @@
-LX Plus v27.1 — relatório de validação, 15/09/2026
+LX Plus v27.2 — relatório de validação, 15/09/2026
 
 EXECUTADO — PASSOU
 - Backup da build v26.2 criado antes das alterações e incluído no pacote final.
@@ -8,9 +8,10 @@ EXECUTADO — PASSOU
 - Funções de servidor exigem JWT; Client Secret do Spotify fica em configuração protegida no banco e não na build entregue.
 - Arquivos essenciais respondem HTTP 200 em servidor estático local: página, CSS v27, JavaScript v27, logo, ícone, manifest e service worker.
 - Regressão focada da abertura (tests/splash-regression.mjs): em simulação sem DOMContentLoaded e sem núcleo, a saída automática abre o login; “Pular” também funciona de imediato; o início tardio do núcleo não pode reabrir o splash.
+- Regressão do observador (tests/observer-regression.mjs): executa o JavaScript v27 real em DOM simulado, reproduz o loop infinito da 27.1 como controle negativo e confirma que a 27.2 encerra as mutações, permite a passagem automática ao login e estabiliza a troca de cargo.
 
 NÃO EXECUTADO NESTE AMBIENTE
-- Inspeção visual de telas, console e interação em Chromium/Firefox: não havia binário de navegador e a instalação automática falhou por limite de rede. tests/smoke.mjs contém o roteiro automatizado para desktop/tablet/mobile, prévia, painel Tocando agora, cargos e PWA, mas seus resultados não foram marcados como PASS. O teste da correção 27.1 é uma simulação do fluxo, não um teste no navegador do Sérgio.
+- Inspeção visual de telas, console e interação em Chromium/Firefox: não havia binário de navegador e a instalação automática falhou por limite de rede. tests/smoke.mjs contém o roteiro automatizado para desktop/tablet/mobile, prévia, painel Tocando agora, cargos e PWA, mas seus resultados não foram marcados como PASS. A correção 27.2 inclui teste de causa e temporização em DOM simulado, não um teste no navegador do Sérgio.
 - Login/cadastro/aprovação reais de conta existente e nova; comparação da posição musical entre contas e dispositivos; par bilateral do fogo com duas sessões; chats/chamadas/denúncias; teste de episódios até o fim; qualidade automática em HLS/DASH reais; instalação PWA em Android/iPhone. Essas etapas exigem contas de teste aprovadas, conteúdo adequado e navegadores/dispositivos reais.
 - Busca Spotify com credenciais reais: Client ID e Client Secret ainda não foram fornecidos. A recuperação para prévias oficiais foi mantida, sem fingir reprodução integral.
 

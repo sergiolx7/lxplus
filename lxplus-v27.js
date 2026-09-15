@@ -16,7 +16,7 @@
   const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   const standalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true;
 
-  LX.v27={version:'27.1',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
+  LX.v27={version:'27.2',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
 
   function syncBranding(root=document){
     root.querySelectorAll?.('img').forEach(img=>{
@@ -246,7 +246,11 @@
   function canPage(page){return (pageCaps[page]||['owner']).includes(normalizeRole(role()))}
   function applyAdminPermissions(){
     const currentRole=normalizeRole(role());$$('#adminNav [data-admin]').forEach(button=>{const allowed=(pageCaps[button.dataset.admin]||['owner']).includes(currentRole);button.classList.toggle('lx-role-hidden',!allowed);button.disabled=!allowed});
-    const ident=document.querySelector('.admin-identity small');if(ident)ident.textContent=roleLabels[currentRole]||'Equipe LX';
+    const ident=document.querySelector('.admin-identity small'),label=roleLabels[currentRole]||'Equipe LX';
+    // A atribuição de textContent cria childList mesmo com o mesmo texto. Como o
+    // observador abaixo chama enhanceAdmin, reescrever sempre aqui bloqueava
+    // todos os timers e a passagem da abertura para o login.
+    if(ident&&ident.textContent!==label)ident.textContent=label;
     if(currentRole!=='owner')document.querySelector('#r2Setup')?.classList.add('lx-role-hidden');
   }
   function roleOptions(selected='administrator'){return Object.entries(roleLabels).map(([value,label])=>`<option value="${value}" ${value===selected?'selected':''}>${label}</option>`).join('')}
@@ -290,5 +294,5 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire,{once:true});else wire();
   setInterval(heartbeat,1200);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){heartbeat();refreshConversationStreak()}});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!ensureNowPlaying().classList.contains('hidden'))closeNowPlaying()});
-  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='27.1';
+  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='27.2';
 })();
