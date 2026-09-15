@@ -66,7 +66,7 @@ const check = async (name, fn) => {
 
 await page.goto(base, { waitUntil: 'domcontentloaded' });
 
-await check('boot and exact v27 logo', async () => {
+await check('boot and exact transparent LX logo', async () => {
   await page.waitForFunction(() => window.__LX_LOGIN_READY === true, null, { timeout: 8000 });
   const logo = await page.locator('#splash img').evaluate(img => ({
     src: img.getAttribute('src'),
@@ -74,9 +74,9 @@ await check('boot and exact v27 logo', async () => {
     height: img.naturalHeight,
     complete: img.complete,
   }));
-  assert.equal(logo.src, 'assets/lxplus-logo-v27.png?v=27.3');
-  assert.equal(logo.width, 275);
-  assert.equal(logo.height, 242);
+  assert.equal(logo.src, 'assets/lxplus-logo-v27.png?v=28.1');
+  assert.equal(logo.width, 277);
+  assert.equal(logo.height, 243);
   assert.equal(logo.complete, true);
   assert.equal(await page.evaluate(() => window.__LX_BOOT_ERROR || ''), '');
 });
@@ -146,7 +146,7 @@ await check('explicit preview and Now Playing', async () => {
       title: 'Faixa de teste',
       artist: 'Artista LX',
       album: 'Álbum LX',
-      cover: 'assets/lxplus-logo-v27.png?v=27.3',
+      cover: 'assets/lxplus-logo-v27.png?v=28.1',
       duration: 30,
       previewUrl: 'https://example.invalid/preview.mp3',
       playbackKind: 'preview',

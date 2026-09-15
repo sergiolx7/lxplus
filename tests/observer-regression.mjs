@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 
-const dist=path.resolve(import.meta.dirname,'../dist');
+const dist=path.resolve(import.meta.dirname,'..');
 const html=fs.readFileSync(path.join(dist,'index.html'),'utf8');
 const shell=html.match(/<script>\s*(\/\* LX SHELL v27[\s\S]*?)<\/script>/)?.[1];
 const v27=fs.readFileSync(path.join(dist,'lxplus-v27.js'),'utf8');
@@ -66,4 +66,4 @@ assert.equal(fixed.window.__LX_INTRO_DONE,true);
 fixed.window.LX.state={user:{adminRole:'owner'}};fixed.trigger();
 assert.equal(fixed.settle(),1,'changing the role must also settle');
 assert.equal(fixed.identity.textContent,'Dono');
-console.log('PASS — reproduz o loop da v27.1 e confirma que a correção permanece estável na v27.3 e permite aos timers abrir o login.');
+console.log('PASS — reproduz o loop da v27.1 e confirma que a correção permanece estável na v28.1 e permite aos timers abrir o login.');

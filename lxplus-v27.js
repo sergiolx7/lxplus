@@ -12,7 +12,7 @@
   const db=()=>LX.cloud?.db?.()||null;
   const role=()=>String(state().user?.adminRole||state().user?.admin_role||LX.cloud?.profile?.()?.admin_role||'').toLowerCase();
   const fmt=seconds=>LX.fmt?.(Number(seconds)||0)||'0:00';
-  const logo='assets/lxplus-logo-v27.png?v=27.3';
+  const logo='assets/lxplus-logo-v27.png?v=28.1';
   const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   const standalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true;
 
@@ -232,7 +232,7 @@
   async function refreshConversationStreak(){
     clearTimeout(streakTimer);streakTimer=setTimeout(async()=>{
       const peer=String(LX.chat?.peer?.()||''),client=db(),head=document.querySelector('.lx-chat-head');if(!peer||!client||!head)return;
-      try{const {data,error}=await client.rpc('lx_get_conversation_streak',{p_other:peer});if(error)throw error;const row=Array.isArray(data)?data[0]:data,badge=head.querySelector('.lx-v27-chat-streak')||document.createElement('span');badge.className='lx-v27-chat-streak';const count=Number(row?.streak_count||0);badge.innerHTML=`<i aria-hidden="true">🔥</i><b>${count}</b>`;badge.title=count?`${count} ${count===1?'dia':'dias'} de fogo nesta conversa`:'O fogo começa quando os dois trocam mensagens hoje';badge.setAttribute('aria-label',badge.title);const copy=head.querySelector(':scope > div');if(copy&&!badge.isConnected)copy.appendChild(badge)}catch(error){console.warn('LX conversation streak',error)}
+      try{const {data,error}=await client.rpc('lx_get_conversation_streak',{p_other:peer});if(error)throw error;const row=Array.isArray(data)?data[0]:data,badge=head.querySelector('.lx-v27-chat-streak')||document.createElement('span');const count=Number(row?.streak_count||0);if(!count){badge.remove();return}badge.className='lx-v27-chat-streak';badge.innerHTML=`<i aria-hidden="true">🔥</i><b>${count}</b>`;badge.title=`${count} ${count===1?'dia':'dias'} de fogo nesta conversa`;badge.setAttribute('aria-label',badge.title);const nameLine=head.querySelector(':scope > div:not(.lx-chat-avatar):not(.lx-chat-call-actions) > strong');if(nameLine&&!badge.isConnected)nameLine.appendChild(badge)}catch(error){console.warn('LX conversation streak',error)}
     },260);
   }
   function subscribeStreak(){

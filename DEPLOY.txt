@@ -1,10 +1,29 @@
-PUBLICAÇÃO LX PLUS — BUILD 27.3
+PUBLICAÇÃO LX PLUS — BUILD 28.1
 
-1. Antes da troca no domínio original, leia TEST-REPORT.txt e faça o aceite em contas/dispositivos reais. O pacote inclui o backup v26.2 para reversão.
-2. Os arquivos da RAIZ deste ZIP são o site estático: index.html, app.css, app-v27.css, lxplus.js, lxplus-v27.js, service-worker.js, manifest.webmanifest, CNAME, lxplus-logo-v27.png e assets/. Envie toda a raiz para o host original, substituindo a build anterior sem apagar os dados de usuário.
-3. A pasta backend/supabase contém migrações e funções como registro; não envie backend/, tests/ ou backup/ ao diretório público do host. As migrações e funções já foram aplicadas ao Supabase da configuração existente; confirme o mesmo projeto antes de qualquer reaplicação.
-4. O Dono deve inserir Spotify Client ID e Client Secret em ADM > Produção & Nuvem. Sem essas credenciais, a busca oficial não é ativa e as prévias Apple/iTunes seguem explicitamente rotuladas.
-5. Para validar: login/cadastro, aprovações, catálogo, reprodução de música e vídeo, fogo com dois usuários, cargos ADM, uploads R2, PWA instalado, temas e tamanhos desktop/tablet/celular.
-6. Após publicar, atualize a página e reinicie o PWA. O service worker v27.3 elimina caches lxplus-shell mais antigos. Não limpe armazenamento de contas sem autorização: histórico e configurações existentes devem permanecer.
+1. Faça backup da build atual antes de publicar. A v28.0 usada como base também está em backup/LX-Plus-v28.0-Modern-Core-Complete.zip.
+2. Envie todos os arquivos desta pasta, preservando nomes e estrutura.
+3. Não publique somente o index.html: app-v28.css e lxplus-v27.js contêm correções essenciais desta revisão.
+4. O service worker usa lxplus-shell-v2810 e remove shells LX Plus anteriores na ativação.
+5. Depois da publicação, faça um hard refresh uma vez e reabra o site.
+6. Confirme no código/meta que a build exibida é 28.1.
+7. Teste Música em uma janela larga e baixa: o destaque deve aparecer sem um bloco vazio enorme.
+8. Abra uma conversa com sequência ativa: o fogo deve aparecer ao lado do nome, nunca por cima do avatar.
+9. Abra Tocando Agora com um título longo: a tipografia deve permanecer proporcional.
+10. Se um serviço externo (Spotify/YouTube/Supabase/R2) falhar, valide o serviço separadamente antes de atribuir o problema à interface.
 
-ATENÇÃO: a prévia privada LX Plus v27 é um ambiente de visualização separado. Este ZIP não altera automaticamente o domínio original.
+--- Instruções anteriores / referência v28.0 ---
+PUBLICAÇÃO LX PLUS — BUILD 28.0
+
+1. Faça backup da publicação atual antes da troca. Este pacote já inclui a v27.3 em backup/, mas mantenha também o estado atual do host.
+2. Publique os arquivos da RAIZ do pacote e as pastas assets/ necessárias. Os principais arquivos públicos desta build são index.html, app.css, app-v27.css, app-v28.css, lxplus.js, lxplus-v27.js, lxplus-v28.js, service-worker.js, manifest.webmanifest, CNAME e assets/.
+3. backend/, tests/ e backup/ são material de implementação/QA/rollback e não precisam ficar expostos no diretório público do site.
+4. Não apague dados de usuário, localStorage nem tabelas do Supabase durante a publicação. A v28 foi feita para reutilizar a estrutura atual.
+5. Após subir os arquivos, faça um hard refresh uma vez. O service worker v28 usa lxplus-shell-v2800 e remove caches lxplus-shell anteriores durante a ativação.
+6. Abra o site em um navegador normal e confira o meta/build 28.0, a logo transparente e a nova Central “Pedidos & Ajuda”.
+7. Com uma conta ADM real, confira: ADM > Saúde do sistema; criar/editar conteúdo; colar link do YouTube Music e Spotify; salvar um título; pedidos do usuário; filtros de solicitações; abertura/recap opcional.
+8. Com duas contas reais, confira: amizade, conversa, resposta, reação, edição/apagar mensagem, áudio/anexo, lido/entregue, fogo, chamada e grupos.
+9. Confira em pelo menos um iPhone/Android e um desktop: PWA, safe area, teclado no chat, player em tela cheia/PiP quando suportado e responsividade.
+10. Para mídia externa, confirme permissões do próprio provedor. Spotify/YouTube usam comportamento oficial do serviço; Google Drive/R2 dependem de compartilhamento/CORS/configuração adequados.
+
+ROLLBACK
+Se houver um problema crítico de produção que não possa ser corrigido imediatamente, restaure backup/LX-Plus-v27.3-Logo-Transparente-Corrigido.zip e faça um hard refresh. Isso reverte os arquivos web; não exclua banco, usuários ou catálogo.

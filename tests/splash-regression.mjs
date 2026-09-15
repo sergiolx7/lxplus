@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 
-const dist=path.resolve(import.meta.dirname,'../dist');
+const dist=path.resolve(import.meta.dirname,'..');
 const html=fs.readFileSync(path.join(dist,'index.html'),'utf8');
 const shell=html.match(/<script>\s*(\/\* LX SHELL v27[\s\S]*?)<\/script>/)?.[1];
 assert.ok(shell,'inline splash fallback not found');

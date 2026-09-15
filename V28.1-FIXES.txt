@@ -1,0 +1,12 @@
+LX PLUS v28.1 — CORREÇÕES VISUAIS
+
+1. Tela de Música: removido espaço superior duplicado e hero compactado.
+2. Tocando Agora: título limitado, legibilidade e proporções refeitas.
+3. Player inferior: layout desktop mais limpo e alinhado ao rodapé.
+4. Comunidade: fogo movido do avatar para a linha do nome; zero dias não gera badge.
+5. Responsividade: regras específicas para desktop baixo, notebook, tablet e celular.
+6. PWA/cache: build 28.1 / shell v2810.
+
+Os serviços externos continuam sujeitos a disponibilidade, permissões e políticas dos respectivos provedores.
+7. Rollback: pacote completo da v28.0 incluído em backup/.
+

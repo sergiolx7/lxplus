@@ -1,14 +1,70 @@
-LX Plus v27.3 — relatório de validação, 15/09/2026
+LX Plus v28.1 — relatório de validação
+Data: 15/09/2026
+Build: 28.1 Modern Core + Visual Polish
 
-EXECUTADO — PASSOU
-- Logo principal convertido para PNG RGBA com transparência real, recortado ao desenho branco e aplicado em todas as referências ativas.
-- Favicon e ícone PWA atualizados sem fundo preto; cache alterado para lxplus-shell-v2703 e referências de build para ?v=27.3.
-- 10/10 verificações automatizadas de estrutura passaram: IDs HTML, scripts compiláveis, referências locais, CSS balanceado, manifest/cache, consistência do logo/favicon, ausência de assets antigos ativos, contratos v27 e ausência de credenciais privadas na build pública.
-- node --check passou em lxplus.js, lxplus-v27.js e service-worker.js.
-- tests/splash-regression.mjs passou: saída automática e botão Pular continuam abrindo o login sem depender do núcleo tardio.
-- tests/observer-regression.mjs passou: a correção do loop de MutationObserver continua estável.
-- Validação de imagem confirmou canal alfa de 0 a 255 e zero pixels RGB escuros visíveis no PNG, eliminando o retângulo preto do arquivo da marca.
+RESULTADO AUTOMATIZADO — PASSOU
+- 15/15 verificações da suíte tests/static-checks.mjs / tests/v28-static.mjs passaram.
+- IDs HTML únicos.
+- Todos os scripts inline compilam.
+- lxplus.js, lxplus-v27.js, lxplus-v28.js e service-worker.js passam em verificação de sintaxe.
+- app.css, app-v27.css e app-v28.css estão estruturalmente balanceados.
+- Todas as referências locais encontradas no HTML/CSS apontam para arquivos existentes.
+- Ordem de carregamento confirmada: camada v27 de compatibilidade antes da v28.1.
+- Service worker confirmado no shell lxplus-shell-v2810 e contendo os assets v28.1.
+- Central “Pedidos & Ajuda” continua presente e conectada ao fluxo existente.
+- Compatibilidade/autodetecção de YouTube, YouTube Music e Spotify continua confirmada por contrato estático.
+- Busca universal, comunidade/atalhos, offline, saúde do sistema e interface v28 continuam presentes.
+- Campos e lógica de “Pular abertura” e “Pular recapitulação” continuam confirmados no ADM/player.
+- Build pública verificada contra exposição acidental de chaves privadas conhecidas.
 
-OBSERVAÇÃO DE QA
-- O binário Chromium está presente neste ambiente, porém a execução headless por linha de comando não encerrou de forma confiável por limitações do próprio ambiente/DBus. Por isso não marco inspeção visual automatizada de navegador como PASS. As verificações estruturais e regressões de JavaScript acima foram executadas com sucesso.
-- Como em qualquer publicação real, login/cadastro, Supabase, Spotify, R2, reprodução HLS/DASH, PWA instalado e fluxos com contas reais dependem dos serviços externos e devem ser conferidos no domínio após a publicação.
+REGRESSÕES ESPECÍFICAS DA v28.1 — PASSOU
+- Espaço vazio excessivo da página Música: removido o padding superior duplicado e reduzida a altura do hero em desktop curto.
+- Hero da Música: composição compacta em duas colunas no desktop, mantendo saudação, filtros e destaque visíveis acima do player.
+- “Tocando agora”: título longo limitado e balanceado; não há overflow horizontal no teste de 2048×682.
+- Player inferior: proporções reduzidas e alinhamento mais próximo de apps atuais de música.
+- Fogo da comunidade: o badge agora é inserido dentro da linha do nome, nunca dentro do avatar.
+- Conversas com streak 0 removem o badge em vez de deixar marcador vazio.
+- Cabeçalhos musicais longos receberam quebra/proporção de segurança.
+
+REGRESSÕES DE ABERTURA — PASSOU
+- tests/splash-regression.mjs: saída automática da abertura e botão Pular continuam abrindo o login sem depender do núcleo tardio.
+- tests/observer-regression.mjs: proteção contra loop de MutationObserver continua estável na v28.1.
+
+INSPEÇÃO VISUAL DE COMPONENTES EM CHROMIUM — PASSOU
+O navegador do ambiente bloqueia navegação direta para localhost/file com ERR_BLOCKED_BY_ADMINISTRATOR, então um E2E completo do domínio local não pode ser certificado aqui. Mesmo assim, os componentes reais foram renderizados em Chromium 144 por DevTools, usando as folhas CSS da build v28.1, para validar as regressões visuais reportadas.
+
+Desktop 2048×682:
+- Música: padding superior do shell = 0 px.
+- Hero da Música: ~271 px de altura; conteúdo visível imediatamente, sem o bloco vazio gigante da v28.0.
+- Destaque musical termina antes do player inferior.
+- Now Playing: título = 48,8 px, duas linhas no caso longo testado, sem overflow horizontal.
+- Fogo: badge não intercepta/encobre o avatar e o parent final é a linha STRONG do nome.
+
+Mobile 390×844:
+- Hero musical permanece compacto e visível.
+- Now Playing fica em uma coluna; título longo permanece em duas linhas e sem overflow horizontal.
+- Badge de fogo continua fora do avatar.
+
+Evidências geradas em tests/:
+- v281-music-home-2048x682.png
+- v281-now-playing-2048x682.png
+- v281-chat-streak.png
+- v281-music-home-mobile-390x844.png
+- v281-now-playing-mobile-390x844.png
+- v281-chat-streak-mobile.png
+- v281-visual-metrics.txt
+- v281-mobile-visual-metrics.txt
+
+LOGO — PASSOU
+- PNG: 277 × 243, RGBA.
+- Canal alfa real: 0 a 255.
+- Pixels visíveis escuros encontrados: 0.
+- SHA-256: d53ef410bfa9f66b6220adc21d50ceacff85a4abecfb1ba6dbd2d80c5ffdcf51
+- A logo branca/transparente aprovada continua intacta; o retângulo preto não voltou.
+
+PLAYER / MÍDIA — VERIFICAÇÕES E LIMITES
+- YouTube/YouTube Music e Spotify continuam usando os players/embeds compatíveis quando o conteúdo é externo.
+- Recursos dependentes de serviços externos só podem ser validados integralmente no domínio real: Supabase, R2, Spotify, YouTube, HLS/DASH, CORS, PWA instalado e WebRTC.
+
+CONCLUSÃO
+A v28.1 corrige os problemas visuais reportados na Música e na Comunidade, preserva a base da v28.0 e passou nos testes estruturais/regressivos e na regressão visual de componentes. “Zero bugs” em todos os navegadores e serviços externos não pode ser garantido tecnicamente; a build foi preparada para homologação/publicação com rollback disponível.

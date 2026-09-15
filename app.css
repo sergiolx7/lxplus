@@ -2033,7 +2033,7 @@ html[data-poster-size="large"],body[data-poster-size="large"]{--lx-poster-w:210p
   position:absolute;
   inset:4% 1% -4%;
   z-index:-1;
-  background:url('assets/lxplus-logo-v27.png?v=27.3') center/contain no-repeat;
+  background:url('assets/lxplus-logo-v27.png?v=28.1') center/contain no-repeat;
   opacity:.22;
   filter:blur(9px) saturate(1.2);
   transform:translate3d(8px,12px,-34px) scale(1.012);
@@ -2136,7 +2136,7 @@ button{transition:background-color .16s ease,color .16s ease,border-color .16s e
 .lx-splash-v260 .lx257-orbit-track{top:41%}
 .lx-splash-v260 .lx257-orb{width:36px;height:36px;box-shadow:0 0 12px rgba(255,255,255,.82),0 0 34px rgba(92,181,255,.45),0 0 70px rgba(139,92,246,.28)}
 .lx-splash-v260 .lx260-brand{box-sizing:border-box;left:50%;top:57%;width:min(760px,calc(100vw - 64px));max-width:760px;aspect-ratio:3.5/1;padding:18px;overflow:visible!important;transform-origin:center;animation:lx260BrandReveal 3.35s 1.48s cubic-bezier(.18,.72,.18,1) both!important}
-.lx-splash-v260 .lx260-brand:before{inset:10% 3% -1%!important;background:url('assets/lxplus-logo-v27.png?v=27.3') center/contain no-repeat!important;opacity:.18!important;filter:blur(12px) saturate(1.35)!important;transform:translate3d(0,14px,-30px) scale(1.01)!important}
+.lx-splash-v260 .lx260-brand:before{inset:10% 3% -1%!important;background:url('assets/lxplus-logo-v27.png?v=28.1') center/contain no-repeat!important;opacity:.18!important;filter:blur(12px) saturate(1.35)!important;transform:translate3d(0,14px,-30px) scale(1.01)!important}
 .lx260-splash-wordmark{display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;object-position:center!important;overflow:visible!important;filter:drop-shadow(0 24px 48px rgba(0,0,0,.48)) drop-shadow(0 0 24px rgba(123,86,255,.14))!important}
 .lx-splash-v260 .lx257-brand-flare{top:69%!important;max-width:600px}
 .lx-splash-v260 .lx257-floor{bottom:-2%!important;width:min(920px,90vw)!important;opacity:.42!important}

@@ -1,0 +1,29 @@
+LX PLUS v28.0 — CHECKLIST RÁPIDO
+
+[OK] Modern Core visual
+[OK] Home/atalhos inteligentes
+[OK] Busca universal Ctrl/⌘+K
+[OK] Comunidade modernizada
+[OK] Perfil modernizado
+[OK] Pessoas/privacidade/denúncia via Central LX
+[OK] Central de notificações preservada e refinada
+[OK] Player v28 + próximo episódio + PiP + cast + atalhos + toque
+[OK] Pular abertura/recapitulação configurável
+[OK] Música + player oficial de provedores
+[OK] Livros/leitor/progresso
+[OK] Skeleton/lazy image/fallback
+[OK] Diagnóstico e log local de erros
+[OK] Offline/PWA/cache v28
+[OK] ADM v28
+[OK] Saúde do sistema
+[OK] Backup/rollback v27.3
+[OK] Responsividade
+[OK] Microinterações
+[OK] Acessibilidade/reduced motion
+[OK] Splash/logo branca transparente preservada
+[OK] Design system v28
+[OK] Limpeza técnica segura
+[OK] Pedidos de conteúdo restaurados
+[OK] Reclamação/sugestão/problema restaurados
+[OK] YouTube + YouTube Music autodetect
+[OK] Spotify autodetect

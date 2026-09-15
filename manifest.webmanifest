@@ -1,7 +1,7 @@
 {
   "name": "LX Plus",
   "short_name": "LX Plus",
-  "description": "Filmes, séries, música, livros e comunidade em uma experiência premium.",
+  "description": "Filmes, séries, música, livros, comunidade e pedidos em uma experiência moderna.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -15,5 +15,11 @@
       "type": "image/svg+xml",
       "purpose": "any"
     }
-  ]
+  ],
+  "categories": [
+    "entertainment",
+    "social",
+    "music"
+  ],
+  "prefer_related_applications": false
 }
