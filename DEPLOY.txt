@@ -1,19 +1,31 @@
-PUBLICAÇÃO LX PLUS — BUILD 26.2
+PUBLICAÇÃO — LX PLUS v27.0 PREMIUM COMPLETE
 
-Base: v26.0 Professional Experience.
-Esta build mantém Supabase, catálogo, mídia, autenticação, música e sync da versão anterior.
+1. Mantenha um backup da versão atual. Um backup da v26.2 foi criado antes desta atualização.
+2. No mesmo projeto Supabase da LX Plus, abra o SQL Editor.
+3. Execute UMA VEZ: `supabase/V27_PREMIUM_COMPLETE.sql`.
+4. Publique TODOS os arquivos desta pasta no mesmo local do site atual, substituindo os arquivos da versão anterior.
+5. Confirme que estes arquivos estão presentes no host:
+   - index.html
+   - app.css
+   - lxplus.js
+   - service-worker.js
+   - manifest.webmanifest
+   - lxplus-brand-v262.png
+   - app-icon-192.png
+   - app-icon-512.png
+   - app-icon-maskable-512.png
+   - pasta assets/
+6. Abra o site e faça um hard refresh. O cache desta versão é `lxplus-shell-2700` e caches LX Plus antigos são removidos na ativação do novo Service Worker.
+7. Em celular/PWA, feche e reabra o app depois da atualização se uma aba antiga continuar carregada.
 
-Envie TODOS os arquivos desta pasta para o host, substituindo os existentes.
-Arquivos principais: index.html, app.css, lxplus.js, service-worker.js, manifest.webmanifest, lxplus-brand-v26.svg, pasta assets e ícones.
+CHECK RÁPIDO DE PRODUÇÃO
+- Entrar com duas contas aprovadas.
+- Abrir uma conversa A↔B e enviar pelo menos uma mensagem de cada lado no mesmo dia; verificar 🔥 1.
+- Validar o comportamento novamente em um dia seguinte para confirmar 🔥 2 e sincronização entre dispositivos.
+- Abrir uma série com próximo episódio e confirmar contador de 5 s + Cancelar.
+- Abrir uma música de prévia e depois uma faixa/Spotify para confirmar que “Prévia” não permanece presa.
+- Validar os quatro papéis ADM usando contas de teste e as políticas cloud já existentes.
+- Confirmar que o convite PWA não aparece quando o app já está instalado.
 
-Mudanças principais da 26.2:
-- Nova entrada pré-login com apenas “LX Plus” branco, sem o logo/orbe antigo.
-- Comunidade redesenhada como Direct moderno (mistura visual Instagram/TikTok), sem Stories.
-- Reconexão automática da sessão social antes de acusar “não conectado”.
-- Sequência diária 🔥 com persistência em uiPrefs + perfil na nuvem.
-- Chat refinado e mais limpo, mantendo chamadas, anexos, áudio, reações e stickers.
-
-Depois da publicação:
-- Desktop: Ctrl+F5.
-- Celular/PWA: feche o app e abra novamente.
-- O service worker 26.2 remove caches lxplus-shell antigos automaticamente.
+NOTA DE SEGURANÇA
+A v27 não recria nem relaxa as políticas de segurança/RLS administrativas já existentes. O frontend limita páginas por papel, mas a autorização definitiva para alterações sensíveis deve continuar sendo garantida pelas regras/RPCs do Supabase configurado em produção.

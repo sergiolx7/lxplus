@@ -1,7 +1,7 @@
 {
   "name": "LX Plus",
   "short_name": "LX Plus",
-  "description": "Assista, leia e ouça em uma experiência LX Plus profissional e personalizada.",
+  "description": "LX Plus — filmes, séries, música, livros e comunidade em uma experiência premium.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

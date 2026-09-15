@@ -1,45 +1,43 @@
-LX Plus v26.2 — Relatório de validação
+LX Plus v27.0 — Relatório de validação
+Data da build: 2026-09-14
 
-Estrutura e sintaxe
-OK — node --check em lxplus.js
-OK — node --check em service-worker.js
-OK — manifest.webmanifest analisado como JSON válido
-OK — 122 IDs estáticos verificados sem duplicações
-OK — 8 blocos JavaScript inline compilados individualmente sem erro de sintaxe
-OK — referências locais de script, CSS e imagens sem arquivos ausentes
-OK — chaves CSS balanceadas (4030 pares na validação executada antes do empacotamento)
-OK — build público 26.2 e cache lxplus-shell-2620 alinhados
+VALIDAÇÕES EXECUTADAS E APROVADAS
+OK — `node --check` em lxplus.js.
+OK — `node --check` em service-worker.js.
+OK — 8 blocos JavaScript inline de index.html compilados individualmente sem erro de sintaxe.
+OK — manifest.webmanifest analisado como JSON válido.
+OK — 122 IDs estáticos no HTML, sem duplicações.
+OK — referências locais de HTML sem arquivos ausentes.
+OK — referências locais `url(...)` do CSS sem arquivos ausentes.
+OK — lista CORE do Service Worker sem arquivos ausentes.
+OK — chaves CSS balanceadas: 4160 `{` / 4160 `}`.
+OK — ícones PWA com dimensões 192×192, 512×512 e maskable 512×512.
+OK — build 27.0 alinhada com cache `lxplus-shell-2700`.
+OK — referências ativas de logos/cache antigos verificadas e removidas.
+OK — UI antiga de fogo por login diário removida.
+OK — fogo por conversa presente com fallback local + RPC `lx_chat_pair_streak`.
+OK — próximo episódio configurado para 5 s + botão Cancelar.
+OK — qualidade manual baseada somente em `qualitySources` reais.
+OK — “Melhorar imagem” identificado como ajuste visual e sem alegação de upscaling de resolução.
+OK — música: marcação/limpeza de Prévia, fila, Tocando Agora, artista e álbum presentes.
+OK — papéis Dono/Administrador/Editor/Moderador e bloqueio de alteração por não-Dono na interface.
+OK — lifecycle PWA: beforeinstallprompt, appinstalled e cooldown de dispensa.
+OK — migração incremental v27 presente em `supabase/V27_PREMIUM_COMPLETE.sql`.
 
-Entrada pré-login
-OK — #splash não contém nenhuma tag <img>
-OK — antiga composição de orbe/logo foi removida do HTML da abertura
-OK — nova wordmark textual “LX Plus” presente
-OK — animações possuem fallback para prefers-reduced-motion
-OK — tempo automático da abertura reduzido para 4,3 s
+SERVIDOR LOCAL
+OK — HTTP 200 para `/`.
+OK — HTTP 200 para `/index.html`.
+OK — HTTP 200 para `/app.css`.
+OK — HTTP 200 para `/lxplus.js`.
+OK — HTTP 200 para `/service-worker.js`.
+OK — HTTP 200 para `/manifest.webmanifest`.
+OK — HTTP 200 para `/lxplus-brand-v262.png`.
 
-Comunidade / conexão
-OK — rota principal da Comunidade abre Conversas
-OK — ensureCloudIdentity() incluída antes de declarar falha de sessão
-OK — recuperação tenta LX.cloud.resume() e Supabase auth.getSession()
-OK — refreshDirectory(), open() e boot() usam a validação resiliente
-OK — status da nuvem separa clientReady de sessionReady/connected
-OK — nenhuma camada de Stories foi criada na v26.2
+LIMITAÇÕES DESTE AMBIENTE DE TESTE
+- A automação Chromium/headless deste ambiente não conseguiu concluir a renderização visual por limitações do runtime isolado; por isso não foi possível fazer comparação visual pixel a pixel aqui.
+- Não foi feita autenticação real com credenciais de usuários da LX Plus em produção.
+- A migração SQL não foi aplicada automaticamente ao seu projeto Supabase; ela precisa ser executada pelo administrador no SQL Editor.
+- Fluxos que dependem de sessão real, RLS, duas contas, Realtime, Spotify/provider externo, PWA do dispositivo e mídia hospedada precisam de um smoke test no domínio publicado.
 
-Sequência diária 🔥
-OK — mesmo dia: 4 permanece 4
-OK — dia consecutivo: 4 vira 5
-OK — quebra de sequência: 4 reinicia em 1
-OK — migração: streak existente 6 permanece 6
-OK — proteção cross-device: cloud já em 5 não vira 6 novamente
-OK — metadados usam uiPrefs, já incluído no sync de estado da conta
-
-Servidor local
-OK — HTTP 200 para /
-OK — HTTP 200 para /index.html
-OK — HTTP 200 para /app.css
-OK — HTTP 200 para /lxplus.js
-OK — HTTP 200 para /service-worker.js
-OK — HTTP 200 para /manifest.webmanifest
-
-Limitação do ambiente
-Não havia Chromium/Firefox disponível para inspeção visual pixel a pixel. A validação desta build cobriu sintaxe, estrutura, referências, servidor local, lógica do streak e regras responsivas/CSS. Teste final em navegador real deve ser feito após publicar ou abrir a pasta em um navegador moderno.
+CONCLUSÃO
+A build passou nas validações estáticas, de sintaxe, integridade de referências, estrutura PWA e servidor local disponíveis neste ambiente. O pacote está pronto para publicação controlada após aplicar a migração SQL e executar o checklist de produção acima.

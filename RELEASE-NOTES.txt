@@ -1,32 +1,68 @@
-LX Plus v26.2 — Novo logo + Intro X Reveal + Equipe ADM
+LX Plus v27.0 — Premium Complete
+Base de continuidade: handoff do Work / build v26.2.
 
-ENTRADA
-- A abertura pré-login foi refeita do zero.
-- Removido o orbe/mascote e a arte de logo da abertura.
-- A tela agora mostra somente “LX Plus” em branco, com profundidade, luz e animação 3D discreta.
-- Sem slogan, cards ou texto extra na abertura.
-- Transição mais curta para a tela de login.
+Esta versão continua a base existente sem substituir Supabase, catálogo, contas, aprovação, mídia, histórico, sincronização e comunidade.
 
-COMUNIDADE
-- Nova organização de Direct: Conversas, Pessoas, Pedidos e Grupos.
-- Visual compacto inspirado na clareza do Instagram Direct e no ritmo visual do TikTok, sem copiar interface proprietária.
-- Avatares circulares, presença online, previews de mensagens, pedidos e chamadas em uma hierarquia mais limpa.
-- Stories NÃO foram adicionados: nenhuma camada nova de mídia temporária/armazenamento foi criada.
-- Chat recebeu acabamento visual mais simples e profissional; recursos existentes foram mantidos.
+ENTRADA E IDENTIDADE
+- Abertura premium curta, escura e limpa, usando a identidade oficial LX Plus já presente no handoff.
+- Reveal com profundidade/3D discreto e transição rápida: ~2,1 s + saída de 0,26 s.
+- Botão para pular a abertura.
+- Referências ativas de logos antigos removidas.
+- Ícones PWA 192/512/maskable regenerados a partir da identidade atual.
+- Build pública atualizada para 27.0 e cache para lxplus-shell-2700.
 
-CONEXÃO / ROUTER SOCIAL
-- A Comunidade não acusa “sessão não conectada” imediatamente.
-- Antes do erro, tenta recuperar a sessão do Supabase via LX.cloud.resume() e auth.getSession().
-- Abertura, boot e leitura do diretório social usam a mesma validação resiliente.
-- Status da nuvem agora distingue clientReady de sessionReady/connected.
+COMUNIDADE E CHAT — FOGO 🔥 CORRIGIDO
+- O fogo não é mais sequência de login diário.
+- Agora é uma sequência independente por conversa entre duas pessoas.
+- Um dia só conta quando os dois participantes enviam pelo menos uma mensagem naquele dia.
+- O mesmo dia conta apenas uma vez.
+- A sequência continua enquanto os dias bilaterais forem consecutivos.
+- Um dia completo sem troca bilateral quebra a sequência.
+- A↔B e A↔C são sequências separadas.
+- Indicador discreto no cabeçalho da conversa.
+- Fallback local com histórico já carregado + RPC cloud `lx_chat_pair_streak` para sincronização no Supabase.
+- A antiga visualização de “dias seguidos” foi removida do perfil.
 
-SEQUÊNCIA 🔥
-- Check-in diário real: mesmo dia não soma duas vezes; dia consecutivo soma 1; quebra de mais de um dia reinicia em 1.
-- Preserva o streak que já existia na migração para v26.2 em vez de fabricar um dia extra.
-- Metadados ficam em uiPrefs, que já participa do sync de estado do usuário.
-- O número também é gravado no campo streak do perfil Supabase quando a sessão está disponível.
-- Indicador 🔥 aparece na navegação e no cabeçalho da Comunidade.
+PLAYER DE FILMES E SÉRIES
+- Próximo episódio automático em 5 segundos quando a preferência de autoplay estiver ligada.
+- Botão Cancelar interrompe a contagem.
+- Próximo episódio continua disponível para ação manual quando autoplay está desligado.
+- Metadados/título no player ficaram mais legíveis, inclusive no celular.
+- Controles desaparecem mais rápido durante a reprodução.
+- Qualidade manual só aparece quando existem fontes reais 2160p/1080p/720p/480p cadastradas.
+- “Melhorar imagem · visual” aplica somente contraste/cor/brightness leve e informa claramente que não aumenta a resolução original.
+- Pré-aquecimento leve da próxima fonte direta quando possível, sem baixar o vídeo inteiro antecipadamente.
+- Legendas, velocidade, PiP, volume, tela cheia e transmissão existentes foram preservados.
 
-ESTABILIDADE
-- Catálogo, Atomic Cloud Sync, autenticação/aprovação, LX Music, player, R2/Supabase e demais módulos da v26.0 foram preservados.
-- Cache atualizado para lxplus-shell-2620.
+LX MUSIC
+- Prévia online identificada explicitamente como “Prévia”.
+- Prévia não grava progresso como se fosse faixa completa.
+- Estado visual “Prévia” é limpo ao trocar para Spotify/arquivo completo.
+- Tela “Tocando agora”.
+- Página de artista e navegação por álbum/artista.
+- Fila com adicionar álbum, mover faixa para cima/baixo, remover e reproduzir.
+- Integrações oficiais já existentes foram preservadas; nenhum conteúdo completo externo é fingido a partir de prévias.
+
+PAPÉIS ADM
+- Interface com quatro papéis: Dono, Administrador, Editor e Moderador.
+- Dono: controle total e alteração da equipe/papéis.
+- Administrador: operação ampla, sem páginas sensíveis de papéis/segurança.
+- Editor: catálogo, importação e uploads.
+- Moderador: solicitações, comunidade e notificações.
+- Alterações de papéis são bloqueadas na interface para quem não é Dono.
+- A camada cloud existente continua sendo a fonte de verdade; a v27 não sobrescreve as regras administrativas já configuradas no seu Supabase.
+
+PWA
+- Convite de instalação elegante somente quando o navegador disponibiliza instalação.
+- Nunca instala automaticamente.
+- Fecha com cooldown de 7 dias quando dispensado.
+- Some quando o app já está instalado/standalone.
+- Lifecycle `beforeinstallprompt` e `appinstalled` consolidado em um único fluxo.
+
+SUPABASE
+- Novo arquivo incremental: `supabase/V27_PREMIUM_COMPLETE.sql`.
+- Ele cria somente o RPC seguro necessário ao fogo por conversa.
+- Não apaga nem recria seu catálogo, contas, mensagens ou objetos administrativos existentes.
+
+IMPORTANTE
+Antes de publicar a v27, execute `supabase/V27_PREMIUM_COMPLETE.sql` UMA VEZ no SQL Editor do mesmo projeto Supabase usado pela LX Plus.

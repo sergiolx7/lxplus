@@ -15,7 +15,7 @@
 
   <script>
   (function(){
-    var BUILD='26.2',KEY='lxplus_build_seen';
+    var BUILD='27.0',KEY='lxplus_build_seen';
     try{
       if(localStorage.getItem(KEY)!==BUILD){
         localStorage.setItem(KEY,BUILD);
@@ -44,36 +44,25 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=26.2">
+  <link rel="stylesheet" href="app.css?v=27.0">
   <title>LX Plus</title>
 </head>
 <body>
   <div id="toast" class="toast" aria-live="polite"></div>
 
-  <section id="splash" class="screen splash lx-splash-v262" aria-label="Abertura LX Plus">
-    <div class="lx262-intro" aria-hidden="true">
-      <div class="lx262-ambient lx262-ambient-a"></div>
-      <div class="lx262-ambient lx262-ambient-b"></div>
-      <div class="lx262-grid"></div>
-      <div class="lx262-face">
-        <div class="lx262-eyes">
-          <span class="lx262-eye lx262-eye-left"><i></i><i></i></span>
-          <span class="lx262-eye lx262-eye-right"><i></i><i></i></span>
-        </div>
-        <div class="lx262-smile"></div>
-      </div>
-      <div class="lx262-wordmark-wrap">
-        <div class="lx262-wordmark" aria-label="LX Plus"><span>LX</span><span>Plus</span></div>
-        <small>stream · music · books · live</small>
-      </div>
+  <section id="splash" class="screen splash lx-splash-v27" aria-label="Abertura LX Plus">
+    <div class="lx27-intro" aria-hidden="true">
+      <div class="lx27-glow lx27-glow-a"></div><div class="lx27-glow lx27-glow-b"></div>
+      <div class="lx27-depth"><img src="lxplus-brand-v262.png?v=27.0" alt="" class="lx27-splash-logo"></div>
+      <div class="lx27-line"></div>
     </div>
-    <button id="skipSplash" class="lx262-skip" type="button">Pular</button>
+    <button id="skipSplash" class="lx27-skip" type="button">Pular</button>
     <button id="enterSplash" class="lx-splash-hidden-enter" type="button" tabindex="-1" aria-hidden="true">Entrar na LX Plus</button>
   </section>
 
   <section id="auth" class="screen auth hidden">
     <div class="auth-showcase">
-      <div class="brand brand-lg brand-approved"><img src="lxplus-brand-v262.png?v=26.2" alt="LX Plus" class="lx-approved-logo"></div>
+      <div class="brand brand-lg brand-approved"><img src="lxplus-brand-v262.png?v=27.0" alt="LX Plus" class="lx-approved-logo"></div>
       <div class="auth-copy">
         <span class="eyebrow">UMA CONTA · QUATRO MODOS</span>
         <h1>Continue de onde parou, em qualquer formato.</h1>
@@ -87,7 +76,7 @@
       </div>
     </div>
     <div class="auth-panel">
-      <div class="auth-mobile-brand brand brand-approved" aria-hidden="true"><img src="lxplus-brand-v262.png?v=26.2" alt="" class="lx-approved-logo"></div>
+      <div class="auth-mobile-brand brand brand-approved" aria-hidden="true"><img src="lxplus-brand-v262.png?v=27.0" alt="" class="lx-approved-logo"></div>
       <div class="auth-box">
         <div class="auth-tabs"><button id="tabLogin" class="active">Entrar</button><button id="tabRegister">Criar conta</button></div>
         <form id="loginForm" class="auth-form">
@@ -112,13 +101,13 @@
   </section>
 
   <section id="profiles" class="screen profiles hidden">
-    <header><div class="brand brand-lg brand-approved"><img src="lxplus-brand-v262.png?v=26.2" alt="LX Plus" class="lx-approved-logo"></div><button id="profileLogout" class="glass-btn">Sair</button></header>
+    <header><div class="brand brand-lg brand-approved"><img src="lxplus-brand-v262.png?v=27.0" alt="LX Plus" class="lx-approved-logo"></div><button id="profileLogout" class="glass-btn">Sair</button></header>
     <main><span class="eyebrow">PERFIS</span><h1>Quem está usando a LX Plus?</h1><div id="profileGrid" class="profile-grid"></div></main>
   </section>
 
   <section id="app" class="app hidden">
     <aside id="lxDesktopRail" class="lx-desktop-rail" aria-label="Navegação principal">
-      <button class="lx-shell-brand" type="button" onclick="document.getElementById('brandHome')?.click()" aria-label="Ir para o início da LX Plus"><img src="lxplus-brand-v262.png?v=26.2" class="lx-shell-logo" alt="LX Plus"></button>
+      <button class="lx-shell-brand" type="button" onclick="document.getElementById('brandHome')?.click()" aria-label="Ir para o início da LX Plus"><img src="lxplus-brand-v262.png?v=27.0" class="lx-shell-logo" alt="LX Plus"></button>
       <nav class="lx-shell-primary">
         <button data-shell-category="Início" class="active"><span>⌂</span><b>Início</b></button>
         <button data-shell-category="Filmes"><span>▣</span><b>Filmes</b></button>
@@ -159,7 +148,7 @@
     </aside>
     <header id="topbar" class="topbar">
       <div class="topbar-row">
-        <a href="#" id="brandHome" class="brand brand-sm brand-approved" aria-label="Ir para o início da LX Plus"><img src="lxplus-brand-v262.png?v=26.2" alt="LX Plus" class="lx-approved-logo"></a>
+        <a href="#" id="brandHome" class="brand brand-sm brand-approved" aria-label="Ir para o início da LX Plus"><img src="lxplus-brand-v262.png?v=27.0" alt="LX Plus" class="lx-approved-logo"></a>
         <div id="modeSwitch" class="mode-switch">
           <button data-mode="Assistir" class="active"><span>▶</span>Assistir</button>
           <button data-mode="Ler"><span>▤</span>Ler</button>
@@ -189,7 +178,7 @@
 
   <section id="admin" class="admin hidden">
     <aside class="admin-side">
-      <div class="brand brand-sm brand-approved"><img src="lxplus-brand-v262.png?v=26.2" alt="LX Plus" class="lx-approved-logo"></div>
+      <div class="brand brand-sm brand-approved"><img src="lxplus-brand-v262.png?v=27.0" alt="LX Plus" class="lx-approved-logo"></div>
       <div class="admin-identity"><div class="admin-avatar">LX</div><div><b>Administrador</b><small>LX Plus</small></div></div>
       <div class="admin-console-label"><span></span> LX PLUS</div>
       <nav id="adminNav">
@@ -240,7 +229,7 @@
     <audio id="musicAudio" preload="metadata"></audio>
   </div>
   <script>
-  /* LX SHELL v26.2 — funciona mesmo se o núcleo atrasar ou falhar */
+  /* LX SHELL v27.0 — funciona mesmo se o núcleo atrasar ou falhar */
   (function(){
     function byId(id){return document.getElementById(id)}
     function show(id){
@@ -260,13 +249,13 @@
       var openAfterIntro=function(){
         if(!splash || splash.classList.contains('hidden')) return;
         splash.classList.add('lx-splash-exit');
-        setTimeout(function(){show('auth');authTab('login');splash.classList.remove('lx-splash-exit')},420);
+        setTimeout(function(){show('auth');authTab('login');splash.classList.remove('lx-splash-exit')},260);
       };
       if(enter) enter.onclick=openAfterIntro;
       if(skip) skip.onclick=openAfterIntro;
       if(splash){
         clearTimeout(window.__LX_SPLASH_TIMER);
-        window.__LX_SPLASH_TIMER=setTimeout(openAfterIntro,3900);
+        window.__LX_SPLASH_TIMER=setTimeout(openAfterIntro,2100);
       }
       var tl=byId('tabLogin'),tr=byId('tabRegister');
       if(tl) tl.onclick=function(){authTab('login')};
@@ -281,7 +270,7 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   })();
   </script>
-  <script src="lxplus.js?v=26.2"></script>
+  <script src="lxplus.js?v=27.0"></script>
   <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 
 <script>
@@ -389,8 +378,7 @@
   }
   function close(){setDrawerOpen(false)}
   function shellHeader(title='Comunidade',subtitle='Mensagens, pessoas e chamadas em um só lugar'){
-    const streak=Number(LX.streak?.current?.()||0);
-    return `<header class="lx-community-head lx261-social-head"><div class="lx261-social-title"><span>LX SOCIAL</span><h2>${esc(title)}</h2><p>${esc(subtitle)}</p></div>${streak?`<button class="lx261-social-streak" type="button" onclick="LX.streak?.open?.()" title="Sua sequência diária">🔥 <b>${streak}</b></button>`:''}<button class="lx-community-close" onclick="LX.social.close()" aria-label="Fechar">×</button></header>`;
+    return `<header class="lx-community-head lx261-social-head"><div class="lx261-social-title"><span>LX SOCIAL</span><h2>${esc(title)}</h2><p>${esc(subtitle)}</p></div><button class="lx-community-close" onclick="LX.social.close()" aria-label="Fechar">×</button></header>`;
   }
   function sectionData(){
     const friends=state.directory.filter(x=>x.relation==='accepted');
@@ -1027,7 +1015,7 @@
   const LX=window.LX=window.LX||{};
   const state={
     booted:false,broadcastChannel:null,dbChannel:null,peer:null,directory:[],recorder:null,chunks:[],recordStream:null,recordTimer:null,
-    dbMessagesAvailable:null,seen:new Set(),emojiCategory:'recent',outbound:new Map(),typing:new Map(),typingTimer:null,typingPulse:0,
+    dbMessagesAvailable:null,seen:new Set(),emojiCategory:'recent',outbound:new Map(),typing:new Map(),pairStreaks:new Map(),typingTimer:null,typingPulse:0,
     replyingTo:null,editing:null,actionMessage:null,longPressTimer:null,longPressStart:null,draftTimer:null,conversationMenuOpen:false,globalBound:false,
     cloudNoticeChannel:null,cloudNoticeRows:[],cloudNoticeUnread:0,cloudNoticeSeen:new Set(),notificationPromptShown:false
   };
@@ -1072,6 +1060,21 @@
   function clearedAt(other){const m=clearMeta(),global=String(m.all||''),single=String(m[threadKey(other)]||'');return [global,single].filter(Boolean).sort().pop()||''}
   function afterClear(other,msg){const cut=clearedAt(other);return (!cut||String(msg?.created_at||'')>cut)&&!isHidden(msg)}
   function thread(other){return (readAll()[threadKey(other)]||[]).filter(m=>afterClear(other,m))}
+  function pairStreakLocal(other){
+    const mine=String(uid()||''),peer=String(other||''),days=new Map();
+    for(const m of thread(peer)){if(m?.deleted_at||!m?.created_at)continue;const d=new Date(m.created_at);if(Number.isNaN(+d))continue;const key=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Fortaleza',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);const set=days.get(key)||new Set();set.add(String(m.sender_id));days.set(key,set)}
+    const dayKey=d=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Fortaleza',year:'numeric',month:'2-digit',day:'2-digit'}).format(d), nowD=new Date(),today=dayKey(nowD),yd=new Date(nowD);yd.setDate(yd.getDate()-1);const yesterday=dayKey(yd);
+    const bilateral=k=>{const s=days.get(k);return !!s&&s.has(mine)&&s.has(peer)};
+    let anchor=bilateral(today)?new Date(nowD):bilateral(yesterday)?yd:null;if(!anchor)return 0;let n=0;
+    for(let i=0;i<3660;i++){const d=new Date(anchor);d.setDate(anchor.getDate()-i);if(!bilateral(dayKey(d)))break;n++}return n
+  }
+  async function pairStreak(other,force=false){
+    const key=String(other||''),cached=state.pairStreaks?.get?.(key);if(!force&&Number.isFinite(cached))return cached;
+    let n=pairStreakLocal(key),c=db();
+    if(c)try{const {data,error}=await c.rpc('lx_chat_pair_streak',{p_other:key});if(!error&&data!=null)n=Math.max(0,Number(data?.streak??data)||0)}catch(e){console.warn('LX pair streak fallback',e)}
+    state.pairStreaks=state.pairStreaks||new Map();state.pairStreaks.set(key,n);return n
+  }
+  async function updatePairStreak(other,force=false){const n=await pairStreak(other,force);if(String(state.peer)!==String(other))return n;const el=document.getElementById('lxPairStreak');if(el){el.classList.toggle('hidden',n<1);el.innerHTML=`🔥 <b>${n}</b><span>${n===1?'dia':'dias'}</span>`;el.title=`Sequência desta conversa: ${n} ${n===1?'dia':'dias'} com troca de mensagens dos dois lados.`}return n}
   function saveMessage(other,msg){
     const all=readAll(),k=threadKey(other),arr=all[k]||[],key=messageKey(msg),idx=arr.findIndex(x=>messageKey(x)===key);
     if(idx>=0)arr[idx]={...arr[idx],...msg};else arr.push(msg);
@@ -1095,7 +1098,7 @@
   function verified(p){return `${esc(p?.name||'Usuário')}${p?.verified?chatVerifiedBadge():''}`}
   function normalizeDb(row){if(!row)return null;return {id:row.client_id||row.id,server_id:row.id,client_id:row.client_id||String(row.id||''),sender_id:row.sender_id,recipient_id:row.recipient_id,kind:row.kind,body:row.body||'',media_key:row.media_key||null,reply_to_client_id:row.reply_to_client_id||null,reactions:row.reactions||{},created_at:row.created_at||now(),updated_at:row.updated_at||row.created_at||now(),edited_at:row.edited_at||null,delivered_at:row.delivered_at||null,read_at:row.read_at||null,deleted_at:row.deleted_at||null,read:!!row.read_at,send_status:row.read_at?'read':row.delivered_at?'delivered':'sent'}}
   function otherFor(m){return String(m.sender_id)===String(uid())?String(m.recipient_id):String(m.sender_id)}
-  async function receiveDb(row){const m=normalizeDb(row);if(!m)return;const other=otherFor(m);if(!other||other==='undefined')return;const key=messageKey(m),isNew=!!key&&!state.seen.has(key);if(key)state.seen.add(key);saveMessage(other,m);if(state.peer===other){renderMessages(other);if(String(m.recipient_id)===String(uid()))markRead(other).catch(()=>{})}else if(isNew&&String(m.recipient_id)===String(uid())){await directory();const p=state.directory.find(x=>String(x.user_id)===String(m.sender_id)&&x.relation==='accepted');if(p)notifyIncoming(p,m)}updateUnreadBadge()}
+  async function receiveDb(row){const m=normalizeDb(row);if(!m)return;const other=otherFor(m);if(!other||other==='undefined')return;const key=messageKey(m),isNew=!!key&&!state.seen.has(key);if(key)state.seen.add(key);saveMessage(other,m);if(state.peer===other){renderMessages(other);updatePairStreak(other,true);if(String(m.recipient_id)===String(uid()))markRead(other).catch(()=>{})}else if(isNew&&String(m.recipient_id)===String(uid())){await directory();const p=state.directory.find(x=>String(x.user_id)===String(m.sender_id)&&x.relation==='accepted');if(p)notifyIncoming(p,m)}updateUnreadBadge()}
 
   function outboundChannel(other){
     const c=db();if(!c)return Promise.reject(new Error('CHAT_OFFLINE'));other=String(other);
@@ -1137,7 +1140,7 @@
   async function send(other,kind='text',body='',media_key=null,reply_to_client_id=null){
     await boot();const p=(await directory()).find(x=>String(x.user_id)===String(other));if(!p||p.relation!=='accepted')return LX.toast?.('Adicione essa pessoa antes de conversar.');
     const msg={id:id(),client_id:null,sender_id:String(uid()),recipient_id:String(other),kind,body:String(body||''),media_key,reply_to_client_id:reply_to_client_id||null,reactions:{},created_at:now(),read:false,send_status:'sending'};msg.client_id=msg.id;
-    saveMessage(other,msg);if(state.peer===String(other))renderMessages(other);
+    saveMessage(other,msg);if(state.peer===String(other)){renderMessages(other);updatePairStreak(other,true)}
     const [persist,bcast]=await Promise.allSettled([tryPersist(msg),emit(other,'message',msg)]),persisted=persist.status==='fulfilled'&&persist.value===true,delivered=bcast.status==='fulfilled';
     patchMessage(other,messageKey(msg),{send_status:delivered?'sent':persisted?'sent':'failed'});if(state.peer===String(other))renderMessages(other);
     if(!persisted&&!delivered)LX.toast?.('Não foi possível entregar agora. Toque na mensagem para tentar novamente.');
@@ -1147,7 +1150,7 @@
     if(!msg||String(msg.recipient_id)!==String(uid()))return;const msgId=messageKey(msg);if(msgId&&state.seen.has(msgId))return;if(msgId)state.seen.add(msgId);if(state.seen.size>600)state.seen=new Set([...state.seen].slice(-300));
     await directory();const p=state.directory.find(x=>String(x.user_id)===String(msg.sender_id));if(!p||p.relation!=='accepted')return;
     msg.read=false;msg.send_status='delivered';msg.delivered_at=msg.delivered_at||now();saveMessage(msg.sender_id,msg);await markDelivered(msg.sender_id);
-    if(state.peer===String(msg.sender_id)){await markRead(msg.sender_id);renderMessages(msg.sender_id)}else notifyIncoming(p,msg);updateUnreadBadge();
+    if(state.peer===String(msg.sender_id)){await markRead(msg.sender_id);renderMessages(msg.sender_id);updatePairStreak(msg.sender_id,true)}else notifyIncoming(p,msg);updateUnreadBadge();
   }
   function receiveAction(a){
     if(!a||String(a.from||'')===String(uid()))return;const other=String(a.from||'');if(!other)return;
@@ -1246,8 +1249,8 @@
     await boot();const p=(await directory()).find(x=>String(x.user_id)===String(other));if(!p||p.relation!=='accepted')return LX.toast?.('Esse contato ainda não é seu amigo.');state.peer=String(other);state.replyingTo=null;state.editing=null;
     await loadPersistent(other).catch(()=>{});await markDelivered(other);await markRead(other);
     const d=document.getElementById('lxCommunityDrawer');if(!d)return LX.toast?.('Abra a Comunidade primeiro.');const draft=draftFor(other)?.text||'';
-    d.innerHTML=`<header class="lx-chat-head"><button class="lx-chat-back" onclick="LX.chat.back()">‹</button>${avatar(p)}<div><strong>${verified(p)}</strong><small id="lxChatPresenceLine"></small></div><div class="lx-chat-call-actions"><button class="lx-chat-head-tool" title="Áudio" onclick="LX.social.startCall('${p.user_id}','audio')"><svg viewBox="0 0 24 24"><path d="M6 2h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4c0 2-2 4-4 4C9 22 2 15 2 6c0-2 2-4 4-4Z"/></svg></button><button class="lx-chat-head-tool" title="Vídeo" onclick="LX.social.startCall('${p.user_id}','video')"><svg viewBox="0 0 24 24"><path d="M4 5h11a2 2 0 0 1 2 2v2.2L22 6v12l-5-3.2V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/></svg></button><button class="lx-chat-head-tool" title="Mais opções" onclick="LX.chat.toggleConversationMenu()">${ICONS.more}</button></div>${conversationMenu(other)}</header><div id="lxChatMessages" class="lx-chat-messages"></div>${emojiPanel()}${stickerPanel()}<form id="lxChatComposer" class="lx-chat-composer"><div id="lxComposeContext" class="lx-compose-context hidden"></div><label class="lx-chat-tool" title="Foto ou PDF">${ICONS.clip}<input id="lxChatFile" type="file" accept="image/*,.pdf,application/pdf" hidden></label><button type="button" id="lxEmojiBtn" class="lx-chat-tool" title="Emojis">${ICONS.smile}</button><button type="button" id="lxStickerBtn" class="lx-chat-tool" title="Figurinhas">${ICONS.sticker}</button><button type="button" id="lxAudioBtn" class="lx-chat-tool lx-chat-record" title="Áudio">${ICONS.mic}</button><textarea id="lxChatInput" rows="1" maxlength="4000" placeholder="Mensagem">${esc(draft)}</textarea><button type="submit" class="lx-chat-send" aria-label="Enviar">${ICONS.send}</button></form>`;
-    renderPresenceLine(other);renderMessages(other);bindComposer(other);renderEmojiGrid('recent');const input=document.getElementById('lxChatInput');if(input&&draft){input.style.height='auto';input.style.height=Math.min(110,input.scrollHeight)+'px'}
+    d.innerHTML=`<header class="lx-chat-head"><button class="lx-chat-back" onclick="LX.chat.back()">‹</button>${avatar(p)}<div class="lx-chat-head-copy"><div class="lx-chat-name-row"><strong>${verified(p)}</strong><span id="lxPairStreak" class="lx-pair-streak hidden"></span></div><small id="lxChatPresenceLine"></small></div><div class="lx-chat-call-actions"><button class="lx-chat-head-tool" title="Áudio" onclick="LX.social.startCall('${p.user_id}','audio')"><svg viewBox="0 0 24 24"><path d="M6 2h4l2 5-3 2a16 16 0 0 0 6 6l2-3 5 2v4c0 2-2 4-4 4C9 22 2 15 2 6c0-2 2-4 4-4Z"/></svg></button><button class="lx-chat-head-tool" title="Vídeo" onclick="LX.social.startCall('${p.user_id}','video')"><svg viewBox="0 0 24 24"><path d="M4 5h11a2 2 0 0 1 2 2v2.2L22 6v12l-5-3.2V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/></svg></button><button class="lx-chat-head-tool" title="Mais opções" onclick="LX.chat.toggleConversationMenu()">${ICONS.more}</button></div>${conversationMenu(other)}</header><div id="lxChatMessages" class="lx-chat-messages"></div>${emojiPanel()}${stickerPanel()}<form id="lxChatComposer" class="lx-chat-composer"><div id="lxComposeContext" class="lx-compose-context hidden"></div><label class="lx-chat-tool" title="Foto ou PDF">${ICONS.clip}<input id="lxChatFile" type="file" accept="image/*,.pdf,application/pdf" hidden></label><button type="button" id="lxEmojiBtn" class="lx-chat-tool" title="Emojis">${ICONS.smile}</button><button type="button" id="lxStickerBtn" class="lx-chat-tool" title="Figurinhas">${ICONS.sticker}</button><button type="button" id="lxAudioBtn" class="lx-chat-tool lx-chat-record" title="Áudio">${ICONS.mic}</button><textarea id="lxChatInput" rows="1" maxlength="4000" placeholder="Mensagem">${esc(draft)}</textarea><button type="submit" class="lx-chat-send" aria-label="Enviar">${ICONS.send}</button></form>`;
+    renderPresenceLine(other);renderMessages(other);updatePairStreak(other,true);bindComposer(other);renderEmojiGrid('recent');const input=document.getElementById('lxChatInput');if(input&&draft){input.style.height='auto';input.style.height=Math.min(110,input.scrollHeight)+'px'}
   }
   function back(){if(state.peer){sendTyping(state.peer,false);const input=document.getElementById('lxChatInput');if(input&&!state.editing)saveDraft(state.peer,input.value)}state.peer=null;state.replyingTo=null;state.editing=null;closeActionMenu();LX.social?.open?.('friends')}
   function bindComposer(other){
@@ -1299,7 +1302,7 @@
   function testSound(){const sound=document.getElementById('lxChatSound')?.value,volume=Number(document.getElementById('lxChatVolume')?.value??.7);if(sound)savePrefs({sound,volume});playNotificationSound(true)}
   async function shutdown(){const c=db();for(const ch of [state.broadcastChannel,state.dbChannel,state.cloudNoticeChannel])if(ch&&c)await c.removeChannel(ch).catch(()=>{});for(const {ch} of state.outbound.values())if(ch&&c)await c.removeChannel(ch).catch(()=>{});state.outbound.clear();state.broadcastChannel=null;state.dbChannel=null;state.cloudNoticeChannel=null;state.cloudNoticeRows=[];state.cloudNoticeUnread=0;state.booted=false;state.peer=null;document.getElementById('lxNotificationPrompt')?.remove()}
 
-  LX.chat={boot,shutdown,open,back,send,insertEmoji,sendSticker,sendStickerIndex,createSticker,loadPersistent,unreadTotal,cloudUnread,notificationItems,markNotificationsRead,pushRuntimeNotice,enableNotifications,settingsHTML,commitSettings,testSound,getPrefs,handleAttachment,renderEmojiGrid,summary,clearConversation,clearAllConversations,openActions,closeActionMenu,startReply,startEdit,cancelComposeContext,copyMessage,deleteForMe,deleteForEveryone,reactMessage,jumpToMessage,toggleConversationMenu,ready:true};
+  LX.chat={pairStreak,updatePairStreak,boot,shutdown,open,back,send,insertEmoji,sendSticker,sendStickerIndex,createSticker,loadPersistent,unreadTotal,cloudUnread,notificationItems,markNotificationsRead,pushRuntimeNotice,enableNotifications,settingsHTML,commitSettings,testSound,getPrefs,handleAttachment,renderEmojiGrid,summary,clearConversation,clearAllConversations,openActions,closeActionMenu,startReply,startEdit,cancelComposeContext,copyMessage,deleteForMe,deleteForEveryone,reactMessage,jumpToMessage,toggleConversationMenu,ready:true};
   const start=()=>{boot().catch(()=>{});setInterval(()=>{if(uid()&&!state.booted)boot().catch(()=>{})},2500)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
 
@@ -1307,29 +1310,25 @@
 
 <script>
 (function(){
-  const state={prompt:null};
+  const state={prompt:null}, DISMISS='lx_pwa_invite_dismissed_until', COOLDOWN=7*86400000;
   const isStandalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
   const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent);
   function button(){return document.getElementById('installAppBtn')}
-  function refresh(){const b=button();if(!b)return;b.classList.toggle('hidden',isStandalone())}
+  function refresh(){const installed=isStandalone(),b=button();if(b)b.classList.toggle('hidden',installed);document.getElementById('lxPwaInvite')?.classList.toggle('hidden',installed);document.querySelectorAll('[data-act="install"]').forEach(x=>x.classList.toggle('hidden',installed))}
+  function dismissed(){return Date.now()<Number(localStorage.getItem(DISMISS)||0)}
+  function dismiss(){localStorage.setItem(DISMISS,String(Date.now()+COOLDOWN));document.getElementById('lxPwaInvite')?.remove()}
+  function invite(){if(isStandalone()||!state.prompt||dismissed()||document.getElementById('lxPwaInvite'))return;const el=document.createElement('aside');el.id='lxPwaInvite';el.className='lx-pwa-invite';el.innerHTML='<div><b>Instalar LX Plus</b><span>Abra mais rápido, em tela cheia e como aplicativo.</span></div><button data-pwa-install>Instalar</button><button data-pwa-close aria-label="Agora não">×</button>';document.body.appendChild(el);el.querySelector('[data-pwa-install]').onclick=install;el.querySelector('[data-pwa-close]').onclick=dismiss}
   function guide(){
-    if(window.LX?.ui?.$){
-      const overlay=document.getElementById('overlay'),modal=document.getElementById('modal');
-      if(overlay&&modal){overlay.classList.remove('hidden');modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page lx-install-guide"><div class="panel-head"><div><span class="eyebrow">LX PLUS</span><h2>Instalar aplicativo</h2><p>${isIOS()?'No iPhone/iPad, abra o menu Compartilhar e escolha “Adicionar à Tela de Início”.':'No navegador, abra o menu e escolha “Instalar LX Plus” ou “Adicionar à tela inicial”.'}</p></div></div><img src="app-icon-192.png" alt="LX Plus"><strong>Abra o LX Plus como um app, em tela cheia e com acesso rápido.</strong></div>`;return;}
-    }
+    if(window.LX?.ui?.$){const overlay=document.getElementById('overlay'),modal=document.getElementById('modal');if(overlay&&modal){overlay.classList.remove('hidden');modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page lx-install-guide"><div class="panel-head"><div><span class="eyebrow">LX PLUS</span><h2>Instalar aplicativo</h2><p>${isIOS()?'No iPhone/iPad, abra Compartilhar e escolha “Adicionar à Tela de Início”.':'No navegador, abra o menu e escolha “Instalar LX Plus” ou “Adicionar à tela inicial”.'}</p></div></div><img src="app-icon-192.png" alt="LX Plus"><strong>Abra o LX Plus como um app, em tela cheia e com acesso rápido.</strong></div>`;return;}}
     alert(isIOS()?'Use Compartilhar → Adicionar à Tela de Início.':'Abra o menu do navegador e escolha Instalar LX Plus.');
   }
-  async function install(){
-    if(isStandalone()){window.LX?.toast?.('LX Plus já está instalado.');return;}
-    if(state.prompt){const p=state.prompt;state.prompt=null;await p.prompt();const choice=await p.userChoice.catch(()=>({outcome:'dismissed'}));if(choice.outcome==='accepted')window.LX?.toast?.('LX Plus instalado.');refresh();return;}
-    guide();
-  }
-  window.LXPWA={install};
-  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();state.prompt=e;refresh();});
-  window.addEventListener('appinstalled',()=>{state.prompt=null;refresh();window.LX?.toast?.('LX Plus instalado com sucesso.');});
-  document.addEventListener('click',e=>{if(e.target.closest?.('#installAppBtn'))install();});
-  if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js',{scope:'./'}).catch(err=>console.warn('LX PWA',err)));}
-  document.addEventListener('DOMContentLoaded',refresh);
+  async function install(){if(isStandalone()){window.LX?.toast?.('LX Plus já está instalado.');refresh();return}if(state.prompt){const p=state.prompt;state.prompt=null;try{await p.prompt();const choice=await p.userChoice;if(choice?.outcome==='accepted'){localStorage.removeItem(DISMISS);window.LX?.toast?.('LX Plus instalado.')}else dismiss()}catch{}document.getElementById('lxPwaInvite')?.remove();refresh();return}guide()}
+  window.LXPWA={install,isStandalone,refresh};
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();state.prompt=e;refresh();setTimeout(invite,1200)});
+  window.addEventListener('appinstalled',()=>{state.prompt=null;localStorage.removeItem(DISMISS);document.getElementById('lxPwaInvite')?.remove();refresh();window.LX?.toast?.('LX Plus instalado com sucesso.')});
+  document.addEventListener('click',e=>{if(e.target.closest?.('#installAppBtn'))install()});
+  if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js',{scope:'./'}).catch(err=>console.warn('LX PWA',err)));
+  document.addEventListener('DOMContentLoaded',()=>{refresh();if(state.prompt)setTimeout(invite,1200)});
 })();
 </script>
 
