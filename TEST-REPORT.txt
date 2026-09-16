@@ -1,13 +1,23 @@
-LX Plus v29.6 — Test Report
+LX Plus v29.7 — MUSIC CHECK-UP
 
-Validações executadas nesta build:
-- Sintaxe dos JavaScript principais.
-- IDs HTML e referências locais.
-- Estrutura CSS.
-- Manifest e service worker v29.6.
-- Regressão de chamada persistente.
-- Regressão de compartilhamento de áudio.
-- Regressão de reprodução de música e arquivo próprio.
-- Regressão do watchdog de boot e cache da PWA.
+CHECK-UP DO CATÁLOGO/NUVEM
+- Confirmado no Supabase que as duas faixas atuais existem em lx_catalog.
+- Confirmado no Storage privado lx-media que os dois MP3 existem fisicamente, MIME audio/mpeg, com aproximadamente 23 MB e 29 MB.
+- Portanto, o erro estava no cliente/player e na troca de renderer, não no upload.
 
-Observação: o ambiente de execução não permite validar áudio físico em um navegador conectado ao seu Supabase/R2 real; os fluxos de código e regressões estáticas foram validados localmente.
+CORREÇÕES
+- Realtime de histórico/lista não chama mais renderHome durante o modo Ouvir.
+- renderHome tem guarda rígida para manter a interface LX Music.
+- URL assinada do Supabase + fallback autenticado por download/Blob.
+- Corrigido escopo de playError que podia gerar erro de runtime depois do carregamento.
+- Caminho rápido de reprodução para mídia pré-carregada, iniciando dentro do clique do usuário.
+- Recuperação automática do <audio> por Blob em erro de fonte cloud.
+- Cache/PWA isolado em v29.7.
+
+TESTES
+- JavaScript e Service Worker: sintaxe válida.
+- Static checks: 10/10.
+- Regressão v29.7: 12/12.
+- Regressões de música completa: 10/10.
+- Regressões de chat/chamada/música: 10/10.
+- Teste real em Chromium com faixa WAV completa: play iniciou; readyState 4; currentTime avançou; botão inferior pausou e retomou; renderHome durante modo Ouvir preservou LX Music.

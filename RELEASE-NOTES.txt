@@ -1,3 +1,21 @@
+LX Plus v29.7 — Music Check-up
+
+- Corrigida a troca aleatória da interface LX Music para o Home antigo: sincronização de histórico/lista não chama mais renderHome durante o modo Ouvir.
+- renderHome agora possui guarda rígida e redireciona para a interface LX Music quando o modo atual é Ouvir.
+- Corrigido o fluxo de áudio privado do Supabase: URL assinada + fallback autenticado por download/Blob.
+- Corrigido erro de escopo do playError que podia gerar exceção após tentar carregar uma faixa.
+- Adicionado caminho rápido: fontes pré-carregadas iniciam dentro do clique do usuário, reduzindo bloqueios de autoplay.
+- O elemento <audio> faz recuperação automática por Blob quando uma URL cloud falha.
+- Removidos redesenhos completos periódicos desnecessários durante a reprodução.
+- Service Worker isolado em cache v29.7 para evitar mistura de JS/CSS de versões anteriores.
+- Adicionado LX.musicHealthCheck() para diagnóstico do player.
+
+LX Plus v29.7 — Music Check-up
+- Corrigido Realtime que trocava LX Music para a tela antiga ao sincronizar histórico/lista.
+- Player próprio ganhou sessão Supabase robusta, signed URL + download Blob fallback e status visível de áudio.
+- Removido rerender completo periódico que podia trocar a interface durante uso.
+- Service Worker evita misturar JS/CSS antigos com a build atual.
+
 LX Plus v29.6 — Music Playback + Boot Recovery
 
 CORREÇÕES PRINCIPAIS

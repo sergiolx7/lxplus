@@ -108,3 +108,11 @@ input,select,textarea,button{max-width:100%}
 .music-dock.external-provider.provider-open .music-provider-panel:not(.hidden){display:block!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important}
 .music-dock.external-provider.provider-open #musicProviderFrame:not(.hidden),.music-dock.external-provider.provider-open .spotify-embed-host:not(.hidden){display:block!important}
 .music-dock.external-provider .music-provider-panel iframe{background:#0b0b0e!important}
+
+/* v29.7 check-up: one stable LX Music renderer + explicit audio health state */
+#app.lx-music-mode #hero,#app.lx-music-mode #welcome{display:none!important}
+#musicPlaybackKind.is-loading{color:#d8b4fe!important}
+#musicPlaybackKind.is-error{color:#ff8f8f!important}
+#musicPlaybackKind.is-ready{color:#a9e8be!important}
+.music-dock:not(.hidden){pointer-events:auto!important}
+.music-dock #musicPlay{pointer-events:auto!important;position:relative;z-index:3}
