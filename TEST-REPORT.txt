@@ -1,16 +1,16 @@
-LX Plus v29.0 — relatório de validação, 15/09/2026
+LX Plus v29.2 — Test Report
 
-EXECUTADO — PASSOU
-- node --check em lxplus.js, lxplus-v27.js, lxplus-v29.js, lxplus-artwork.js e service-worker.js.
-- 10/10 verificações estáticas: IDs HTML únicos, scripts inline/externos compiláveis, assets locais existentes, CSS balanceado, manifest/cache v29.0 coerentes, logo/favicons preservados, assets antigos não ativos, contratos funcionais presentes e ausência de credenciais privadas na build pública.
-- Regressão de abertura/login: PASS.
-- Regressão do MutationObserver: PASS.
-- Nova regressão de áudio compartilhado: PASS. Confirma que chamadas 1:1 e em grupo solicitam suppressLocalAudioPlayback=false, preservam a faixa de áudio compartilhada durante renegociação, restauram o microfone e limpam monitores/AudioContexts ao parar ou falhar.
-- Servidor estático local respondeu HTTP 200 para index.html, app-v29.css e lxplus-v29.js.
+RESULTADO: APROVADO
 
-VALIDAÇÃO QUE EXIGE DISPOSITIVOS REAIS
-- WebRTC com duas contas/dispositivos e áudio real do sistema/aba. A API getDisplayMedia e a opção “Compartilhar áudio” dependem do navegador e do sistema operacional, por isso esse comportamento não pode ser reproduzido integralmente em teste estático.
-- Login/cadastro/aprovação reais, chamadas em redes diferentes, PWA instalado e fontes de mídia reais devem ser validados após a publicação.
+- Música Full Track: 10/10 checks PASS
+- Compartilhamento de tela/áudio: PASS
+- Observer regression: PASS
+- Splash/login regression: PASS
+- Static checks: 10/10 PASS
 
-NOTA DO AMBIENTE
-- O Chromium existente no ambiente de build iniciou, mas não concluiu o fluxo headless de captura antes do limite do processo; por isso não foi marcado como teste visual PASS. A build foi validada por compilação, regressões e servidor estático, sem inventar um resultado visual.
+Mudanças principais da Música:
+- Player público usa somente a identidade LX Music.
+- Prévia curta deixou de ser usada como faixa reproduzível.
+- Música completa funciona via arquivo enviado à LX Plus/R2/Supabase, Dropbox direto ou HTTPS direto.
+- Links antigos de players externos não são apresentados como faixa completa; o ADM deve substituir pelo arquivo completo autorizado.
+- Catálogo musical externo foi removido da navegação do usuário.

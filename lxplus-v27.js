@@ -12,11 +12,11 @@
   const db=()=>LX.cloud?.db?.()||null;
   const role=()=>String(state().user?.adminRole||state().user?.admin_role||LX.cloud?.profile?.()?.admin_role||'').toLowerCase();
   const fmt=seconds=>LX.fmt?.(Number(seconds)||0)||'0:00';
-  const logo='assets/lxplus-logo-v27.png?v=29.0';
+  const logo='assets/lxplus-logo-v27.png?v=29.2';
   const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   const standalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true;
 
-  LX.v27={version:'29.0',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
+  LX.v27={version:'29.2',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
 
   function syncBranding(root=document){
     root.querySelectorAll?.('img').forEach(img=>{
@@ -58,7 +58,7 @@
   /* ---------- Música: sem confundir prévia com faixa completa ---------- */
   const audio=()=>$('musicAudio');
   const track=()=>state().musicQueue?.[state().musicIndex]||null;
-  function isSpotify(item=track()){return /^spotify:/i.test(String(item?.mediaKey||''))}
+  function isSpotify(){return false}
   function isPreview(item=track()){return !!item&&(item.isPreview===true||item.playbackKind==='preview'||(!item.mediaKey&&!!item.previewUrl))}
   function musicPositionKey(item=track()){
     if(!item||!uid())return'';
@@ -66,13 +66,8 @@
   }
   function setMusicKind(){
     const item=track(),badge=$('musicPlaybackKind'),dock=$('musicDock');if(!badge||!dock)return;
-    const preview=isPreview(item),spotify=isSpotify(item);
-    badge.textContent=preview?'PRÉVIA · até 30 s':spotify?'SPOTIFY OFICIAL':'FAIXA COMPLETA';
-    badge.classList.toggle('is-preview',preview);badge.classList.toggle('is-spotify',spotify);badge.classList.toggle('hidden',!item);
-    dock.classList.toggle('is-preview',preview);dock.classList.toggle('is-full-track',!!item&&!preview&&!spotify);
-    if(preview){badge.title='Trecho curto oficial. Não é a música completa.';$('musicDuration')?.setAttribute('title','Duração desta prévia')}
-    else $('musicDuration')?.removeAttribute('title');
-    syncNowPlaying();
+    badge.textContent=item?'FAIXA COMPLETA · LX MUSIC':'';badge.classList.remove('is-preview','is-spotify');badge.classList.toggle('hidden',!item);
+    dock.classList.remove('is-preview');dock.classList.toggle('is-full-track',!!item);$('musicDuration')?.removeAttribute('title');syncNowPlaying();
   }
   function saveScopedPosition(){
     const item=track(),el=audio(),key=musicPositionKey(item);if(!item||!el||!key||isPreview(item)||!Number.isFinite(el.duration)||el.duration<=0)return;
@@ -89,11 +84,7 @@
     const position=Math.max(Number(local.position||0),cloudPosition);
     if(position>4&&position<el.duration-8)try{el.currentTime=position}catch{}
   }
-  function playPreview(item){
-    if(!item?.previewUrl)return toast('Prévia oficial indisponível para esta faixa.');
-    state().musicQueue=[{title:item.title||'Prévia',artist:item.artist||'Apple Music',album:item.album||'',cover:item.cover||'',duration:Number(item.duration)||30,previewUrl:item.previewUrl,isPreview:true,playbackKind:'preview',contentId:'preview-'+String(item.remoteId||Date.now()),remoteId:item.remoteId||'',index:0}];
-    state().musicIndex=0;$('musicDock')?.classList.remove('hidden');LX.loadMusicTrack?.(true);setTimeout(setMusicKind,0);
-  }
+  function playPreview(){toast('Prévia desativada. A LX Music usa somente faixas completas do catálogo próprio.')}
   LX.playOnlineMusicPreview=playPreview;
 
   function spotifyTrack(item){
@@ -176,7 +167,7 @@
     const signature=[item.mediaKey||item.remoteId||item.contentId||item.title,item.cover||'',item.artist||'',item.duration||'',current,queue.map(row=>row.mediaKey||row.remoteId||row.contentId||row.title).join(',')].join('|');
     if(panel.dataset.signature===signature){updateNowPlayingProgress();return}panel.dataset.signature=signature;panel.classList.toggle('no-queue',!upcoming.length);panel.style.setProperty('--now-art',LX.artwork.safeBackground(item));
     const icon=name=>LX.artwork.icon(name),button=(name,target,label)=>`<button type="button" onclick="${target}" aria-label="${label}" title="${label}">${icon(name)}</button>`;
-    panel.innerHTML=`<div class="lx-v27-now-backdrop"></div><header>${button('down','LX.closeNowPlaying()','Fechar Tocando agora')}<div><span>TOCANDO AGORA</span><strong>${preview?'Prévia oficial':spotify?'Spotify oficial':'LX Music'}</strong></div>${button('queue','LX.openMusicQueue()','Abrir fila')}</header><main><section class="lx-v27-now-art">${LX.artwork.markup(item,{},'lx-now-art-image','Capa de '+(item.title||'música'))}<span class="${preview?'preview':''}">${preview?'PRÉVIA · TRECHO CURTO':spotify?'PLAYER OFICIAL SPOTIFY':'FAIXA COMPLETA'}</span></section><section class="lx-v27-now-copy"><div><span>${esc(item.album||'LX Music')}</span><h2>${esc(item.title||'Faixa')}</h2><p>${esc(item.artist||'LX Music')}</p></div>${button('heart',"document.getElementById('musicLikeBtn')?.click()",'Salvar na biblioteca')}<div class="lx-v27-now-progress"><input data-now-progress type="range" min="0" max="100" step="0.1" value="${Number($('musicProgress')?.value||0)}" aria-label="Posição da faixa" oninput="document.getElementById('musicProgress').value=this.value;document.getElementById('musicProgress').dispatchEvent(new Event('input'))"><div><span data-now-time>${esc($('musicTime')?.textContent||'0:00')}</span><span data-now-duration>${esc($('musicDuration')?.textContent||fmt(item.duration))}</span></div></div><div class="lx-v27-now-controls">${button('shuffle',"document.getElementById('musicShuffle')?.click()",'Embaralhar')}${button('prev',"document.getElementById('musicPrev')?.click()",'Anterior')}<button data-now-play type="button" class="main" aria-label="Reproduzir ou pausar" onclick="document.getElementById('musicPlay')?.click()">${icon(audio()?.paused?'play':'pause')}</button>${button('next',"document.getElementById('musicNext')?.click()",'Próxima')}${button('repeat',"document.getElementById('musicRepeat')?.click()",'Repetir')}</div><div class="lx-v27-now-actions">${button('lyrics','LX.openMusicLyrics?.()','Ver letra')}${button('queue','LX.openMusicQueue()','Abrir fila')}${spotify?`<button type="button" onclick="LX.closeNowPlaying();LX.openMusicProvider()" aria-label="Abrir Spotify oficial">${icon('external')} Spotify oficial</button>`:''}</div>${preview?'<div class="lx-v27-preview-warning"><strong>Isto é uma prévia.</strong><span>Para ouvir a faixa completa, abra o serviço oficial.</span></div>':''}</section>${upcoming.length?`<aside><span>PRÓXIMAS</span><h3>Na fila</h3>${upcoming.map((row,index)=>`<button type="button" onclick="LX.musicQueuePlay(${current+1+index})">${LX.artwork.markup(row,{},'lx-queue-art',row.title)}<span><strong>${esc(row.title)}</strong><small>${esc(row.artist)}</small></span></button>`).join('')}</aside>`:''}</main>`;
+    panel.innerHTML=`<div class="lx-v27-now-backdrop"></div><header>${button('down','LX.closeNowPlaying()','Fechar Tocando agora')}<div><span>TOCANDO AGORA</span><strong>LX Music</strong></div>${button('queue','LX.openMusicQueue()','Abrir fila')}</header><main><section class="lx-v27-now-art">${LX.artwork.markup(item,{},'lx-now-art-image','Capa de '+(item.title||'música'))}<span class="${preview?'preview':''}">FAIXA COMPLETA · LX MUSIC</span></section><section class="lx-v27-now-copy"><div><span>${esc(item.album||'LX Music')}</span><h2>${esc(item.title||'Faixa')}</h2><p>${esc(item.artist||'LX Music')}</p></div>${button('heart',"document.getElementById('musicLikeBtn')?.click()",'Salvar na biblioteca')}<div class="lx-v27-now-progress"><input data-now-progress type="range" min="0" max="100" step="0.1" value="${Number($('musicProgress')?.value||0)}" aria-label="Posição da faixa" oninput="document.getElementById('musicProgress').value=this.value;document.getElementById('musicProgress').dispatchEvent(new Event('input'))"><div><span data-now-time>${esc($('musicTime')?.textContent||'0:00')}</span><span data-now-duration>${esc($('musicDuration')?.textContent||fmt(item.duration))}</span></div></div><div class="lx-v27-now-controls">${button('shuffle',"document.getElementById('musicShuffle')?.click()",'Embaralhar')}${button('prev',"document.getElementById('musicPrev')?.click()",'Anterior')}<button data-now-play type="button" class="main" aria-label="Reproduzir ou pausar" onclick="document.getElementById('musicPlay')?.click()">${icon(audio()?.paused?'play':'pause')}</button>${button('next',"document.getElementById('musicNext')?.click()",'Próxima')}${button('repeat',"document.getElementById('musicRepeat')?.click()",'Repetir')}</div><div class="lx-v27-now-actions">${button('lyrics','LX.openMusicLyrics?.()','Ver letra')}${button('queue','LX.openMusicQueue()','Abrir fila')}</div></section>${upcoming.length?`<aside><span>PRÓXIMAS</span><h3>Na fila</h3>${upcoming.map((row,index)=>`<button type="button" onclick="LX.musicQueuePlay(${current+1+index})">${LX.artwork.markup(row,{},'lx-queue-art',row.title)}<span><strong>${esc(row.title)}</strong><small>${esc(row.artist)}</small></span></button>`).join('')}</aside>`:''}</main>`;
     LX.artwork.hydrate(panel);
   }
   function updateNowPlayingProgress(){const panel=$('lxV27NowPlaying'),source=$('musicProgress');if(!panel||panel.classList.contains('hidden'))return;const range=panel.querySelector('[data-now-progress]'),time=panel.querySelector('[data-now-time]'),duration=panel.querySelector('[data-now-duration]'),play=panel.querySelector('[data-now-play]');if(range&&source&&document.activeElement!==range)range.value=source.value||0;if(time)time.textContent=$('musicTime')?.textContent||'0:00';if(duration)duration.textContent=$('musicDuration')?.textContent||fmt(track()?.duration);if(play)play.innerHTML=LX.artwork.icon(audio()?.paused?'play':'pause')}
@@ -193,7 +184,7 @@
   }
   function openQueueV27(){
     const modal=$('modal'),overlay=$('overlay'),queue=state().musicQueue||[],current=Number(state().musicIndex)||0;if(!modal||!overlay)return;overlay.classList.remove('hidden');
-    modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="lx-v27-queue"><header><span>LX MUSIC</span><h2>Fila de reprodução</h2><p>Reordene, remova ou escolha a próxima faixa.</p></header><div>${queue.map((item,index)=>`<article class="${index===current?'active':''}"><button type="button" class="lx-v27-queue-play" onclick="LX.musicQueuePlay(${index})">${LX.artwork.markup(item,{},'lx-queue-art',item.title)}<span><strong>${esc(item.title)}</strong><small>${esc(item.artist)} · ${isPreview(item)?'Prévia':isSpotify(item)?'Spotify oficial':'Faixa completa'}</small></span><time>${fmt(item.duration||0)}</time></button><div><button type="button" onclick="LX.v27QueueMove(${index},-1)" ${index===0?'disabled':''} aria-label="Mover para cima">↑</button><button type="button" onclick="LX.v27QueueMove(${index},1)" ${index===queue.length-1?'disabled':''} aria-label="Mover para baixo">↓</button><button type="button" class="danger" onclick="LX.v27QueueRemove(${index})" aria-label="Remover da fila">×</button></div></article>`).join('')||'<div class="lx-v27-empty"><strong>A fila está vazia</strong><p>Escolha uma faixa para começar.</p></div>'}</div></div>`;
+    modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="lx-v27-queue"><header><span>LX MUSIC</span><h2>Fila de reprodução</h2><p>Reordene, remova ou escolha a próxima faixa.</p></header><div>${queue.map((item,index)=>`<article class="${index===current?'active':''}"><button type="button" class="lx-v27-queue-play" onclick="LX.musicQueuePlay(${index})">${LX.artwork.markup(item,{},'lx-queue-art',item.title)}<span><strong>${esc(item.title)}</strong><small>${esc(item.artist)} · Faixa completa · LX Music</small></span><time>${fmt(item.duration||0)}</time></button><div><button type="button" onclick="LX.v27QueueMove(${index},-1)" ${index===0?'disabled':''} aria-label="Mover para cima">↑</button><button type="button" onclick="LX.v27QueueMove(${index},1)" ${index===queue.length-1?'disabled':''} aria-label="Mover para baixo">↓</button><button type="button" class="danger" onclick="LX.v27QueueRemove(${index})" aria-label="Remover da fila">×</button></div></article>`).join('')||'<div class="lx-v27-empty"><strong>A fila está vazia</strong><p>Escolha uma faixa para começar.</p></div>'}</div></div>`;
     LX.artwork.hydrate(modal);
   }
   LX.openNowPlaying=openNowPlaying;LX.closeNowPlaying=closeNowPlaying;LX.openMusicQueue=openQueueV27;LX.v27QueueMove=queueMove;LX.v27QueueRemove=queueRemove;
@@ -272,7 +263,7 @@
     $('lxSpotifySave').onclick=async()=>{const button=$('lxSpotifySave'),id=$('lxSpotifyClientId').value.trim(),secret=$('lxSpotifyClientSecret').value.trim();if(!id||!secret)return toast('Preencha Client ID e Client Secret.');button.disabled=true;button.textContent='Salvando…';try{const client=db();for(const [key,value] of [['spotify_client_id',id],['spotify_client_secret',secret]]){const {error}=await client.rpc('lx_admin_set_integration_secret',{p_key:key,p_value:value});if(error)throw error}$('lxSpotifyClientSecret').value='';$('lxSpotifyStatus').textContent='Testando…';await spotifyInvoke({action:'search',q:'Brasil',limit:1});$('lxSpotifyStatus').textContent='Conectado';toast('Spotify conectado com segurança.')}catch(error){console.warn(error);$('lxSpotifyStatus').textContent='Verifique as credenciais';toast('Não foi possível validar o Spotify.')}finally{button.disabled=false;button.textContent='Salvar e testar'}};
   }
 
-  function enhanceAdmin(){applyAdminPermissions();renderAdminTeam();appendSpotifySettings()}
+  function enhanceAdmin(){applyAdminPermissions();renderAdminTeam()}
 
   /* ---------- Integração com a aplicação existente ---------- */
   function wire(){
@@ -282,20 +273,19 @@
     $('musicQueueBtn')?.addEventListener('click',event=>{event.stopImmediatePropagation();openQueueV27()});
     $('musicCoverBtn')?.addEventListener('click',event=>{event.stopImmediatePropagation();openNowPlaying()});
     document.querySelector('#musicDock .music-info')?.addEventListener('click',openNowPlaying);
-    const legacy=LX.contentHub?.renderMusic;if(legacy){LX.v27.legacyMusicSearch=legacy;LX.contentHub.renderMusic=renderSpotifySearch}
     const originalOpen=LX.chat?.open;if(originalOpen)LX.chat.open=async(...args)=>{const result=await originalOpen(...args);refreshConversationStreak();return result};
-    subscribeStreak();enhanceAdmin();
+    subscribeStreak();applyAdminPermissions();renderAdminTeam();
     $('adminNav')?.addEventListener('click',event=>{const button=event.target.closest('[data-admin]');if(button&&!canPage(button.dataset.admin)){event.preventDefault();event.stopImmediatePropagation();toast('Esse cargo não possui acesso a esta área.')}},true);
     setMusicKind();
   }
   let lastUser='';
   function heartbeat(){
-    const current=uid();if(lastUser&&current!==lastUser){audio()?.pause();if(audio())audio().currentTime=0;state().musicQueue=[];state().musicIndex=0;$('musicDock')?.classList.add('hidden');closeNowPlaying()}lastUser=current;if(current)subscribeStreak();setMusicKind();enhanceAdmin();syncBranding();$('lxStreakIndicator')?.remove();$('lxStreakWelcome')?.remove();
+    const current=uid();if(lastUser&&current!==lastUser){audio()?.pause();if(audio())audio().currentTime=0;state().musicQueue=[];state().musicIndex=0;$('musicDock')?.classList.add('hidden');closeNowPlaying()}lastUser=current;if(current)subscribeStreak();setMusicKind();applyAdminPermissions();renderAdminTeam();syncBranding();$('lxStreakIndicator')?.remove();$('lxStreakWelcome')?.remove();
   }
   const observer=new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes){if(node.nodeType!==1)continue;syncBranding(node);if(node.id==='lxGlobalCinema')setTimeout(()=>enhancePlayer(node),0);if(node.querySelector?.('#lxGlobalCinema'))enhancePlayer(node.querySelector('#lxGlobalCinema'));if(node.matches?.('.lx-chat-head,.lx-chat-msg')||node.querySelector?.('.lx-chat-head,.lx-chat-msg'))refreshConversationStreak()}enhanceAdmin()});
   observer.observe(document.documentElement,{childList:true,subtree:true});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire,{once:true});else wire();
   setInterval(heartbeat,1200);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){heartbeat();refreshConversationStreak()}});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!ensureNowPlaying().classList.contains('hidden'))closeNowPlaying()});
-  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='29.0';
+  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='29.2';
 })();

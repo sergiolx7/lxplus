@@ -1,4 +1,4 @@
-/* LX Plus v29.0 — Stability, responsive polish and player readability */
+/* LX Plus v29.2 — Stability, responsive polish and player readability */
 html,body{max-width:100%;overflow-x:clip}
 #app,.app,#app main,.home-content,.rail-section,.rail-wrap,.rail,.lx-music-main,.lx-music-section,.lx-community-drawer,.admin-shell,.panel-page{min-width:0}
 img,video,iframe{max-width:100%}
@@ -58,3 +58,10 @@ input,select,textarea,button{max-width:100%}
   .lx-next-ep{max-width:132px!important}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+
+/* LX Music v29.2 — catálogo próprio, faixa completa */
+.music-provider-panel,.music-provider-toggle{display:none!important}
+.music-playback-kind{letter-spacing:.08em}
+.lx-music-card-main>em,.lx-music-provider{background:rgba(255,255,255,.08)!important;color:#f2f2f5!important}
+.media-source-switch [hidden]{display:none!important}

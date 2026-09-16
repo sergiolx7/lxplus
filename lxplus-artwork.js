@@ -1,4 +1,4 @@
-/* LX Music v29.0: artwork and control icons shared across music surfaces. */
+/* LX Music v29.2: artwork and control icons shared across music surfaces. */
 (()=>{
   'use strict';
   const LX=window.LX=window.LX||{},fallback='assets/lx-music-fallback.svg';
