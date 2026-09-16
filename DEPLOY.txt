@@ -1,7 +1,9 @@
-LX Plus v29.6 — arquivos para GitHub Pages
+LX Plus v29.8 — GitHub Pages
 
-1. Substitua os arquivos do site pelos arquivos deste ZIP.
-2. Aguarde o GitHub Pages concluir o deploy.
-3. Na primeira abertura da v29.6, atualize a página uma vez se uma aba antiga já estava aberta. O service worker v29.6 assume as próximas aberturas automaticamente.
+1. Remova/substitua os arquivos atualmente publicados pela pasta deste ZIP.
+2. O deploy de produção precisa conter index.html, lxplus.bundle.css, lxplus.bundle.js, service-worker.js, manifest.webmanifest, CNAME e a pasta assets.
+3. Os antigos app.css/app-v*.css/lxplus.js/lxplus-v*.js NÃO são mais usados pela v29.8. Eles podem ser apagados do repositório para evitar confusão.
+4. Aguarde o GitHub Pages finalizar o deploy.
+5. Na primeira abertura da v29.8, faça uma recarga normal. A build limpa os caches LX antigos e registra o Service Worker v29.8 depois do reset.
 
-Correções desta build: reprodução de arquivo de música enviado pelo ADM, normalização de MIME, fallback de áudio e recuperação da tela de carregamento/PWA.
+Arquitetura de produção: 1 CSS + 1 JS + 1 Service Worker versionado.
