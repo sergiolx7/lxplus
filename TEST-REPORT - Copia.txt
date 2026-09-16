@@ -1,0 +1,20 @@
+LX Plus v29.4 — Test Report
+
+PASS 12/12 — hotfix estático da build:
+- build/cache 29.4
+- Voltar ao site não é hangup
+- Encerrar continua explícito
+- painel oficial de reprodução existe
+- Spotify Embed API carregada
+- Música aceita YouTube e Spotify no ADM
+- controle YouTube via IFrame API
+- controle Spotify via Embed API
+- fallback para arquivo próprio preservado
+- CSS do player externo habilitado apenas quando necessário
+
+PASS 10/10 — testes estruturais do projeto completo.
+PASS — screen-audio-regression.
+PASS — observer-regression.
+PASS — splash-regression.
+
+Nota: reprodução integral de Spotify depende das regras do serviço, conta, região e disponibilidade do conteúdo. YouTube/YouTube Music usa o player oficial do YouTube e também depende da disponibilidade definida pelo provedor.

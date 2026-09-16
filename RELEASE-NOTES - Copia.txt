@@ -1,0 +1,61 @@
+LX Plus v29.4
+- Corrigido: Voltar ao site durante chamada agora minimiza e mantém a conexão WebRTC ativa.
+- YouTube e Spotify passam a ser aceitos como fontes oficiais de Música no ADM.
+- YouTube usa iframe oficial com controle por API; Spotify usa Spotify Embed iFrame API.
+- A interface principal continua identificada como LX Music.
+
+LX Plus v29.3 — Direct 2.0 + Chamada Persistente + LX Music Full Track
+
+- Chat/Direct: a interface nova agora tem prioridade sobre os estilos antigos; mensagens próprias deixam de voltar ao roxo legado.
+- Chamada 1:1: o botão Voltar minimiza a chamada em vez de encerrá-la. A conexão WebRTC, microfone e áudio remoto continuam ativos enquanto o usuário navega pelo site.
+- Chamada minimizada: nova barra flutuante com tempo, retorno à chamada, microfone, câmera e encerrar.
+- LX Music: removido o caminho legado que ainda tentava controlar provider externo oculto.
+- Player: resolve áudio completo por upload LX, Supabase/R2, Dropbox direto ou URL HTTPS direta, espera metadata/canplay e trata erros de reprodução.
+- Prévia externa não é usada como fallback de música completa.
+- Build/cache atualizados para 29.3.
+
+LX Plus v29.3 — LX Music Full Track
+- A interface musical usa somente a marca LX Music; provedores externos não aparecem no player.
+- Prévia de 30 segundos foi desativada como forma de reprodução.
+- Música publicada deve ter áudio completo próprio: upload/R2/Supabase, Dropbox direto ou HTTPS direto.
+- Faixas antigas apontando para embeds externos pedem substituição pelo áudio completo no ADM.
+
+LX Plus v29.1
+- Logo corrigida para usar somente os detalhes brancos com fundo transparente.
+- Navegação do carrossel da Música estilizada e sem os botões cinza bugados.
+
+LX Plus v29.0 — Stability + Shared Audio
+15/09/2026
+
+TRANSMISSÃO DE TELA / CHAMADAS
+- Corrigido o caso em que a outra pessoa ouvia o áudio compartilhado, mas quem estava transmitindo deixava de ouvir.
+- A captura de tela agora solicita explicitamente que o navegador preserve a reprodução local do áudio.
+- Microfone + áudio da tela continuam sendo misturados para o participante remoto quando o navegador entrega uma faixa de áudio compartilhada.
+- Foi incluído fallback local apenas quando o próprio navegador informa que silenciou a reprodução local, evitando áudio duplicado/eco nos casos normais.
+- A mesma correção foi aplicada às chamadas 1:1 e às chamadas em grupo.
+- Ao parar a transmissão, cancelar, ocorrer erro ou encerrar a chamada, o sender de áudio volta ao microfone e os AudioContexts/faixas temporárias são encerrados.
+- Renegociação/reconexão WebRTC preserva a faixa mista da tela para não voltar silenciosamente ao microfone no meio do compartilhamento.
+
+MÚSICA E INTERFACE
+- Mantido o carrossel compacto da v28.3 e adicionada uma camada final para impedir áreas vazias de reservarem altura.
+- Carrossel de Música limitado no desktop e celular; não usa alturas de viewport exageradas.
+- Dock de música ganhou fallback visual permanente para a capa e proteção adicional para títulos/artistas longos.
+- Imagens de catálogo/comunidade recebem carregamento preguiçoso e decoding assíncrono quando apropriado.
+- Tipografia e containers receberam proteções contra estouro horizontal.
+- O fogo/contador da Comunidade permanece no fluxo do cabeçalho, sem ficar por cima de nome ou avatar.
+
+PLAYER DE FILMES E SÉRIES
+- Botão de próximo episódio ficou maior e mais informativo, incluindo temporada/episódio no player nativo.
+- Controles de próximo episódio e qualidade ficaram mais legíveis no celular e em fontes externas.
+- Mantidos autoplay do próximo episódio com contagem regressiva de 5 segundos e opção de cancelar para mídia nativa.
+- Mantidos fullscreen, mini player, retomada de progresso, qualidade adaptativa quando a fonte fornece rendições reais e fallback do Google Drive.
+
+LOGIN, NUVEM, ADM E RESPONSIVIDADE
+- Mantidos os fluxos robustos de login/cadastro, correção de e-mail, confirmação/aprovação ADM e recuperação de sessão já presentes no projeto.
+- Mantidos realtime, retry de catálogo, sincronização Supabase, uploads, PWA, favoritos, histórico, busca universal, ranking e Comunidade.
+- Adicionada camada v29 de estabilidade responsiva para impedir scroll horizontal e melhorar tabelas/painéis no celular.
+- Service Worker e todos os assets públicos foram versionados para 29.0, eliminando cache da build anterior.
+
+OBSERVAÇÃO SOBRE ÁUDIO COMPARTILHADO
+- Para o áudio da aba/tela chegar à outra pessoa, ainda é necessário marcar “Compartilhar áudio” na janela nativa do Chrome/Edge quando essa opção aparecer.
+- Alguns navegadores/sistemas não disponibilizam áudio do sistema em todos os tipos de captura. A LX Plus agora preserva o áudio local quando a API oferece essa capacidade, mas não pode criar uma faixa de sistema que o navegador não fornecer.
