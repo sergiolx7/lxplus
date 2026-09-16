@@ -1,8 +1,8 @@
 {
   "name": "LX Plus",
   "short_name": "LX Plus",
-  "description": "Filmes, séries, música, livros, comunidade e pedidos em uma experiência moderna.",
-  "start_url": "./",
+  "description": "Filmes, séries, música, livros e comunidade em uma experiência premium.",
+  "start_url": "./?v=29.0",
   "scope": "./",
   "display": "standalone",
   "background_color": "#020306",
@@ -13,13 +13,8 @@
       "src": "assets/icon-v27.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ],
-  "categories": [
-    "entertainment",
-    "social",
-    "music"
-  ],
-  "prefer_related_applications": false
+  "version": "29.0"
 }

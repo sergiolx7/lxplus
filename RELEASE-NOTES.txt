@@ -1,79 +1,35 @@
-LX Plus v28.1 — Visual Polish + Music/Community Bugfix
+LX Plus v29.0 — Stability + Shared Audio
+15/09/2026
 
-Correções desta revisão:
-- Remove o grande vazio da tela inicial de Música causado por espaçamento superior duplicado.
-- Reorganiza o destaque musical em composição compacta, mantendo saudação, capa e controles visíveis mesmo em telas largas e baixas.
-- Reduz e equilibra títulos do Tocando Agora; títulos longos não dominam mais a tela nem quebram em linhas desproporcionais.
-- Player inferior ficou mais limpo e proporcional no desktop, com encaixe no rodapé em vez de um cartão flutuante exagerado.
-- Corrige o bug do fogo da conversa que era inserido dentro do avatar; agora aparece ao lado do nome e some quando a sequência é zero.
-- Adiciona proteções de tipografia para títulos de álbum, busca e páginas musicais.
-- Mantém compatibilidade com Spotify, YouTube/YouTube Music, Supabase, PWA e todas as funções da v28.0.
-- Cache do PWA atualizado para lxplus-shell-v2810.
-- A v28.0 também foi incluída em backup para rollback rápido desta revisão.
+TRANSMISSÃO DE TELA / CHAMADAS
+- Corrigido o caso em que a outra pessoa ouvia o áudio compartilhado, mas quem estava transmitindo deixava de ouvir.
+- A captura de tela agora solicita explicitamente que o navegador preserve a reprodução local do áudio.
+- Microfone + áudio da tela continuam sendo misturados para o participante remoto quando o navegador entrega uma faixa de áudio compartilhada.
+- Foi incluído fallback local apenas quando o próprio navegador informa que silenciou a reprodução local, evitando áudio duplicado/eco nos casos normais.
+- A mesma correção foi aplicada às chamadas 1:1 e às chamadas em grupo.
+- Ao parar a transmissão, cancelar, ocorrer erro ou encerrar a chamada, o sender de áudio volta ao microfone e os AudioContexts/faixas temporárias são encerrados.
+- Renegociação/reconexão WebRTC preserva a faixa mista da tela para não voltar silenciosamente ao microfone no meio do compartilhamento.
 
---- HISTÓRICO ---
+MÚSICA E INTERFACE
+- Mantido o carrossel compacto da v28.3 e adicionada uma camada final para impedir áreas vazias de reservarem altura.
+- Carrossel de Música limitado no desktop e celular; não usa alturas de viewport exageradas.
+- Dock de música ganhou fallback visual permanente para a capa e proteção adicional para títulos/artistas longos.
+- Imagens de catálogo/comunidade recebem carregamento preguiçoso e decoding assíncrono quando apropriado.
+- Tipografia e containers receberam proteções contra estouro horizontal.
+- O fogo/contador da Comunidade permanece no fluxo do cabeçalho, sem ficar por cima de nome ou avatar.
 
-LX Plus v28.0 — Modern Core
-Data: 15/09/2026
+PLAYER DE FILMES E SÉRIES
+- Botão de próximo episódio ficou maior e mais informativo, incluindo temporada/episódio no player nativo.
+- Controles de próximo episódio e qualidade ficaram mais legíveis no celular e em fontes externas.
+- Mantidos autoplay do próximo episódio com contagem regressiva de 5 segundos e opção de cancelar para mídia nativa.
+- Mantidos fullscreen, mini player, retomada de progresso, qualidade adaptativa quando a fonte fornece rendições reais e fallback do Google Drive.
 
-OBJETIVO
-Esta versão moderniza a LX Plus sem reiniciar o projeto do zero. A base de dados, catálogo, contas, Supabase, R2, comunidade, histórico, perfis e integrações existentes foram preservados. A v28 adiciona uma camada nova de interface, diagnóstico, suporte e robustez sobre a base já aprovada da v27.3.
+LOGIN, NUVEM, ADM E RESPONSIVIDADE
+- Mantidos os fluxos robustos de login/cadastro, correção de e-mail, confirmação/aprovação ADM e recuperação de sessão já presentes no projeto.
+- Mantidos realtime, retry de catálogo, sincronização Supabase, uploads, PWA, favoritos, histórico, busca universal, ranking e Comunidade.
+- Adicionada camada v29 de estabilidade responsiva para impedir scroll horizontal e melhorar tabelas/painéis no celular.
+- Service Worker e todos os assets públicos foram versionados para 29.0, eliminando cache da build anterior.
 
-DESTAQUES PRINCIPAIS
-- Central “Pedidos & Ajuda” restaurada e ampliada. O usuário pode pedir filme/série/anime/dorama/livro/música, relatar problema, enviar sugestão/reclamação e acompanhar as próprias solicitações. Pedidos repetidos continuam somando votos e chegam ao fluxo já existente do ADM/Supabase.
-- Compatibilidade de mídia reforçada para YouTube, YouTube Music e Spotify. Ao colar o link no ADM, a LX Plus detecta automaticamente o provedor e seleciona a fonte adequada. O player usa o player oficial do provedor quando necessário.
-- Busca universal por catálogo, pessoas e ações com Ctrl/⌘ + K.
-- Player v28 com melhorias de navegação, gestos de toque, atalhos e configuração opcional de “Pular recapitulação” e “Pular abertura” no ADM.
-- Interface, comunidade, perfil, música, livros, notificações e painel ADM receberam uma camada visual mais moderna e consistente.
-- Nova página “Saúde do sistema” no ADM com diagnóstico local de internet, Supabase, R2, service worker/PWA, música, solicitações e erros recentes da instalação.
-- Cache/PWA migrado para lxplus-shell-v2800, removendo shells antigos e reduzindo o risco de o navegador continuar mostrando uma versão anterior.
-- A logo branca transparente aprovada na v27.3 foi mantida byte a byte; o fundo preto não voltou.
-
-AS 22 FRENTES DA ATUALIZAÇÃO
-1. Interface geral modernizada: tipografia, hierarquia, superfícies, espaçamento, cartões, navegação, hover e microinterações.
-2. Home mais inteligente: atalhos contextuais para continuar, buscar, comunidade e suporte, preservando as recomendações e seções personalizadas já existentes.
-3. Busca universal: filmes, séries, músicas, livros, pessoas e ações em uma mesma paleta; atalho Ctrl/⌘ + K.
-4. Comunidade v2: visual refinado sobre o sistema já existente de conversas, mensagens em tempo real, digitando, lido/entregue, respostas, edição, exclusão, reações, áudio, anexos, grupos e chamadas.
-5. Perfil social modernizado: ações rápidas, identidade, bio, molduras, atividade, preferências e acesso direto à comunidade/suporte.
-6. Pessoas e segurança: solicitações de amizade, remoção de contato, privacidade de presença/chamadas já existentes e novo acesso visível para denúncia/ajuda pela Central LX.
-7. Notificações: preservada a central unificada de comunidade, conteúdo e sistema, com contador e “marcar como lidas”, recebendo o tratamento visual v28.
-8. Player v28: próximo episódio, velocidade, legendas, PiP, transmissão/tela cheia, atalhos, gesto de toque e novos botões configuráveis de pular abertura/recapitulação para mídia nativa.
-9. Música modernizada: dock, fila, Tocando agora, páginas de álbum/artista/playlist já existentes, com reforço na integração oficial Spotify e YouTube/YouTube Music.
-10. Livros: leitor, progresso, capítulos, PDF/EPUB e continuidade preservados, com ajustes de legibilidade e consistência visual.
-11. Loading e tolerância visual: skeletons em diagnósticos, lazy loading de imagens e tratamento de imagem quebrada.
-12. Resiliência contra bugs: captura de erros locais, tratamento de promessa rejeitada, estados offline/online, proteção contra observers duplicados e preservação das correções da abertura/login.
-13. Offline/PWA: aviso de conexão, shell em cache, limpeza de caches antigos e atualização controlada do service worker.
-14. ADM modernizado: filtros de pedidos, detecção automática de fonte de mídia, publicação preservada e novos campos de player para abertura/recapitulação.
-15. Saúde do sistema: novo diagnóstico no ADM para serviços e erros da sessão/instalação.
-16. Atualização segura: v28 é aditiva; v27.3 está incluída em backup para rollback, sem migração destrutiva de dados.
-17. Responsividade: regras específicas para desktop, tablet, celular, safe areas e layouts compactos.
-18. Microinterações: transições de botões, hover, cartões, paleta de busca, feedback de ações e animações reduzidas quando o sistema pede “reduzir movimento”.
-19. Acessibilidade: aria labels preservados/adicionados, áreas de toque maiores, atalhos de teclado, contraste e suporte a prefers-reduced-motion.
-20. Entrada/identidade: splash curto existente preservado, agora sempre usando a logo branca transparente aprovada e referências de build v28.
-21. Design system v28: variáveis próprias de superfícies, bordas, raio, sombra e movimento para manter a aparência consistente sem quebrar a compatibilidade da base.
-22. Limpeza técnica segura: referências ativas de cache/build normalizadas para 28.0, testes antigos ajustados para a raiz real do pacote, dist de teste removido do pacote final e camada v28 isolada em app-v28.css/lxplus-v28.js.
-
-PEDIDOS, RECLAMAÇÕES E SUPORTE
-- O botão “Pedidos” voltou a ficar visível no topo.
-- Há um atalho “Pedidos & Ajuda” na navegação lateral.
-- No celular há um botão flutuante “Ajuda” quando o app está aberto.
-- A Central LX possui quatro abas: Pedir conteúdo, Relatar problema, Sugestão/Reclamação e Minhas solicitações.
-- O painel ADM continua recebendo e organizando as solicitações pelo mecanismo existente de requests.
-
-YOUTUBE / YOUTUBE MUSIC / SPOTIFY
-- YouTube e YouTube Music: links comuns, youtu.be, vídeos, Shorts e playlists continuam passando pelo normalizador já existente; a v28 detecta automaticamente o provedor ao colar o link.
-- Spotify: links open.spotify.com e URIs spotify: continuam suportando os tipos já reconhecidos pela base (faixa, álbum, playlist, artista, episódio/show quando aplicável).
-- A LX Plus não tenta “baixar” ou fingir áudio integral de serviços externos. Quando o provedor exige seu player oficial, a reprodução permanece no player oficial, respeitando disponibilidade e regras do serviço.
-
-PLAYER: PULAR ABERTURA / RECAPITULAÇÃO
-No ADM > editar conteúdo > Mais opções, títulos de vídeo agora podem ter quatro tempos opcionais em segundos:
-- Recapitulação: início e fim
-- Abertura: início e fim
-Durante esse intervalo, o player nativo mostra o botão correspondente. Se os tempos estiverem vazios ou inválidos, o botão não aparece. Players externos incorporados (como iframe de alguns provedores) continuam sob controle do próprio provedor.
-
-ROLLBACK
-- backup/LX-Plus-v27.3-Logo-Transparente-Corrigido.zip contém a versão imediatamente anterior aprovada.
-- backup/LX-Plus-v26.2-Original-Backup.zip foi preservado do pacote anterior.
-
-IMPORTANTE
-Nenhum pacote web sério pode prometer “zero bugs” em todos os aparelhos e serviços externos. Esta build passou pelas verificações automatizadas disponíveis no ambiente e foi preparada para falhar de forma mais clara e recuperável. Supabase, R2, Spotify, YouTube/YouTube Music, HLS/DASH, chamadas WebRTC e PWA instalado ainda dependem do ambiente real, permissões, credenciais, CORS, rede e conteúdo cadastrado.
+OBSERVAÇÃO SOBRE ÁUDIO COMPARTILHADO
+- Para o áudio da aba/tela chegar à outra pessoa, ainda é necessário marcar “Compartilhar áudio” na janela nativa do Chrome/Edge quando essa opção aparecer.
+- Alguns navegadores/sistemas não disponibilizam áudio do sistema em todos os tipos de captura. A LX Plus agora preserva o áudio local quando a API oferece essa capacidade, mas não pode criar uma faixa de sistema que o navegador não fornecer.

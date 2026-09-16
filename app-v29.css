@@ -1,0 +1,48 @@
+/* LX Plus v29.0 — Stability, responsive polish and player readability */
+html,body{max-width:100%;overflow-x:clip}
+#app,.app,#app main,.home-content,.rail-section,.rail-wrap,.rail,.lx-music-main,.lx-music-section,.lx-community-drawer,.admin-shell,.panel-page{min-width:0}
+img,video,iframe{max-width:100%}
+.hero-copy h1,.rail-head h2,.lx-section-title h2,.panel-head h2,.detail-copy h1,.episode-copy strong{overflow-wrap:break-word;word-break:normal}
+.rail-head h2,.lx-section-title h2{font-size:clamp(18px,1.55vw,25px);line-height:1.18}
+.rail-head p,.lx-section-title p{font-size:clamp(11px,.9vw,13px);line-height:1.45}
+.rail-section:has(.rail:empty),.lx-music-section:has(.lx-music-grid:empty),.hub-section:has(.hub-poster-grid:empty){display:none}
+
+/* Music: never reserve a giant blank hero and always show a visual in the dock. */
+.lx-music-carousel{min-height:0!important;height:auto!important;max-height:340px!important;overflow:hidden}
+.lx-music-carousel:not(:has(.lx-music-feature)){display:none!important}
+#musicCover{background:#18181d url('assets/lx-music-fallback.svg') center/cover no-repeat}
+.music-cover-btn{overflow:hidden}
+.music-dock .music-info strong,.music-dock .music-info small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Player controls: next episode and quality remain readable without covering the movie. */
+.lx-watch-action,.lx-next-ep{font-size:clamp(9px,.8vw,11px);min-height:38px}
+.lx-next-ep{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-buttons button,.player-buttons select{min-height:38px}
+
+/* Community: streak/status stays in flow instead of sitting on top of names/avatars. */
+.lx-chat-head>div:nth-of-type(2)>.lx-v27-chat-streak{position:static!important;inset:auto!important;transform:none!important;max-width:100%}
+.lx-community-person-copy,.lx-chat-head>div:nth-of-type(2){min-width:0}
+
+/* ADM/mobile surfaces should scroll inside themselves rather than widening the whole site. */
+.admin-shell,.admin-main,.admin-page,.panel-page{max-width:100%}
+.admin-table-wrap,.table-wrap{max-width:100%;overflow:auto;-webkit-overflow-scrolling:touch}
+input,select,textarea,button{max-width:100%}
+
+@media(max-width:760px){
+  .lx-music-carousel{max-height:230px!important}
+  .lx-music-carousel .lx-music-feature{max-height:190px!important}
+  .rail-head{gap:10px;align-items:flex-end}
+  .rail-head>span{font-size:9px;white-space:nowrap}
+  .lx-watch-action,.lx-next-ep{min-height:36px;font-size:10px}
+  .lx-next-ep{max-width:160px!important}
+  .episode-item{min-width:0}
+  .episode-copy{min-width:0}
+  .episode-copy strong,.episode-copy small{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
+@media(max-width:430px){
+  .lx-music-carousel{max-height:205px!important}
+  .lx-music-carousel .lx-music-feature{max-height:168px!important}
+  .rail-head h2,.lx-section-title h2{font-size:18px}
+  .lx-next-ep{max-width:132px!important}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
