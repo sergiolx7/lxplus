@@ -1,9 +1,9 @@
-window.__LX_JS_BUILD='29.4';
+window.__LX_JS_BUILD='29.5';
 
 /* ===== config.js · LX Plus v25.50 ===== */
 window.LX=window.LX||{};
 LX.config={
-  version:'29.4',
+  version:'29.5',
   environment:'cloud-ready',
   production:true,
   apiBase:'',
@@ -355,7 +355,7 @@ window.__LX_MODULES['r2-media']='25.50';
  function preview(provider,value){const key=normalize(provider,value),d=describe(key);return {key,...d}}
  LX.mediaSources={normalize,describe,directUrl,label,toInput,modeFor,info,allowedFor,preview,providers:['upload','gdrive','dropbox','youtube','spotify','onedrive','archive','direct']};
 })();
-window.__LX_MODULES['free-media-hub']='29.4';
+window.__LX_MODULES['free-media-hub']='29.5';
 
 /* ===== services.js · LX Plus v25.36 ===== */
 (()=>{const LX=window.LX,S=LX.store,$=id=>document.getElementById(id);
@@ -1265,7 +1265,39 @@ async function ensureSpotifyController(uri,autoplay=false){const host=$('spotify
 function resetMusicProvider(){const dock=$('musicDock'),panel=$('musicProviderPanel'),frame=$('musicProviderFrame'),host=$('spotifyEmbedHost'),toggle=$('musicProviderToggle');try{spotifyController?.pause?.()}catch{}providerPlayback={kind:'native',paused:true,desc:null};dock?.classList.remove('external-provider','provider-spotify','provider-youtube','provider-soundcloud','provider-drive','provider-open');panel?.classList.add('hidden');panel?.style.removeProperty('--provider-height');host?.classList.add('hidden');toggle?.classList.add('hidden');if(frame){frame.removeAttribute('src');frame.style.removeProperty('height');frame.removeAttribute('data-provider');frame.classList.add('hidden')}}
 async function openMusicProvider(){const dock=$('musicDock'),panel=$('musicProviderPanel');if(!dock?.classList.contains('external-provider')||!panel)return false;const open=!dock.classList.contains('provider-open');dock.classList.toggle('provider-open',open);panel.classList.toggle('hidden',!open);return open}
 function youtubeCommand(func,args=[]){const frame=$('musicProviderFrame');try{frame?.contentWindow?.postMessage(JSON.stringify({event:'command',func,args}),'*');return true}catch{return false}}
-async function setupMusicEmbed(desc,autoplay=false){const dock=$('musicDock'),panel=$('musicProviderPanel'),frame=$('musicProviderFrame'),host=$('spotifyEmbedHost'),toggle=$('musicProviderToggle');if(!desc||!dock||!panel)return false;providerPlayback={kind:desc.provider==='Spotify'?'spotify':/^YouTube/i.test(String(desc.provider||''))?'youtube':'embed',paused:!autoplay,desc};dock.classList.add('external-provider','provider-open');panel.classList.remove('hidden');toggle?.classList.remove('hidden');if(providerPlayback.kind==='spotify'){dock.classList.add('provider-spotify');dock.classList.remove('provider-youtube');frame?.classList.add('hidden');host?.classList.remove('hidden');await ensureSpotifyController(desc.spotifyUri||String(desc.openUrl||'').replace(/^https:\/\/open\.spotify\.com\//,'spotify:').replace('/' , ':'),autoplay);providerPlayback.paused=spotifyPlayback.paused;return true}host?.classList.add('hidden');if(frame){let src=desc.src||'';if(providerPlayback.kind==='youtube'){dock.classList.add('provider-youtube');const join=src.includes('?')?'&':'?';src+=`${join}enablejsapi=1&origin=${encodeURIComponent(location.origin)}`}frame.src=src;frame.dataset.provider=providerPlayback.kind;frame.style.height=Math.max(152,Number(desc.embedHeight)||180)+'px';frame.classList.remove('hidden');if(autoplay&&providerPlayback.kind==='youtube'){setTimeout(()=>youtubeCommand('playVideo'),250)}}return true}
+async function setupMusicEmbed(desc,autoplay=false){
+ const dock=$('musicDock'),panel=$('musicProviderPanel'),frame=$('musicProviderFrame'),host=$('spotifyEmbedHost'),toggle=$('musicProviderToggle');
+ if(!desc||!dock||!panel)return false;
+ const kind=desc.provider==='Spotify'?'spotify':/^YouTube/i.test(String(desc.provider||''))?'youtube':'embed';
+ providerPlayback={kind,paused:true,desc};
+ dock.classList.add('external-provider','provider-open');panel.classList.remove('hidden');toggle?.classList.remove('hidden');
+ if(frame){frame.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';frame.referrerPolicy='strict-origin-when-cross-origin'}
+ if(kind==='spotify'){
+  dock.classList.add('provider-spotify');dock.classList.remove('provider-youtube');host?.classList.remove('hidden');frame?.classList.add('hidden');
+  const uri=desc.spotifyUri||String(desc.openUrl||'').replace(/^https:\/\/open\.spotify\.com\//,'spotify:').replace('/' , ':');
+  try{
+   await ensureSpotifyController(uri,autoplay);providerPlayback.paused=spotifyPlayback.paused;updateMusicUI();return true;
+  }catch(error){
+   console.warn('LX Spotify controller fallback',error);host?.classList.add('hidden');
+   if(frame){frame.src=desc.src||'';frame.dataset.provider='spotify-fallback';frame.style.height=Math.max(152,Number(desc.embedHeight)||152)+'px';frame.classList.remove('hidden');providerPlayback.kind='embed';providerPlayback.paused=true;}
+   LX.toast('Player LX carregado. Se o navegador bloquear o início automático, toque em ▶ dentro do player.');updateMusicUI();return true;
+  }
+ }
+ host?.classList.add('hidden');
+ if(frame){
+  let src=desc.src||'';
+  if(kind==='youtube'){
+   dock.classList.add('provider-youtube');dock.classList.remove('provider-spotify');
+   const join=src.includes('?')?'&':'?';src+=`${join}enablejsapi=1&origin=${encodeURIComponent(location.origin)}&autoplay=${autoplay?1:0}`;
+   let attempts=0,playTimer=null;
+   const requestPlay=()=>{if(!autoplay)return;youtubeCommand('playVideo');attempts++;if(attempts<8)playTimer=setTimeout(requestPlay,350)};
+   frame.onload=()=>{clearTimeout(playTimer);attempts=0;setTimeout(requestPlay,120)};
+  }
+  frame.src=src;frame.dataset.provider=kind;frame.style.height=Math.max(152,Number(desc.embedHeight)||180)+'px';frame.classList.remove('hidden');
+  if(kind==='youtube'&&autoplay)setTimeout(()=>youtubeCommand('playVideo'),700);
+ }
+ updateMusicUI();return true;
+}
 
 LX.openMusicProvider=openMusicProvider;
 function musicToggleSaved(id){if(id==null)return;let list=D.myList(),saved=list.some(x=>String(x)===String(id));list=saved?list.filter(x=>String(x)!==String(id)):[...list,id];S.write(S.keys.list,list);D.track('music_library',{id,saved:!saved});LX.toast(saved?'Removido da sua biblioteca.':'Salvo na sua biblioteca.');if(state.screen==='app'&&state.mode==='Ouvir')U.renderApp();const modalSave=$('lxAlbumSave'),active=!saved;if(modalSave){modalSave.classList.toggle('active',active);modalSave.textContent=active?'♥ Salvo':'♡ Salvar'}syncMusicSaveUI()}
@@ -1283,12 +1315,12 @@ async function loadTrack(autoplay=false){
  $('musicTitle').textContent=t.title||'Faixa';$('musicArtist').textContent=t.artist||'LX Music';LX.artwork.set($('musicCover'),t,content);dock?.style.setProperty('--music-cover',LX.artwork.safeBackground(t,content));$('musicProgress').value=0;$('musicTime').textContent='0:00';$('musicDuration').textContent=LX.fmt(t.duration||0);if($('musicProviderLabel'))$('musicProviderLabel').textContent='LX Music';syncMusicMediaSession(t);syncMusicCardState();document.dispatchEvent(new CustomEvent('lx:music-changed',{detail:{item:t,index:state.musicIndex,provider:'LX Music'}}));
  try{
    const refs=[t.fullMediaKey,t.audioKey,t.mediaKey,t.audioUrl,t.url,t.src,content.fullMediaKey,content.audioKey,content.mediaKey].filter(Boolean);let src=null,embed=null;
-   for(const ref of refs){const desc=LX.mediaSources?.describe?.(ref);if(desc?.kind==='embed'){embed=embed||desc;continue}try{const media=await S.getMedia(ref);if(ticket!==musicLoadTicket)return;if(media){src=typeof media==='string'?media:URL.createObjectURL(media);break}}catch(e){console.warn('LX music source failed',ref,e)}}
+   for(const ref of refs){const desc=LX.mediaSources?.describe?.(ref);if(desc?.kind==='embed'){embed=embed||desc;continue}if(desc?.kind==='direct'&&desc.src){src=desc.src;break}try{const media=await S.getMedia(ref);if(ticket!==musicLoadTicket)return;if(media){src=typeof media==='string'?media:URL.createObjectURL(media);break}}catch(e){console.warn('LX music source failed',ref,e)}}
    if(!src&&embed){await setupMusicEmbed(embed,autoplay);if(ticket!==musicLoadTicket)return;updateMusicUI();syncMusicCardState();return}
    if(!src){if(autoplay)LX.toast('Esta faixa ainda não tem uma fonte reproduzível cadastrada. Use arquivo completo, YouTube ou Spotify no ADM.');updateMusicUI();return}
    musicObjectUrl=src.startsWith?.('blob:')?src:null;a.preload='auto';a.src=src;a.load();
    await new Promise((resolve,reject)=>{if(a.readyState>=2)return resolve();let done=false;const clean=()=>{a.removeEventListener('canplay',ok);a.removeEventListener('loadedmetadata',ok);a.removeEventListener('error',bad)},ok=()=>{if(done)return;done=true;clean();resolve()},bad=()=>{if(done)return;done=true;clean();reject(a.error||new Error('AUDIO_LOAD_ERROR'))};a.addEventListener('canplay',ok,{once:true});a.addEventListener('loadedmetadata',ok,{once:true});a.addEventListener('error',bad,{once:true});setTimeout(()=>{if(done)return;done=true;clean();resolve()},4500)});
-   if(ticket!==musicLoadTicket)return;if(autoplay)await a.play().catch(error=>{console.warn('LX audio autoplay',error);if(error?.name!=='AbortError')LX.toast(error?.name==='NotAllowedError'?'Toque no botão ▶ para liberar o áudio.':'Não foi possível tocar esta faixa. Verifique o arquivo completo no ADM.')});
+   if(ticket!==musicLoadTicket)return;if(autoplay){try{await a.play();providerPlayback={kind:'native',paused:false,desc:null}}catch(error){console.warn('LX audio autoplay',error);if(error?.name!=='AbortError')LX.toast(error?.name==='NotAllowedError'?'O navegador bloqueou o autoplay. Toque em ▶ uma vez para liberar o áudio.':'A fonte de áudio não respondeu. Abra o ADM e teste o arquivo completo desta faixa.')}}
  }catch(error){console.warn('LX audio load',error);if(ticket===musicLoadTicket&&autoplay)LX.toast('Não foi possível carregar o áudio completo desta faixa.')}if(ticket===musicLoadTicket)updateMusicUI()
 }
 function updateMusicUI(){const a=$('musicAudio'),t=currentMusic(),paused=isExternalMusicTrack(t)?providerPlayback.paused:a.paused;$('musicPlay').innerHTML=LX.artwork.icon(paused?'play':'pause');$('musicPlay').title='Reproduzir / pausar';$('musicPlay').setAttribute('aria-label',$('musicPlay').title);$('musicShuffle').classList.toggle('active',musicShuffleMode);$('musicShuffle').setAttribute('aria-pressed',String(musicShuffleMode));$('musicRepeat').classList.toggle('active',musicRepeatMode>0);$('musicRepeat').innerHTML=LX.artwork.icon('repeat')+(musicRepeatMode===2?'<sup>1</sup>':'');$('musicRepeat').setAttribute('aria-pressed',String(musicRepeatMode>0));try{if('mediaSession'in navigator)navigator.mediaSession.playbackState=t?(paused?'paused':'playing'):'none'}catch{}syncMusicCardState();syncMusicSaveUI();syncRightMusicRail?.()}
@@ -1341,7 +1373,7 @@ let __lxWasOffline=!navigator.onLine;window.addEventListener('offline',()=>{__lx
 try{const u=new URL(location.href);if(u.searchParams.has('lxbuild')||u.searchParams.has('_')){u.searchParams.delete('lxbuild');u.searchParams.delete('_');history.replaceState(null,'',u.pathname+(u.search?u.search:'')+u.hash)}}catch(e){}
 })();
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['app']='29.4';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['app']='29.5';
 
 /* =====================================================================
    LX Plus v25.50 — Drive Quality + Next Episode

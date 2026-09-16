@@ -1,3 +1,9 @@
+LX Plus v29.5
+- Corrige reprodução de música externa que podia ficar sem saída.
+- YouTube agora espera o iframe carregar e repete o comando de play.
+- Spotify usa controlador oficial e cai para embed comum se a API falhar.
+- Arquivos completos próprios são resolvidos por URL direta antes de outras camadas.
+
 LX Plus v29.4
 - Corrigido: Voltar ao site durante chamada agora minimiza e mantém a conexão WebRTC ativa.
 - YouTube e Spotify passam a ser aceitos como fontes oficiais de Música no ADM.
