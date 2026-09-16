@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="lxplus-build" content="29.2">
+  <meta name="lxplus-build" content="29.3">
   <meta name="theme-color" content="#050506">
   <meta name="color-scheme" content="dark light">
   <meta name="description" content="LX Plus — Assistir, Ler e Ouvir em uma experiência premium.">
-  <link rel="icon" type="image/png" href="assets/lxplus-logo-v27.png?v=29.2">
-  <link rel="apple-touch-icon" href="assets/lxplus-logo-v27.png?v=29.2">
+  <link rel="icon" type="image/png" href="assets/lxplus-logo-v27.png?v=29.3">
+  <link rel="apple-touch-icon" href="assets/lxplus-logo-v27.png?v=29.3">
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,8 +16,8 @@
 
   <script>
   (function(){
-    var BUILD='29.2',KEY='lxplus_build_seen';
-    try{if(localStorage.getItem(KEY)!==BUILD){localStorage.setItem(KEY,BUILD);if('caches'in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^lxplus-/.test(k)&&k!=='lxplus-shell-v2920').map(k=>caches.delete(k)))).catch(()=>{});if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.update?.())).catch(()=>{})}}
+    var BUILD='29.3',KEY='lxplus_build_seen';
+    try{if(localStorage.getItem(KEY)!==BUILD){localStorage.setItem(KEY,BUILD);if('caches'in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^lxplus-/.test(k)&&k!=='lxplus-shell-v2930').map(k=>caches.delete(k)))).catch(()=>{});if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.update?.())).catch(()=>{})}}
     catch(error){console.warn('LX PWA build refresh',error)}
     if('serviceWorker'in navigator){navigator.serviceWorker.addEventListener('controllerchange',function(){if(sessionStorage.getItem('lxplus_sw_reload')===BUILD)return;sessionStorage.setItem('lxplus_sw_reload',BUILD);location.reload()})}
   })();
@@ -41,10 +41,10 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=29.2">
-  <link rel="stylesheet" href="app-v27.css?v=29.2">
-  <link rel="stylesheet" href="app-v28.css?v=29.2">
-  <link rel="stylesheet" href="app-v29.css?v=29.2">
+  <link rel="stylesheet" href="app.css?v=29.3">
+  <link rel="stylesheet" href="app-v27.css?v=29.3">
+  <link rel="stylesheet" href="app-v28.css?v=29.3">
+  <link rel="stylesheet" href="app-v29.css?v=29.3">
   <title>LX Plus</title>
 </head>
 <body>
@@ -54,7 +54,7 @@
     <div class="lx27-intro" aria-hidden="true">
       <div class="lx27-halo"></div>
       <div class="lx27-logo-stage">
-        <img src="assets/lxplus-logo-v27.png?v=29.2" alt="">
+        <img src="assets/lxplus-logo-v27.png?v=29.3" alt="">
         <div class="lx27-wordmark" aria-label="LX Plus"><span>LX</span><span>Plus</span></div>
       </div>
       <div class="lx27-lightline"></div>
@@ -65,7 +65,7 @@
 
   <section id="auth" class="screen auth hidden">
     <div class="auth-showcase">
-      <div class="brand brand-lg brand-approved"><img src="assets/lxplus-logo-v27.png?v=29.2" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div>
+      <div class="brand brand-lg brand-approved"><img src="assets/lxplus-logo-v27.png?v=29.3" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div>
       <div class="auth-copy">
         <span class="eyebrow">UMA CONTA · QUATRO MODOS</span>
         <h1>Continue de onde parou, em qualquer formato.</h1>
@@ -79,7 +79,7 @@
       </div>
     </div>
     <div class="auth-panel">
-      <div class="auth-mobile-brand brand brand-approved" aria-hidden="true"><img src="assets/lxplus-logo-v27.png?v=29.2" alt="" class="lx-approved-logo lx-logo-v27"></div>
+      <div class="auth-mobile-brand brand brand-approved" aria-hidden="true"><img src="assets/lxplus-logo-v27.png?v=29.3" alt="" class="lx-approved-logo lx-logo-v27"></div>
       <div class="auth-box">
         <div class="auth-tabs"><button id="tabLogin" class="active">Entrar</button><button id="tabRegister">Criar conta</button></div>
         <form id="loginForm" class="auth-form">
@@ -104,13 +104,13 @@
   </section>
 
   <section id="profiles" class="screen profiles hidden">
-    <header><div class="brand brand-lg brand-approved"><img src="assets/lxplus-logo-v27.png?v=29.2" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div><button id="profileLogout" class="glass-btn">Sair</button></header>
+    <header><div class="brand brand-lg brand-approved"><img src="assets/lxplus-logo-v27.png?v=29.3" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div><button id="profileLogout" class="glass-btn">Sair</button></header>
     <main><span class="eyebrow">PERFIS</span><h1>Quem está usando a LX Plus?</h1><div id="profileGrid" class="profile-grid"></div></main>
   </section>
 
   <section id="app" class="app hidden">
     <aside id="lxDesktopRail" class="lx-desktop-rail" aria-label="Navegação principal">
-      <button class="lx-shell-brand" type="button" onclick="document.getElementById('brandHome')?.click()" aria-label="Ir para o início da LX Plus"><img src="assets/lxplus-logo-v27.png?v=29.2" class="lx-shell-logo lx-logo-v27" alt="LX Plus"></button>
+      <button class="lx-shell-brand" type="button" onclick="document.getElementById('brandHome')?.click()" aria-label="Ir para o início da LX Plus"><img src="assets/lxplus-logo-v27.png?v=29.3" class="lx-shell-logo lx-logo-v27" alt="LX Plus"></button>
       <nav class="lx-shell-primary">
         <button data-shell-category="Início" class="active"><span>⌂</span><b>Início</b></button>
         <button data-shell-category="Filmes"><span>▣</span><b>Filmes</b></button>
@@ -151,7 +151,7 @@
     </aside>
     <header id="topbar" class="topbar">
       <div class="topbar-row">
-        <a href="#" id="brandHome" class="brand brand-sm brand-approved" aria-label="Ir para o início da LX Plus"><img src="assets/lxplus-logo-v27.png?v=29.2" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></a>
+        <a href="#" id="brandHome" class="brand brand-sm brand-approved" aria-label="Ir para o início da LX Plus"><img src="assets/lxplus-logo-v27.png?v=29.3" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></a>
         <div id="modeSwitch" class="mode-switch">
           <button data-mode="Assistir" class="active"><span>▶</span>Assistir</button>
           <button data-mode="Ler"><span>▤</span>Ler</button>
@@ -181,7 +181,7 @@
 
   <section id="admin" class="admin hidden">
     <aside class="admin-side">
-      <div class="brand brand-sm brand-approved"><img src="assets/lxplus-logo-v27.png?v=29.2" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div>
+      <div class="brand brand-sm brand-approved"><img src="assets/lxplus-logo-v27.png?v=29.3" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div>
       <div class="admin-identity"><div class="admin-avatar">LX</div><div><b>Administrador</b><small>LX Plus</small></div></div>
       <div class="admin-console-label"><span></span> LX PLUS</div>
       <nav id="adminNav">
@@ -284,10 +284,10 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   })();
   </script>
-  <script src="lxplus-artwork.js?v=29.2"></script>
-  <script src="lxplus.js?v=29.2"></script>
-  <script src="lxplus-v27.js?v=29.2"></script>
-  <script src="lxplus-v29.js?v=29.2"></script>
+  <script src="lxplus-artwork.js?v=29.3"></script>
+  <script src="lxplus.js?v=29.3"></script>
+  <script src="lxplus-v27.js?v=29.3"></script>
+  <script src="lxplus-v29.js?v=29.3"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded',function(){
@@ -300,7 +300,7 @@
     booted:false,directory:[],coreChannel:null,presenceChannel:null,presenceMap:{},presenceReady:false,signalChannel:null,activeCall:null,incoming:null,
     pc:null,localStream:null,remoteStream:null,remoteAudioStream:null,remoteCameraStream:null,remoteScreenStream:null,screenStream:null,audioTransceiver:null,screenSender:null,screenTransceiver:null,cameraTransceiver:null,videoSender:null,cameraPlaceholderTrack:null,screenPlaceholderTrack:null,placeholderCanvases:[],processed:new Set(),pendingIce:[],remoteTracks:new Map(),remoteScreenMid:null,remoteShareMode:null,remoteSharing:false,screenMode:null,makingOffer:false,negotiating:false,pendingNegotiation:null,lastRemoteOfferAt:0,lastLocalOfferAt:0,remoteShareRecoveryTimer:null,
     reconnectTimer:null,reconnectAttempts:0,reconnectInFlight:false,callTimeout:null,callTimer:null,callStartedAt:null,callStartedClock:null,networkState:'idle',callPollTimer:null,callPollBusy:false,openTab:'discover',drawerOpen:false,lastError:'',loading:false,
-    screenAudioTrack:null,screenAudioContext:null,screenAudioDestination:null,screenAudioMixedTrack:null,screenAudioSources:[],screenLocalAudioElement:null,screenLocalAudioTrack:null,lastSeenTimer:null,lastSeenBusy:false
+    screenAudioTrack:null,screenAudioContext:null,screenAudioDestination:null,screenAudioMixedTrack:null,screenAudioSources:[],screenLocalAudioElement:null,screenLocalAudioTrack:null,lastSeenTimer:null,lastSeenBusy:false,callMinimized:false
   };
   const db=()=>LX.cloud?.db?.();
   const me=()=>LX.cloud?.user?.()||U?.state?.user||null;
@@ -596,10 +596,11 @@
     const el=document.getElementById('lxCallTimer');if(el)el.textContent=elapsed;
     const top=document.getElementById('lxCallStatusTop');if(top&&state.callStartedAt)top.textContent=`Em chamada · ${elapsed}`;
     const clock=document.getElementById('lxCallStartedClock');if(clock)clock.textContent=state.callStartedAt?`desde ${fmtClock(state.callStartedAt)}`:'aguardando';
+    const mini=document.getElementById('lxPersistentCallTimer');if(mini)mini.textContent=elapsed;
   }
   function startCallTimer(answeredAt){const parsed=answeredAt?new Date(answeredAt).getTime():Date.now();state.callStartedAt=Number.isFinite(parsed)?parsed:Date.now();state.callStartedClock=state.callStartedAt;clearInterval(state.callTimer);tickCallTimer();state.callTimer=setInterval(tickCallTimer,1000)}
   function stopCallTimer(){clearInterval(state.callTimer);state.callTimer=null;state.callStartedAt=null;state.callStartedClock=null}
-  function setCallNetwork(label='Conectando mídia',kind='connecting'){state.networkState=kind;const el=document.getElementById('lxCallNetwork');if(el){el.textContent=label;el.className=`lx-call-network ${kind}`}}
+  function setCallNetwork(label='Conectando mídia',kind='connecting'){state.networkState=kind;const el=document.getElementById('lxCallNetwork');if(el){el.textContent=label;el.className=`lx-call-network ${kind}`}const mini=document.getElementById('lxPersistentCall');if(mini){mini.dataset.network=kind;mini.title=label}}
   function showAudioUnlock(show){document.getElementById('lxAudioUnlock')?.classList.toggle('hidden',!show)}
   async function resumeCallAudio(){
     const el=document.getElementById('lxRemoteAudio');if(!el)return false;
@@ -650,11 +651,29 @@
       await tr.sender.replaceTrack(mixed);return true;
     }catch(e){console.warn('LX shared audio mix',e);try{await tr.sender.replaceTrack(screenAudio);return true}catch{return false}}
   }
+  function renderPersistentCall(){
+    if(!state.activeCall)return null;
+    const person=callPerson(state.activeCall.otherId);let bar=document.getElementById('lxPersistentCall');
+    if(!bar){bar=document.createElement('div');bar.id='lxPersistentCall';bar.className='lx-persistent-call';document.body.appendChild(bar)}
+    const mic=state.localStream?.getAudioTracks?.()[0],cam=state.localStream?.getVideoTracks?.()[0];
+    bar.innerHTML=`<button class="lx-persistent-call-main" type="button" onclick="LX.social.restoreCall()">${avatar(person,'lx-persistent-call-avatar')}<span><b>${verified(person)}</b><small><i></i> Em chamada · <strong id="lxPersistentCallTimer">${state.callStartedAt?fmtCallTime(Date.now()-state.callStartedAt):'00:00'}</strong></small></span></button><div class="lx-persistent-call-actions"><button type="button" class="${mic&&!mic.enabled?'off':''}" onclick="LX.social.toggleMic();event.stopPropagation()" aria-label="Microfone">${icon('mic')}</button><button type="button" class="${cam&&!cam.enabled?'off':''}" onclick="LX.social.toggleCamera();event.stopPropagation()" aria-label="Câmera">${icon('camera')}</button><button type="button" class="hangup" onclick="LX.social.endCurrentCall();event.stopPropagation()" aria-label="Encerrar">${icon('hang')}</button></div>`;
+    return bar;
+  }
+  function minimizeCall(){
+    if(!state.activeCall)return false;state.callMinimized=true;
+    document.getElementById('lxCallOverlay')?.classList.add('is-minimized');document.documentElement.classList.remove('lx-call-open');renderPersistentCall();
+    try{resumeCallAudio()}catch{}return true;
+  }
+  function restoreCall(){
+    if(!state.activeCall)return false;state.callMinimized=false;document.getElementById('lxPersistentCall')?.remove();
+    const overlay=document.getElementById('lxCallOverlay');if(overlay){overlay.classList.remove('is-minimized');document.documentElement.classList.add('lx-call-open')}
+    try{resumeCallAudio()}catch{}return true;
+  }
   function mountCallUI(person,mode='video',status='Conectando...'){
     close(); document.getElementById('lxCallOverlay')?.remove();
     const el=document.createElement('div'); el.id='lxCallOverlay'; el.className='lx-call-overlay lx-call-pro';
-    el.innerHTML=`<div class="lx-call-stage"><audio id="lxRemoteAudio" autoplay playsinline></audio><video id="lxRemoteVideo" class="lx-call-remote" autoplay muted playsinline></video><video id="lxRemoteScreen" class="lx-call-screen hidden" autoplay muted playsinline></video><button id="lxAudioUnlock" class="lx-call-audio-unlock hidden" onclick="LX.social.resumeCallAudio()">🔊 Ativar áudio da chamada</button><div id="lxRemoteFallback" class="lx-call-remote-fallback">${avatar(person,'lx-call-big-avatar')}<strong>${verified(person)}</strong><small id="lxCallStatus">${esc(status)}</small></div><div id="lxShareBadge" class="lx-share-badge hidden">${icon('screen')} Tela compartilhada</div><div class="lx-call-local-wrap"><video id="lxLocalVideo" class="lx-call-local" autoplay muted playsinline></video><span id="lxLocalLabel">VOCÊ</span></div><div id="lxLocalShareWrap" class="lx-call-local-share hidden"><video id="lxLocalSharePreview" autoplay muted playsinline></video><span>SUA TELA</span></div><header class="lx-call-header"><button data-lx-hangup="1" onclick="LX.social.endCurrentCall()" aria-label="Encerrar e voltar">‹</button><div><strong>${verified(person)}</strong><small id="lxCallStatusTop">${esc(status)}</small></div><div class="lx-call-meta"><span id="lxCallNetwork" class="lx-call-network connecting">Conectando mídia</span><span id="lxCallTimer" class="lx-call-timer">00:00</span><span id="lxCallStartedClock" class="lx-call-start-clock">aguardando</span></div></header><div id="lxReactionLayer" class="lx-reaction-layer"></div><div id="lxReactionPicker" class="lx-reaction-picker hidden"><button onclick="LX.social.sendReaction('❤️')">❤️</button><button onclick="LX.social.sendReaction('😂')">😂</button><button onclick="LX.social.sendReaction('🔥')">🔥</button><button onclick="LX.social.sendReaction('👏')">👏</button><button onclick="LX.social.sendReaction('😮')">😮</button><button onclick="LX.social.sendReaction('👍')">👍</button></div><div id="lxSharePicker" class="lx-share-picker hidden"><button onclick="LX.social.shareScreen('replace')"><b>${icon('screen')} Tela principal</b><small>Mostra sua tela no lugar da câmera. Você continua ouvindo e, ao marcar Compartilhar áudio, a outra pessoa também.</small></button><button onclick="LX.social.shareScreen('dual')"><b>${icon('video')} Tela + câmera</b><small>Compartilha a tela, mantém a câmera e preserva o áudio local + remoto quando o navegador permitir.</small></button></div><div class="lx-call-controls"><button id="lxMicBtn" onclick="LX.social.toggleMic()">${icon('mic')}<small>Microfone</small></button><button id="lxCamBtn" onclick="LX.social.toggleCamera()">${icon('camera')}<small>Câmera</small></button><button id="lxShareBtn" onclick="LX.social.toggleSharePicker()">${icon('screen')}<small>Compartilhar</small></button><button id="lxReactionBtn" onclick="LX.social.toggleReactions()">${icon('smile')}<small>Reações</small></button><button onclick="LX.social.toggleCallFullscreen()">${icon('full')}<small>Tela cheia</small></button><button class="hangup" data-lx-hangup="1" onclick="LX.social.endCurrentCall()">${icon('hang')}<small>Encerrar</small></button></div></div>`;
-    document.body.appendChild(el); document.documentElement.classList.add('lx-call-open');
+    el.innerHTML=`<div class="lx-call-stage"><audio id="lxRemoteAudio" autoplay playsinline></audio><video id="lxRemoteVideo" class="lx-call-remote" autoplay muted playsinline></video><video id="lxRemoteScreen" class="lx-call-screen hidden" autoplay muted playsinline></video><button id="lxAudioUnlock" class="lx-call-audio-unlock hidden" onclick="LX.social.resumeCallAudio()">🔊 Ativar áudio da chamada</button><div id="lxRemoteFallback" class="lx-call-remote-fallback">${avatar(person,'lx-call-big-avatar')}<strong>${verified(person)}</strong><small id="lxCallStatus">${esc(status)}</small></div><div id="lxShareBadge" class="lx-share-badge hidden">${icon('screen')} Tela compartilhada</div><div class="lx-call-local-wrap"><video id="lxLocalVideo" class="lx-call-local" autoplay muted playsinline></video><span id="lxLocalLabel">VOCÊ</span></div><div id="lxLocalShareWrap" class="lx-call-local-share hidden"><video id="lxLocalSharePreview" autoplay muted playsinline></video><span>SUA TELA</span></div><header class="lx-call-header"><button data-lx-hangup="1" onclick="LX.social.minimizeCall()" aria-label="Voltar ao site sem encerrar a chamada">‹</button><div><strong>${verified(person)}</strong><small id="lxCallStatusTop">${esc(status)}</small></div><div class="lx-call-meta"><span id="lxCallNetwork" class="lx-call-network connecting">Conectando mídia</span><span id="lxCallTimer" class="lx-call-timer">00:00</span><span id="lxCallStartedClock" class="lx-call-start-clock">aguardando</span></div></header><div id="lxReactionLayer" class="lx-reaction-layer"></div><div id="lxReactionPicker" class="lx-reaction-picker hidden"><button onclick="LX.social.sendReaction('❤️')">❤️</button><button onclick="LX.social.sendReaction('😂')">😂</button><button onclick="LX.social.sendReaction('🔥')">🔥</button><button onclick="LX.social.sendReaction('👏')">👏</button><button onclick="LX.social.sendReaction('😮')">😮</button><button onclick="LX.social.sendReaction('👍')">👍</button></div><div id="lxSharePicker" class="lx-share-picker hidden"><button onclick="LX.social.shareScreen('replace')"><b>${icon('screen')} Tela principal</b><small>Mostra sua tela no lugar da câmera. Você continua ouvindo e, ao marcar Compartilhar áudio, a outra pessoa também.</small></button><button onclick="LX.social.shareScreen('dual')"><b>${icon('video')} Tela + câmera</b><small>Compartilha a tela, mantém a câmera e preserva o áudio local + remoto quando o navegador permitir.</small></button></div><div class="lx-call-controls"><button id="lxMicBtn" onclick="LX.social.toggleMic()">${icon('mic')}<small>Microfone</small></button><button id="lxCamBtn" onclick="LX.social.toggleCamera()">${icon('camera')}<small>Câmera</small></button><button id="lxShareBtn" onclick="LX.social.toggleSharePicker()">${icon('screen')}<small>Compartilhar</small></button><button id="lxReactionBtn" onclick="LX.social.toggleReactions()">${icon('smile')}<small>Reações</small></button><button onclick="LX.social.toggleCallFullscreen()">${icon('full')}<small>Tela cheia</small></button><button class="hangup" data-lx-hangup="1" onclick="LX.social.endCurrentCall()">${icon('hang')}<small>Encerrar</small></button></div></div>`;
+    document.body.appendChild(el); state.callMinimized=false;document.getElementById('lxPersistentCall')?.remove();document.documentElement.classList.add('lx-call-open');
     const local=document.getElementById('lxLocalVideo'); if(local&&state.localStream){local.srcObject=state.localStream;local.classList.toggle('hidden',!state.localStream.getVideoTracks().length);local.play?.().catch(()=>{})}
     updateCallStatus(status); tickCallTimer(); return el;
   }
@@ -871,11 +890,11 @@
     for(const t of [state.cameraPlaceholderTrack,state.screenPlaceholderTrack])try{t?.stop?.()}catch{};state.cameraPlaceholderTrack=null;state.screenPlaceholderTrack=null;state.placeholderCanvases=[];
     clearTimeout(state.remoteShareRecoveryTimer);state.remoteShareRecoveryTimer=null;clearTimeout(state.reconnectTimer);state.reconnectTimer=null;state.reconnectAttempts=0;state.reconnectInFlight=false;state.negotiating=false;state.pendingNegotiation=null;
     state.localStream=null;state.screenStream=null;state.remoteStream=null;state.remoteAudioStream=null;state.remoteCameraStream=null;state.remoteScreenStream=null;state.audioTransceiver=null;state.screenSender=null;state.screenTransceiver=null;state.cameraTransceiver=null;state.videoSender=null;state.remoteTracks=new Map();state.remoteScreenMid=null;state.remoteShareMode=null;state.remoteSharing=false;state.screenMode=null;state.activeCall=null;state.pendingIce=[];state.processed.clear();showAudioUnlock(false);
-    document.getElementById('lxCallOverlay')?.remove();document.documentElement.classList.remove('lx-call-open');
+    document.getElementById('lxCallOverlay')?.remove();document.getElementById('lxPersistentCall')?.remove();state.callMinimized=false;document.documentElement.classList.remove('lx-call-open');
     if(channel&&c)c.removeChannel(channel).catch(()=>{});
     if(showToast)(LX.toast||((m)=>console.log(m)))('Chamada encerrada.');
   }
-  function toggleMic(){const t=state.localStream?.getAudioTracks?.()[0];if(!t)return (LX.toast||((m)=>console.log(m)))('Microfone não disponível.');t.enabled=!t.enabled;document.getElementById('lxMicBtn')?.classList.toggle('off',!t.enabled)}
+  function toggleMic(){const t=state.localStream?.getAudioTracks?.()[0];if(!t)return (LX.toast||((m)=>console.log(m)))('Microfone não disponível.');t.enabled=!t.enabled;document.getElementById('lxMicBtn')?.classList.toggle('off',!t.enabled);if(state.callMinimized)renderPersistentCall()}
   async function waitForStableSignaling(timeout=6500){
     const pc=state.pc;if(!pc)return false;const started=Date.now();
     while(pc.signalingState!=='stable'&&pc.signalingState!=='closed'&&Date.now()-started<timeout)await new Promise(r=>setTimeout(r,80));
@@ -906,9 +925,9 @@
   }
   async function toggleCamera(){
     let t=state.localStream?.getVideoTracks?.()[0];
-    if(t){t.enabled=!t.enabled;document.getElementById('lxCamBtn')?.classList.toggle('off',!t.enabled);return}
+    if(t){t.enabled=!t.enabled;document.getElementById('lxCamBtn')?.classList.toggle('off',!t.enabled);if(state.callMinimized)renderPersistentCall();return}
     if(!navigator.mediaDevices?.getUserMedia)return (LX.toast||((m)=>console.log(m)))('Câmera não disponível neste navegador.');
-    try{const stream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720},facingMode:'user'},audio:false});t=stream.getVideoTracks()[0];if(!t)return;state.localStream=state.localStream||new MediaStream();state.localStream.addTrack(t);const sender=await ensureVideoSender();if(sender)await sender.replaceTrack(t);const local=document.getElementById('lxLocalVideo');if(local){local.srcObject=state.localStream;local.classList.remove('hidden');local.play?.().catch(()=>{})}document.getElementById('lxCamBtn')?.classList.remove('off');(LX.toast||((m)=>console.log(m)))('Câmera ativada.')}catch(e){console.warn(e);(LX.toast||((m)=>console.log(m)))('Não foi possível ativar a câmera. Verifique a permissão do navegador.')}
+    try{const stream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720},facingMode:'user'},audio:false});t=stream.getVideoTracks()[0];if(!t)return;state.localStream=state.localStream||new MediaStream();state.localStream.addTrack(t);const sender=await ensureVideoSender();if(sender)await sender.replaceTrack(t);const local=document.getElementById('lxLocalVideo');if(local){local.srcObject=state.localStream;local.classList.remove('hidden');local.play?.().catch(()=>{})}document.getElementById('lxCamBtn')?.classList.remove('off');if(state.callMinimized)renderPersistentCall();(LX.toast||((m)=>console.log(m)))('Câmera ativada.')}catch(e){console.warn(e);(LX.toast||((m)=>console.log(m)))('Não foi possível ativar a câmera. Verifique a permissão do navegador.')}
   }
   function toggleSharePicker(){if(state.screenStream){stopScreenShare();return}document.getElementById('lxReactionPicker')?.classList.add('hidden');document.getElementById('lxSharePicker')?.classList.toggle('hidden')}
   async function shareScreen(mode='replace'){
@@ -983,7 +1002,7 @@
   document.addEventListener('click',e=>{const b=e.target?.closest?.('[data-lx-hangup="1"]');if(b&&document.getElementById('lxCallOverlay')){e.preventDefault();e.stopPropagation();endCurrentCall()}},true);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){touchLastSeen(true);refreshDirectory().then(applyPresenceUI).catch(()=>{})}else touchLastSeen(true)});
   window.addEventListener('pagehide',()=>{touchLastSeen(true);if(state.lastSeenTimer){clearInterval(state.lastSeenTimer);state.lastSeenTimer=null}});
-  LX.social={boot,shutdown,open,close,retry,openProfile,openSettings,commitSettings,refreshDirectory,syncMyProfile,add,respond,removeFriend,startCall,acceptIncoming,rejectIncoming,endCurrentCall,toggleMic,toggleCamera,shareScreen,toggleSharePicker,toggleReactions,sendReaction,toggleCallFullscreen,resumeCallAudio,isOnline,presenceText,presenceVisible,setPresenceVisible,ready:true}; window.LXOpenCommunity=function(tab){return open(tab||'friends')};
+  LX.social={boot,shutdown,open,close,retry,openProfile,openSettings,commitSettings,refreshDirectory,syncMyProfile,add,respond,removeFriend,startCall,acceptIncoming,rejectIncoming,endCurrentCall,minimizeCall,restoreCall,toggleMic,toggleCamera,shareScreen,toggleSharePicker,toggleReactions,sendReaction,toggleCallFullscreen,resumeCallAudio,isOnline,presenceText,presenceVisible,setPresenceVisible,ready:true}; window.LXOpenCommunity=function(tab){return open(tab||'friends')};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindLauncher,{once:true});else bindLauncher();
 })();
 
@@ -1364,7 +1383,7 @@
   function guide(){
     if(window.LX?.ui?.$){
       const overlay=document.getElementById('overlay'),modal=document.getElementById('modal');
-      if(overlay&&modal){overlay.classList.remove('hidden');modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page lx-install-guide"><div class="panel-head"><div><span class="eyebrow">LX PLUS</span><h2>Instalar aplicativo</h2><p>${isIOS()?'No iPhone/iPad, abra o menu Compartilhar e escolha “Adicionar à Tela de Início”.':'No navegador, abra o menu e escolha “Instalar LX Plus” ou “Adicionar à tela inicial”.'}</p></div></div><img src="assets/lxplus-logo-v27.png?v=29.2" alt="LX Plus"><strong>Abra o LX Plus como um app, em tela cheia e com acesso rápido.</strong></div>`;return;}
+      if(overlay&&modal){overlay.classList.remove('hidden');modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page lx-install-guide"><div class="panel-head"><div><span class="eyebrow">LX PLUS</span><h2>Instalar aplicativo</h2><p>${isIOS()?'No iPhone/iPad, abra o menu Compartilhar e escolha “Adicionar à Tela de Início”.':'No navegador, abra o menu e escolha “Instalar LX Plus” ou “Adicionar à tela inicial”.'}</p></div></div><img src="assets/lxplus-logo-v27.png?v=29.3" alt="LX Plus"><strong>Abra o LX Plus como um app, em tela cheia e com acesso rápido.</strong></div>`;return;}
     }
     alert(isIOS()?'Use Compartilhar → Adicionar à Tela de Início.':'Abra o menu do navegador e escolha Instalar LX Plus.');
   }

@@ -12,11 +12,11 @@
   const db=()=>LX.cloud?.db?.()||null;
   const role=()=>String(state().user?.adminRole||state().user?.admin_role||LX.cloud?.profile?.()?.admin_role||'').toLowerCase();
   const fmt=seconds=>LX.fmt?.(Number(seconds)||0)||'0:00';
-  const logo='assets/lxplus-logo-v27.png?v=29.2';
+  const logo='assets/lxplus-logo-v27.png?v=29.3';
   const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   const standalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true;
 
-  LX.v27={version:'29.2',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
+  LX.v27={version:'29.3',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
 
   function syncBranding(root=document){
     root.querySelectorAll?.('img').forEach(img=>{
@@ -88,7 +88,7 @@
   LX.playOnlineMusicPreview=playPreview;
 
   function spotifyTrack(item){
-    const artists=(item?.artists||[]).map(a=>a.name).filter(Boolean).join(', ')||'Spotify';
+    const artists=(item?.artists||[]).map(a=>a.name).filter(Boolean).join(', ')||'LX Music';
     return {title:item?.name||'Faixa',artist:artists,album:item?.album?.name||'',cover:item?.album?.images?.[0]?.url||'',duration:Number(item?.duration_ms||0)/1000,mediaKey:`spotify:track:${item?.id}`,contentId:`spotify-${item?.id}`,remoteId:item?.id,index:0,playbackKind:'spotify'};
   }
   function playSpotifyList(list,index=0){
@@ -111,7 +111,7 @@
     if(data?.error)throw new Error(data.error);return data;
   }
   const imageOf=item=>item?.images?.[0]?.url||item?.album?.images?.[0]?.url||'';
-  const artistsOf=item=>(item?.artists||[]).map(a=>a.name).filter(Boolean).join(', ')||'Spotify';
+  const artistsOf=item=>(item?.artists||[]).map(a=>a.name).filter(Boolean).join(', ')||'LX Music';
   function spotifyTrackRows(items,source='tracks'){
     return (items||[]).map((item,index)=>`<article class="lx-v27-spotify-track"><button type="button" class="lx-v27-track-play" onclick="LX.v27PlaySpotify(${index},'${source}')" aria-label="Reproduzir ${esc(item.name)}">${LX.artwork.markup({...item,cover:imageOf(item)}, {}, 'lx-spotify-art',item.name)}<span>▶</span></button><div><strong>${esc(item.name)}</strong><small>${esc(artistsOf(item))} · ${esc(item.album?.name||'Single')}</small></div><time>${fmt(Number(item.duration_ms||0)/1000)}</time><button type="button" class="lx-v27-add-queue" onclick="LX.v27AddSpotify(${index},'${source}')" aria-label="Adicionar à fila">＋</button></article>`).join('');
   }
@@ -121,8 +121,8 @@
   }
   function musicSearchShell(q=''){
     const welcome=$('welcome'),content=$('homeContent');$('hero')?.classList.add('hidden');
-    if(welcome)welcome.innerHTML=`<section class="lx-v27-music-search-hero"><span class="eyebrow">LX MUSIC · SPOTIFY</span><h1>Encontre o que quer ouvir.</h1><p>Catálogo oficial, player persistente e prévias sempre identificadas.</p><form id="lxV27SpotifySearch"><label><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.4-4.4m2.4-5.6a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"/></svg><input id="lxV27SpotifyQuery" value="${esc(q)}" placeholder="Faixa, artista, álbum ou playlist" autocomplete="off"></label><button>Buscar</button></form></section>`;
-    if(content)content.innerHTML='<section class="lx-v27-spotify-loading"><span></span>Consultando o catálogo oficial…</section>';
+    if(welcome)welcome.innerHTML=`<section class="lx-v27-music-search-hero"><span class="eyebrow">LX MUSIC</span><h1>Encontre o que quer ouvir.</h1><p>Catálogo LX Music com player persistente e faixas completas cadastradas no site.</p><form id="lxV27SpotifySearch"><label><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.4-4.4m2.4-5.6a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"/></svg><input id="lxV27SpotifyQuery" value="${esc(q)}" placeholder="Faixa, artista, álbum ou playlist" autocomplete="off"></label><button>Buscar</button></form></section>`;
+    if(content)content.innerHTML='<section class="lx-v27-spotify-loading"><span></span>Carregando a biblioteca LX Music…</section>';
     $('lxV27SpotifySearch')?.addEventListener('submit',event=>{event.preventDefault();renderSpotifySearch($('lxV27SpotifyQuery')?.value||'')});
   }
   async function renderSpotifySearch(query='Brasil'){
@@ -134,14 +134,14 @@
       c.innerHTML=`<div class="lx-v27-spotify-results">${LX.v27.spotifyCache.tracks.length?`<section><header><div><span>FAIXAS</span><h2>Resultados principais</h2></div><button type="button" onclick="LX.v27PlaySpotify(0)">▶ Tocar tudo</button></header><div class="lx-v27-track-table">${spotifyTrackRows(LX.v27.spotifyCache.tracks)}</div></section>`:''}${LX.v27.spotifyCache.artists.length?`<section><header><div><span>ARTISTAS</span><h2>Artistas</h2></div></header><div class="lx-v27-card-grid artists">${spotifyCards(LX.v27.spotifyCache.artists,'artist')}</div></section>`:''}${LX.v27.spotifyCache.albums.length?`<section><header><div><span>ÁLBUNS E SINGLES</span><h2>Discografia</h2></div></header><div class="lx-v27-card-grid">${spotifyCards(LX.v27.spotifyCache.albums,'album')}</div></section>`:''}${LX.v27.spotifyCache.playlists.length?`<section><header><div><span>PLAYLISTS</span><h2>Playlists</h2></div></header><div class="lx-v27-card-grid">${spotifyCards(LX.v27.spotifyCache.playlists,'playlist')}</div></section>`:''}</div>`;
       syncBranding(c);
     }catch(error){
-      const legacy=LX.v27.legacyMusicSearch;if(typeof legacy==='function'){await legacy(q);const c=$('homeContent');if(c)c.insertAdjacentHTML('afterbegin',`<div class="lx-v27-provider-note"><strong>Spotify aguardando configuração</strong><span>${esc(error.message)} Enquanto isso, os resultados abaixo são prévias oficiais e aparecem marcados como “Prévia”.</span></div>`)}
+      const legacy=LX.v27.legacyMusicSearch;if(typeof legacy==='function'){await legacy(q);const c=$('homeContent');if(c)c.insertAdjacentHTML('afterbegin',`<div class="lx-v27-provider-note"><strong>Catálogo externo desativado</strong><span>${esc(error.message)} Enquanto isso, os resultados abaixo são prévias oficiais e aparecem marcados como “Prévia”.</span></div>`)}
       else if($('homeContent'))$('homeContent').innerHTML=`<div class="lx-v27-empty"><strong>Busca musical indisponível</strong><p>${esc(error.message)}</p></div>`;
     }
   }
 
   async function openSpotifyArtist(id){
     const overlay=$('overlay'),modal=$('modal');if(!overlay||!modal)return;overlay.classList.remove('hidden');modal.innerHTML='<div class="lx-v27-detail-loading">Carregando artista…</div>';
-    try{const out=await spotifyInvoke({action:'artist',id}),artist=out.artist||{},tracks=out.tracks?.tracks||[],albums=out.albums?.items||[];LX.v27.spotifyCache.artistTracks=tracks;LX.v27.spotifyCache.artistAlbums=albums;modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="lx-v27-artist-page"><header style="--artist-bg:url('${esc(imageOf(artist))}')"><img src="${esc(imageOf(artist))}" alt="" loading="lazy"><div><span class="lx-v27-verified">✓ Artista verificado no Spotify</span><h2>${esc(artist.name)}</h2><p>${Number(artist.followers?.total||0).toLocaleString('pt-BR')} seguidores</p><button type="button" onclick="LX.v27PlaySpotify(0,'artistTracks')">▶ Reproduzir populares</button></div></header><section><div class="lx-v27-section-head"><span>POPULAR</span><h3>Músicas populares</h3></div><div class="lx-v27-track-table">${spotifyTrackRows(tracks,'artistTracks')}</div></section><section><div class="lx-v27-section-head"><span>DISCOGRAFIA</span><h3>Álbuns e singles</h3></div><div class="lx-v27-card-grid">${spotifyCards(albums,'album')}</div></section></div>`}catch(error){modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="lx-v27-empty"><strong>Não foi possível abrir o artista</strong><p>${esc(error.message)}</p></div>`}
+    try{const out=await spotifyInvoke({action:'artist',id}),artist=out.artist||{},tracks=out.tracks?.tracks||[],albums=out.albums?.items||[];LX.v27.spotifyCache.artistTracks=tracks;LX.v27.spotifyCache.artistAlbums=albums;modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="lx-v27-artist-page"><header style="--artist-bg:url('${esc(imageOf(artist))}')"><img src="${esc(imageOf(artist))}" alt="" loading="lazy"><div><span class="lx-v27-verified">✓ Artista verificado na LX Music</span><h2>${esc(artist.name)}</h2><p>${Number(artist.followers?.total||0).toLocaleString('pt-BR')} seguidores</p><button type="button" onclick="LX.v27PlaySpotify(0,'artistTracks')">▶ Reproduzir populares</button></div></header><section><div class="lx-v27-section-head"><span>POPULAR</span><h3>Músicas populares</h3></div><div class="lx-v27-track-table">${spotifyTrackRows(tracks,'artistTracks')}</div></section><section><div class="lx-v27-section-head"><span>DISCOGRAFIA</span><h3>Álbuns e singles</h3></div><div class="lx-v27-card-grid">${spotifyCards(albums,'album')}</div></section></div>`}catch(error){modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="lx-v27-empty"><strong>Não foi possível abrir o artista</strong><p>${esc(error.message)}</p></div>`}
   }
   async function openSpotifyAlbum(id){
     const overlay=$('overlay'),modal=$('modal');if(!overlay||!modal)return;overlay.classList.remove('hidden');modal.innerHTML='<div class="lx-v27-detail-loading">Carregando álbum…</div>';
@@ -149,7 +149,7 @@
   }
   async function openSpotifyPlaylist(id){
     const overlay=$('overlay'),modal=$('modal');if(!overlay||!modal)return;overlay.classList.remove('hidden');modal.innerHTML='<div class="lx-v27-detail-loading">Carregando playlist…</div>';
-    try{const out=await spotifyInvoke({action:'playlist',id}),list=out.data||{},tracks=(list.tracks?.items||[]).map(x=>x.track).filter(x=>x?.id);LX.v27.spotifyCache.playlistTracks=tracks;modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="lx-v27-album-page"><header style="--album-bg:url('${esc(imageOf(list))}')"><img src="${esc(imageOf(list))}" alt="" loading="lazy"><div><span>PLAYLIST</span><h2>${esc(list.name)}</h2><p>${esc(list.owner?.display_name||'Spotify')} · ${tracks.length} faixas</p><button type="button" onclick="LX.v27PlaySpotify(0,'playlistTracks')">▶ Reproduzir</button></div></header><section><div class="lx-v27-track-table">${spotifyTrackRows(tracks,'playlistTracks')}</div></section></div>`}catch(error){modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="lx-v27-empty"><strong>Não foi possível abrir a playlist</strong><p>${esc(error.message)}</p></div>`}
+    try{const out=await spotifyInvoke({action:'playlist',id}),list=out.data||{},tracks=(list.tracks?.items||[]).map(x=>x.track).filter(x=>x?.id);LX.v27.spotifyCache.playlistTracks=tracks;modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="lx-v27-album-page"><header style="--album-bg:url('${esc(imageOf(list))}')"><img src="${esc(imageOf(list))}" alt="" loading="lazy"><div><span>PLAYLIST</span><h2>${esc(list.name)}</h2><p>${esc(list.owner?.display_name||'LX Music')} · ${tracks.length} faixas</p><button type="button" onclick="LX.v27PlaySpotify(0,'playlistTracks')">▶ Reproduzir</button></div></header><section><div class="lx-v27-track-table">${spotifyTrackRows(tracks,'playlistTracks')}</div></section></div>`}catch(error){modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="lx-v27-empty"><strong>Não foi possível abrir a playlist</strong><p>${esc(error.message)}</p></div>`}
   }
   LX.openSpotifyArtist=openSpotifyArtist;LX.openSpotifyAlbum=openSpotifyAlbum;LX.openSpotifyPlaylist=openSpotifyPlaylist;
   LX.v27ShuffleSpotify=source=>{const list=[...(LX.v27.spotifyCache[source]||[])];for(let i=list.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[list[i],list[j]]=[list[j],list[i]]}playSpotifyList(list,0)};
@@ -287,5 +287,5 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire,{once:true});else wire();
   setInterval(heartbeat,1200);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){heartbeat();refreshConversationStreak()}});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!ensureNowPlaying().classList.contains('hidden'))closeNowPlaying()});
-  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='29.2';
+  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='29.3';
 })();

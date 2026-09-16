@@ -1,4 +1,14 @@
-LX Plus v29.2 — LX Music Full Track
+LX Plus v29.3 — Direct 2.0 + Chamada Persistente + LX Music Full Track
+
+- Chat/Direct: a interface nova agora tem prioridade sobre os estilos antigos; mensagens próprias deixam de voltar ao roxo legado.
+- Chamada 1:1: o botão Voltar minimiza a chamada em vez de encerrá-la. A conexão WebRTC, microfone e áudio remoto continuam ativos enquanto o usuário navega pelo site.
+- Chamada minimizada: nova barra flutuante com tempo, retorno à chamada, microfone, câmera e encerrar.
+- LX Music: removido o caminho legado que ainda tentava controlar provider externo oculto.
+- Player: resolve áudio completo por upload LX, Supabase/R2, Dropbox direto ou URL HTTPS direta, espera metadata/canplay e trata erros de reprodução.
+- Prévia externa não é usada como fallback de música completa.
+- Build/cache atualizados para 29.3.
+
+LX Plus v29.3 — LX Music Full Track
 - A interface musical usa somente a marca LX Music; provedores externos não aparecem no player.
 - Prévia de 30 segundos foi desativada como forma de reprodução.
 - Música publicada deve ter áudio completo próprio: upload/R2/Supabase, Dropbox direto ou HTTPS direto.

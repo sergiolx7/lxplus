@@ -1,16 +1,11 @@
-LX Plus v29.2 — Test Report
+LX Plus v29.3 — Test Report
 
-RESULTADO: APROVADO
+PASS — regressão Direct/Call/Music: 10/10
+PASS — LX Music full-track: 10/10
+PASS — static checks: 10/10
+PASS — screen audio 1:1 e grupo
+PASS — observer/login regression
+PASS — splash/login regression
+SKIP — smoke E2E com Playwright: dependência Playwright não disponível neste runtime.
 
-- Música Full Track: 10/10 checks PASS
-- Compartilhamento de tela/áudio: PASS
-- Observer regression: PASS
-- Splash/login regression: PASS
-- Static checks: 10/10 PASS
-
-Mudanças principais da Música:
-- Player público usa somente a identidade LX Music.
-- Prévia curta deixou de ser usada como faixa reproduzível.
-- Música completa funciona via arquivo enviado à LX Plus/R2/Supabase, Dropbox direto ou HTTPS direto.
-- Links antigos de players externos não são apresentados como faixa completa; o ADM deve substituir pelo arquivo completo autorizado.
-- Catálogo musical externo foi removido da navegação do usuário.
+Observação: música completa exige que o áudio completo autorizado esteja cadastrado no catálogo. A build não transforma previews externos em faixas completas.
