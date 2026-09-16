@@ -1,3 +1,15 @@
+LX Plus v29.9 — Mobile Responsive Edition
+
+- interface recalibrada para 320–760 px;
+- hero, cabeçalhos, cards e textos reduzidos no celular;
+- navegação inferior compacta sem scroll lateral;
+- cards da Home menores e com três colunas onde couber;
+- LX Music redesenhada no mobile com grade de 3 colunas, hero compacto e mini-player menor;
+- modais, perfil, detalhes, episódios, comunidade, chat e ADM adaptados para telas estreitas;
+- campos usam 16 px no iOS para evitar zoom automático;
+- safe-area e controles de toque preservados;
+- lógica da v29.8 mantida sem alterações funcionais.
+
 LX Plus v29.8 — Production Cleanup
 
 Esta build remove a principal fonte de conflitos entre versões antes do lançamento:

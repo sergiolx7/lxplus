@@ -1,36 +1,25 @@
-LX Plus v29.8 — PRODUCTION CLEANUP / PRE-LAUNCH CHECK-UP
+LX Plus v29.9 — Mobile Responsive QA
 
-DIAGNÓSTICO REAL
-- Confirmado no Supabase: as duas músicas atuais estão publicadas no lx_catalog.
-- Confirmado no Storage privado lx-media: os dois MP3 existem fisicamente, MIME audio/mpeg, com aproximadamente 23 MB e 29 MB.
-- Portanto, o upload estava correto. O bloqueio estava no código do cliente/player e em renderizações concorrentes.
+Build: 29.9
+Base: v29.8 Production Cleanup
+Focus: 320px–760px
 
-CAUSAS ENCONTRADAS E CORRIGIDAS
-1. O player chamava musicSaved() fora do escopo onde a função existia. Isso gerava ReferenceError durante loadTrack() antes de a mídia chegar ao <audio>. Corrigido para consultar a lista diretamente.
-2. O renderizador LX Music chamava prewarmMusicCatalog() de outro escopo. Corrigido para LX.prewarmMusicCatalog?.().
-3. Havia duas assinaturas Realtime para lx_user_state. Uma delas reidratava e redesenhava a aplicação inteira durante atualizações de histórico/progresso. A assinatura duplicada foi removida.
-4. renderHome() agora possui guarda rígida: em modo Ouvir ele sempre volta para renderMusicExperience().
-5. MutationObserver do homeContent recupera a superfície LX Music caso qualquer código antigo tente substituir o conteúdo.
-6. CSS/JS de várias gerações não são mais carregados separadamente em produção. O deploy usa apenas lxplus.bundle.css e lxplus.bundle.js.
-7. Service Worker usa cache exclusivo v29.8, apaga caches LX antigos e aguarda o reset antes de registrar o worker novo.
-8. YouTube Embed usa enablejsapi=1 para os comandos Play/Pause funcionarem.
-9. MP3/M4A/AAC/OGG/WAV/WebM/FLAC enviados com MIME vazio/octet-stream são normalizados antes da reprodução.
-10. Fonte cloud privada usa URL assinada e possui fallback autenticado por download/Blob.
+PASS — CSS bundle parses with zero syntax errors (tinycss2)
+PASS — CSS braces balanced
+PASS — JavaScript bundle passes node --check
+PASS — viewport meta uses width=device-width
+PASS — dedicated breakpoints at 760px, 430px and 360px
+PASS — bottom navigation compacted to six equal columns without horizontal overflow
+PASS — Home poster width reduced to 118px / 108px / 101px by viewport
+PASS — Home hero capped at 390px, 340px on narrow phones
+PASS — LX Music side/detail rails removed on phone
+PASS — LX Music grid switches to 3 columns on phone
+PASS — Music dock reduced and positioned above bottom navigation + safe area
+PASS — modals use bottom-sheet/full-width mobile composition
+PASS — form fields use 16px on phone to prevent iOS automatic zoom
+PASS — chat/community/call controls reduced for narrow screens
+PASS — admin tables remain horizontally scrollable instead of widening the page
+PASS — safe-area-inset-bottom preserved for iPhone home indicator
+PASS — desktop rules remain outside the new mobile-only overrides
 
-TESTES DE NAVEGADOR (CHROMIUM REAL)
-- Faixa cloud simulada com resolução assíncrona: readyState 4, paused=false, currentTime avançou e eventos play/playing dispararam.
-- Botão Play/Pause: pausa e retoma corretamente.
-- Blob com MIME application/octet-stream e nome .mp3: normalizado e reproduzido; currentTime avançou.
-- Superfície antiga injetada artificialmente durante modo Ouvir: removida e LX Music restaurada automaticamente.
-- renderHome() chamado durante modo Ouvir: preserva LX Music.
-- YouTube: iframe oficial criado com enablejsapi=1 e player marcado como ativo.
-- Nenhum PageError no teste final do fluxo principal.
-
-VALIDAÇÃO ESTÁTICA
-- JavaScript principal: sintaxe válida (node --check).
-- Service Worker: sintaxe válida.
-- Checklist de produção: 14/14.
-- index.html referencia somente 1 CSS e 1 JS de produção.
-
-LIMITAÇÃO EXTERNA
-- Reprodução integral por Spotify/YouTube depende das regras e permissões do próprio serviço. Arquivos completos enviados à LX Plus usam o player nativo e não têm essa dependência de provider.
+Functional code from v29.8 was not rewritten; v29.9 is a responsive presentation update.

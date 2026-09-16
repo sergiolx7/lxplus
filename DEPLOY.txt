@@ -1,3 +1,6 @@
+LX Plus v29.9 — Mobile Responsive Edition
+Substitua os arquivos da raiz do GitHub pelos deste ZIP.
+
 LX Plus v29.8 — GitHub Pages
 
 1. Remova/substitua os arquivos atualmente publicados pela pasta deste ZIP.
