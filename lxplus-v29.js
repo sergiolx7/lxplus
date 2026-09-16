@@ -1,10 +1,10 @@
-/* LX Plus v29.5 — conservative client-side stability layer */
+/* LX Plus v29.6 — conservative client-side stability layer */
 (()=>{
   'use strict';
   const LX=window.LX=window.LX||{};
   window.__LX_MODULES=window.__LX_MODULES||{};
-  window.__LX_MODULES.v29='29.5';
-  LX.v29={version:'29.5',stability:true};
+  window.__LX_MODULES.v29='29.6';
+  LX.v29={version:'29.6',stability:true};
 
   function tuneImages(root=document){
     const imgs=root.querySelectorAll?.('.home-content img,.rail img,.lx-music-main img,.lx-community-drawer img,.panel-page img')||[];

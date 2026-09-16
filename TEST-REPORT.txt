@@ -1,15 +1,13 @@
-LX Plus v29.5 — Test Report
+LX Plus v29.6 — Test Report
 
-Static suite: 10/10 PASS
-Music playback regression: PASS
-- Spotify Embed API present
-- Spotify iframe fallback present
-- YouTube play retry after iframe load present
-- Direct/full audio URL prioritized
-- Native HTMLAudio play path present
-Call persistence regression: PASS
-Screen audio regression: PASS
-Observer/login regression: PASS
-Splash regression: PASS
+Validações executadas nesta build:
+- Sintaxe dos JavaScript principais.
+- IDs HTML e referências locais.
+- Estrutura CSS.
+- Manifest e service worker v29.6.
+- Regressão de chamada persistente.
+- Regressão de compartilhamento de áudio.
+- Regressão de reprodução de música e arquivo próprio.
+- Regressão do watchdog de boot e cache da PWA.
 
-Nota: reprodução integral de fontes de terceiros continua sujeita às regras e disponibilidade do próprio serviço. Para reprodução integral garantida pelo LX Plus, use arquivo/stream completo autorizado no catálogo.
+Observação: o ambiente de execução não permite validar áudio físico em um navegador conectado ao seu Supabase/R2 real; os fluxos de código e regressões estáticas foram validados localmente.
