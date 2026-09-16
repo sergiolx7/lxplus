@@ -24,12 +24,12 @@
 
 
 /* ===== lxplus.js ===== */
-window.__LX_JS_BUILD='30.0';
+window.__LX_JS_BUILD='30.1';
 
 /* ===== config.js · LX Plus v25.50 ===== */
 window.LX=window.LX||{};
 LX.config={
-  version:'30.0',
+  version:'30.1',
   environment:'cloud-ready',
   production:true,
   apiBase:'',
@@ -604,7 +604,7 @@ function renderBookExperience(){
 }
 
 function renderHome(){if(state.mode==='Ouvir')return renderMusicExperience();const a=items();if(!a.length){$('homeContent').innerHTML=`<section class="official-empty"><span class="eyebrow">LX PLUS</span><h2>${state.user?.admin?'Catálogo pronto para você organizar':'Novidades em breve'}</h2><p>${state.user?.admin?'A plataforma está limpa. Use o Painel ADM para cadastrar seus conteúdos, capas, banners e lançamentos.':'O catálogo está sendo preparado.'}</p>${state.user?.admin?'<button class="primary-btn" onclick="LX.openAdmin()">Abrir Painel ADM</button>':''}</section>`;return}if(state.query){$('homeContent').innerHTML=rail(`Resultados para “${esc(state.query)}”`,'Busca tolerante a erros por título, elenco, autor, artista, gênero e tags.',a);return}if(state.category!=='Início'){$('homeContent').innerHTML=rail(state.category,'Tudo nesta categoria.',a);return}const h=D.history(),pref=D.preferences()[state.user?.email||'']||{},histEntries=Object.entries(h).filter(([,v])=>v?.opened).sort((a,b)=>(b[1].opened||0)-(a[1].opened||0)),recentId=histEntries[0]?.[0],recent=D.catalog().find(x=>String(x.id)===String(recentId)),cont=a.filter(x=>h[x.id]?.progress>0&&h[x.id]?.progress<98),recs=D.recommendation(a,h,D.ratings(),pref).slice(0,12),because=recent?a.filter(x=>x.id!==recent.id&&(x.genre===recent.genre||x.type===recent.type)&&!h[x.id]).slice(0,10):[],top=[...a].sort((x,y)=>(y.trending?1:0)-(x.trending?1:0)||(+y.priority||0)-(+x.priority||0)).slice(0,10),newest=[...a].sort((x,y)=>(+new Date(y.publishedAt||y.createdAt||0))-(+new Date(x.publishedAt||x.createdAt||0))).slice(0,12);let html='';if(cont.length)html+=rail(state.mode==='Ler'?'Continuar lendo':state.mode==='Ouvir'?'Ouvir novamente':'Continuar assistindo','Retome exatamente do segundo em que parou.',cont,true);if(recs.length){const why=pref.genres?.length?`Preferências: ${pref.genres.slice(0,3).join(', ')}. Também usamos histórico, notas e tags.`:'Baseado no seu histórico, avaliações, gêneros e tags. Você pode ajustar isso no Perfil.';html+=rail('Recomendado para você',why,recs)}if(because.length)html+=rail(`Porque você ${recent.type==='Livro'?'leu':recent.type==='Música'?'ouviu':'assistiu'} ${esc(recent.title)}`,'Uma seleção relacionada ao seu histórico recente.',because);html+=rail('Top 10 LX','Os títulos mais fortes neste momento.',top,false,true);html+=rail('Em alta','O que está chamando atenção.',a.filter(x=>x.trending));html+=rail('Lançados recentemente','As novidades mais recentes da plataforma.',newest);[...new Set(a.map(x=>x.genre))].slice(0,5).forEach(g=>html+=rail(g,`Seleção em ${g.toLowerCase()}.`,a.filter(x=>x.genre===g)));$('homeContent').innerHTML=html}
-function renderApp(){$('app')?.classList.toggle('lx-music-mode',state.mode==='Ouvir');renderCategories();syncMobileNavState?.();if(state.mode==='Ao vivo')LX.contentHub?.renderLive?.();else if(state.mode==='Assistir'&&state.category==='Catálogo Online')LX.contentHub?.renderWatch?.();else if(state.mode==='Ler'&&state.category==='Biblioteca Pública')LX.contentHub?.renderBooks?.();else if(state.mode==='Ouvir')renderMusicExperience();else if(state.mode==='Ler')renderBookExperience();else{renderHero();renderWelcome();renderHome()}updateNoticeCount();try{LX.syncPremiumShell?.()}catch(e){console.warn('LX premium shell sync',e)}const adm=$('adminTopBtn');if(adm)adm.classList.toggle('hidden',!state.user?.admin)}
+function renderApp(){$('app')?.classList.toggle('lx-music-mode',state.mode==='Ouvir');renderCategories();LX.syncMobileNavState?.();if(state.mode==='Ao vivo')LX.contentHub?.renderLive?.();else if(state.mode==='Assistir'&&state.category==='Catálogo Online')LX.contentHub?.renderWatch?.();else if(state.mode==='Ler'&&state.category==='Biblioteca Pública')LX.contentHub?.renderBooks?.();else if(state.mode==='Ouvir')renderMusicExperience();else if(state.mode==='Ler')renderBookExperience();else{renderHero();renderWelcome();renderHome()}updateNoticeCount();try{LX.syncPremiumShell?.()}catch(e){console.warn('LX premium shell sync',e)}const adm=$('adminTopBtn');if(adm)adm.classList.toggle('hidden',!state.user?.admin)}
 function scroll(id,d){const e=$(id);e?.scrollBy({left:d*e.clientWidth*.82,behavior:'smooth'})}
 function close(){$('overlay').classList.add('hidden')}function closePlayer(){if(LX.stopMiniPlayer)LX.stopMiniPlayer(true);else{$('playerOverlay').classList.add('hidden');$('videoEl')?.pause()}}function closeReader(){$('readerOverlay').classList.add('hidden')}
 function updateNoticeCount(){const system=D.notices().filter(x=>!x.read).length,chat=Number(LX.chat?.unreadTotal?.()||0),cloud=Number(LX.chat?.cloudUnread?.()||0),community=Math.max(chat,cloud),c=system+community;const el=$('notifyCount');if(el){el.textContent=c>99?'99+':String(c);el.style.display=c?'grid':'none'}try{if('setAppBadge'in navigator)c?navigator.setAppBadge(c):navigator.clearAppBadge?.()}catch{}}
@@ -1224,6 +1224,7 @@ $('brandHome').onclick=e=>{e.preventDefault();state.category='Início';state.que
 function closeMobileMore(){const sheet=$('mobileMoreSheet'),back=$('mobileMoreBackdrop');sheet?.classList.add('hidden');back?.classList.add('hidden');sheet?.setAttribute('aria-hidden','true')}
 function openMobileMore(){const sheet=$('mobileMoreSheet'),back=$('mobileMoreBackdrop');sheet?.classList.remove('hidden');back?.classList.remove('hidden');sheet?.setAttribute('aria-hidden','false')}
 function syncMobileNavState(){let key='Início';if(state.mode==='Ouvir')key='Música';else if(state.mode==='Ler')key='Livros';else if(state.mode==='Assistir'&&state.category==='Filmes')key='Filmes';else if(state.mode==='Assistir'&&state.category==='Séries')key='Séries';else if(state.mode==='Ao vivo'||(state.mode==='Assistir'&&!['Início','Filmes','Séries'].includes(state.category)))key='Mais';$$('[data-mobile]').forEach(y=>y.classList.toggle('active',y.dataset.mobile===key))}
+LX.syncMobileNavState=syncMobileNavState;
 function mobileGo(mode,category='Início'){state.mode=mode;state.category=category;state.query='';if(mode==='Ouvir')state.musicView='home';if($('searchInput'))$('searchInput').value='';$$('[data-mode]').forEach(y=>y.classList.toggle('active',y.dataset.mode===mode));closeMobileMore();U.renderApp();saveView();syncMobileNavState();window.scrollTo({top:0,behavior:'instant'})}
 $$('[data-mode]').forEach(b=>b.onclick=()=>{state.mode=b.dataset.mode;state.category=b.dataset.mode==='Ao vivo'?'Hoje':'Início';state.query='';if($('searchInput'))$('searchInput').value='';$$('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));U.renderApp();syncMobileNavState();saveView()});
 $$('[data-mobile]').forEach(b=>b.onclick=()=>{const x=b.dataset.mobile;if(x==='Início')return mobileGo('Assistir','Início');if(x==='Filmes')return mobileGo('Assistir','Filmes');if(x==='Séries')return mobileGo('Assistir','Séries');if(x==='Música')return mobileGo('Ouvir','Início');if(x==='Livros')return mobileGo('Ler','Início');if(x==='Mais')return openMobileMore()});
@@ -2250,7 +2251,7 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire,{once:true});else wire();
   setInterval(heartbeat,1200);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){heartbeat();refreshConversationStreak()}});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!ensureNowPlaying().classList.contains('hidden'))closeNowPlaying()});
-  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='30.0';
+  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='30.1';
 })();
 
 
@@ -2260,8 +2261,8 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
   'use strict';
   const LX=window.LX=window.LX||{};
   window.__LX_MODULES=window.__LX_MODULES||{};
-  window.__LX_MODULES.v29='30.0';
-  LX.v29={version:'30.0',stability:true};
+  window.__LX_MODULES.v29='30.1';
+  LX.v29={version:'30.1',stability:true};
 
   function tuneImages(root=document){
     const imgs=root.querySelectorAll?.('.home-content img,.rail img,.lx-music-main img,.lx-community-drawer img,.panel-page img')||[];

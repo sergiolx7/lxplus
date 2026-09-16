@@ -1,0 +1,13 @@
+LX Plus v30.1 — Login/mobile navigation hotfix
+
+Correção principal
+- renderApp() não acessa mais syncMobileNavState como identificador fora do próprio módulo.
+- A sincronização mobile foi exposta em LX.syncMobileNavState e chamada com optional chaining.
+- O login não deve mais falhar com: "syncMobileNavState is not defined".
+
+Validações
+- node --check lxplus.bundle.js: OK
+- função global LX.syncMobileNavState atribuída: OK
+- renderApp usa LX.syncMobileNavState?.(): OK
+- nenhuma chamada syncMobileNavState?.() fora do namespace global: OK
+- index/service-worker apontam para build 30.1: OK

@@ -5573,7 +5573,7 @@ input,select,textarea,button{max-width:100%}
   .rail,.category-nav,.lx-music-mobile-tabs,.lx-music-top-chips{scroll-snap-type:x proximity;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
 }
 
-/* ===== LX Plus v30.0 · Mobile navigation + layout reset ===== */
+/* ===== LX Plus v30.1 · Mobile navigation + layout reset ===== */
 .mobile-more-sheet,.mobile-more-backdrop{display:none}
 @media (max-width:760px){
   html,body{width:100%;max-width:100%;overflow-x:hidden!important}
