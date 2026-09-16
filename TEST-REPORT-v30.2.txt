@@ -1,0 +1,10 @@
+LX Plus v30.2 — Music Mobile QA
+
+[OK] CSS final contém override mobile v30.2
+[OK] 2 colunas compactas em Ouça novamente
+[OK] Mixes horizontais com 108px
+[OK] 3 colunas em cards musicais até 390px
+[OK] Fallback para 2 colunas em telas <= 340px
+[OK] Títulos limitados a 2 linhas
+[OK] Desktop não alterado (regras restritas a max-width:760px)
+[OK] Build/cache atualizados para 30.2

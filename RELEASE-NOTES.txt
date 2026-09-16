@@ -1,3 +1,13 @@
+v30.2 — Music Mobile Polish
+
+- Capas de música reduzidas e proporcionais em telas de celular.
+- “Ouça novamente” agora usa duas colunas compactas.
+- “Seus mixes” virou uma prateleira horizontal menor.
+- “Feito para você”, “Popular agora” e “Lançamentos” usam 3 cards por linha em celulares comuns.
+- Títulos passam a até 2 linhas sem estourar o card.
+- Ícones Play, badges e textos foram reduzidos para manter proporção.
+- Desktop permanece inalterado.
+
 LX Plus v30.1 — HOTFIX LOGIN
 - Corrigido erro de escopo: syncMobileNavState is not defined.
 - Navegação mobile agora é sincronizada através de LX.syncMobileNavState, sem interromper o login.
