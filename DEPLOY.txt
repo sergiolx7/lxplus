@@ -1,4 +1,4 @@
-LX Plus v29.3 — LX Music Full Track
+LX Plus v29.4 — LX Music Full Track
 - A interface musical usa somente a marca LX Music; provedores externos não aparecem no player.
 - Prévia de 30 segundos foi desativada como forma de reprodução.
 - Música publicada deve ter áudio completo próprio: upload/R2/Supabase, Dropbox direto ou HTTPS direto.

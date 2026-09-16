@@ -1,5 +1,5 @@
-const CACHE='lxplus-shell-v2930';
-const CORE=['./','./index.html','./app.css?v=29.3','./app-v27.css?v=29.3','./app-v28.css?v=29.3','./app-v29.css?v=29.3','./lxplus-artwork.js?v=29.3','./lxplus.js?v=29.3','./lxplus-v27.js?v=29.3','./lxplus-v29.js?v=29.3','./manifest.webmanifest','./assets/lxplus-logo-v27.png?v=29.3','./assets/icon-v27.svg','./assets/lx-music-fallback.svg'];
+const CACHE='lxplus-shell-v2940';
+const CORE=['./','./index.html','./app.css?v=29.4','./app-v27.css?v=29.4','./app-v28.css?v=29.4','./app-v29.css?v=29.4','./lxplus-artwork.js?v=29.4','./lxplus.js?v=29.4','./lxplus-v27.js?v=29.4','./lxplus-v29.js?v=29.4','./manifest.webmanifest','./assets/lxplus-logo-v27.png?v=29.4','./assets/icon-v27.svg','./assets/lx-music-fallback.svg'];
 self.addEventListener('install',event=>{event.waitUntil((async()=>{const cache=await caches.open(CACHE);await Promise.allSettled(CORE.map(asset=>cache.add(asset)));await self.skipWaiting()})())});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('lxplus-')&&k!==CACHE).map(k=>caches.delete(k)));await self.clients.claim()})())});
 self.addEventListener('message',event=>{if(event.data==='SKIP_WAITING')self.skipWaiting()});

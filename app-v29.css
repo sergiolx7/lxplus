@@ -1,4 +1,4 @@
-/* LX Plus v29.3 — Stability, responsive polish and player readability */
+/* LX Plus v29.4 — Stability, responsive polish and player readability */
 html,body{max-width:100%;overflow-x:clip}
 #app,.app,#app main,.home-content,.rail-section,.rail-wrap,.rail,.lx-music-main,.lx-music-section,.lx-community-drawer,.admin-shell,.panel-page{min-width:0}
 img,video,iframe{max-width:100%}
@@ -60,13 +60,13 @@ input,select,textarea,button{max-width:100%}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 
 
-/* LX Music v29.3 — catálogo próprio, faixa completa */
+/* LX Music v29.4 — catálogo próprio, faixa completa */
 .music-provider-panel,.music-provider-toggle{display:none!important}
 .music-playback-kind{letter-spacing:.08em}
 .lx-music-card-main>em,.lx-music-provider{background:rgba(255,255,255,.08)!important;color:#f2f2f5!important}
 .media-source-switch [hidden]{display:none!important}
 
-/* LX Plus v29.3 — Chat 2.0: força a interface nova acima dos estilos legados */
+/* LX Plus v29.4 — Chat 2.0: força a interface nova acima dos estilos legados */
 #lxCommunityDrawer .lx-chat-head{min-height:68px!important;background:rgba(7,9,12,.98)!important;border-bottom:1px solid rgba(255,255,255,.06)!important;padding:11px 13px!important;box-shadow:0 10px 32px rgba(0,0,0,.22)!important}
 #lxCommunityDrawer .lx-chat-head strong{font-size:14px!important;color:#f5f6f7!important;font-weight:760!important}
 #lxCommunityDrawer .lx-chat-head small{font-size:10px!important;color:#7d8793!important}
@@ -92,6 +92,14 @@ input,select,textarea,button{max-width:100%}
 .lx-persistent-call-actions{display:flex;gap:5px}.lx-persistent-call-actions button{width:36px;height:36px;padding:0;display:grid;place-items:center;border-radius:11px;border:1px solid rgba(255,255,255,.07);background:#181c22;color:#d4dae0}.lx-persistent-call-actions button svg{width:17px;height:17px}.lx-persistent-call-actions button.off{color:#ff6d78;background:rgba(255,71,87,.1)}.lx-persistent-call-actions button.hangup{background:#e5484d;color:#fff;border-color:#e5484d}
 @media(max-width:620px){.lx-persistent-call{left:8px;right:8px;bottom:calc(76px + env(safe-area-inset-bottom));min-width:0;max-width:none}.lx-persistent-call-actions button{width:34px;height:34px}.lx-persistent-call-actions button:nth-child(2){display:none}}
 
-/* LX Music v29.3 — somente player próprio; sem UI de providers externos. */
-.music-provider-panel,.music-provider-toggle,#spotifyEmbedHost,#musicProviderFrame{display:none!important}
+/* LX Music v29.4 — LX interface + official provider playback when a catalog item is a provider link. */
 #musicProviderLabel{display:none!important}
+.music-provider-panel{display:none!important}
+.music-dock.external-provider .music-provider-panel:not(.hidden){display:block!important;position:absolute;right:8px;bottom:82px;width:min(520px,calc(100vw - 24px));padding:8px;border:1px solid rgba(255,255,255,.1);border-radius:16px;background:#0d0e11;box-shadow:0 22px 70px rgba(0,0,0,.55);z-index:30}
+.music-dock.external-provider:not(.provider-open) .music-provider-panel{display:none!important}
+.music-provider-toggle.hidden{display:none!important}.music-dock.external-provider .music-provider-toggle{display:grid!important;place-items:center}
+.spotify-embed-host{display:block;width:100%;min-height:152px}.spotify-embed-host.hidden{display:none!important}.spotify-embed-host iframe{display:block;width:100%;min-height:152px;border:0;border-radius:12px}
+#musicProviderFrame{display:block;width:100%;min-height:152px;border:0;border-radius:12px;background:#000}#musicProviderFrame.hidden{display:none!important}
+.music-provider-foot{padding:7px 4px 2px;color:#8f98a5;font-size:10px}.music-dock.external-provider .music-timeline{opacity:.6}.music-dock.external-provider.provider-youtube .music-timeline{visibility:hidden}
+@media(max-width:760px){.music-dock.external-provider .music-provider-panel:not(.hidden){left:0;right:0;bottom:68px;width:auto}.music-dock.external-provider{overflow:visible!important}.music-dock.external-provider .music-provider-toggle{display:grid!important}}
+

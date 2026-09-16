@@ -1,3 +1,9 @@
+LX Plus v29.4
+- Corrigido: Voltar ao site durante chamada agora minimiza e mantém a conexão WebRTC ativa.
+- YouTube e Spotify passam a ser aceitos como fontes oficiais de Música no ADM.
+- YouTube usa iframe oficial com controle por API; Spotify usa Spotify Embed iFrame API.
+- A interface principal continua identificada como LX Music.
+
 LX Plus v29.3 — Direct 2.0 + Chamada Persistente + LX Music Full Track
 
 - Chat/Direct: a interface nova agora tem prioridade sobre os estilos antigos; mensagens próprias deixam de voltar ao roxo legado.

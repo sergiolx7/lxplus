@@ -3,21 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="lxplus-build" content="29.3">
+  <meta name="lxplus-build" content="29.4">
   <meta name="theme-color" content="#050506">
   <meta name="color-scheme" content="dark light">
   <meta name="description" content="LX Plus — Assistir, Ler e Ouvir em uma experiência premium.">
-  <link rel="icon" type="image/png" href="assets/lxplus-logo-v27.png?v=29.3">
-  <link rel="apple-touch-icon" href="assets/lxplus-logo-v27.png?v=29.3">
+  <link rel="icon" type="image/png" href="assets/lxplus-logo-v27.png?v=29.4">
+  <link rel="apple-touch-icon" href="assets/lxplus-logo-v27.png?v=29.4">
   <link rel="manifest" href="manifest.webmanifest">
+  <script src="https://open.spotify.com/embed/iframe-api/v1" defer></script>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="LX Plus">
 
   <script>
   (function(){
-    var BUILD='29.3',KEY='lxplus_build_seen';
-    try{if(localStorage.getItem(KEY)!==BUILD){localStorage.setItem(KEY,BUILD);if('caches'in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^lxplus-/.test(k)&&k!=='lxplus-shell-v2930').map(k=>caches.delete(k)))).catch(()=>{});if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.update?.())).catch(()=>{})}}
+    var BUILD='29.4',KEY='lxplus_build_seen';
+    try{if(localStorage.getItem(KEY)!==BUILD){localStorage.setItem(KEY,BUILD);if('caches'in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>/^lxplus-/.test(k)&&k!=='lxplus-shell-v2940').map(k=>caches.delete(k)))).catch(()=>{});if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.update?.())).catch(()=>{})}}
     catch(error){console.warn('LX PWA build refresh',error)}
     if('serviceWorker'in navigator){navigator.serviceWorker.addEventListener('controllerchange',function(){if(sessionStorage.getItem('lxplus_sw_reload')===BUILD)return;sessionStorage.setItem('lxplus_sw_reload',BUILD);location.reload()})}
   })();
@@ -41,10 +42,10 @@
     return false;
   };
   </script>
-  <link rel="stylesheet" href="app.css?v=29.3">
-  <link rel="stylesheet" href="app-v27.css?v=29.3">
-  <link rel="stylesheet" href="app-v28.css?v=29.3">
-  <link rel="stylesheet" href="app-v29.css?v=29.3">
+  <link rel="stylesheet" href="app.css?v=29.4">
+  <link rel="stylesheet" href="app-v27.css?v=29.4">
+  <link rel="stylesheet" href="app-v28.css?v=29.4">
+  <link rel="stylesheet" href="app-v29.css?v=29.4">
   <title>LX Plus</title>
 </head>
 <body>
@@ -54,7 +55,7 @@
     <div class="lx27-intro" aria-hidden="true">
       <div class="lx27-halo"></div>
       <div class="lx27-logo-stage">
-        <img src="assets/lxplus-logo-v27.png?v=29.3" alt="">
+        <img src="assets/lxplus-logo-v27.png?v=29.4" alt="">
         <div class="lx27-wordmark" aria-label="LX Plus"><span>LX</span><span>Plus</span></div>
       </div>
       <div class="lx27-lightline"></div>
@@ -65,7 +66,7 @@
 
   <section id="auth" class="screen auth hidden">
     <div class="auth-showcase">
-      <div class="brand brand-lg brand-approved"><img src="assets/lxplus-logo-v27.png?v=29.3" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div>
+      <div class="brand brand-lg brand-approved"><img src="assets/lxplus-logo-v27.png?v=29.4" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div>
       <div class="auth-copy">
         <span class="eyebrow">UMA CONTA · QUATRO MODOS</span>
         <h1>Continue de onde parou, em qualquer formato.</h1>
@@ -79,7 +80,7 @@
       </div>
     </div>
     <div class="auth-panel">
-      <div class="auth-mobile-brand brand brand-approved" aria-hidden="true"><img src="assets/lxplus-logo-v27.png?v=29.3" alt="" class="lx-approved-logo lx-logo-v27"></div>
+      <div class="auth-mobile-brand brand brand-approved" aria-hidden="true"><img src="assets/lxplus-logo-v27.png?v=29.4" alt="" class="lx-approved-logo lx-logo-v27"></div>
       <div class="auth-box">
         <div class="auth-tabs"><button id="tabLogin" class="active">Entrar</button><button id="tabRegister">Criar conta</button></div>
         <form id="loginForm" class="auth-form">
@@ -104,13 +105,13 @@
   </section>
 
   <section id="profiles" class="screen profiles hidden">
-    <header><div class="brand brand-lg brand-approved"><img src="assets/lxplus-logo-v27.png?v=29.3" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div><button id="profileLogout" class="glass-btn">Sair</button></header>
+    <header><div class="brand brand-lg brand-approved"><img src="assets/lxplus-logo-v27.png?v=29.4" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div><button id="profileLogout" class="glass-btn">Sair</button></header>
     <main><span class="eyebrow">PERFIS</span><h1>Quem está usando a LX Plus?</h1><div id="profileGrid" class="profile-grid"></div></main>
   </section>
 
   <section id="app" class="app hidden">
     <aside id="lxDesktopRail" class="lx-desktop-rail" aria-label="Navegação principal">
-      <button class="lx-shell-brand" type="button" onclick="document.getElementById('brandHome')?.click()" aria-label="Ir para o início da LX Plus"><img src="assets/lxplus-logo-v27.png?v=29.3" class="lx-shell-logo lx-logo-v27" alt="LX Plus"></button>
+      <button class="lx-shell-brand" type="button" onclick="document.getElementById('brandHome')?.click()" aria-label="Ir para o início da LX Plus"><img src="assets/lxplus-logo-v27.png?v=29.4" class="lx-shell-logo lx-logo-v27" alt="LX Plus"></button>
       <nav class="lx-shell-primary">
         <button data-shell-category="Início" class="active"><span>⌂</span><b>Início</b></button>
         <button data-shell-category="Filmes"><span>▣</span><b>Filmes</b></button>
@@ -151,7 +152,7 @@
     </aside>
     <header id="topbar" class="topbar">
       <div class="topbar-row">
-        <a href="#" id="brandHome" class="brand brand-sm brand-approved" aria-label="Ir para o início da LX Plus"><img src="assets/lxplus-logo-v27.png?v=29.3" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></a>
+        <a href="#" id="brandHome" class="brand brand-sm brand-approved" aria-label="Ir para o início da LX Plus"><img src="assets/lxplus-logo-v27.png?v=29.4" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></a>
         <div id="modeSwitch" class="mode-switch">
           <button data-mode="Assistir" class="active"><span>▶</span>Assistir</button>
           <button data-mode="Ler"><span>▤</span>Ler</button>
@@ -181,7 +182,7 @@
 
   <section id="admin" class="admin hidden">
     <aside class="admin-side">
-      <div class="brand brand-sm brand-approved"><img src="assets/lxplus-logo-v27.png?v=29.3" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div>
+      <div class="brand brand-sm brand-approved"><img src="assets/lxplus-logo-v27.png?v=29.4" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div>
       <div class="admin-identity"><div class="admin-avatar">LX</div><div><b>Administrador</b><small>LX Plus</small></div></div>
       <div class="admin-console-label"><span></span> LX PLUS</div>
       <nav id="adminNav">
@@ -227,7 +228,12 @@
       <div class="music-transport"><button id="musicShuffle" title="Embaralhar" aria-label="Embaralhar fila">⇄</button><button id="musicPrev" title="Anterior" aria-label="Faixa anterior">‹</button><button id="musicPlay" class="music-main-play" title="Reproduzir" aria-label="Reproduzir ou pausar">▶</button><button id="musicNext" title="Próxima" aria-label="Próxima faixa">›</button><button id="musicRepeat" title="Repetir" aria-label="Alterar modo de repetição">↻</button></div>
       <div class="music-timeline"><span id="musicTime">0:00</span><input id="musicProgress" type="range" min="0" max="100" value="0" step="0.1" aria-label="Progresso da música"><span id="musicDuration">0:00</span></div>
     </div>
-    <div class="music-right-controls"><button id="musicLikeBtn" title="Salvar na biblioteca" aria-label="Salvar na biblioteca">♡</button><button id="musicLyricsBtn" title="Abrir letra" aria-label="Abrir letra">≡</button><button id="musicQueueBtn" title="Fila" aria-label="Abrir fila de reprodução">☷</button><span aria-hidden="true">🔊</span><input id="musicVolume" type="range" min="0" max="1" step="0.05" value="1" aria-label="Volume"><button id="musicClose" title="Fechar" aria-label="Fechar player">×</button></div>
+    <div class="music-right-controls"><button id="musicLikeBtn" title="Salvar na biblioteca" aria-label="Salvar na biblioteca">♡</button><button id="musicLyricsBtn" title="Abrir letra" aria-label="Abrir letra">≡</button><button id="musicQueueBtn" title="Fila" aria-label="Abrir fila de reprodução">☷</button><button id="musicProviderToggle" class="music-provider-toggle hidden" title="Abrir reprodução oficial" aria-label="Abrir reprodução oficial">↗</button><span aria-hidden="true">🔊</span><input id="musicVolume" type="range" min="0" max="1" step="0.05" value="1" aria-label="Volume"><button id="musicClose" title="Fechar" aria-label="Fechar player">×</button></div>
+    <div id="musicProviderPanel" class="music-provider-panel hidden" aria-label="Reprodução oficial">
+      <div id="spotifyEmbedHost" class="spotify-embed-host hidden"></div>
+      <iframe id="musicProviderFrame" class="hidden" title="Reprodução oficial" allow="autoplay; encrypted-media; picture-in-picture" loading="eager" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      <div class="music-provider-foot"><small>A reprodução desta faixa usa o player oficial da fonte.</small></div>
+    </div>
     <audio id="musicAudio" preload="metadata"></audio>
   </div>
   <script>
@@ -284,10 +290,10 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   })();
   </script>
-  <script src="lxplus-artwork.js?v=29.3"></script>
-  <script src="lxplus.js?v=29.3"></script>
-  <script src="lxplus-v27.js?v=29.3"></script>
-  <script src="lxplus-v29.js?v=29.3"></script>
+  <script src="lxplus-artwork.js?v=29.4"></script>
+  <script src="lxplus.js?v=29.4"></script>
+  <script src="lxplus-v27.js?v=29.4"></script>
+  <script src="lxplus-v29.js?v=29.4"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded',function(){
@@ -672,7 +678,7 @@
   function mountCallUI(person,mode='video',status='Conectando...'){
     close(); document.getElementById('lxCallOverlay')?.remove();
     const el=document.createElement('div'); el.id='lxCallOverlay'; el.className='lx-call-overlay lx-call-pro';
-    el.innerHTML=`<div class="lx-call-stage"><audio id="lxRemoteAudio" autoplay playsinline></audio><video id="lxRemoteVideo" class="lx-call-remote" autoplay muted playsinline></video><video id="lxRemoteScreen" class="lx-call-screen hidden" autoplay muted playsinline></video><button id="lxAudioUnlock" class="lx-call-audio-unlock hidden" onclick="LX.social.resumeCallAudio()">🔊 Ativar áudio da chamada</button><div id="lxRemoteFallback" class="lx-call-remote-fallback">${avatar(person,'lx-call-big-avatar')}<strong>${verified(person)}</strong><small id="lxCallStatus">${esc(status)}</small></div><div id="lxShareBadge" class="lx-share-badge hidden">${icon('screen')} Tela compartilhada</div><div class="lx-call-local-wrap"><video id="lxLocalVideo" class="lx-call-local" autoplay muted playsinline></video><span id="lxLocalLabel">VOCÊ</span></div><div id="lxLocalShareWrap" class="lx-call-local-share hidden"><video id="lxLocalSharePreview" autoplay muted playsinline></video><span>SUA TELA</span></div><header class="lx-call-header"><button data-lx-hangup="1" onclick="LX.social.minimizeCall()" aria-label="Voltar ao site sem encerrar a chamada">‹</button><div><strong>${verified(person)}</strong><small id="lxCallStatusTop">${esc(status)}</small></div><div class="lx-call-meta"><span id="lxCallNetwork" class="lx-call-network connecting">Conectando mídia</span><span id="lxCallTimer" class="lx-call-timer">00:00</span><span id="lxCallStartedClock" class="lx-call-start-clock">aguardando</span></div></header><div id="lxReactionLayer" class="lx-reaction-layer"></div><div id="lxReactionPicker" class="lx-reaction-picker hidden"><button onclick="LX.social.sendReaction('❤️')">❤️</button><button onclick="LX.social.sendReaction('😂')">😂</button><button onclick="LX.social.sendReaction('🔥')">🔥</button><button onclick="LX.social.sendReaction('👏')">👏</button><button onclick="LX.social.sendReaction('😮')">😮</button><button onclick="LX.social.sendReaction('👍')">👍</button></div><div id="lxSharePicker" class="lx-share-picker hidden"><button onclick="LX.social.shareScreen('replace')"><b>${icon('screen')} Tela principal</b><small>Mostra sua tela no lugar da câmera. Você continua ouvindo e, ao marcar Compartilhar áudio, a outra pessoa também.</small></button><button onclick="LX.social.shareScreen('dual')"><b>${icon('video')} Tela + câmera</b><small>Compartilha a tela, mantém a câmera e preserva o áudio local + remoto quando o navegador permitir.</small></button></div><div class="lx-call-controls"><button id="lxMicBtn" onclick="LX.social.toggleMic()">${icon('mic')}<small>Microfone</small></button><button id="lxCamBtn" onclick="LX.social.toggleCamera()">${icon('camera')}<small>Câmera</small></button><button id="lxShareBtn" onclick="LX.social.toggleSharePicker()">${icon('screen')}<small>Compartilhar</small></button><button id="lxReactionBtn" onclick="LX.social.toggleReactions()">${icon('smile')}<small>Reações</small></button><button onclick="LX.social.toggleCallFullscreen()">${icon('full')}<small>Tela cheia</small></button><button class="hangup" data-lx-hangup="1" onclick="LX.social.endCurrentCall()">${icon('hang')}<small>Encerrar</small></button></div></div>`;
+    el.innerHTML=`<div class="lx-call-stage"><audio id="lxRemoteAudio" autoplay playsinline></audio><video id="lxRemoteVideo" class="lx-call-remote" autoplay muted playsinline></video><video id="lxRemoteScreen" class="lx-call-screen hidden" autoplay muted playsinline></video><button id="lxAudioUnlock" class="lx-call-audio-unlock hidden" onclick="LX.social.resumeCallAudio()">🔊 Ativar áudio da chamada</button><div id="lxRemoteFallback" class="lx-call-remote-fallback">${avatar(person,'lx-call-big-avatar')}<strong>${verified(person)}</strong><small id="lxCallStatus">${esc(status)}</small></div><div id="lxShareBadge" class="lx-share-badge hidden">${icon('screen')} Tela compartilhada</div><div class="lx-call-local-wrap"><video id="lxLocalVideo" class="lx-call-local" autoplay muted playsinline></video><span id="lxLocalLabel">VOCÊ</span></div><div id="lxLocalShareWrap" class="lx-call-local-share hidden"><video id="lxLocalSharePreview" autoplay muted playsinline></video><span>SUA TELA</span></div><header class="lx-call-header"><button data-lx-call-back="1" onclick="LX.social.minimizeCall(); return false" aria-label="Voltar ao site sem encerrar a chamada">‹</button><div><strong>${verified(person)}</strong><small id="lxCallStatusTop">${esc(status)}</small></div><div class="lx-call-meta"><span id="lxCallNetwork" class="lx-call-network connecting">Conectando mídia</span><span id="lxCallTimer" class="lx-call-timer">00:00</span><span id="lxCallStartedClock" class="lx-call-start-clock">aguardando</span></div></header><div id="lxReactionLayer" class="lx-reaction-layer"></div><div id="lxReactionPicker" class="lx-reaction-picker hidden"><button onclick="LX.social.sendReaction('❤️')">❤️</button><button onclick="LX.social.sendReaction('😂')">😂</button><button onclick="LX.social.sendReaction('🔥')">🔥</button><button onclick="LX.social.sendReaction('👏')">👏</button><button onclick="LX.social.sendReaction('😮')">😮</button><button onclick="LX.social.sendReaction('👍')">👍</button></div><div id="lxSharePicker" class="lx-share-picker hidden"><button onclick="LX.social.shareScreen('replace')"><b>${icon('screen')} Tela principal</b><small>Mostra sua tela no lugar da câmera. Você continua ouvindo e, ao marcar Compartilhar áudio, a outra pessoa também.</small></button><button onclick="LX.social.shareScreen('dual')"><b>${icon('video')} Tela + câmera</b><small>Compartilha a tela, mantém a câmera e preserva o áudio local + remoto quando o navegador permitir.</small></button></div><div class="lx-call-controls"><button id="lxMicBtn" onclick="LX.social.toggleMic()">${icon('mic')}<small>Microfone</small></button><button id="lxCamBtn" onclick="LX.social.toggleCamera()">${icon('camera')}<small>Câmera</small></button><button id="lxShareBtn" onclick="LX.social.toggleSharePicker()">${icon('screen')}<small>Compartilhar</small></button><button id="lxReactionBtn" onclick="LX.social.toggleReactions()">${icon('smile')}<small>Reações</small></button><button onclick="LX.social.toggleCallFullscreen()">${icon('full')}<small>Tela cheia</small></button><button class="hangup" data-lx-hangup="1" onclick="LX.social.endCurrentCall()">${icon('hang')}<small>Encerrar</small></button></div></div>`;
     document.body.appendChild(el); state.callMinimized=false;document.getElementById('lxPersistentCall')?.remove();document.documentElement.classList.add('lx-call-open');
     const local=document.getElementById('lxLocalVideo'); if(local&&state.localStream){local.srcObject=state.localStream;local.classList.toggle('hidden',!state.localStream.getVideoTracks().length);local.play?.().catch(()=>{})}
     updateCallStatus(status); tickCallTimer(); return el;
@@ -1383,7 +1389,7 @@
   function guide(){
     if(window.LX?.ui?.$){
       const overlay=document.getElementById('overlay'),modal=document.getElementById('modal');
-      if(overlay&&modal){overlay.classList.remove('hidden');modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page lx-install-guide"><div class="panel-head"><div><span class="eyebrow">LX PLUS</span><h2>Instalar aplicativo</h2><p>${isIOS()?'No iPhone/iPad, abra o menu Compartilhar e escolha “Adicionar à Tela de Início”.':'No navegador, abra o menu e escolha “Instalar LX Plus” ou “Adicionar à tela inicial”.'}</p></div></div><img src="assets/lxplus-logo-v27.png?v=29.3" alt="LX Plus"><strong>Abra o LX Plus como um app, em tela cheia e com acesso rápido.</strong></div>`;return;}
+      if(overlay&&modal){overlay.classList.remove('hidden');modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page lx-install-guide"><div class="panel-head"><div><span class="eyebrow">LX PLUS</span><h2>Instalar aplicativo</h2><p>${isIOS()?'No iPhone/iPad, abra o menu Compartilhar e escolha “Adicionar à Tela de Início”.':'No navegador, abra o menu e escolha “Instalar LX Plus” ou “Adicionar à tela inicial”.'}</p></div></div><img src="assets/lxplus-logo-v27.png?v=29.4" alt="LX Plus"><strong>Abra o LX Plus como um app, em tela cheia e com acesso rápido.</strong></div>`;return;}
     }
     alert(isIOS()?'Use Compartilhar → Adicionar à Tela de Início.':'Abra o menu do navegador e escolha Instalar LX Plus.');
   }
