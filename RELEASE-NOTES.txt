@@ -1,28 +1,9 @@
-LX Plus v29.9 — Mobile Responsive Edition
+LX Plus v30.0 — Mobile Navigation & Responsive Rebuild
 
-- interface recalibrada para 320–760 px;
-- hero, cabeçalhos, cards e textos reduzidos no celular;
-- navegação inferior compacta sem scroll lateral;
-- cards da Home menores e com três colunas onde couber;
-- LX Music redesenhada no mobile com grade de 3 colunas, hero compacto e mini-player menor;
-- modais, perfil, detalhes, episódios, comunidade, chat e ADM adaptados para telas estreitas;
-- campos usam 16 px no iOS para evitar zoom automático;
-- safe-area e controles de toque preservados;
-- lógica da v29.8 mantida sem alterações funcionais.
-
-LX Plus v29.8 — Production Cleanup
-
-Esta build remove a principal fonte de conflitos entre versões antes do lançamento:
-- produção passa a carregar somente lxplus.bundle.css + lxplus.bundle.js;
-- caches antigos da LX Plus são descartados na troca para v29.8;
-- corrigido ReferenceError que interrompia o Play antes do carregamento do arquivo;
-- removida assinatura Realtime duplicada que redesenhava a tela durante o progresso da música;
-- LX Music ganhou proteção rígida contra a interface antiga reaparecer;
-- player de arquivo próprio validado no Chromium com reprodução real e avanço de currentTime;
-- Blob/MIME incorreto recebe normalização automática;
-- YouTube oficial usa JS API corretamente;
-- área Música ganhou painel direito "Tocando agora" e composição mais próxima de um app musical de desktop;
-- linhas da Home com poucos títulos ganham preenchimento visual LX Plus, evitando grandes buracos vazios;
-- mantidas as correções anteriores de chamada persistente, transmissão de áudio, Direct, login e responsividade.
-
-Observação: Spotify/YouTube seguem as políticas de reprodução dos respectivos serviços. Para reprodução integral controlada pela LX Plus, use arquivos/streams completos autorizados no catálogo.
+- Navegação inferior móvel refeita: Início, Filmes, Séries, Música, Livros e Mais ficam acessíveis de qualquer tela.
+- Novo painel “Mais” com Buscar, Animes, Doramas, Ao vivo, Minha Lista, Comunidade, Pedidos, Ranking e Perfil.
+- O topo desktop e a barra de categorias antigas não disputam mais espaço no celular.
+- Música mobile reorganizada: cabeçalho compacto, abas utilizáveis, busca proporcional, 2 cards por linha e mini-player acima da navegação.
+- Home, hero, cards, livros, comunidade e overlays redimensionados para 320–760 px.
+- Desktop preservado; as mudanças desta versão são majoritariamente aplicadas abaixo de 760 px.
+- Base funcional da v29.9 mantida: player, chamadas persistentes, Supabase e bundles consolidados.

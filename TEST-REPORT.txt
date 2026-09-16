@@ -1,25 +1,23 @@
-LX Plus v29.9 — Mobile Responsive QA
+LX Plus v30.0 — Mobile Rebuild QA
 
-Build: 29.9
-Base: v29.8 Production Cleanup
-Focus: 320px–760px
+Build: 30.0
+Base funcional: v29.9 / arquitetura consolidada v29.8
 
-PASS — CSS bundle parses with zero syntax errors (tinycss2)
-PASS — CSS braces balanced
-PASS — JavaScript bundle passes node --check
-PASS — viewport meta uses width=device-width
-PASS — dedicated breakpoints at 760px, 430px and 360px
-PASS — bottom navigation compacted to six equal columns without horizontal overflow
-PASS — Home poster width reduced to 118px / 108px / 101px by viewport
-PASS — Home hero capped at 390px, 340px on narrow phones
-PASS — LX Music side/detail rails removed on phone
-PASS — LX Music grid switches to 3 columns on phone
-PASS — Music dock reduced and positioned above bottom navigation + safe area
-PASS — modals use bottom-sheet/full-width mobile composition
-PASS — form fields use 16px on phone to prevent iOS automatic zoom
-PASS — chat/community/call controls reduced for narrow screens
-PASS — admin tables remain horizontally scrollable instead of widening the page
-PASS — safe-area-inset-bottom preserved for iPhone home indicator
-PASS — desktop rules remain outside the new mobile-only overrides
+Verificações concluídas:
+[PASS] JavaScript bundle válido em node --check.
+[PASS] index.html contém exatamente 6 destinos principais no mobile: Início, Filmes, Séries, Música, Livros e Mais.
+[PASS] Painel Mais contém Buscar, Animes, Doramas, Ao vivo, Minha Lista, Comunidade, Pedidos, Ranking e Perfil.
+[PASS] Troca mobile altera também o modo interno: Assistir / Ouvir / Ler / Ao vivo.
+[PASS] Barra desktop de categorias e seletor de modos ficam ocultos abaixo de 760 px.
+[PASS] Navegação inferior não usa scroll horizontal e ocupa a largura do telefone.
+[PASS] Music mobile usa uma única coluna estrutural, sem sidebar desktop e com 2 cards por linha.
+[PASS] Player musical fica acima da barra móvel e não cobre a navegação.
+[PASS] Header móvel usa somente logo + busca + notificações + perfil.
+[PASS] Home usa hero e cards reduzidos para telefone.
+[PASS] Leitor/Livros usa grade de 2 colunas no mobile.
+[PASS] CSS fecha todas as chaves e preserva as regras desktop fora do breakpoint.
+[PASS] Service Worker atualizado para lxplus-shell-v3000.
+[PASS] Manifest inicia em ?v=30.0.
 
-Functional code from v29.8 was not rewritten; v29.9 is a responsive presentation update.
+Objetivo desta versão:
+Corrigir a navegação e a composição visual em 320–760 px sem reescrever player, Supabase, chamadas ou a lógica consolidada da v29.9.

@@ -24,12 +24,12 @@
 
 
 /* ===== lxplus.js ===== */
-window.__LX_JS_BUILD='29.9';
+window.__LX_JS_BUILD='30.0';
 
 /* ===== config.js · LX Plus v25.50 ===== */
 window.LX=window.LX||{};
 LX.config={
-  version:'29.9',
+  version:'30.0',
   environment:'cloud-ready',
   production:true,
   apiBase:'',
@@ -401,7 +401,7 @@ window.__LX_MODULES['r2-media']='25.50';
  function preview(provider,value){const key=normalize(provider,value),d=describe(key);return {key,...d}}
  LX.mediaSources={normalize,describe,directUrl,label,toInput,modeFor,info,allowedFor,preview,providers:['upload','gdrive','dropbox','youtube','spotify','onedrive','archive','direct']};
 })();
-window.__LX_MODULES['free-media-hub']='29.9';
+window.__LX_MODULES['free-media-hub']='30.0';
 
 /* ===== services.js · LX Plus v25.36 ===== */
 (()=>{const LX=window.LX,S=LX.store,$=id=>document.getElementById(id);
@@ -604,7 +604,7 @@ function renderBookExperience(){
 }
 
 function renderHome(){if(state.mode==='Ouvir')return renderMusicExperience();const a=items();if(!a.length){$('homeContent').innerHTML=`<section class="official-empty"><span class="eyebrow">LX PLUS</span><h2>${state.user?.admin?'Catálogo pronto para você organizar':'Novidades em breve'}</h2><p>${state.user?.admin?'A plataforma está limpa. Use o Painel ADM para cadastrar seus conteúdos, capas, banners e lançamentos.':'O catálogo está sendo preparado.'}</p>${state.user?.admin?'<button class="primary-btn" onclick="LX.openAdmin()">Abrir Painel ADM</button>':''}</section>`;return}if(state.query){$('homeContent').innerHTML=rail(`Resultados para “${esc(state.query)}”`,'Busca tolerante a erros por título, elenco, autor, artista, gênero e tags.',a);return}if(state.category!=='Início'){$('homeContent').innerHTML=rail(state.category,'Tudo nesta categoria.',a);return}const h=D.history(),pref=D.preferences()[state.user?.email||'']||{},histEntries=Object.entries(h).filter(([,v])=>v?.opened).sort((a,b)=>(b[1].opened||0)-(a[1].opened||0)),recentId=histEntries[0]?.[0],recent=D.catalog().find(x=>String(x.id)===String(recentId)),cont=a.filter(x=>h[x.id]?.progress>0&&h[x.id]?.progress<98),recs=D.recommendation(a,h,D.ratings(),pref).slice(0,12),because=recent?a.filter(x=>x.id!==recent.id&&(x.genre===recent.genre||x.type===recent.type)&&!h[x.id]).slice(0,10):[],top=[...a].sort((x,y)=>(y.trending?1:0)-(x.trending?1:0)||(+y.priority||0)-(+x.priority||0)).slice(0,10),newest=[...a].sort((x,y)=>(+new Date(y.publishedAt||y.createdAt||0))-(+new Date(x.publishedAt||x.createdAt||0))).slice(0,12);let html='';if(cont.length)html+=rail(state.mode==='Ler'?'Continuar lendo':state.mode==='Ouvir'?'Ouvir novamente':'Continuar assistindo','Retome exatamente do segundo em que parou.',cont,true);if(recs.length){const why=pref.genres?.length?`Preferências: ${pref.genres.slice(0,3).join(', ')}. Também usamos histórico, notas e tags.`:'Baseado no seu histórico, avaliações, gêneros e tags. Você pode ajustar isso no Perfil.';html+=rail('Recomendado para você',why,recs)}if(because.length)html+=rail(`Porque você ${recent.type==='Livro'?'leu':recent.type==='Música'?'ouviu':'assistiu'} ${esc(recent.title)}`,'Uma seleção relacionada ao seu histórico recente.',because);html+=rail('Top 10 LX','Os títulos mais fortes neste momento.',top,false,true);html+=rail('Em alta','O que está chamando atenção.',a.filter(x=>x.trending));html+=rail('Lançados recentemente','As novidades mais recentes da plataforma.',newest);[...new Set(a.map(x=>x.genre))].slice(0,5).forEach(g=>html+=rail(g,`Seleção em ${g.toLowerCase()}.`,a.filter(x=>x.genre===g)));$('homeContent').innerHTML=html}
-function renderApp(){$('app')?.classList.toggle('lx-music-mode',state.mode==='Ouvir');renderCategories();if(state.mode==='Ao vivo')LX.contentHub?.renderLive?.();else if(state.mode==='Assistir'&&state.category==='Catálogo Online')LX.contentHub?.renderWatch?.();else if(state.mode==='Ler'&&state.category==='Biblioteca Pública')LX.contentHub?.renderBooks?.();else if(state.mode==='Ouvir')renderMusicExperience();else if(state.mode==='Ler')renderBookExperience();else{renderHero();renderWelcome();renderHome()}updateNoticeCount();try{LX.syncPremiumShell?.()}catch(e){console.warn('LX premium shell sync',e)}const adm=$('adminTopBtn');if(adm)adm.classList.toggle('hidden',!state.user?.admin)}
+function renderApp(){$('app')?.classList.toggle('lx-music-mode',state.mode==='Ouvir');renderCategories();syncMobileNavState?.();if(state.mode==='Ao vivo')LX.contentHub?.renderLive?.();else if(state.mode==='Assistir'&&state.category==='Catálogo Online')LX.contentHub?.renderWatch?.();else if(state.mode==='Ler'&&state.category==='Biblioteca Pública')LX.contentHub?.renderBooks?.();else if(state.mode==='Ouvir')renderMusicExperience();else if(state.mode==='Ler')renderBookExperience();else{renderHero();renderWelcome();renderHome()}updateNoticeCount();try{LX.syncPremiumShell?.()}catch(e){console.warn('LX premium shell sync',e)}const adm=$('adminTopBtn');if(adm)adm.classList.toggle('hidden',!state.user?.admin)}
 function scroll(id,d){const e=$(id);e?.scrollBy({left:d*e.clientWidth*.82,behavior:'smooth'})}
 function close(){$('overlay').classList.add('hidden')}function closePlayer(){if(LX.stopMiniPlayer)LX.stopMiniPlayer(true);else{$('playerOverlay').classList.add('hidden');$('videoEl')?.pause()}}function closeReader(){$('readerOverlay').classList.add('hidden')}
 function updateNoticeCount(){const system=D.notices().filter(x=>!x.read).length,chat=Number(LX.chat?.unreadTotal?.()||0),cloud=Number(LX.chat?.cloudUnread?.()||0),community=Math.max(chat,cloud),c=system+community;const el=$('notifyCount');if(el){el.textContent=c>99?'99+':String(c);el.style.display=c?'grid':'none'}try{if('setAppBadge'in navigator)c?navigator.setAppBadge(c):navigator.clearAppBadge?.()}catch{}}
@@ -1221,7 +1221,15 @@ $('registerRetryBtn').onclick=()=>{resetRegisterForEdit();$('regEmail')?.focus()
 window.__LX_LOGIN_READY=true;$('loginForm').onsubmit=async e=>{e.preventDefault();const email=$('loginEmail').value.trim().toLowerCase(),password=$('loginPass').value,btn=e.currentTarget.querySelector('button[type=submit]');if(!email||!password)return LX.toast('Preencha e-mail e senha.');try{if(btn){btn.disabled=true;btn.textContent='Entrando…'}await LX.ensureSupabase();const {user}=await D.auth.login(email,password);if(!user)throw new Error('LOGIN_EMPTY_USER');state.user=user;S.writeLocal(S.keys.session,{email});if(!user.admin&&!user.approved){showApprovalWaiting(user,user.approvalStatus);LX.toast('Seu cadastro ainda aguarda aprovação.');return}clearApprovalWaiting();enterMainApp(user,true);LX.social?.boot?.();LX.chat?.boot?.()}catch(err){console.warn('LX login',err);const msg=String(err?.message||'');if(/email not confirmed|email_not_confirmed/i.test(msg)){const box=$('loginApprovalStatus');if(box){box.textContent=approvalCopy('pending');box.classList.remove('hidden','rejected');box.classList.add('pending')}return LX.toast('Aguardando confirmação por e-mail ou aprovação do ADM.')}if(err?.status===429||/rate limit|429/i.test(msg))return LX.toast('Limite temporário do Supabase atingido. Aguarde e tente novamente.');if(/Failed to load Supabase|CLOUD_NOT_CONFIGURED|SDK/i.test(msg))return LX.toast('Não consegui conectar à nuvem. Sua tela não será recarregada; tente novamente em alguns segundos.');U.show('auth');U.authTab('login');LX.toast(msg&&msg!=='Invalid login credentials'?('Falha ao entrar: '+msg.slice(0,110)):'Não foi possível entrar. Confira seu e-mail e senha.')}finally{if(btn){btn.disabled=false;btn.textContent='Entrar'}}};
 $('profileLogout').onclick=$('adminLogout').onclick=logout;async function logout(){await LX.social?.shutdown?.().catch?.(()=>{});await D.auth.logout?.().catch(()=>{});state.user=null;state.profile=null;try{localStorage.removeItem('lx16_session')}catch{};U.show('auth')}
 $('brandHome').onclick=e=>{e.preventDefault();state.category='Início';state.query='';if($('searchInput'))$('searchInput').value='';U.renderApp();saveView()};$('searchBtn').onclick=()=>{$('searchWrap').classList.toggle('open');$('searchInput').focus()};$('searchInput').oninput=e=>{state.query=e.target.value.trim();if(state.query)D.track('search',{query:state.query});state.mode==='Ouvir'?U.renderApp():U.renderHome()};$('requestBtn').onclick=openRequests;$('notifyBtn').onclick=openNotifications;$('premiumBtn').onclick=openPremium;$('themeBtn').onclick=openTheme;$('profileBtn').onclick=openProfile;$('adminTopBtn').onclick=()=>{LX.admin.render(U.state.adminPage||'dashboard');U.show('admin');saveView()};$('adminPreview').onclick=()=>{U.renderApp();U.show('app');saveView()};
-$$('[data-mode]').forEach(b=>b.onclick=()=>{state.mode=b.dataset.mode;state.category=b.dataset.mode==='Ao vivo'?'Hoje':'Início';state.query='';if($('searchInput'))$('searchInput').value='';$$('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));U.renderApp();saveView()});$$('[data-mobile]').forEach(b=>b.onclick=()=>{const x=b.dataset.mobile;$$('[data-mobile]').forEach(y=>y.classList.toggle('active',y===b));if(x==='Buscar'){$('searchWrap').classList.add('open');$('searchInput').focus()}else if(x==='Música'){state.mode='Ouvir';state.category='Início';state.query='';state.musicView='home';$$('[data-mode]').forEach(y=>y.classList.toggle('active',y.dataset.mode==='Ouvir'));U.renderApp()}else if(x==='Perfil')openProfile();else if(x==='Ranking')openRanking();else if(x==='Pedidos')openRequests();else if(x==='Pessoas'||x==='Comunidade')LX.social?.open?.();else{state.category=x;U.renderApp()}});window.addEventListener('scroll',()=>$('topbar')?.classList.toggle('scrolled',scrollY>24),{passive:true});
+function closeMobileMore(){const sheet=$('mobileMoreSheet'),back=$('mobileMoreBackdrop');sheet?.classList.add('hidden');back?.classList.add('hidden');sheet?.setAttribute('aria-hidden','true')}
+function openMobileMore(){const sheet=$('mobileMoreSheet'),back=$('mobileMoreBackdrop');sheet?.classList.remove('hidden');back?.classList.remove('hidden');sheet?.setAttribute('aria-hidden','false')}
+function syncMobileNavState(){let key='Início';if(state.mode==='Ouvir')key='Música';else if(state.mode==='Ler')key='Livros';else if(state.mode==='Assistir'&&state.category==='Filmes')key='Filmes';else if(state.mode==='Assistir'&&state.category==='Séries')key='Séries';else if(state.mode==='Ao vivo'||(state.mode==='Assistir'&&!['Início','Filmes','Séries'].includes(state.category)))key='Mais';$$('[data-mobile]').forEach(y=>y.classList.toggle('active',y.dataset.mobile===key))}
+function mobileGo(mode,category='Início'){state.mode=mode;state.category=category;state.query='';if(mode==='Ouvir')state.musicView='home';if($('searchInput'))$('searchInput').value='';$$('[data-mode]').forEach(y=>y.classList.toggle('active',y.dataset.mode===mode));closeMobileMore();U.renderApp();saveView();syncMobileNavState();window.scrollTo({top:0,behavior:'instant'})}
+$$('[data-mode]').forEach(b=>b.onclick=()=>{state.mode=b.dataset.mode;state.category=b.dataset.mode==='Ao vivo'?'Hoje':'Início';state.query='';if($('searchInput'))$('searchInput').value='';$$('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));U.renderApp();syncMobileNavState();saveView()});
+$$('[data-mobile]').forEach(b=>b.onclick=()=>{const x=b.dataset.mobile;if(x==='Início')return mobileGo('Assistir','Início');if(x==='Filmes')return mobileGo('Assistir','Filmes');if(x==='Séries')return mobileGo('Assistir','Séries');if(x==='Música')return mobileGo('Ouvir','Início');if(x==='Livros')return mobileGo('Ler','Início');if(x==='Mais')return openMobileMore()});
+$$('[data-mobile-close]').forEach(b=>b.onclick=closeMobileMore);
+$$('[data-mobile-more]').forEach(b=>b.onclick=()=>{const x=b.dataset.mobileMore;if(x==='Buscar'){closeMobileMore();$('searchWrap')?.classList.add('open');$('searchInput')?.focus();return}if(x==='Animes')return mobileGo('Assistir','Animes');if(x==='Doramas')return mobileGo('Assistir','Doramas');if(x==='Ao vivo')return mobileGo('Ao vivo','Hoje');if(x==='Minha Lista'){closeMobileMore();state.category='Minha Lista';U.renderApp();saveView();return}if(x==='Comunidade'){closeMobileMore();return LX.social?.open?.('friends')}if(x==='Pedidos'){closeMobileMore();return openRequests()}if(x==='Ranking'){closeMobileMore();return openRanking()}if(x==='Perfil'){closeMobileMore();return openProfile()}});
+window.addEventListener('scroll',()=>$('topbar')?.classList.toggle('scrolled',scrollY>24),{passive:true});
 $$('[data-admin]').forEach(b=>b.onclick=()=>{$$('[data-admin]').forEach(x=>x.classList.toggle('active',x===b));LX.admin.render(b.dataset.admin)});
 function record(x){const h=D.history();h[x.id]={...(h[x.id]||{}),opened:Date.now(),progress:h[x.id]?.progress??x.progress??0};S.write(S.keys.history,h);D.track('open',{id:x.id,title:x.title,type:x.type})}
 function toggleList(id){let l=D.myList(),has=l.some(x=>String(x)===String(id));l=has?l.filter(x=>String(x)!==String(id)):[...l,id];S.write(S.keys.list,l);LX.toast(has?'Removido da Minha Lista.':'Adicionado à Minha Lista.');U.renderApp()}
@@ -1506,7 +1514,7 @@ function stopMiniPlayer(closeOverlay=true){const v=activeVideoEl;if(v){try{if(v.
 $('legalAboutBtn')?.addEventListener('click',()=>openLegal('about'));$('legalTermsBtn')?.addEventListener('click',()=>openLegal('terms'));$('legalPrivacyBtn')?.addEventListener('click',()=>openLegal('privacy'));
 $('miniRestore').onclick=restoreMiniPlayer;$('miniClose').onclick=()=>stopMiniPlayer(true);$('miniPlay').onclick=()=>{const v=activeVideoEl;if(v)v.paused?v.play():v.pause()};
 $('overlay').onclick=e=>{if(e.target===$('overlay'))U.close()};$('playerOverlay').onclick=e=>{if(e.target===$('playerOverlay'))U.closePlayer()};$('readerOverlay').onclick=e=>{if(e.target===$('readerOverlay'))U.closeReader()};document.addEventListener('keydown',e=>{if(e.key==='Escape'){U.close();U.closePlayer();U.closeReader()}});
-LX.musicHealthCheck=()=>{const a=$('musicAudio'),t=currentMusic();return {build:'29.9',mode:state.mode,screen:state.screen,track:t?.title||null,sourceRef:a?.dataset?.sourceRef||t?.mediaKey||null,src:a?.currentSrc||a?.src||null,paused:a?.paused??true,readyState:a?.readyState??0,networkState:a?.networkState??0,error:a?.error?{code:a.error.code,message:a.error.message||''}:null,status:$('musicPlaybackKind')?.textContent||'',cloud:!!String(a?.dataset?.sourceRef||t?.mediaKey||'').startsWith('cloud:')}};
+LX.musicHealthCheck=()=>{const a=$('musicAudio'),t=currentMusic();return {build:'30.0',mode:state.mode,screen:state.screen,track:t?.title||null,sourceRef:a?.dataset?.sourceRef||t?.mediaKey||null,src:a?.currentSrc||a?.src||null,paused:a?.paused??true,readyState:a?.readyState??0,networkState:a?.networkState??0,error:a?.error?{code:a.error.code,message:a.error.message||''}:null,status:$('musicPlaybackKind')?.textContent||'',cloud:!!String(a?.dataset?.sourceRef||t?.mediaKey||'').startsWith('cloud:')}};
 LX.primeMusicMedia=primeMusicMedia;LX.prewarmMusicCatalog=prewarmMusicCatalog;LX.syncMusicCardState=syncMusicCardState;LX.musicToggleSaved=musicToggleSaved;LX.musicToggleSavedCurrent=musicToggleSavedCurrent;LX.openMusicLyrics=openMusicLyrics;LX.loadMusicTrack=loadTrack;LX.currentMusic=currentMusic;LX.refreshMusicUI=updateMusicUI;
 LX.toggleCurrentMusic=toggleCurrentMusic;LX.playOnlineMusicPreview=()=>LX.toast('Prévia desativada. A LX Music reproduz somente faixas completas do próprio catálogo.');LX.primary=primary;LX.detail=detail;LX.openMusicAlbum=openMusicAlbum;LX.openMusicQueue=openMusicQueue;LX.musicQueuePlay=i=>{state.musicIndex=+i||0;loadTrack(true);U.close()};LX.musicShuffleAlbum=id=>{musicShuffleMode=true;music(id,0,true)};LX.toggleList=toggleList;LX.rate=rate;LX.play=play;LX.selectSeason=(id,season)=>{const x=D.catalog().find(z=>z.id===id);if(!x)return;const el=$('detailTab');if(el)el.innerHTML=episodesTab(x,+season||1)};LX.read=read;LX.music=music;LX.openRequests=openRequests;LX.openRanking=openRanking;LX.openProfile=openProfile;LX.openNotifications=openNotifications;LX.openPremium=openPremium;LX.choosePlan=choosePlan;LX.toggleGenre=toggleGenre;LX.openTheme=openTheme;LX.scroll=U.scroll;LX.openAdmin=()=>{if(!state.user?.admin||!LX.admin)return LX.toast('Acesso ADM indisponível.');LX.admin.render(U.state.adminPage||'dashboard');U.show('admin');saveView()};LX.openLegal=openLegal;LX.applyBranding=applyBranding;LX.saveProfileDetails=saveProfileDetails;LX.setProfileShape=setProfileShape;LX.setProfileFrame=setProfileFrame;LX.minimizePlayer=minimizePlayer;LX.restoreMiniPlayer=restoreMiniPlayer;LX.stopMiniPlayer=stopMiniPlayer;LX.saveView=saveView;LX.restoreView=restoreView;LX.rankPeriod=x=>{state.rankingPeriod=x;openRanking()};LX.rankKind=x=>{state.rankingKind=x;openRanking()};LX.readAll=()=>{const n=D.notices().map(x=>({...x,read:true})),ids=n.map(x=>x.id);S.writeLocal(S.keys.notices,n);S.write(S.keys.noticeReads,ids);U.updateNoticeCount();LX.toast('Tudo marcado como lido e sincronizado.')};LX.setTheme=t=>{S.write(S.keys.theme,t);applyTheme()};LX.setAccent=c=>{S.write(S.keys.accent,c);applyTheme()};LX.setLayout=setLayout;LX.setMotion=setMotion;LX.setUiPref=setUiPref;LX.applyTheme=applyTheme;LX.installApp=installApp;LX.setProfilePreset=setProfilePreset;LX.setGalleryAvatar=setGalleryAvatar;LX.clearProfileImage=clearProfileImage;LX.tvMode=tvMode;
 setInterval(()=>{if(state.screen==='app'){U.updateNoticeCount?.();if(state.mode==='Ouvir'){syncMusicCardState();updateMusicUI()}}},60000);
@@ -1515,7 +1523,7 @@ let __lxWasOffline=!navigator.onLine;window.addEventListener('offline',()=>{__lx
 try{const u=new URL(location.href);if(u.searchParams.has('lxbuild')||u.searchParams.has('_')){u.searchParams.delete('lxbuild');u.searchParams.delete('_');history.replaceState(null,'',u.pathname+(u.search?u.search:'')+u.hash)}}catch(e){}
 })();
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['app']='29.9';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['app']='30.0';
 
 /* =====================================================================
    LX Plus v25.50 — Drive Quality + Next Episode
@@ -1967,11 +1975,11 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
   const db=()=>LX.cloud?.db?.()||null;
   const role=()=>String(state().user?.adminRole||state().user?.admin_role||LX.cloud?.profile?.()?.admin_role||'').toLowerCase();
   const fmt=seconds=>LX.fmt?.(Number(seconds)||0)||'0:00';
-  const logo='assets/lxplus-logo-v27.png?v=29.9';
+  const logo='assets/lxplus-logo-v27.png?v=30.0';
   const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   const standalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true;
 
-  LX.v27={version:'29.9',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
+  LX.v27={version:'30.0',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
 
   function syncBranding(root=document){
     root.querySelectorAll?.('img').forEach(img=>{
@@ -2242,18 +2250,18 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire,{once:true});else wire();
   setInterval(heartbeat,1200);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){heartbeat();refreshConversationStreak()}});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!ensureNowPlaying().classList.contains('hidden'))closeNowPlaying()});
-  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='29.9';
+  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='30.0';
 })();
 
 
 /* ===== lxplus-v29.js ===== */
-/* LX Plus v29.9 — conservative client-side stability layer */
+/* LX Plus v30.0 — conservative client-side stability layer */
 (()=>{
   'use strict';
   const LX=window.LX=window.LX||{};
   window.__LX_MODULES=window.__LX_MODULES||{};
-  window.__LX_MODULES.v29='29.9';
-  LX.v29={version:'29.9',stability:true};
+  window.__LX_MODULES.v29='30.0';
+  LX.v29={version:'30.0',stability:true};
 
   function tuneImages(root=document){
     const imgs=root.querySelectorAll?.('.home-content img,.rail img,.lx-music-main img,.lx-community-drawer img,.panel-page img')||[];

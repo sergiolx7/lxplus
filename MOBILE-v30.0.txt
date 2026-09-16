@@ -1,0 +1,22 @@
+LX Plus v30.0 — Mobile
+
+Navegação principal:
+- Início
+- Filmes
+- Séries
+- Música
+- Livros
+- Mais
+
+Dentro de Mais:
+- Buscar
+- Animes
+- Doramas
+- Ao vivo
+- Minha Lista
+- Comunidade
+- Pedidos
+- Ranking LX
+- Perfil
+
+A barra superior de categorias do desktop é escondida no celular para evitar navegação duplicada e sobreposição.

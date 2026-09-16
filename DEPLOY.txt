@@ -1,12 +1,5 @@
-LX Plus v29.9 — Mobile Responsive Edition
-Substitua os arquivos da raiz do GitHub pelos deste ZIP.
+LX Plus v30.0
 
-LX Plus v29.8 — GitHub Pages
-
-1. Remova/substitua os arquivos atualmente publicados pela pasta deste ZIP.
-2. O deploy de produção precisa conter index.html, lxplus.bundle.css, lxplus.bundle.js, service-worker.js, manifest.webmanifest, CNAME e a pasta assets.
-3. Os antigos app.css/app-v*.css/lxplus.js/lxplus-v*.js NÃO são mais usados pela v29.8. Eles podem ser apagados do repositório para evitar confusão.
-4. Aguarde o GitHub Pages finalizar o deploy.
-5. Na primeira abertura da v29.8, faça uma recarga normal. A build limpa os caches LX antigos e registra o Service Worker v29.8 depois do reset.
-
-Arquitetura de produção: 1 CSS + 1 JS + 1 Service Worker versionado.
+Envie o conteúdo deste ZIP para a RAIZ do repositório do GitHub Pages, substituindo os arquivos anteriores.
+O Service Worker usa o cache lxplus-shell-v3000 e remove caches LX Plus antigos na ativação.
+Após o deploy, feche e abra novamente a PWA/site no celular para garantir que a nova navegação seja carregada.
