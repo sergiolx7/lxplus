@@ -11,6 +11,16 @@ img,video,iframe{max-width:100%}
 .lx-music-carousel{min-height:0!important;height:auto!important;max-height:340px!important;overflow:hidden}
 .lx-music-carousel:not(:has(.lx-music-feature)){display:none!important}
 #musicCover{background:#18181d url('assets/lx-music-fallback.svg') center/cover no-repeat}
+
+.lx-music-carousel-nav{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:10px 4px 0}
+.lx-music-carousel-nav>span{display:flex;align-items:center;gap:8px}
+.lx-music-carousel-nav>button,.lx-music-carousel-nav [data-lx-slide-dot]{appearance:none;-webkit-appearance:none;border:0;cursor:pointer}
+.lx-music-carousel-nav>button{display:grid;place-items:center;width:34px;height:34px;padding:0;border-radius:999px;background:rgba(255,255,255,.08);color:#f3f3f5}
+.lx-music-carousel-nav>button:hover{background:rgba(255,255,255,.14)}
+.lx-music-carousel-nav>button svg{width:18px;height:18px;fill:currentColor;stroke:none}
+.lx-music-carousel-nav [data-lx-slide-dot]{width:26px;height:8px;padding:0;border-radius:999px;background:#5b5b66;transition:width .22s ease,background .22s ease}
+.lx-music-carousel-nav [data-lx-slide-dot][aria-current="true"]{width:38px;background:#f2f2f5}
+
 .music-cover-btn{overflow:hidden}
 .music-dock .music-info strong,.music-dock .music-info small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
@@ -31,6 +41,8 @@ input,select,textarea,button{max-width:100%}
 @media(max-width:760px){
   .lx-music-carousel{max-height:230px!important}
   .lx-music-carousel .lx-music-feature{max-height:190px!important}
+  .lx-music-carousel-nav{justify-content:center;padding-top:8px}
+  .lx-music-carousel-nav>button{display:none}
   .rail-head{gap:10px;align-items:flex-end}
   .rail-head>span{font-size:9px;white-space:nowrap}
   .lx-watch-action,.lx-next-ep{min-height:36px;font-size:10px}

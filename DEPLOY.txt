@@ -1,3 +1,7 @@
+LX Plus v29.1
+- Logo corrigida para usar somente os detalhes brancos com fundo transparente.
+- Navegação do carrossel da Música estilizada e sem os botões cinza bugados.
+
 PUBLICAÇÃO LX PLUS — BUILD 29.0
 
 ARQUIVOS PARA O GITHUB PAGES

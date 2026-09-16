@@ -1,3 +1,7 @@
+LX Plus v29.1
+- Logo corrigida para usar somente os detalhes brancos com fundo transparente.
+- Navegação do carrossel da Música estilizada e sem os botões cinza bugados.
+
 LX Plus v29.0 — Stability + Shared Audio
 15/09/2026
 
