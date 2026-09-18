@@ -2,7 +2,8 @@
   "name": "LX Plus",
   "short_name": "LX Plus",
   "description": "Filmes, séries, música, livros e comunidade em uma experiência premium.",
-  "start_url": "./?v=30.4",
+  "id": "./",
+  "start_url": "./?v=30.5",
   "scope": "./",
   "display": "standalone",
   "background_color": "#020306",
@@ -16,5 +17,5 @@
       "purpose": "any maskable"
     }
   ],
-  "version": "30.0"
+  "version": "30.5"
 }

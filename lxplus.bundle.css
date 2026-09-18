@@ -5852,3 +5852,9 @@ input,select,textarea,button{max-width:100%}
 .youtube-bulk-status.error{border-color:rgba(255,90,90,.35);background:rgba(255,90,90,.05)}
 .youtube-bulk-status.error b{color:#ff9a9a}
 @media(max-width:760px){.youtube-bulk-head{display:block}.youtube-bulk-head>span{display:inline-block;margin-top:8px}.youtube-bulk-grid{grid-template-columns:1fr}.youtube-bulk-actions{align-items:stretch}.youtube-bulk-actions .primary-btn{width:100%}}
+
+
+/* ===== LX Plus v30.5 · persistent music + solid pause icon ===== */
+.music-dock #musicPlay svg,.lx-v27-now-controls .main svg{display:block;overflow:visible}
+.music-dock #musicPlay svg rect,.lx-v27-now-controls .main svg rect{fill:currentColor!important;stroke:none!important}
+.music-dock #musicPlay:focus-visible,.lx-v27-now-controls .main:focus-visible{outline:2px solid color-mix(in srgb,var(--accent) 75%,#fff);outline-offset:3px}
