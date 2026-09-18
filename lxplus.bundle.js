@@ -24,12 +24,12 @@
 
 
 /* ===== lxplus.js ===== */
-window.__LX_JS_BUILD='30.5';
+window.__LX_JS_BUILD='30.6';
 
 /* ===== config.js · LX Plus v25.50 ===== */
 window.LX=window.LX||{};
 LX.config={
-  version:'30.5',
+  version:'30.6',
   environment:'cloud-ready',
   production:true,
   apiBase:'',
@@ -1220,7 +1220,7 @@ async function premiumSet(email,plan){const user=D.users().find(x=>x.email===ema
 async function premiumOff(email){const user=D.users().find(x=>x.email===email);if(LX.cloud?.enabled?.()&&user?.id){await LX.cloud.setPremium(user.id,D.subscriptions()[email]?.plan||'Mensal',false).catch(e=>console.warn(e));D.track('admin_premium',{email,active:false});LX.toast('Premium desativado na nuvem.');return render('premium')}const a=D.subscriptions();a[email]={...(a[email]||{}),active:false,ended:Date.now()};D.saveSubscriptions(a);LX.toast('Premium desativado.');render('premium')}
 LX.admin={render,edit,del,verify,saveChanges,discardPending,approveUser,rejectUser,deletePendingUser,makeAdmin,removeAdmin,reqStatus,premiumSet,premiumOff,togglePublish,toggleFeatured,priority,preview,fromRequest,pendingCount,updateSaveDock,addMusicCategory,renameMusicCategory,deleteMusicCategory};updateSaveDock();})();
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.admin='30.5';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.admin='30.6';
 
 /* ===== app.js · LX Plus v27.0 ===== */
 /* LX APP CORE */
@@ -1310,7 +1310,7 @@ $$('[data-mobile]').forEach(b=>b.onclick=()=>{const x=b.dataset.mobile;if(x==='I
 $$('[data-mobile-close]').forEach(b=>b.onclick=closeMobileMore);
 $$('[data-mobile-more]').forEach(b=>b.onclick=()=>{const x=b.dataset.mobileMore;if(x==='Buscar'){closeMobileMore();$('searchWrap')?.classList.add('open');$('searchInput')?.focus();return}if(x==='Animes')return mobileGo('Assistir','Animes');if(x==='Doramas')return mobileGo('Assistir','Doramas');if(x==='Ao vivo')return mobileGo('Ao vivo','Hoje');if(x==='Minha Lista'){closeMobileMore();state.category='Minha Lista';U.renderApp();saveView();return}if(x==='Comunidade'){closeMobileMore();return LX.social?.open?.('friends')}if(x==='Pedidos'){closeMobileMore();return openRequests()}if(x==='Ranking'){closeMobileMore();return openRanking()}if(x==='Perfil'){closeMobileMore();return openProfile()}});
 window.addEventListener('scroll',()=>$('topbar')?.classList.toggle('scrolled',scrollY>24),{passive:true});
-$$('[data-admin]').forEach(b=>b.onclick=()=>{$$('[data-admin]').forEach(x=>x.classList.toggle('active',x===b));LX.admin.render(b.dataset.admin)});
+$$('[data-admin]').forEach(b=>b.onclick=()=>{$$('[data-admin]').forEach(x=>x.classList.toggle('active',x===b));LX.admin.render(b.dataset.admin);try{b.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})}catch{}});
 function record(x){const h=D.history();h[x.id]={...(h[x.id]||{}),opened:Date.now(),progress:h[x.id]?.progress??x.progress??0};S.write(S.keys.history,h);D.track('open',{id:x.id,title:x.title,type:x.type})}
 function toggleList(id){let l=D.myList(),has=l.some(x=>String(x)===String(id));l=has?l.filter(x=>String(x)!==String(id)):[...l,id];S.write(S.keys.list,l);LX.toast(has?'Removido da Minha Lista.':'Adicionado à Minha Lista.');U.renderApp()}
 function rate(id,n){const r=D.ratings();r[id]=n;D.saveRatings(r);D.track('rate',{id,rating:n});LX.toast(`Avaliação ${n}/5 salva.`);detail(id)}
@@ -2090,7 +2090,7 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
   const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   const standalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true;
 
-  LX.v27={version:'30.5',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
+  LX.v27={version:'30.6',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
 
   function syncBranding(root=document){
     root.querySelectorAll?.('img').forEach(img=>{
@@ -2361,7 +2361,7 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire,{once:true});else wire();
   setInterval(heartbeat,1200);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){heartbeat();refreshConversationStreak()}});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!ensureNowPlaying().classList.contains('hidden'))closeNowPlaying()});
-  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='30.5';
+  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='30.6';
 })();
 
 
@@ -2371,8 +2371,8 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
   'use strict';
   const LX=window.LX=window.LX||{};
   window.__LX_MODULES=window.__LX_MODULES||{};
-  window.__LX_MODULES.v29='30.5';
-  LX.v29={version:'30.5',stability:true};
+  window.__LX_MODULES.v29='30.6';
+  LX.v29={version:'30.6',stability:true};
 
   function tuneImages(root=document){
     const imgs=root.querySelectorAll?.('.home-content img,.rail img,.lx-music-main img,.lx-community-drawer img,.panel-page img')||[];

@@ -1,4 +1,4 @@
-LX Plus v30.5 — Player persistente e PWA de música
+LX Plus v30.6 — Player persistente e PWA de música
 
 - Corrigido o botão principal: o ícone de pausa agora usa barras sólidas e não desaparece sobre o botão branco.
 - Player continua ativo ao navegar por Filmes, Séries, Livros, Comunidade e demais telas da LX Plus.

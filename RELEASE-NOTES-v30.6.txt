@@ -1,0 +1,8 @@
+LX Plus v30.6
+
+- Corrige navegação ADM cortada em tablets e celulares.
+- Remove a margem lateral de desktop que permanecia ativa no tablet.
+- Menu Biblioteca / Importar catálogo / Uploads / Aprovações / demais áreas agora fica em barra horizontal rolável.
+- Primeiro item do menu não fica mais escondido fora da tela.
+- Layout ADM passa a ocupar 100% da largura em telas até 1180 px.
+- Ajustes específicos de espaçamento para tablet, celular e telas menores de 430 px.
