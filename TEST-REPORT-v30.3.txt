@@ -1,0 +1,11 @@
+LX Plus v30.3 — Test Report
+
+node --check dist/lxplus.bundle.js: PASS
+tests/static-checks.mjs: PASS 16/16
+
+Music categories:
+- multi-category payload (genre + genres[]): PASS
+- category search/filter UI: PASS
+- ADM add/rename/delete category controls: PASS
+- responsive category cards: PASS
+- service worker cache bumped to v3030: PASS

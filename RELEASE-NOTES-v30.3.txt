@@ -1,0 +1,11 @@
+LX Plus v30.3 — Categorias de Música
+
+- Adiciona categorias/gêneros organizados na área Música.
+- Cada música pode ter gênero principal + múltiplas categorias (genres[]).
+- Busca encontra músicas pelo gênero principal e categorias adicionais.
+- Tela Música ganhou Explorar por gênero, filtros e prateleiras por categoria.
+- Painel ADM permite criar, renomear e excluir categorias globais.
+- Editor de Música permite selecionar gênero principal e categorias adicionais.
+- Recomendações passam a considerar múltiplos gêneros.
+- Layout responsivo para desktop e celular.
+- Mantida compatibilidade com itens antigos que possuem apenas genre.
