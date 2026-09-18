@@ -192,6 +192,7 @@ async function prepareLocalStateForCloud(){const st=buildState();if(st.profileSt
 function onLocalWrite(k){if(!enabled()||!currentAuth||!USER_STATE_KEYS.has(k))return;clearTimeout(syncTimer);syncTimer=setTimeout(syncUserState,550)}
 async function syncUserState(){const c=db();if(!c||!currentAuth)return;const {error}=await c.from('lx_user_state').upsert({user_id:currentAuth.id,data:buildState(),updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error)console.warn('LX state sync',error)}
 async function upsertCatalogItem(item){const c=db();if(!c)throw new Error('CLOUD_NOT_CONFIGURED');if(!currentAuth)throw new Error('AUTH_REQUIRED');const id=Number(item?.id);if(!Number.isFinite(id))throw new Error('INVALID_CATALOG_ID');const {error}=await c.rpc('lx_catalog_upsert_item',{p_id:id,p_payload:item||{},p_published:item?.published!==false});if(error){error.lxOperation='catalog_rpc_upsert';throw error}await refreshCatalog();return true}
+async function bulkUpsertCatalogItems(items){const c=db();if(!c)throw new Error('CLOUD_NOT_CONFIGURED');if(!currentAuth)throw new Error('AUTH_REQUIRED');const rows=(items||[]).filter(x=>Number.isFinite(Number(x?.id)));if(!rows.length)return 0;const {data,error}=await c.rpc('lx_catalog_bulk_upsert',{p_items:rows});if(error){error.lxOperation='catalog_rpc_bulk_upsert';throw error}await refreshCatalog();return Number(data||rows.length)}
 async function deleteCatalogItem(id){
  const c=db();if(!c)throw new Error('CLOUD_NOT_CONFIGURED');if(!currentAuth)throw new Error('AUTH_REQUIRED');
  const n=Number(id);if(!Number.isFinite(n))throw new Error('INVALID_CATALOG_ID');
@@ -266,7 +267,7 @@ async function migrateLocalCatalog(){if(!isAdmin())throw new Error('ADMIN_REQUIR
  for(const x of items){x.cover=await migrateAsset(x.cover,`cover_${x.id}`);x.banner=await migrateAsset(x.banner,`banner_${x.id}`);x.carouselImage=await migrateAsset(x.carouselImage,`carousel_${x.id}`);x.mediaKey=await migrateKey(x.mediaKey,`main_${x.id}`);x.trailerKey=await migrateKey(x.trailerKey,`trailer_${x.id}`);for(const e of x.episodes||[])e.mediaKey=await migrateKey(e.mediaKey,`episode_${x.id}_S${e.season||1}E${e.number||0}`);for(const t of x.tracks||[])t.mediaKey=await migrateKey(t.mediaKey,`track_${x.id}_${t.number||t.title||'audio'}`)}
  cache(S.keys.catalog,items);await saveCatalog(items);await publishNotices(S.read(S.keys.notices,[]));return {titles:items.length,media,assets}}
 function status(){return {configured:enabled(),connected:!!currentAuth,clientReady:!!client,sessionReady:!!currentAuth,user:currentAuth?.email||null,admin:isAdmin(),approved:!!currentProfile?.approved||isAdmin(),approvalStatus:currentProfile?.approval_status||null,mediaBucket:cfg().mediaBucket||'lx-media',assetBucket:cfg().assetBucket||'lx-assets',catalogWriteMode:'RPC'}}
-LX.cloud={enabled,db,user,profile,isAdmin,initPublic,signUp,resendConfirmation,signIn,resume,signOut,resetPassword,updatePassword,isRecoveryFlow,onLocalWrite,syncUserState,saveCatalog,upsertCatalogItem,deleteCatalogItem,saveUsers,saveBranding,requestOrVote,refreshRequests,updateRequestStatus,publishNotices,approveUser,setVerified,setAdminRole,commitAdminChanges,rejectUser,deletePendingUser,setPremium,track,uploadFile,publicUrl,mediaUrl,downloadMedia,removeUploadedPath,migrateLocalCatalog,status,hydrateUser,refreshBranding,catalogState:()=>catalogLoadStatus,retryCatalog:refreshCatalog};
+LX.cloud={enabled,db,user,profile,isAdmin,initPublic,signUp,resendConfirmation,signIn,resume,signOut,resetPassword,updatePassword,isRecoveryFlow,onLocalWrite,syncUserState,saveCatalog,upsertCatalogItem,bulkUpsertCatalogItems,deleteCatalogItem,saveUsers,saveBranding,requestOrVote,refreshRequests,updateRequestStatus,publishNotices,approveUser,setVerified,setAdminRole,commitAdminChanges,rejectUser,deletePendingUser,setPremium,track,uploadFile,publicUrl,mediaUrl,downloadMedia,removeUploadedPath,migrateLocalCatalog,status,hydrateUser,refreshBranding,catalogState:()=>catalogLoadStatus,retryCatalog:refreshCatalog};
 })();
 
 window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['cloud']='25.50';
@@ -726,22 +727,81 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['ui']='27.0';
     }finally{if(btn){btn.disabled=false;btn.textContent='⚡ Importar populares da semana'}}
   }
 
+  function ytVideoIdFromRef(value){
+    const raw=String(value||'').trim();let m=raw.match(/^youtube:([A-Za-z0-9_-]{11})$/i);if(m)return m[1];m=raw.match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/|\/live\/)([A-Za-z0-9_-]{11})/i);return m?.[1]||'';
+  }
+  function cleanYoutubeTitle(value){
+    return String(value||'').replace(/\s*[\[(][^\])]*(?:official\s*(?:music\s*)?(?:video|audio)|music\s*video|lyrics?|lyric\s*video|clipe\s*oficial|visualizer|video\s*oficial)[^\])]*[\])]/gi,'').replace(/\s{2,}/g,' ').trim();
+  }
+  function cleanYoutubeArtist(value){return String(value||'').replace(/\s+-\s+Topic$/i,'').replace(/VEVO$/i,'').trim()}
+  function youtubeMusicParts(row){
+    let title=cleanYoutubeTitle(row?.title||'Música do YouTube'),artist=cleanYoutubeArtist(row?.channelTitle||'');
+    const split=title.match(/^(.{1,90}?)\s+[\-–—]\s+(.{1,160})$/);
+    if(split){const left=cleanYoutubeArtist(split[1]),right=cleanYoutubeTitle(split[2]);if(left&&right){artist=left;title=right}}
+    return {title:title||'Música do YouTube',artist:artist||'YouTube'};
+  }
+  function musicFingerprint(title,artist){
+    const scrub=value=>D().normalize(String(value||'').replace(/\b(?:official|video|audio|lyrics?|clipe|visualizer|hd|4k)\b/gi,' ').replace(/[^\p{L}\p{N}]+/gu,' ').replace(/\s+/g,' ').trim());
+    return `${scrub(title)}|${scrub(artist)}`;
+  }
+  function youtubeIdOfCatalog(item){
+    const refs=[item?.youtubeVideoId,item?.mediaKey,item?.metadataUrl,item?.externalMusicUrl,...(item?.tracks||[]).flatMap(t=>[t?.mediaKey,t?.url])];
+    for(const ref of refs){const key=ytVideoIdFromRef(ref);if(key)return key}return '';
+  }
+  function youtubeCatalogItem(row,category){
+    const parts=youtubeMusicParts(row),videoId=String(row?.videoId||''),when=new Date().toISOString(),year=String(row?.publishedAt||'').slice(0,4),mediaKey=`youtube:${videoId}`;
+    return {id:id(),type:'Música',title:parts.title,desc:'',year:+year||new Date().getFullYear(),genre:category,genres:[category],artist:parts.artist,album:'YouTube',cover:'',banner:'',duration:Number(row?.duration||0),mediaKey,tracks:[{number:1,title:parts.title,artist:parts.artist,duration:Number(row?.duration||0),mediaKey,qualityMode:'external'}],youtubeVideoId:videoId,youtubeThumbnail:String(row?.thumbnail||''),externalMusicUrl:`https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`,metadataProvider:'YouTube',metadataUrl:`https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`,remoteId:videoId,published:true,publishedAt:when,featured:false,trending:false,newRelease:false,priority:0,createdAt:when,importedAt:when};
+  }
+  async function youtubeInvoke(source){
+    const client=LX.cloud?.db?.();if(!client)throw new Error('Entre na LX Plus e conecte a nuvem para importar do YouTube.');
+    const {data,error}=await client.functions.invoke('lx-content-hub',{body:{action:'youtube_bulk',source,maxItems:500}});
+    if(error){let message=error.message||'Falha ao consultar o YouTube.';try{const payload=await error.context?.json?.();if(payload?.message||payload?.error)message=payload.message||payload.error}catch{}throw new Error(message)}
+    if(data?.error){const map={YOUTUBE_NOT_CONFIGURED:'A YouTube Data API Key ainda não foi configurada pelo Dono no painel ADM.',YOUTUBE_SOURCE_REQUIRED:'Cole uma playlist, canal ou links do YouTube.',YOUTUBE_LINK_INVALID:`Não reconheci este link: ${data.message||''}`,YOUTUBE_CHANNEL_NOT_FOUND:'Não foi possível localizar os vídeos desse canal.',ADMIN_REQUIRED:'Seu cargo não possui acesso ao importador.'};throw new Error(data.message||map[data.error]||data.error)}return data;
+  }
+  async function saveYoutubeBatch(items){
+    if(!items.length)return 0;
+    if(LX.cloud?.enabled?.()&&LX.cloud?.bulkUpsertCatalogItems)return LX.cloud.bulkUpsertCatalogItems(items);
+    let saved=0;for(const item of items){await D().saveCatalogItem(item);saved++}return saved;
+  }
+  function setYoutubeBulkStatus(html,stateName=''){const box=document.getElementById('youtubeBulkStatus');if(!box)return;box.className=`youtube-bulk-status ${stateName}`.trim();box.innerHTML=html}
+  async function importYoutubeBulk(){
+    const source=document.getElementById('youtubeBulkSource')?.value?.trim()||'',category=document.getElementById('youtubeBulkCategory')?.value||'Outra',btn=document.getElementById('youtubeBulkSave');
+    if(!source)return toast('Cole uma playlist, canal ou links do YouTube.');
+    if(!['Gospel','Outra'].includes(category))return toast('Escolha Gospel ou Outra.');
+    const old=btn?.textContent;if(btn){btn.disabled=true;btn.textContent='Buscando músicas…'}setYoutubeBulkStatus('<b>Consultando o YouTube…</b><span>O LX Plus vai comparar tudo com o catálogo antes de salvar.</span>','loading');
+    try{
+      const out=await youtubeInvoke(source),existing=D().catalog().filter(x=>x.type==='Música'),ids=new Set(existing.map(youtubeIdOfCatalog).filter(Boolean)),fps=new Set(existing.map(x=>musicFingerprint(x.title,x.artist)).filter(x=>x!=='|')),batchIds=new Set(),batchFps=new Set(),fresh=[];let duplicates=0;
+      for(const row of out.items||[]){
+        const item=youtubeCatalogItem(row,category),videoId=item.youtubeVideoId,fp=musicFingerprint(item.title,item.artist);
+        if((videoId&&(ids.has(videoId)||batchIds.has(videoId)))||(fp&&fp!=='|'&&(fps.has(fp)||batchFps.has(fp)))){duplicates++;continue}
+        fresh.push(item);if(videoId)batchIds.add(videoId);if(fp&&fp!=='|')batchFps.add(fp);
+      }
+      if(btn)btn.textContent=fresh.length?'Salvando novas…':'Nada novo';
+      const saved=await saveYoutubeBatch(fresh),found=Number(out.found||(out.items||[]).length),truncated=out.truncated?'<small>Esta origem passou de 500 vídeos; foram analisados os primeiros 500 nesta importação.</small>':'';
+      setYoutubeBulkStatus(`<b>${saved} ${saved===1?'música nova salva':'músicas novas salvas'}.</b><span>${found} encontradas · ${duplicates} repetidas ignoradas automaticamente · categoria: ${esc(category)}.</span>${truncated}`,'ok');
+      toast(saved?`${saved} músicas novas adicionadas. ${duplicates} repetidas foram ignoradas.`:`Nenhuma música nova. ${duplicates||found} já estavam no catálogo.`);
+      if(saved)LX.ui?.renderApp?.();
+    }catch(e){console.warn(e);setYoutubeBulkStatus(`<b>Não foi possível concluir.</b><span>${esc(e.message||'Verifique a integração do YouTube e tente novamente.')}</span>`,'error');toast(e.message||'Falha na importação em massa.')}finally{if(btn){btn.disabled=false;btn.textContent=old||'Salvar músicas novas'}}
+  }
+
   function render(m){
     m.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN</span><h1>Importador de catálogo</h1><p>Pesquise metadados oficiais e monte o catálogo sem preencher capa, sinopse e ficha técnica manualmente.</p></div></div>
     <section class="import-hero"><div><span class="eyebrow">LX CATALOG IMPORTER</span><h2>Catálogo rápido, mídia sob seu controle.</h2><p>Filmes e séries chegam como rascunho com capa, banner e ficha técnica. Livros e músicas também podem receber metadados e arte automaticamente.</p></div><div class="import-badges"><span>🎬 TMDB</span><span>📚 Open Library</span><span>♫ Music metadata</span></div></section>
+    <section class="admin-card youtube-bulk-card"><div class="youtube-bulk-head"><div><span class="eyebrow">YOUTUBE · IMPORTAÇÃO EM MASSA</span><h2>Adicionar muitas músicas de uma vez</h2><p>Cole uma playlist, um canal ou vários links de vídeos (um por linha). O LX Plus remove repetidas automaticamente e salva apenas as músicas que ainda não existem.</p></div><span>AUTO DEDUP</span></div><div class="youtube-bulk-grid"><label class="field youtube-bulk-source"><span>Playlist, canal ou links do YouTube</span><textarea id="youtubeBulkSource" rows="4" placeholder="https://www.youtube.com/playlist?list=...&#10;ou https://www.youtube.com/@canal&#10;ou vários links, um por linha"></textarea><small>Até 500 vídeos por importação. Músicas repetidas pelo link/ID ou por título + artista são ignoradas.</small></label><label class="field youtube-bulk-category"><span>Categoria das músicas</span><select id="youtubeBulkCategory"><option value="Gospel">Gospel</option><option value="Outra">Outra</option></select><small>Essa é a única classificação necessária na importação em massa.</small></label></div><div class="youtube-bulk-actions"><button id="youtubeBulkSave" class="primary-btn" type="button">Salvar músicas novas</button><span>As novas músicas entram publicadas usando o player oficial do YouTube. Depois você pode trocar somente as capas.</span></div><div id="youtubeBulkStatus" class="youtube-bulk-status"><b>Pronto para importar.</b><span>Cole os links, escolha Gospel ou Outra e clique em Salvar músicas novas.</span></div></section>
     <div class="admin-grid"><section class="admin-card"><h2>Fonte</h2><div class="import-source-tabs"><button data-source="tmdb-movie">Filmes</button><button data-source="tmdb-tv">Séries</button><button data-source="book">Livros</button><button data-source="music">Músicas</button></div><div class="import-search-row"><input id="importSearch" placeholder="Ex.: Vingadores, Breaking Bad, Dom Casmurro, artista…"><button id="importGo" class="primary-btn">Buscar</button></div><small style="color:var(--muted)">Tudo importado entra como rascunho, salvo livros gratuitos que você decidir publicar.</small></section>
-    <section class="admin-card"><h2>Fontes online</h2><label class="field">TMDB API Key v3<input id="tmdbKey" type="password" placeholder="Cole sua API Key do TMDB" value="${esc(key())}"></label><label class="field">TheSportsDB Key <span class="optional">opcional</span><input id="sportsKey" type="password" placeholder="Deixe vazio para usar o plano gratuito"></label><div class="import-key-actions"><button id="saveTmdb">Salvar TMDB + ativar catálogo online</button><button id="saveSports">Salvar chave esportiva</button><button id="importPopular" class="primary-btn">⚡ Importar populares da semana</button></div><div id="integrationStatus" class="import-key-status">Verificando integrações…</div><small style="color:var(--muted)">As chaves online são guardadas na tabela protegida do Supabase e usadas pela Edge Function. O TMDB também fica neste navegador para o importador ADM.</small></section></div>
+    <section class="admin-card"><h2>Fontes online</h2><label class="field">TMDB API Key v3<input id="tmdbKey" type="password" placeholder="Cole sua API Key do TMDB" value="${esc(key())}"></label><label class="field">YouTube Data API Key<input id="youtubeApiKey" type="password" autocomplete="new-password" placeholder="Cole a API Key do YouTube"></label><label class="field">TheSportsDB Key <span class="optional">opcional</span><input id="sportsKey" type="password" placeholder="Deixe vazio para usar o plano gratuito"></label><div class="import-key-actions"><button id="saveTmdb">Salvar TMDB + ativar catálogo online</button><button id="saveYoutube">Salvar YouTube API</button><button id="saveSports">Salvar chave esportiva</button><button id="importPopular" class="primary-btn">⚡ Importar populares da semana</button></div><div id="integrationStatus" class="import-key-status">Verificando integrações…</div><small style="color:var(--muted)">As chaves online são guardadas na tabela protegida do Supabase e usadas pelas Edge Functions. A chave do YouTube não fica exposta no site público.</small></section></div>
     <div class="import-notice"><b>Importante:</b> TMDB/Open Library/música fornecem metadados e capas. Filmes, episódios e áudio completo continuam dependendo de arquivo próprio/licenciado.</div>
     <section id="importResults" class="import-results"><div class="import-empty">Escolha uma fonte e pesquise acima.</div></section>`;
     document.querySelectorAll('[data-source]').forEach(b=>{b.classList.toggle('active',b.dataset.source===state.source);b.onclick=()=>{state.source=b.dataset.source;document.querySelectorAll('[data-source]').forEach(x=>x.classList.toggle('active',x===b));document.getElementById('importSearch').focus()}});
     document.getElementById('importGo').onclick=runSearch;document.getElementById('importSearch').onkeydown=e=>{if(e.key==='Enter')runSearch()};
     document.getElementById('saveTmdb').onclick=async()=>{const v=document.getElementById('tmdbKey').value.trim();try{if(v)localStorage.setItem(LS_KEY,v);else localStorage.removeItem(LS_KEY)}catch{};try{const c=LX.cloud?.db?.();if(!c)throw new Error('Nuvem indisponível');const {error}=await c.rpc('lx_admin_set_integration_secret',{p_key:'tmdb_v3',p_value:v});if(error)throw error;toast(v?'TMDB ativado com segurança na nuvem.':'TMDB removido da nuvem.');await refreshIntegrationStatus()}catch(e){console.warn(e);toast('Não foi possível salvar a integração no Supabase.')}};
+    document.getElementById('saveYoutube').onclick=async()=>{const v=document.getElementById('youtubeApiKey').value.trim();if(!v)return toast('Cole a YouTube Data API Key.');try{const c=LX.cloud?.db?.();if(!c)throw new Error('Nuvem indisponível');const {error}=await c.rpc('lx_admin_set_integration_secret',{p_key:'youtube_api_key',p_value:v});if(error)throw error;document.getElementById('youtubeApiKey').value='';toast('YouTube API conectada com segurança.');await refreshIntegrationStatus()}catch(e){console.warn(e);toast(/owner required/i.test(e.message||'')?'Somente o Dono pode salvar a chave do YouTube.':'Não foi possível salvar a integração do YouTube.')}};
     document.getElementById('saveSports').onclick=async()=>{const v=document.getElementById('sportsKey').value.trim();try{const c=LX.cloud?.db?.();if(!c)throw new Error('Nuvem indisponível');const {error}=await c.rpc('lx_admin_set_integration_secret',{p_key:'thesportsdb_key',p_value:v});if(error)throw error;toast(v?'Chave esportiva salva.':'Plano gratuito de esportes ativado.');document.getElementById('sportsKey').value='';await refreshIntegrationStatus()}catch(e){console.warn(e);toast('Não foi possível salvar a chave esportiva.')}};
-    async function refreshIntegrationStatus(){const el=document.getElementById('integrationStatus');if(!el)return;try{const c=LX.cloud?.db?.();const {data,error}=await c.rpc('lx_integration_status');if(error)throw error;const keys=new Set((data||[]).map(x=>x.key));el.innerHTML=`<span class="${keys.has('tmdb_v3')?'ok':'warn'}">TMDB ${keys.has('tmdb_v3')?'✓ configurado':'! pendente'}</span><span class="${keys.has('thesportsdb_key')?'ok':''}">Esportes ${keys.has('thesportsdb_key')?'Premium/API própria':'Free API'}</span>`}catch{el.textContent='Não foi possível verificar as integrações.'}}
+    async function refreshIntegrationStatus(){const el=document.getElementById('integrationStatus');if(!el)return;try{const c=LX.cloud?.db?.();const {data,error}=await c.rpc('lx_integration_status');if(error)throw error;const keys=new Set((data||[]).map(x=>x.key));el.innerHTML=`<span class="${keys.has('tmdb_v3')?'ok':'warn'}">TMDB ${keys.has('tmdb_v3')?'✓ configurado':'! pendente'}</span><span class="${keys.has('youtube_api_key')?'ok':'warn'}">YouTube ${keys.has('youtube_api_key')?'✓ configurado':'! pendente'}</span><span class="${keys.has('thesportsdb_key')?'ok':''}">Esportes ${keys.has('thesportsdb_key')?'Premium/API própria':'Free API'}</span>`}catch{el.textContent='Não foi possível verificar as integrações.'}}
     refreshIntegrationStatus();
-    document.getElementById('importPopular').onclick=importPopular;
+    document.getElementById('importPopular').onclick=importPopular;document.getElementById('youtubeBulkSave').onclick=importYoutubeBulk;
   }
-  LX.importer={render,search:runSearch,importPopular,toCatalog};
+  LX.importer={render,search:runSearch,importPopular,importYoutubeBulk,toCatalog};
 })();
 
 window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['catalog-importer']='25.35';
@@ -1160,7 +1220,7 @@ async function premiumSet(email,plan){const user=D.users().find(x=>x.email===ema
 async function premiumOff(email){const user=D.users().find(x=>x.email===email);if(LX.cloud?.enabled?.()&&user?.id){await LX.cloud.setPremium(user.id,D.subscriptions()[email]?.plan||'Mensal',false).catch(e=>console.warn(e));D.track('admin_premium',{email,active:false});LX.toast('Premium desativado na nuvem.');return render('premium')}const a=D.subscriptions();a[email]={...(a[email]||{}),active:false,ended:Date.now()};D.saveSubscriptions(a);LX.toast('Premium desativado.');render('premium')}
 LX.admin={render,edit,del,verify,saveChanges,discardPending,approveUser,rejectUser,deletePendingUser,makeAdmin,removeAdmin,reqStatus,premiumSet,premiumOff,togglePublish,toggleFeatured,priority,preview,fromRequest,pendingCount,updateSaveDock,addMusicCategory,renameMusicCategory,deleteMusicCategory};updateSaveDock();})();
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.admin='30.3';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.admin='30.4';
 
 /* ===== app.js · LX Plus v27.0 ===== */
 /* LX APP CORE */
@@ -1999,7 +2059,7 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
   const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   const standalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true;
 
-  LX.v27={version:'30.3',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
+  LX.v27={version:'30.4',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
 
   function syncBranding(root=document){
     root.querySelectorAll?.('img').forEach(img=>{

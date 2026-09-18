@@ -1,0 +1,7 @@
+LX Plus v30.4 — Deploy
+
+1. Envie todos os arquivos desta pasta para a raiz do GitHub Pages, substituindo a versão anterior.
+2. O backend Supabase do projeto LX Plus já foi atualizado para a v30.4 (migração e lx-content-hub v2).
+3. Antes da primeira importação do YouTube, entre no painel ADM > Importador > Fontes online e salve sua YouTube Data API Key.
+4. Depois: cole playlist/canal/links, escolha Gospel ou Outra e clique em “Salvar músicas novas”.
+5. Músicas repetidas são ignoradas automaticamente; somente as novas são cadastradas.
