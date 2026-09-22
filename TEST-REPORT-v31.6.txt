@@ -1,0 +1,22 @@
+LX Plus v31.6 — TEST REPORT
+
+Resultado: 34/34 verificações estáticas aprovadas.
+
+[OK] versão/cache 31.6
+[OK] JavaScript — node --check
+[OK] arquivos principais via HTTP local: index, JS, CSS, manifest e service worker = 200
+[OK] Google Drive usa tentativa de stream direto no LX Player
+[OK] segunda rota automática do Drive
+[OK] sem fallback automático para iframe/download do Drive
+[OK] bloqueio de qualidades falsas/repetidas
+[OK] resolução real detectada no player
+[OK] 4K exibido somente para fonte 2160p / arquivo 4K real
+[OK] melhoria inteligente perceptual separada de 4K real
+[OK] HLS/DASH adaptativo via Shaka Player
+[OK] seletor manual para arquivos distintos por qualidade
+[OK] layout Cinema responsivo em celular/tablet/desktop
+[OK] fullscreen/PiP/cast/legendas/velocidade preservados
+[OK] importação em massa preservada
+[OK] música personalizada e identificação do YouTube preservadas
+
+Limitação validada: o ambiente de teste não possui acesso externo para reproduzir o arquivo real do Google Drive. O código testa duas URLs de streaming direto; a disponibilidade final depende das permissões e do comportamento do Drive para aquele arquivo.

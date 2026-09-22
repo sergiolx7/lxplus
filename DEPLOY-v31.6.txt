@@ -1,0 +1,12 @@
+LX Plus v31.6
+
+PUBLICAR NO GITHUB:
+1. Use o conteúdo da pasta dist/ na raiz do repositório.
+2. Substitua index.html, lxplus.bundle.js, lxplus.bundle.css, manifest.webmanifest e service-worker.js.
+3. Faça um hard refresh uma vez após o deploy.
+
+PLAYER:
+- Google Drive: tentativa de stream direto dentro da LX Plus.
+- R2 / arquivo direto / HLS: player LX completo.
+- 4K só aparece como 4K real quando a fonte/rendição tem 2160p ou quando há um arquivo 2160p separado.
+- Para estabilidade e qualidade adaptativa em produção, use R2 + HLS (ou arquivos MP4 separados por qualidade).

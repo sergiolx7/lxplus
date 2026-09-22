@@ -1,0 +1,14 @@
+LX Plus v31.6 — LX Cinema Stream
+
+- Google Drive passa a tentar streaming direto no elemento <video> da LX Plus antes de qualquer alternativa.
+- Removido o fluxo que levava o usuário para a interface do Drive/download no player de filmes.
+- Duas rotas de streaming do Drive são tentadas automaticamente.
+- Se o Drive negar streaming, a LX Plus mantém o usuário no site e recomenda R2/LX Stream/HLS.
+- Qualidades repetidas (mesmo arquivo marcado como 480p/720p/1080p/4K) são ignoradas.
+- Player mostra a resolução realmente detectada, sem chamar um arquivo comum de 4K.
+- HLS/DASH continua com qualidade adaptativa pelo Shaka Player.
+- Se existirem arquivos separados por qualidade, o seletor da LX Plus permite troca manual.
+- “Melhoria inteligente” aplica nitidez/contraste local sem alegar geração de 4K real.
+- Layout do cinema permanece responsivo para celular, tablet, desktop e fullscreen.
+
+Observação: upscale 4K real exige processamento/transcodificação no servidor e geração de um arquivo/rendição 2160p.
