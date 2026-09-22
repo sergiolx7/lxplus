@@ -5942,7 +5942,7 @@ input,select,textarea,button{max-width:100%}
 @media(max-width:520px){.detail-shell-v256 .detail-hero{min-height:225px!important}.detail-shell-v256 .detail-hero-inner{padding:12px!important}.detail-side-info{grid-template-columns:repeat(2,minmax(0,1fr))!important}.detail-description-card p{font-size:10.5px!important}.rating-row{overflow-x:auto!important}.detail-tabs{overflow-x:auto!important;white-space:nowrap!important}}
 
 
-/* ===== LX Plus v31.8 · proportional artwork, sports live, quick quality ===== */
+/* ===== LX Plus v31.9 · proportional artwork, sports live, branded audio ===== */
 .hero-bg.hero-bg-poster{background-size:cover!important;background-position:center!important;overflow:hidden}
 .hero-bg.hero-bg-poster:before{display:block!important;content:"";position:absolute;inset:-8%;background-image:var(--hero-art);background-size:cover;background-position:center;filter:blur(28px) brightness(.5) saturate(.92);transform:scale(1.12);opacity:.95}
 .hero-poster-focus{position:absolute;z-index:1;inset:3% 12% 0 44%;background-size:contain;background-repeat:no-repeat;background-position:center;filter:none;transform:none;opacity:.98}
@@ -5962,3 +5962,20 @@ input,select,textarea,button{max-width:100%}
 @media(max-width:900px){.hero-poster-focus{inset:5% 6% 2% 38%}.lx-team-badge{width:40px;height:40px;flex-basis:40px}.lx-live-player318{width:96vw;padding:12px}}
 @media(max-width:760px){.hero-poster-focus{inset:3% 8% 20% 8%;opacity:.55}.music-dock.provider-youtube .music-provider-panel{width:200px!important;max-width:200px!important;left:auto!important;right:0!important}.music-dock.provider-youtube #musicProviderFrame{height:200px!important}.hub-match.lx-match318{grid-template-columns:1fr auto 1fr;gap:6px}.lx-team318,.lx-team318.away{flex-direction:column;justify-content:center;text-align:center;gap:5px}.lx-team318 strong{font-size:10px!important}.lx-team-badge{width:36px;height:36px;flex-basis:36px}.lx-live318-actions{justify-content:center}.lx-live-player318>header{align-items:flex-start;flex-direction:column}.lx-live-player318>header>div:last-child{width:100%}.lx-live-player318>header button{flex:1}.lx-live-stage318{border-radius:12px;aspect-ratio:16/9;max-height:60vh}.lx-live-player318>footer{flex-direction:column}}
 @media(min-width:1500px){.hero-poster-focus{inset:2% 12% 0 50%}.lx-team-badge{width:58px;height:58px;flex-basis:58px}}
+
+
+/* ===== LX Plus v31.9 · compact provider branding + hidden audio transport ===== */
+.music-provider-brand{display:inline-flex;align-items:center;margin-top:4px;width:max-content;max-width:100%;line-height:1}
+.music-provider-brand.hidden{display:none!important}
+.lx-provider-lockup{display:inline-flex;align-items:center;gap:5px;min-width:0;color:#e9edf2;font-size:10px;font-weight:800;letter-spacing:.01em;white-space:nowrap}
+.lx-provider-lockup b{font:inherit;color:inherit}.lx-provider-lockup i{font-style:normal;color:#7f8995;font-size:9px}.lx-provider-logo{width:24px;height:17px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}.lx-provider-logo svg{display:block;width:100%;height:100%}
+.lx-provider-lockup.is-spotify .lx-provider-logo{width:17px;height:17px}.lx-provider-lockup.compact{font-size:9px;gap:4px}.lx-provider-lockup.compact .lx-provider-logo{width:20px;height:14px}.lx-provider-lockup.compact.is-spotify .lx-provider-logo{width:14px;height:14px}
+.lx-music-provider .lx-provider-lockup{color:#fff}.lx-album-badges .lx-provider-lockup{font-size:10px}
+#musicDock.provider-transport{height:58px!important;min-height:58px!important;grid-template-columns:auto minmax(130px,1fr) minmax(260px,1.3fr) auto!important;overflow:visible!important}
+#musicDock.provider-transport .music-center-controls{display:grid!important}
+#musicDock.provider-transport .music-provider-toggle{display:none!important}
+#musicDock.provider-transport #musicProviderPanel{display:block!important;position:fixed!important;left:-10000px!important;top:0!important;right:auto!important;bottom:auto!important;width:2px!important;height:2px!important;min-width:2px!important;max-width:2px!important;min-height:2px!important;max-height:2px!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;opacity:.001!important;visibility:visible!important;pointer-events:none!important;overflow:hidden!important;transform:none!important;z-index:-1!important}
+#musicDock.provider-transport #musicProviderFrame,#musicDock.provider-transport #spotifyEmbedHost,#musicDock.provider-transport #spotifyEmbedHost iframe{display:block!important;width:2px!important;height:2px!important;min-width:2px!important;min-height:2px!important;border:0!important;opacity:.001!important;pointer-events:none!important}
+#musicDock.provider-transport .music-provider-foot{display:none!important}
+#musicDock.provider-transport.provider-youtube .music-timeline{visibility:visible!important;opacity:.78!important}
+@media(max-width:760px){#musicDock.provider-transport{left:8px!important;right:8px!important;bottom:calc(70px + env(safe-area-inset-bottom))!important;grid-template-columns:44px minmax(0,1fr) 42px!important;height:60px!important;min-height:60px!important}.music-provider-brand{margin-top:2px}.lx-provider-lockup{font-size:8px}.lx-provider-lockup .lx-provider-logo{width:18px;height:13px}.lx-provider-lockup.is-spotify .lx-provider-logo{width:13px;height:13px}}
