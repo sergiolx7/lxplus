@@ -1,0 +1,9 @@
+LX Plus v31.3 — correção YouTube em massa
+
+- Corrigido CORS/OPTIONS da Edge Function lx-content-hub.
+- Corrigidas expressões regulares duplicadamente escapadas no importador YouTube.
+- Links diretos do YouTube agora funcionam sem YouTube Data API Key usando oEmbed.
+- Vários links diretos podem ser importados de uma vez.
+- Playlist/canal inteiro continuam exigindo YouTube Data API Key.
+- Frontend ganhou fallback pelo navegador para links diretos caso a Edge Function não responda.
+- Mensagens de sessão expirada/API Key ficaram mais claras.

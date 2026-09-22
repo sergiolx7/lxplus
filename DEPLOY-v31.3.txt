@@ -1,0 +1,5 @@
+LX Plus v31.3
+
+O backend lx-content-hub v3 já foi publicado no Supabase.
+Para atualizar o frontend, substitua os arquivos do repositório pelos arquivos deste ZIP.
+Após o deploy, use Ctrl+F5 uma vez.

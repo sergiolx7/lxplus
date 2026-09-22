@@ -1,0 +1,9 @@
+LX Plus v31.3 — TEST REPORT
+
+[OK] frontend version
+[OK] browser fallback
+[OK] edge call
+[OK] backend CORS
+[OK] backend OPTIONS
+[OK] oembed fallback
+[OK] playlist api error
