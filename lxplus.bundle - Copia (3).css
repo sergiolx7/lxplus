@@ -5971,12 +5971,11 @@ input,select,textarea,button{max-width:100%}
 .lx-provider-lockup b{font:inherit;color:inherit}.lx-provider-lockup i{font-style:normal;color:#7f8995;font-size:9px}.lx-provider-logo{width:24px;height:17px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}.lx-provider-logo svg{display:block;width:100%;height:100%}
 .lx-provider-lockup.is-spotify .lx-provider-logo{width:17px;height:17px}.lx-provider-lockup.compact{font-size:9px;gap:4px}.lx-provider-lockup.compact .lx-provider-logo{width:20px;height:14px}.lx-provider-lockup.compact.is-spotify .lx-provider-logo{width:14px;height:14px}
 .lx-music-provider .lx-provider-lockup{color:#fff}.lx-album-badges .lx-provider-lockup{font-size:10px}
-/* LX v32.0: provider players remain real, visible and interactive. Hidden 2px iframes were unreliable. */
-#musicDock.provider-transport{overflow:visible!important}
-.music-dock.external-provider .music-provider-toggle{display:grid!important}
-.music-dock.external-provider.provider-youtube .music-provider-panel{width:min(360px,calc(100vw - 24px))!important;max-width:360px!important;right:8px!important}
-.music-dock.external-provider.provider-youtube #musicProviderFrame{width:100%!important;height:202px!important;min-height:202px!important;aspect-ratio:16/9!important}
-.music-dock.external-provider.provider-spotify .music-provider-panel{width:min(470px,calc(100vw - 24px))!important}
-.music-dock.external-provider.provider-open .music-provider-panel{display:block!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important;transform:none!important}
-.music-dock.external-provider:not(.provider-open) .music-provider-panel{display:none!important}
-@media(max-width:760px){.music-dock.external-provider.provider-youtube .music-provider-panel,.music-dock.external-provider.provider-spotify .music-provider-panel{left:0!important;right:0!important;bottom:68px!important;width:auto!important;max-width:none!important}.music-dock.external-provider.provider-youtube #musicProviderFrame{height:200px!important}.music-dock.external-provider .music-provider-toggle{display:grid!important}}
+#musicDock.provider-transport{height:58px!important;min-height:58px!important;grid-template-columns:auto minmax(130px,1fr) minmax(260px,1.3fr) auto!important;overflow:visible!important}
+#musicDock.provider-transport .music-center-controls{display:grid!important}
+#musicDock.provider-transport .music-provider-toggle{display:none!important}
+#musicDock.provider-transport #musicProviderPanel{display:block!important;position:fixed!important;left:-10000px!important;top:0!important;right:auto!important;bottom:auto!important;width:2px!important;height:2px!important;min-width:2px!important;max-width:2px!important;min-height:2px!important;max-height:2px!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;opacity:.001!important;visibility:visible!important;pointer-events:none!important;overflow:hidden!important;transform:none!important;z-index:-1!important}
+#musicDock.provider-transport #musicProviderFrame,#musicDock.provider-transport #spotifyEmbedHost,#musicDock.provider-transport #spotifyEmbedHost iframe{display:block!important;width:2px!important;height:2px!important;min-width:2px!important;min-height:2px!important;border:0!important;opacity:.001!important;pointer-events:none!important}
+#musicDock.provider-transport .music-provider-foot{display:none!important}
+#musicDock.provider-transport.provider-youtube .music-timeline{visibility:visible!important;opacity:.78!important}
+@media(max-width:760px){#musicDock.provider-transport{left:8px!important;right:8px!important;bottom:calc(70px + env(safe-area-inset-bottom))!important;grid-template-columns:44px minmax(0,1fr) 42px!important;height:60px!important;min-height:60px!important}.music-provider-brand{margin-top:2px}.lx-provider-lockup{font-size:8px}.lx-provider-lockup .lx-provider-logo{width:18px;height:13px}.lx-provider-lockup.is-spotify .lx-provider-logo{width:13px;height:13px}}
