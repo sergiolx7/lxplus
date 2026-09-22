@@ -1,0 +1,11 @@
+LX Plus v31.5 — Música personalizada + identidade confiável
+
+- Destaques da Música continuam controlados manualmente pelo ADM.
+- Home da Música agora cria recomendações por usuário usando playCount, recência, favoritos e gêneros realmente ouvidos.
+- Se a pessoa ouve mais Gospel, Funk, Sertanejo etc., a Home passa a sugerir faixas ainda não ouvidas dessas categorias.
+- Até dois blocos “Porque você ouve <gênero>” podem aparecer conforme o histórico.
+- “Descobertas para você” prioriza músicas não reproduzidas e evita repetir os destaques manuais.
+- “Ouça novamente” usa as faixas mais tocadas pelo próprio usuário.
+- Importação do YouTube preserva sempre título, artista e thumbnail reais do vídeo.
+- Apple Music/iTunes só complementa álbum, gênero, ano e duração quando o backend confirma correspondência >= 88%.
+- O registro incorreto de Natanzinho Lima foi reparado no Supabase.

@@ -1,0 +1,13 @@
+LX Plus v31.5 — TEST REPORT
+
+[OK] JavaScript syntax (node --check)
+[OK] 26/26 static checks
+[OK] v31.5 cache/version references
+[OK] manual music featured flag preserved
+[OK] personalized music taste profile uses playCount/history
+[OK] unseen same-genre recommendations
+[OK] discovery and replay sections
+[OK] YouTube title/artist/thumbnail identity preserved
+[OK] external catalog metadata requires matched status + >= 88% confidence
+[OK] YouTube browser fallback and Edge Function CORS remain present
+[OK] universal importer backend matcher v2 present

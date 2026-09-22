@@ -1,0 +1,8 @@
+LX Plus v31.4 — identidade musical confiável
+
+- YouTube vira a fonte principal para título, artista e capa em músicas importadas por link.
+- Thumbnail real do YouTube não é mais substituída por capa de catálogo com baixa confiança.
+- Canal “Oficial/Official/Topic/VEVO” é normalizado para o nome do artista.
+- Apple Music/iTunes só complementa álbum, gênero e ano quando título + artista batem com confiança alta.
+- Correspondências duvidosas ficam de fora do preenchimento automático.
+- Registro incorreto de Natanzinho Lima foi corrigido no Supabase.

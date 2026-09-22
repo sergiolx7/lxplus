@@ -1,0 +1,11 @@
+LX Plus v31.5
+
+Backend:
+- lx-content-hub v3 já está ativo no Supabase com CORS/YouTube corrigidos.
+- lx-universal-importer v2 já está ativo com correspondência musical mais rígida.
+- O registro incorreto do YouTube/Natanzinho Lima foi reparado no catálogo.
+
+Frontend:
+- publique o conteúdo da pasta dist/ no repositório/hospedagem.
+- Service Worker/cache atualizado para v31.5.
+- depois do deploy, use Ctrl+F5 uma vez no desktop ou feche/reabra o PWA no celular.
