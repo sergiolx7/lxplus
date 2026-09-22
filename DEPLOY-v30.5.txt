@@ -1,0 +1,5 @@
+LX Plus v30.5
+
+Arquivos do diretório dist prontos para GitHub Pages.
+Após publicar, force uma atualização do service worker se o navegador mantiver cache antigo.
+Cache atual: lxplus-shell-v3050.

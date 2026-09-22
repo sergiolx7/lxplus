@@ -1,0 +1,22 @@
+LX PLUS v30.4 — TEST REPORT
+
+Resultado: APROVADO
+
+- 24/24 verificações estáticas aprovadas.
+- Sintaxe JavaScript validada com node --check.
+- Importação em massa do YouTube presente no painel ADM.
+- Categoria da importação em massa limitada a: Gospel ou Outra.
+- Aceita playlist, canal e múltiplos links de vídeos.
+- Limite por operação: até 500 vídeos.
+- Deduplicação por YouTube Video ID/link.
+- Deduplicação adicional por título + artista normalizados.
+- Duplicatas existentes e duplicatas do próprio lote são ignoradas.
+- Somente músicas novas são gravadas/publicadas.
+- Resumo de encontradas, repetidas e adicionadas disponível no importador.
+- Chave YouTube Data API não fica embutida no código público.
+- RPC lx_catalog_bulk_upsert incluída na migração v30.4.
+- Supabase real verificado: migração v30.4 aplicada.
+- Supabase real verificado: lx-content-hub v2 ACTIVE com ação youtube_bulk.
+- Supabase real verificado: youtube_api_key aceita pelo gerenciador seguro de integrações.
+
+Observação: para consultar o YouTube, o Dono deve configurar uma YouTube Data API Key uma única vez em ADM > Importador > Fontes online.

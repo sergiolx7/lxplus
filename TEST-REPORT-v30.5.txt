@@ -1,0 +1,18 @@
+LX Plus v30.5 — TEST REPORT
+
+Resultado: PASS 30/30
+
+Validações executadas:
+- JavaScript do bundle: sintaxe válida (node --check).
+- Manifest PWA: JSON válido.
+- Cache do service worker: lxplus-shell-v3050.
+- Referências CSS/JS com cache bust v30.5.
+- Ícone de pausa sólido presente.
+- Media Session com play/pause/anterior/próxima/seek/stop para áudio direto/cloud.
+- Sincronização de posição do Media Session presente.
+- Player persistente mantido entre telas da LX Plus.
+- YouTube pausado ao entrar em segundo plano, em conformidade com as políticas oficiais do YouTube.
+- Importação em massa, categorias Gospel/Outra e deduplicação da v30.4 preservadas.
+
+Observação de plataforma:
+A continuidade de áudio direto/cloud em segundo plano depende do suporte do navegador e do sistema operacional. O PWA está preparado para usar Media Session e o elemento HTMLAudio persistente; o sistema pode, ainda assim, suspender apps em condições de economia de bateria/memória.

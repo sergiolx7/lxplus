@@ -1,0 +1,17 @@
+LX Plus v30.4 — Importação em Massa do YouTube
+
+- Novo bloco "YouTube · Importação em massa" no Painel ADM > Importador.
+- Aceita playlist do YouTube/YouTube Music, canal por ID/handle e vários links de vídeos (um por linha).
+- Categoria da importação simplificada para apenas duas opções: Gospel ou Outra.
+- Deduplicação automática antes de salvar:
+  - compara o ID/link do vídeo do YouTube;
+  - compara também título + artista normalizados;
+  - remove duplicadas dentro da própria importação.
+- Apenas músicas novas são gravadas no catálogo.
+- Resultado mostra quantas foram encontradas, ignoradas como repetidas e realmente salvas.
+- As músicas novas entram publicadas com player oficial do YouTube; a capa pode ser substituída depois no ADM.
+- Importação limitada a 500 vídeos por operação para manter estabilidade.
+- O Edge Function existente lx-content-hub foi ampliado no Supabase com a ação segura youtube_bulk (v2).
+- Nova RPC lx_catalog_bulk_upsert para salvar o lote em uma única operação e evitar centenas de sincronizações individuais.
+- YouTube Data API Key pode ser salva pelo Dono no Painel ADM e permanece protegida no Supabase.
+- Compatível com o sistema de categorias e player da v30.3.
