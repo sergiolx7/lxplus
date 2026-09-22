@@ -1,0 +1,32 @@
+LX Plus v31.1 — DEPLOY
+Data: 22/09/2026
+Build: 31.1
+Service Worker cache: lxplus-shell-v3100
+
+GITHUB PAGES
+1. Use o ZIP “LX-Plus-v31.1-GitHub.zip”.
+2. Substitua na raiz do repositório os arquivos do site pelos arquivos do ZIP.
+3. Mantenha o arquivo CNAME se o domínio personalizado continuar o mesmo.
+4. Após o deploy, faça uma atualização forçada uma vez para trocar o Service Worker antigo.
+
+SUPABASE
+No projeto conectado, as alterações aditivas desta versão já foram aplicadas:
+- migração lxplus_v310_universal_catalog;
+- migração lxplus_v310_community_indexes;
+- Edge Function lx-universal-importer ativa com verificação JWT.
+As funções antigas lx-content-hub, lx-r2-media e lx-spotify-catalog foram preservadas.
+
+CONFIGURAÇÃO DO IMPORTADOR UNIVERSAL
+No site, entre como proprietário/ADM e abra ADM > Importador Universal > Integrações.
+- TMDB API Key: necessária para filmes e séries.
+- Google Drive API Key: necessária para escanear pastas do Drive.
+- YouTube API Key: necessária para o importador em massa do YouTube já existente.
+
+Para o modo Drive por API Key, compartilhe a pasta de forma que a API consiga listá-la. O importador não torna a pasta pública por conta própria.
+
+IMPORTANTE
+Não coloque service_role, secret keys ou credenciais privadas em arquivos JavaScript, GitHub ou no navegador.
+
+
+ATENÇÃO v31.1
+Substitua TODOS os arquivos do repositório pelos arquivos deste ZIP, principalmente index.html, lxplus.bundle.js, lxplus.bundle.css, manifest.webmanifest e service-worker.js. O Service Worker usa um cache novo (lxplus-shell-v3110) para impedir que a v31.0 continue aparecendo no celular/tablet.

@@ -1,0 +1,17 @@
+LX PLUS v31.1 — TEST REPORT
+
+PASS — JavaScript bundle syntax (node --check)
+PASS — HTML parser validation
+PASS — Core files present and non-empty
+PASS — IMPORTAÇÃO EM MASSA visible in ADM sidebar
+PASS — Dashboard quick-launch module included
+PASS — Google Drive bulk scanner UI included
+PASS — CSV/TXT/JSON file loader included
+PASS — Downloadable CSV template included
+PASS — Local-folder name analyzer included
+PASS — Bulk metadata/review/publish functions included
+PASS — PWA manifest version bumped to 31.1
+PASS — Service Worker cache bumped to lxplus-shell-v3110
+PASS — Local HTTP checks: index/JS/CSS/manifest/SW returned 200
+
+Note: live publishing requires replacing the repository/static hosting files with the GitHub ZIP contents.

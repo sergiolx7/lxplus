@@ -24,12 +24,12 @@
 
 
 /* ===== lxplus.js ===== */
-window.__LX_JS_BUILD='31.0';
+window.__LX_JS_BUILD='31.1';
 
 /* ===== config.js · LX Plus v25.50 ===== */
 window.LX=window.LX||{};
 LX.config={
-  version:'31.0',
+  version:'31.1',
   environment:'cloud-ready',
   production:true,
   apiBase:'',
@@ -1220,7 +1220,7 @@ async function premiumSet(email,plan){const user=D.users().find(x=>x.email===ema
 async function premiumOff(email){const user=D.users().find(x=>x.email===email);if(LX.cloud?.enabled?.()&&user?.id){await LX.cloud.setPremium(user.id,D.subscriptions()[email]?.plan||'Mensal',false).catch(e=>console.warn(e));D.track('admin_premium',{email,active:false});LX.toast('Premium desativado na nuvem.');return render('premium')}const a=D.subscriptions();a[email]={...(a[email]||{}),active:false,ended:Date.now()};D.saveSubscriptions(a);LX.toast('Premium desativado.');render('premium')}
 LX.admin={render,edit,del,verify,saveChanges,discardPending,approveUser,rejectUser,deletePendingUser,makeAdmin,removeAdmin,reqStatus,premiumSet,premiumOff,togglePublish,toggleFeatured,priority,preview,fromRequest,pendingCount,updateSaveDock,addMusicCategory,renameMusicCategory,deleteMusicCategory};updateSaveDock();})();
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.admin='31.0';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.admin='31.1';
 
 /* ===== app.js · LX Plus v27.0 ===== */
 /* LX APP CORE */
@@ -2086,11 +2086,11 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
   const db=()=>LX.cloud?.db?.()||null;
   const role=()=>String(state().user?.adminRole||state().user?.admin_role||LX.cloud?.profile?.()?.admin_role||'').toLowerCase();
   const fmt=seconds=>LX.fmt?.(Number(seconds)||0)||'0:00';
-  const logo='assets/lxplus-logo-v27.png?v=31.0';
+  const logo='assets/lxplus-logo-v27.png?v=31.1';
   const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   const standalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true;
 
-  LX.v27={version:'31.0',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
+  LX.v27={version:'31.1',spotifyCache:{tracks:[],artists:[],albums:[],playlists:[]}};
 
   function syncBranding(root=document){
     root.querySelectorAll?.('img').forEach(img=>{
@@ -2361,7 +2361,7 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire,{once:true});else wire();
   setInterval(heartbeat,1200);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){heartbeat();refreshConversationStreak()}});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!ensureNowPlaying().classList.contains('hidden'))closeNowPlaying()});
-  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='31.0';
+  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES.v27='31.1';
 })();
 
 
@@ -2371,8 +2371,8 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
   'use strict';
   const LX=window.LX=window.LX||{};
   window.__LX_MODULES=window.__LX_MODULES||{};
-  window.__LX_MODULES.v29='31.0';
-  LX.v29={version:'31.0',stability:true};
+  window.__LX_MODULES.v29='31.1';
+  LX.v29={version:'31.1',stability:true};
 
   function tuneImages(root=document){
     const imgs=root.querySelectorAll?.('.home-content img,.rail img,.lx-music-main img,.lx-community-drawer img,.panel-page img')||[];
@@ -2403,7 +2403,7 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
 
-/* ===== universal-importer-v31.js · LX Plus v31.0 ===== */
+/* ===== universal-importer-v31.js · LX Plus v31.1 ===== */
 (()=>{
   'use strict';
   const LX=window.LX=window.LX||{},old=LX.importer||{},D=()=>LX.data,U=()=>LX.ui;
@@ -2453,6 +2453,8 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
   }
   async function scanDrive(){const folder=document.getElementById('universalDriveFolder')?.value?.trim();if(!folder)return toast('Cole o link da pasta do Google Drive.');const btn=document.getElementById('universalDriveScan');if(btn){btn.disabled=true;btn.textContent='Escaneando…'}try{const d=await universalHub('drive_scan',{folder,maxItems:1000});toast(`${d.found||0} arquivos de mídia encontrados no Drive.`);await analyzeRows(d.items||[])}catch(e){toast(errorText(e))}finally{if(btn){btn.disabled=false;btn.textContent='Escanear Drive + identificar'}}}
   async function analyzeText(){const rows=parseRows(document.getElementById('universalPaste')?.value||'');await analyzeRows(rows)}
+  async function loadListFile(){const f=document.getElementById('universalListFile')?.files?.[0];if(!f)return;try{const text=await f.text();const area=document.getElementById('universalPaste');if(area)area.value=text;toast(`${f.name} carregado. Agora clique em Analisar lista em massa.`)}catch(e){console.warn(e);toast('Não foi possível ler esse arquivo.')}}
+  function downloadTemplate(){const csv='nome|link\nInterestelar.2014.1080p.mkv|https://drive.google.com/file/d/SEU_ID/view\nThe Last of Us S02E03.mkv|https://drive.google.com/file/d/SEU_ID/view\n';const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='LX-Plus-importacao-em-massa-modelo.csv';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);}
   async function analyzeLocal(){const files=document.getElementById('universalFolderInput')?.files||[];await analyzeRows(localRows(files))}
   function setBatchStatus(text,done=0,total=0,kind=''){const box=document.getElementById('universalBatchStatus');if(!box)return;const pct=total?Math.round(done/total*100):0;box.className=`universal-batch-status ${kind}`;box.innerHTML=`<div><b>${esc(text)}</b><span>${total?`${done}/${total}`:''}</span></div><i><u style="width:${pct}%"></u></i>`}
   const statusLabel=s=>({matched:'Identificado',review:'Revisar',unmatched:'Não encontrado',duplicate:'Duplicado',merge:'Atualizar série'}[s]||s);
@@ -2469,16 +2471,16 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
 
   function integrations(){return `<section class="admin-card"><h2>Integrações da automação</h2><label class="field">TMDB API Key v3<input id="tmdbKeyV31" type="password" autocomplete="new-password" placeholder="Chave para filmes, séries, capas e sinopses"></label><label class="field">Google Drive API Key<input id="driveApiKeyV31" type="password" autocomplete="new-password" placeholder="Usada somente no backend para escanear pastas compartilhadas"></label><label class="field">YouTube Data API Key<input id="youtubeApiKey" type="password" autocomplete="new-password" placeholder="Para importação em massa de músicas"></label><label class="field">TheSportsDB Key <span class="optional">opcional</span><input id="sportsKey" type="password" autocomplete="new-password" placeholder="Vazio = plano gratuito"></label><div class="import-key-actions"><button id="saveTmdbV31">Salvar TMDB</button><button id="saveDriveV31">Salvar Drive</button><button id="saveYoutube">Salvar YouTube</button><button id="saveSports">Salvar esportes</button><button id="importPopular" class="primary-btn">⚡ Importar populares da semana</button></div><div id="integrationStatus" class="import-key-status">Verificando integrações…</div><small style="color:var(--muted)">As chaves ficam no Supabase e não são incluídas no JavaScript público. Para escanear Drive por API Key, a pasta precisa estar compartilhada para acesso por link.</small></section>`}
   function render(m){
-    m.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN · v31.0</span><h1>Importador Universal</h1><p>Coloque centenas de filmes, episódios, músicas e livros de uma vez. O LX Plus identifica o arquivo, encontra a capa e os metadados, remove duplicados e permite revisar antes de publicar.</p></div></div>
+    m.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN · v31.1</span><h1>IMPORTAÇÃO EM MASSA</h1><p>Coloque centenas de filmes, séries, episódios, músicas e livros de uma vez. O LX Plus identifica o arquivo, encontra a capa e os metadados, remove duplicados e permite revisar antes de publicar.</p></div></div>
     <section class="import-hero universal-hero"><div><span class="eyebrow">UNIVERSAL AUTO CATALOG</span><h2>Arquivo → título → capa → catálogo.</h2><p>O trabalho repetitivo fica automatizado. Correspondências seguras são selecionadas sozinhas; dúvidas ficam separadas para revisão.</p></div><div class="import-badges"><span>🎬 TMDB</span><span>☁ Google Drive</span><span>📚 Open Library</span><span>♫ Music</span></div></section>
-    <section class="admin-card universal-import-card"><div class="universal-title"><div><span class="eyebrow">LOTE AUTOMÁTICO</span><h2>1. Escolha de onde vêm os arquivos</h2></div><span class="universal-limit">até 1.000 por leitura</span></div><div class="universal-source-grid"><div class="universal-source"><h3>Google Drive</h3><p>Escaneia uma pasta compartilhada e subpastas. Os links dos arquivos já entram nos players.</p><input id="universalDriveFolder" placeholder="https://drive.google.com/drive/folders/..."><button id="universalDriveScan" class="primary-btn">Escanear Drive + identificar</button></div><div class="universal-source"><h3>Pasta deste computador</h3><p>Lê os nomes em massa para montar o catálogo. Os arquivos não são enviados automaticamente.</p><label class="universal-file-button">Escolher pasta<input id="universalFolderInput" type="file" webkitdirectory directory multiple hidden></label><button id="universalLocalAnalyze">Analisar nomes da pasta</button></div><div class="universal-source"><h3>Lista / CSV / JSON</h3><p>Use <code>nome do arquivo | link</code>, um por linha, ou uma lista JSON.</p><textarea id="universalPaste" rows="5" placeholder="Interestelar.2014.1080p.mkv | https://drive.google.com/file/d/.../view&#10;The Last of Us S02E03.mkv | https://drive.google.com/file/d/.../view"></textarea><button id="universalTextAnalyze">Analisar lista</button></div></div><div id="universalBatchStatus" class="universal-batch-status"><div><b>Pronto para analisar.</b><span></span></div><i><u style="width:0%"></u></i></div></section>
+    <section class="admin-card universal-import-card"><div class="universal-title"><div><span class="eyebrow">LOTE AUTOMÁTICO</span><h2>1. Escolha de onde vêm os arquivos</h2></div><span class="universal-limit">até 1.000 por leitura</span></div><div class="universal-source-grid"><div class="universal-source"><h3>Google Drive</h3><p>Escaneia uma pasta compartilhada e subpastas. Os links dos arquivos já entram nos players.</p><input id="universalDriveFolder" placeholder="https://drive.google.com/drive/folders/..."><button id="universalDriveScan" class="primary-btn">Escanear Drive + identificar</button></div><div class="universal-source"><h3>Pasta deste computador</h3><p>Lê os nomes em massa para montar o catálogo. Os arquivos não são enviados automaticamente.</p><label class="universal-file-button">Escolher pasta<input id="universalFolderInput" type="file" webkitdirectory directory multiple hidden></label><button id="universalLocalAnalyze">Analisar nomes da pasta</button></div><div class="universal-source"><h3>Lista / CSV / JSON</h3><p>Cole muitos itens ou envie um arquivo <b>.csv, .txt ou .json</b>. Formato rápido: <code>nome do arquivo | link</code>.</p><textarea id="universalPaste" rows="5" placeholder="Interestelar.2014.1080p.mkv | https://drive.google.com/file/d/.../view&#10;The Last of Us S02E03.mkv | https://drive.google.com/file/d/.../view"></textarea><div class="universal-file-row"><label class="universal-file-button compact">Carregar CSV/TXT/JSON<input id="universalListFile" type="file" accept=".csv,.txt,.json,text/csv,text/plain,application/json" hidden></label><button id="universalTemplate" type="button">Baixar modelo CSV</button></div><button id="universalTextAnalyze" class="primary-btn">Analisar lista em massa</button></div></div><div id="universalBatchStatus" class="universal-batch-status"><div><b>Pronto para analisar.</b><span></span></div><i><u style="width:0%"></u></i></div></section>
     <section class="admin-card universal-review-card"><div class="universal-review-head"><div><span class="eyebrow">REVISÃO INTELIGENTE</span><h2>2. Confirme antes de publicar</h2></div><div class="universal-review-actions"><button id="universalSelectMatched">Selecionar seguros</button><label><input id="universalPublishNow" type="checkbox" checked> Publicar imediatamente</label><button id="universalPublish" class="primary-btn">Publicar selecionados</button></div></div><div id="universalSummary" class="universal-summary"><span>Sem análise ainda.</span></div><div id="universalQueue" class="universal-queue"><div class="import-empty">Ainda não há arquivos analisados.</div></div><small id="universalMore" class="universal-more"></small></section>
     <section class="admin-card youtube-bulk-card"><div class="youtube-bulk-head"><div><span class="eyebrow">YOUTUBE · IMPORTAÇÃO EM MASSA</span><h2>Adicionar muitas músicas de uma vez</h2><p>Playlist, canal ou vários links. O sistema remove repetidas automaticamente.</p></div><span>AUTO DEDUP</span></div><div class="youtube-bulk-grid"><label class="field youtube-bulk-source"><span>Playlist, canal ou links</span><textarea id="youtubeBulkSource" rows="4" placeholder="https://www.youtube.com/playlist?list=...&#10;ou https://www.youtube.com/@canal"></textarea></label><label class="field youtube-bulk-category"><span>Categoria</span><select id="youtubeBulkCategory"><option value="Gospel">Gospel</option><option value="Outra">Outra</option></select></label></div><div class="youtube-bulk-actions"><button id="youtubeBulkSave" class="primary-btn">Salvar músicas novas</button></div><div id="youtubeBulkStatus" class="youtube-bulk-status"><b>Pronto para importar.</b><span>Até 500 vídeos por importação.</span></div></section>
     <div class="admin-grid"><section class="admin-card"><h2>Busca manual rápida</h2><div class="import-source-tabs"><button data-source-v31="movie">Filmes</button><button data-source-v31="tv">Séries</button><button data-source-v31="book">Livros</button><button data-source-v31="music">Músicas</button></div><div class="import-search-row"><input id="importSearch" placeholder="Pesquise um título, livro ou artista…"><button id="importGo" class="primary-btn">Buscar</button></div></section>${integrations()}</div>
     <div class="import-notice"><b>Importação segura:</b> capas e metadados vêm de catálogos externos; a LX Plus não baixa filmes ou músicas de terceiros. Use somente mídia que você possui ou tem autorização para disponibilizar.</div><section id="importResults" class="import-results"><div class="import-empty">A busca manual aparece aqui.</div></section>`;
     document.querySelectorAll('[data-source-v31]').forEach(b=>{b.classList.toggle('active',b.dataset.sourceV31===state.source);b.onclick=()=>{state.source=b.dataset.sourceV31;document.querySelectorAll('[data-source-v31]').forEach(x=>x.classList.toggle('active',x===b))}});
     document.getElementById('importGo').onclick=runSearch;document.getElementById('importSearch').onkeydown=e=>e.key==='Enter'&&runSearch();document.getElementById('importPopular').onclick=importPopular;
-    document.getElementById('universalDriveScan').onclick=scanDrive;document.getElementById('universalTextAnalyze').onclick=analyzeText;document.getElementById('universalLocalAnalyze').onclick=analyzeLocal;document.getElementById('universalSelectMatched').onclick=()=>{state.queue.forEach(x=>x.selected=['matched','merge'].includes(x.finalStatus));renderQueue()};document.getElementById('universalPublish').onclick=publishBatch;
+    document.getElementById('universalDriveScan').onclick=scanDrive;document.getElementById('universalTextAnalyze').onclick=analyzeText;document.getElementById('universalLocalAnalyze').onclick=analyzeLocal;document.getElementById('universalListFile').onchange=loadListFile;document.getElementById('universalTemplate').onclick=downloadTemplate;document.getElementById('universalSelectMatched').onclick=()=>{state.queue.forEach(x=>x.selected=['matched','merge'].includes(x.finalStatus));renderQueue()};document.getElementById('universalPublish').onclick=publishBatch;
     document.getElementById('saveTmdbV31').onclick=async()=>{const v=document.getElementById('tmdbKeyV31').value.trim();try{await saveSecret('tmdb_v3',v);document.getElementById('tmdbKeyV31').value='';toast(v?'TMDB conectado.':'TMDB removido.');refreshIntegrationStatus()}catch(e){toast(/owner required/i.test(e.message||'')?'Somente o Dono pode alterar integrações.':errorText(e))}};
     document.getElementById('saveDriveV31').onclick=async()=>{const v=document.getElementById('driveApiKeyV31').value.trim();if(!v)return toast('Cole a Google Drive API Key.');try{await saveSecret('google_drive_api_key',v);document.getElementById('driveApiKeyV31').value='';toast('Google Drive conectado ao importador.');refreshIntegrationStatus()}catch(e){toast(/owner required/i.test(e.message||'')?'Somente o Dono pode alterar integrações.':errorText(e))}};
     document.getElementById('saveYoutube').onclick=async()=>{const v=document.getElementById('youtubeApiKey').value.trim();if(!v)return toast('Cole a YouTube Data API Key.');try{await saveSecret('youtube_api_key',v);document.getElementById('youtubeApiKey').value='';toast('YouTube conectado.');refreshIntegrationStatus()}catch(e){toast(errorText(e))}};
@@ -2488,5 +2490,30 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
     refreshIntegrationStatus();renderQueue();
   }
   LX.importer={...old,render,search:runSearch,importPopular,toCatalog,scanDrive,analyzeRows,publishBatch};
-  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['universal-importer']='31.0';
+  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['universal-importer']='31.1';
+})();
+
+
+/* ===== mass-import-launch-v31.1.js ===== */
+(()=>{
+  'use strict';
+  const LX=window.LX=window.LX||{};
+  const addLaunch=()=>{
+    const main=document.getElementById('adminMain');
+    if(!main||LX.ui?.state?.adminPage!=='dashboard'||main.querySelector('.lx-mass-launch'))return;
+    const card=document.createElement('section');
+    card.className='lx-mass-launch';
+    card.innerHTML=`<div class="lx-mass-launch-copy"><span class="eyebrow">NOVO · v31.1</span><h2>⚡ IMPORTAÇÃO EM MASSA</h2><p>Adicione centenas de filmes, séries, episódios, músicas e livros. O LX Plus identifica título, ano e episódio, busca capa/metadados e elimina duplicados antes de publicar.</p><div class="lx-mass-launch-tags"><span>☁ Pasta do Drive</span><span>📄 CSV/JSON</span><span>📁 Pasta local</span><span>🎬 Capas automáticas</span></div></div><div class="lx-mass-launch-actions"><button class="primary-btn" type="button">ABRIR IMPORTAÇÃO EM MASSA</button><small>Ideal para cadastrar o catálogo inteiro sem item por item.</small></div>`;
+    card.querySelector('button').onclick=()=>LX.admin?.render?.('importer');
+    const head=main.querySelector('.admin-head');
+    if(head)head.insertAdjacentElement('afterend',card);else main.prepend(card);
+  };
+  const original=LX.admin?.render;
+  if(original&&!original.__lxMassWrapped){
+    const wrapped=function(page,...args){const r=original.call(this,page,...args);queueMicrotask(addLaunch);return r};
+    wrapped.__lxMassWrapped=true;LX.admin.render=wrapped;
+  }
+  const obs=new MutationObserver(()=>addLaunch());
+  const target=document.getElementById('adminMain');if(target)obs.observe(target,{childList:true,subtree:false});
+  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['mass-import-launch']='31.1';
 })();
