@@ -1,0 +1,29 @@
+LX Plus v31.0 — TEST REPORT
+Data: 22/09/2026
+
+RESULTADO
+PASS 42/42 verificações estáticas do projeto.
+
+VALIDADO
+- Build/versionamento v31.0.
+- Bundle JS sem erro de sintaxe.
+- Scripts inline do HTML sem erro de sintaxe.
+- Service Worker e cache v31.0.
+- Importador Universal presente e responsivo.
+- Escaneamento Drive implementado no backend protegido.
+- Matching em lote implementado no backend protegido.
+- Fila Identificado/Revisar/Não encontrado/Duplicado/Atualizar série.
+- Deduplicação antes da publicação.
+- Publicação em lote preservada.
+- YouTube bulk import preservado.
+- Player persistente/PWA da v30.6 preservados.
+- Correção ADM tablet/celular preservada.
+- Recuperação automática de conexões do chat implementada.
+- Índices de comunidade/chamadas aplicados no Supabase.
+- Edge Function lx-universal-importer confirmada ACTIVE.
+
+BANCO
+As cinco advertências de foreign keys sem índice relacionadas a grupos/chamadas deixaram de aparecer no Performance Advisor após a migração.
+
+LIMITAÇÕES DE TESTE
+Testes automatizados não substituem uso real em todos os aparelhos/navegadores. Operações externas dependem das respectivas API Keys, disponibilidade dos provedores e permissões das pastas do Drive.

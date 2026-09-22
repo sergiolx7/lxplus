@@ -1,0 +1,43 @@
+LX Plus v31.0 — Core & Auto Catalog
+Data: 22/09/2026
+
+PRINCIPAIS NOVIDADES
+- Novo Importador Universal no painel ADM.
+- Importação em massa a partir de pasta do Google Drive, pasta local (nomes dos arquivos), lista, CSV simples ou JSON.
+- Identificação automática de filmes, séries, episódios, músicas e livros pelos nomes dos arquivos.
+- Filmes e séries: busca automática de título, ano, capa, banner, descrição, gêneros, elenco, criadores/diretores e temporadas via TMDB.
+- Músicas: preenchimento de artista, álbum, capa, gênero, ano e duração a partir de metadados públicos.
+- Livros: preenchimento de título, autor, ano, capa e identificadores a partir de catálogo público.
+- Fila de revisão com estados: Identificado, Revisar, Não encontrado, Duplicado e Atualizar série.
+- Duplicação protegida antes da publicação.
+- Séries existentes podem receber novos episódios sem recriar o título inteiro.
+- Publicação em lotes usando o RPC já existente do catálogo.
+- Importador do YouTube v30.4 preservado.
+
+GOOGLE DRIVE
+- O painel pode escanear recursivamente uma pasta compartilhada e reconhecer arquivos de vídeo, áudio e livros.
+- Para usar o escaneamento, configure a Google Drive API Key em ADM > Importador Universal > Integrações.
+- O modo de pasta local lê os nomes para preparar o catálogo; ele não envia automaticamente os arquivos do computador para a nuvem.
+
+COMUNIDADE
+- Reconexão mais robusta do chat quando apenas um canal Realtime cai.
+- Tentativa de recuperação ao voltar a internet e ao retornar à aba do navegador.
+- Atualização do histórico aberto após reconexão.
+- Índices adicionais no Supabase para grupos, chamadas e sinais, reduzindo consultas custosas em relações por usuário.
+
+ESTABILIDADE / MOBILE / PWA
+- Base mantida sobre a v30.6, preservando player persistente, Media Session, PWA, YouTube em lote e correções ADM mobile/tablet.
+- Manifesto e Service Worker atualizados para v31.0 para reduzir cache antigo.
+- Importador Universal responsivo em desktop, tablet e celular.
+- Itens pesados usam renderização adiada quando possível.
+
+BACKEND / SEGURANÇA
+- Nova Edge Function: lx-universal-importer, protegida por autenticação e papel ADM.
+- Chaves privadas não são colocadas no bundle do navegador.
+- Google Drive API Key adicionada à lista permitida de integrações do ADM.
+- lx-content-hub existente foi mantido intacto para reduzir risco de regressão.
+
+OBSERVAÇÕES
+- Filmes/séries precisam de TMDB API Key para identificação automática completa.
+- Escaneamento do Drive precisa de Google Drive API Key e acesso da API à pasta informada.
+- Nenhuma chave secreta é incluída neste ZIP.

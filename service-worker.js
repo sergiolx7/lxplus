@@ -1,5 +1,5 @@
-const CACHE='lxplus-shell-v3030';
-const CORE=['./','./index.html','./lxplus.bundle.css?v=30.3','./lxplus.bundle.js?v=30.3','./manifest.webmanifest','./assets/lxplus-logo-v27.png?v=30.3','./assets/icon-v27.svg','./assets/lx-music-fallback.svg'];
+const CACHE='lxplus-shell-v3100';
+const CORE=['./','./index.html','./lxplus.bundle.css?v=31.0','./lxplus.bundle.js?v=31.0','./manifest.webmanifest','./assets/lxplus-logo-v27.png?v=31.0','./assets/icon-v27.svg','./assets/lx-music-fallback.svg'];
 self.addEventListener('install',event=>{event.waitUntil((async()=>{const cache=await caches.open(CACHE);await Promise.allSettled(CORE.map(x=>cache.add(x)));await self.skipWaiting()})())});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{for(const key of await caches.keys())if(key!==CACHE&&key.startsWith('lxplus-'))await caches.delete(key);await self.clients.claim()})())});
 self.addEventListener('message',event=>{if(event.data==='SKIP_WAITING')self.skipWaiting()});

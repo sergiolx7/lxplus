@@ -3595,7 +3595,7 @@ html[data-poster-size="large"],body[data-poster-size="large"]{--lx-poster-w:162p
   position:absolute;
   inset:4% 1% -4%;
   z-index:-1;
-  background:url('assets/lxplus-logo-v27.png?v=27.0') center/contain no-repeat;
+  background:url('assets/lxplus-logo-v27.png?v=31.0') center/contain no-repeat;
   opacity:.22;
   filter:blur(9px) saturate(1.2);
   transform:translate3d(8px,12px,-34px) scale(1.012);
@@ -3689,7 +3689,7 @@ button{transition:background-color .16s ease,color .16s ease,border-color .16s e
 .lx-splash-v260 .lx257-orbit-track{top:41%}
 .lx-splash-v260 .lx257-orb{width:36px;height:36px;box-shadow:0 0 12px rgba(255,255,255,.82),0 0 34px rgba(92,181,255,.45),0 0 70px rgba(139,92,246,.28)}
 .lx-splash-v260 .lx260-brand{box-sizing:border-box;left:50%;top:57%;width:min(760px,calc(100vw - 64px));max-width:760px;aspect-ratio:3.5/1;padding:18px;overflow:visible!important;transform-origin:center;animation:lx260BrandReveal 3.35s 1.48s cubic-bezier(.18,.72,.18,1) both!important}
-.lx-splash-v260 .lx260-brand:before{inset:10% 3% -1%!important;background:url('assets/lxplus-logo-v27.png?v=27.0') center/contain no-repeat!important;opacity:.18!important;filter:blur(12px) saturate(1.35)!important;transform:translate3d(0,14px,-30px) scale(1.01)!important}
+.lx-splash-v260 .lx260-brand:before{inset:10% 3% -1%!important;background:url('assets/lxplus-logo-v27.png?v=31.0') center/contain no-repeat!important;opacity:.18!important;filter:blur(12px) saturate(1.35)!important;transform:translate3d(0,14px,-30px) scale(1.01)!important}
 .lx260-splash-wordmark{display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain!important;object-position:center!important;overflow:visible!important;filter:drop-shadow(0 24px 48px rgba(0,0,0,.48)) drop-shadow(0 0 24px rgba(123,86,255,.14))!important}
 .lx-splash-v260 .lx257-brand-flare{top:69%!important;max-width:600px}
 .lx-splash-v260 .lx257-floor{bottom:-2%!important;width:min(920px,90vw)!important;opacity:.42!important}
@@ -5832,3 +5832,79 @@ input,select,textarea,button{max-width:100%}
  .lx-music-category-covers{width:44px;height:44px;border-radius:8px}.lx-music-category-card strong{font-size:9px}.lx-music-category-card small{font-size:6.6px}.lx-music-category-card>b{font-size:15px}
  .lx-admin-category-head{display:block}.lx-admin-category-head>span{display:inline-block;margin-top:8px}.lx-admin-category-add{grid-template-columns:1fr}.lx-admin-category-list{grid-template-columns:1fr}.lx-admin-category-chip{grid-template-columns:minmax(0,1fr) auto auto}
 }
+
+/* ===== LX Plus v30.4 · YouTube bulk music importer ===== */
+.youtube-bulk-card{margin:0 0 14px;border-color:rgba(255,64,64,.18);background:linear-gradient(135deg,rgba(255,255,255,.045),rgba(255,35,35,.045))}
+.youtube-bulk-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
+.youtube-bulk-head h2{margin:4px 0 5px;font-size:clamp(20px,2.5vw,30px)}
+.youtube-bulk-head p{margin:0;max-width:830px;color:var(--muted);line-height:1.5}
+.youtube-bulk-head>span{flex:0 0 auto;padding:7px 10px;border:1px solid rgba(255,255,255,.1);border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.08em;color:var(--muted)}
+.youtube-bulk-grid{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:12px;align-items:start}
+.youtube-bulk-source textarea{min-height:112px;resize:vertical;font-family:inherit;line-height:1.45}
+.youtube-bulk-category select{min-height:44px}
+.youtube-bulk-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px}
+.youtube-bulk-actions>span{max-width:720px;color:var(--muted);font-size:10px;line-height:1.45}
+.youtube-bulk-status{display:flex;flex-direction:column;gap:3px;margin-top:12px;padding:11px 13px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.025)}
+.youtube-bulk-status b{font-size:11px}.youtube-bulk-status span,.youtube-bulk-status small{font-size:9px;color:var(--muted);line-height:1.4}
+.youtube-bulk-status.loading{border-color:rgba(66,165,255,.3)}
+.youtube-bulk-status.ok{border-color:rgba(80,210,140,.35);background:rgba(80,210,140,.05)}
+.youtube-bulk-status.ok b{color:#7be6ae}
+.youtube-bulk-status.error{border-color:rgba(255,90,90,.35);background:rgba(255,90,90,.05)}
+.youtube-bulk-status.error b{color:#ff9a9a}
+@media(max-width:760px){.youtube-bulk-head{display:block}.youtube-bulk-head>span{display:inline-block;margin-top:8px}.youtube-bulk-grid{grid-template-columns:1fr}.youtube-bulk-actions{align-items:stretch}.youtube-bulk-actions .primary-btn{width:100%}}
+
+
+/* ===== LX Plus v30.6 · persistent music + solid pause icon ===== */
+.music-dock #musicPlay svg,.lx-v27-now-controls .main svg{display:block;overflow:visible}
+.music-dock #musicPlay svg rect,.lx-v27-now-controls .main svg rect{fill:currentColor!important;stroke:none!important}
+.music-dock #musicPlay:focus-visible,.lx-v27-now-controls .main:focus-visible{outline:2px solid color-mix(in srgb,var(--accent) 75%,#fff);outline-offset:3px}
+
+
+/* v30.6 · ADM responsive navigation fix — tablet + celular */
+@media (max-width:1180px){
+  .admin{display:block!important;width:100%!important;max-width:100vw!important;overflow-x:hidden!important}
+  .admin-side{
+    position:sticky!important;top:0!important;left:0!important;right:auto!important;bottom:auto!important;
+    width:100%!important;max-width:100vw!important;height:auto!important;min-height:0!important;
+    z-index:500!important;display:block!important;padding:7px 8px!important;margin:0!important;
+    border:0!important;border-bottom:1px solid var(--lx27-line,var(--line))!important;
+    background:rgba(7,10,15,.98)!important;box-shadow:0 12px 30px rgba(0,0,0,.24)!important;
+    overflow:hidden!important
+  }
+  .admin-side>.brand,.admin-identity,.admin-console-label{display:none!important}
+  .admin-side nav{
+    display:flex!important;width:100%!important;max-width:100%!important;gap:6px!important;padding:1px 2px 4px!important;
+    overflow-x:auto!important;overflow-y:hidden!important;overscroll-behavior-x:contain!important;
+    -webkit-overflow-scrolling:touch!important;scroll-snap-type:x proximity!important;scrollbar-width:none!important
+  }
+  .admin-side nav::-webkit-scrollbar{display:none!important}
+  .admin-side nav button{
+    flex:0 0 auto!important;min-width:112px!important;max-width:none!important;height:46px!important;min-height:46px!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;
+    padding:6px 10px!important;white-space:nowrap!important;scroll-snap-align:start!important;
+    border-radius:10px!important;font-size:11px!important;text-align:center!important;transform:none!important
+  }
+  .admin-side nav button i{display:grid!important;width:22px!important;height:22px!important;place-items:center!important;flex:0 0 22px!important;font-size:11px!important}
+  .admin-side nav button span{display:block!important;flex:0 0 auto!important;font-size:10px!important;line-height:1.1!important}
+  .admin-bottom{display:none!important}
+  .admin-main{margin:0!important;width:100%!important;max-width:100vw!important;padding:20px 14px 92px!important;overflow-x:hidden!important}
+}
+@media (max-width:760px){
+  .admin-side{position:sticky!important;top:0!important;bottom:auto!important;height:auto!important;padding:6px 6px!important}
+  .admin-side nav{gap:4px!important;padding-bottom:3px!important}
+  .admin-side nav button{min-width:92px!important;height:44px!important;min-height:44px!important;padding:5px 7px!important;gap:5px!important}
+  .admin-side nav button i{width:18px!important;height:18px!important;flex-basis:18px!important;font-size:10px!important}
+  .admin-side nav button span{font-size:9px!important}
+  .admin-main{margin:0!important;padding:12px 8px 84px!important}
+}
+@media (max-width:430px){
+  .admin-side nav button{min-width:84px!important;padding-inline:6px!important}
+  .admin-side nav button span{font-size:8px!important}
+}
+
+/* ===== LX Plus v31.0 · Universal Auto Catalog ===== */
+.universal-hero{align-items:center}.universal-import-card,.universal-review-card{overflow:hidden}.universal-title,.universal-review-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:18px}.universal-title h2,.universal-review-head h2{margin:5px 0 0}.universal-limit{padding:8px 12px;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:12px;white-space:nowrap}.universal-source-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.universal-source{display:flex;flex-direction:column;gap:10px;min-width:0;padding:16px;border:1px solid var(--border);border-radius:18px;background:color-mix(in srgb,var(--card) 86%,transparent)}.universal-source h3{margin:0;font-size:17px}.universal-source p{margin:0;color:var(--muted);font-size:13px;line-height:1.5;min-height:58px}.universal-source input,.universal-source textarea{width:100%;box-sizing:border-box}.universal-source textarea{resize:vertical;min-height:104px}.universal-file-button{display:flex;align-items:center;justify-content:center;min-height:42px;border:1px dashed var(--border);border-radius:12px;cursor:pointer;font-weight:750;background:var(--soft)}.universal-batch-status{margin-top:16px}.universal-batch-status>div{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:13px}.universal-batch-status b{color:var(--text)}.universal-batch-status>i{display:block;height:7px;margin-top:9px;border-radius:99px;background:var(--soft);overflow:hidden}.universal-batch-status>i>u{display:block;height:100%;border-radius:inherit;background:currentColor;text-decoration:none;transition:width .25s ease}.universal-batch-status.ok{color:#42d58b}.universal-batch-status.error{color:#ff6a74}.universal-review-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.universal-review-actions label{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:13px}.universal-summary{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:13px}.universal-summary span{padding:7px 10px;border-radius:999px;background:var(--soft);font-size:12px;color:var(--muted)}.universal-summary .ok{color:#42d58b}.universal-summary .warn{color:#ffc45d}.universal-queue{display:grid;gap:8px;max-height:640px;overflow:auto;overscroll-behavior:contain;padding-right:3px}.universal-row{display:grid;grid-template-columns:32px 58px minmax(0,1fr);gap:11px;align-items:center;padding:10px;border:1px solid var(--border);border-radius:15px;background:var(--card);content-visibility:auto;contain-intrinsic-size:80px}.universal-row.review{border-color:color-mix(in srgb,#ffc45d 60%,var(--border))}.universal-row.unmatched{opacity:.72}.universal-row.duplicate{opacity:.62}.universal-row.merge{border-color:color-mix(in srgb,#56a8ff 58%,var(--border))}.universal-select{display:grid;place-items:center}.universal-select input{width:18px;height:18px}.universal-thumb{width:58px;aspect-ratio:2/3;border-radius:8px;background:var(--soft) center/cover no-repeat}.universal-row-main{min-width:0}.universal-row-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.universal-row-head b{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.universal-row-main small,.universal-row-main p{display:block;margin:3px 0 0;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.universal-row .status{flex:none;padding:5px 8px;border-radius:999px;background:var(--soft);font-size:11px}.universal-row .status.matched{color:#42d58b}.universal-row .status.review{color:#ffc45d}.universal-row .status.duplicate{color:var(--muted)}.universal-row .status.merge{color:#73b8ff}.universal-more{display:block;margin-top:10px;color:var(--muted)}
+@media(max-width:980px){.universal-source-grid{grid-template-columns:1fr 1fr}.universal-source:last-child{grid-column:1/-1}}
+@media(max-width:680px){.universal-title,.universal-review-head{flex-direction:column}.universal-source-grid{grid-template-columns:1fr}.universal-source:last-child{grid-column:auto}.universal-source p{min-height:0}.universal-review-actions{justify-content:flex-start;width:100%}.universal-review-actions .primary-btn{width:100%}.universal-row{grid-template-columns:28px 46px minmax(0,1fr)}.universal-thumb{width:46px}.universal-row-head{align-items:flex-start;flex-direction:column;gap:5px}.universal-row .status{align-self:flex-start}.universal-queue{max-height:none;overflow:visible}}
+/* Small performance win on long catalog/community lists without changing layout. */
+.import-card,.lx-community-person,.episode-item,.track-item{content-visibility:auto;contain-intrinsic-size:120px}
