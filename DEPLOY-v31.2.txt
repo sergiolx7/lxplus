@@ -1,0 +1,22 @@
+LX PLUS v31.2 — PUBLICAÇÃO
+
+1. Extraia LX-Plus-v31.2-GitHub.zip.
+2. Substitua TODOS os arquivos estáticos antigos do repositório pelos arquivos deste pacote.
+3. Confirme principalmente:
+   - index.html
+   - lxplus.bundle.js
+   - lxplus.bundle.css
+   - manifest.webmanifest
+   - service-worker.js
+   - assets/
+4. Faça o commit/push e espere o GitHub Pages concluir a publicação.
+5. Abra o site e faça uma atualização forçada uma vez (Ctrl+F5 no desktop). Em PWA instalada, feche e abra novamente após a publicação.
+
+COMO USAR MÚSICAS
+- Principal de Música: no ADM, marque apenas as faixas que devem aparecer como destaque.
+- MP3 individual: ADM > Catálogo > adicionar/editar Música > escolha o arquivo. Aguarde a identificação automática antes de salvar.
+- Muitas músicas locais: ADM > IMPORTAÇÃO EM MASSA > Pasta deste computador > escolha a pasta > Analisar MP3s e nomes > revise > Publicar selecionados.
+- Muitas músicas do YouTube: ADM > IMPORTAÇÃO EM MASSA > YouTube > cole playlist/canal/links > Salvar músicas novas.
+
+YOUTUBE
+O player deve ser testado no domínio HTTP/HTTPS publicado. Abrir o index diretamente como file:// pode não fornecer a identificação de origem exigida por provedores de embed.

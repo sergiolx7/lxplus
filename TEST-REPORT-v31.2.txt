@@ -1,0 +1,35 @@
+LX PLUS v31.2 — TEST REPORT
+
+PASS — JavaScript bundle syntax (node --check)
+PASS — HTML parsed successfully
+PASS — Core static files present and served via local HTTP
+PASS — index.html returned HTTP 200
+PASS — lxplus.bundle.js returned HTTP 200
+PASS — lxplus.bundle.css returned HTTP 200
+PASS — manifest.webmanifest returned HTTP 200
+PASS — service-worker.js returned HTTP 200
+PASS — main logo asset returned HTTP 200
+PASS — 29/29 project-specific static checks
+PASS — PWA version/cache = 31.2 / lxplus-shell-v3120
+PASS — IMPORTAÇÃO EM MASSA visible and wired
+PASS — local-folder MP3 tag reader included
+PASS — local MP3 batch uploads wired at publish time
+PASS — individual MP3 smart metadata module included
+PASS — existing multi-track uploader uses smart metadata
+PASS — YouTube bulk metadata enrichment included
+PASS — YouTube deduplication preserved
+PASS — YouTube parser accepts main link formats
+PASS — YouTube embed sends origin/widget_referrer on HTTP/HTTPS
+PASS — YouTube iframe referrer policy adjusted
+PASS — YouTube player minimum height increased
+PASS — Music Home filters to featured tracks only
+PASS — non-featured tracks remain searchable
+PASS — content detail layout compacted
+PASS — admin featured label clarified
+PASS — no literal YouTube API key embedded in public bundle
+PASS — universal import backend source present in complete project
+PASS — community indexes present in complete project
+PASS — complete-project dist matches GitHub package core files
+
+Scope note:
+These tests validate code integrity and local static delivery. Third-party playback still depends on the provider, browser policies, network and correct deployment over HTTP/HTTPS. The live domain must receive the v31.2 static files before these frontend changes appear there.

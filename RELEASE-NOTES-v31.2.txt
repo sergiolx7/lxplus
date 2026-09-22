@@ -1,0 +1,43 @@
+LX PLUS v31.2 — MUSIC SMART IMPORT + PLAYER FIX
+
+Principais mudanças
+
+1. Página de detalhes compactada
+- Hero, sinopse, ficha lateral, avaliação e abas ocupam menos espaço.
+- Removida a repetição grande de ano/classificação/gênero na aba Visão geral.
+- Layout mais proporcional em desktop, tablet e celular.
+
+2. Página principal de Música = somente destaques
+- A Home de Música mostra apenas faixas marcadas pelo ADM como "Mostrar na página principal / destaque".
+- As demais músicas continuam no catálogo e aparecem pela Busca/Explorar/Biblioteca.
+- Se não houver destaque, a Home mostra um atalho simples para pesquisar.
+
+3. MP3 inteligente — cadastro individual
+- Ao selecionar um arquivo de áudio, a LX Plus tenta ler tags ID3.
+- Detecta título, artista, álbum, ano, gênero, duração e capa incorporada quando disponíveis.
+- Complementa dados usando o catálogo musical conectado ao importador.
+- Preenche automaticamente descrição curta e capa quando encontrada.
+
+4. MP3 inteligente — importação em massa
+- A opção IMPORTAÇÃO EM MASSA lê vários MP3s/áudios da pasta.
+- Usa tags + nome do arquivo para identificar faixa/artista.
+- Busca capa, álbum, ano, gênero e duração automaticamente.
+- Itens seguros são selecionados automaticamente; dúvidas ficam para revisão.
+- Ao publicar, os áudios locais selecionados são enviados pelo sistema de mídia configurado (R2/Supabase conforme o projeto).
+
+5. Importação em massa do YouTube melhorada
+- Playlist, canal ou vários links continuam aceitos.
+- Antes de salvar, tenta identificar faixa, artista, álbum, capa, ano, gênero e duração.
+- Mantém deduplicação por vídeo e por título + artista.
+- Capa do catálogo musical é usada quando encontrada; thumbnail do YouTube fica como fallback.
+
+6. Player do YouTube / erro de incorporação
+- Parser de links ampliado para youtube.com, youtu.be, YouTube Music, shorts, live, embed e IDs diretos.
+- Embed agora envia identificação de origem/referrer quando a página está em HTTP/HTTPS.
+- Player recebeu altura mínima compatível e política de referrer ajustada.
+
+7. PWA / cache
+- Versão e cache atualizados para v31.2 para reduzir a chance de celular/tablet continuar abrindo arquivos antigos.
+
+Observação
+Nenhum sistema web complexo pode garantir literalmente zero bugs em todo navegador/provedor. Esta versão foi validada por testes estáticos, sintaxe JavaScript e carregamento HTTP local antes do empacotamento.
