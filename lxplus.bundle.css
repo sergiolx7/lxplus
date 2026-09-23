@@ -6032,3 +6032,144 @@ input,select,textarea,button{max-width:100%}
 }
 @media (max-width:430px){#welcome .mode-summary{display:none}#welcome .welcome-card{width:min(290px,100%)}}
 @media(max-width:760px){.music-dock.external-provider.provider-youtube .music-provider-panel{width:min(360px,calc(100vw - 16px))!important;left:auto!important;right:0!important}.music-dock.external-provider.provider-youtube #musicProviderFrame{height:202px!important;min-height:202px!important}}
+
+/* =========================================================
+   LX Plus v33.5 · UI Recovery / Layout Unification
+   ========================================================= */
+:root{--lx-topbar-h:82px}
+
+/* Visual intro: decorative only, never blocks input or boot. */
+.lx-visual-intro335{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;align-content:center;gap:22px;background:#020204;pointer-events:none;animation:lx335Intro 2.15s ease forwards}
+.lx-intro-face335{position:relative;width:88px;height:60px;filter:drop-shadow(0 14px 28px rgba(255,255,255,.08))}
+.lx-intro-face335 i{position:absolute;top:4px;width:32px;height:7px;background:#fff;border-radius:999px;transform:rotate(43deg)}
+.lx-intro-face335 i:first-child{left:8px}.lx-intro-face335 i:nth-child(2){right:8px;transform:rotate(-43deg)}
+.lx-intro-face335 i:after{content:"";position:absolute;inset:0;transform:rotate(90deg);background:#fff;border-radius:999px}
+.lx-intro-face335 b{position:absolute;left:25px;right:25px;bottom:8px;height:7px;background:#fff;border-radius:999px;box-shadow:0 3px 0 rgba(255,255,255,.18)}
+.lx-intro-word335{display:flex;align-items:baseline;gap:8px;color:#fff;letter-spacing:-.06em;text-shadow:0 10px 40px rgba(255,255,255,.12)}
+.lx-intro-word335 strong{font:900 clamp(44px,5vw,76px)/1 system-ui,sans-serif}.lx-intro-word335 span{font:500 clamp(38px,4.3vw,66px)/1 system-ui,sans-serif;color:#ececf2}
+@keyframes lx335Intro{0%,48%{opacity:1;visibility:visible}78%{opacity:.14}100%{opacity:0;visibility:hidden}}
+@media(prefers-reduced-motion:reduce){.lx-visual-intro335{animation-duration:.65s}}
+
+/* Remove duplicate desktop rails that were colliding with the main navigation. */
+.lx-desktop-rail,.lx-right-rail{display:none!important}
+@media(min-width:1280px){#app>main{margin-left:0!important;margin-right:0!important;width:100%!important}}
+
+/* One compact, full-width top bar. */
+#app .topbar{left:0!important;right:0!important;top:0!important;border-radius:0!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.065)!important;background:rgba(5,6,10,.93)!important;backdrop-filter:blur(18px) saturate(1.15)!important;box-shadow:0 10px 28px rgba(0,0,0,.18)!important;overflow:visible!important}
+#app .topbar-row{height:45px!important;min-height:45px!important;padding:0 14px!important;gap:9px!important}
+#app .topbar .brand{width:34px!important;min-width:34px!important;height:34px!important;overflow:hidden;margin-right:1px}
+#app .topbar .brand img{width:34px!important;height:34px!important;object-fit:contain!important}
+#app .mode-switch{height:35px!important;padding:2px!important;gap:1px!important;background:rgba(255,255,255,.025)!important}
+#app .mode-switch button{height:29px!important;padding:0 9px!important;font-size:10px!important}
+#app .category-nav{min-height:36px!important;height:36px!important;padding:2px 10px 5px!important;gap:2px!important;background:rgba(5,6,10,.82)!important}
+#app .category-nav button{height:29px!important;padding:0 9px!important;font-size:10px!important}
+#app .top-actions{gap:5px!important;min-width:0!important}
+#app .top-actions>button{height:34px!important;min-height:34px!important;border-radius:10px!important}
+#app .icon-btn.lx-top-icon{width:34px!important;min-width:34px!important;padding:0!important}
+#app .community-top-btn{height:34px!important;padding:0 10px!important;font-size:10px!important}
+#app .community-top-btn svg{width:15px!important;height:15px!important}
+#app .avatar-btn{width:34px!important;height:34px!important;min-width:34px!important}
+#app .avatar-btn .avatar-inline{width:100%!important;height:100%!important}
+#app .install-app-btn,#app .message-top-btn{display:none!important}
+.lx-ai-top335{height:34px!important;padding:0 10px!important;border:1px solid rgba(255,255,255,.09);border-radius:10px;background:linear-gradient(135deg,rgba(126,56,224,.35),rgba(64,100,225,.18));color:#fff;font-size:10px;font-weight:850;white-space:nowrap}
+
+/* Search button can no longer float as an orphan icon. */
+#app .search-wrap{position:relative!important;width:34px!important;height:34px!important;flex:0 0 auto!important;transition:width .2s ease!important}
+#app .search-wrap input{position:absolute!important;right:0!important;top:0!important;width:34px!important;height:34px!important;opacity:0!important;padding:0!important;border-radius:10px!important;box-sizing:border-box!important;pointer-events:none!important}
+#app .search-wrap button{right:0!important;top:0!important;width:34px!important;height:34px!important;border-radius:10px!important;display:grid!important;place-items:center!important;padding:0!important;line-height:1!important}
+#app .search-wrap.open{width:min(320px,34vw)!important}
+#app .search-wrap.open input{width:100%!important;opacity:1!important;pointer-events:auto!important;padding:0 42px 0 12px!important}
+#app .search-wrap.open button{background:rgba(15,18,26,.98)!important}
+#app .search-shortcut{display:none!important}
+
+/* Hero starts directly under compact navigation, with no extra black slab. */
+#app>main{padding-top:var(--lx-topbar-h)!important}
+#app .hero{height:min(70vh,720px)!important;min-height:520px!important;margin-top:0!important}
+#app .hero-copy{padding-bottom:68px!important}
+#app .hero-copy h1{font-size:clamp(46px,5.6vw,82px)!important}
+#app .hero-bg{background-size:cover!important;background-repeat:no-repeat!important}
+
+/* Greeting: compact and below the hero, never covering rails/content. */
+#app .welcome{margin-top:0!important;padding:12px 4vw 20px!important;z-index:8!important}
+#app .welcome-card{width:min(520px,100%)!important;min-height:0!important;padding:10px 12px!important;border-radius:14px!important;align-items:center!important;gap:10px!important;background:linear-gradient(100deg,rgba(12,13,20,.96),rgba(20,12,35,.88))!important}
+#app .welcome-user{gap:10px!important;align-items:center!important}
+#app .welcome-avatar{width:38px!important;height:38px!important;min-width:38px!important}
+#app .welcome-card .eyebrow{font-size:7px!important}
+#app .welcome-card h2{font-size:17px!important;margin:2px 0!important;line-height:1.08!important}
+#app .welcome-card p{font-size:9px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:250px!important}
+#app .mode-summary{gap:10px!important;margin-left:auto!important}
+#app .mode-summary strong{font-size:14px!important}
+#app .mode-summary small{font-size:6px!important}
+#app .experience-strip{display:none!important}
+
+/* Main music page: only its own music navigation remains. */
+.lx-music-shell-v260{padding-top:0!important}
+@media(min-width:1280px){.lx-music-shell-v260{grid-template-columns:210px minmax(0,1fr)!important}.lx-music-main-v260{min-width:0!important}}
+
+/* Music search: fixed dimensions and button containment on every viewport. */
+.lx-music-search-box{width:min(780px,100%)!important;max-width:100%!important;height:52px!important;grid-template-columns:38px minmax(0,1fr) 34px 84px!important;padding:4px 5px 4px 9px!important;box-sizing:border-box!important;overflow:hidden!important}
+.lx-music-search-box>*{min-width:0!important;box-sizing:border-box!important}
+.lx-music-search-box button[type="submit"]{width:80px!important;min-width:80px!important;height:40px!important;padding:0 10px!important;display:grid!important;place-items:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.lx-music-search-box #lxMusicSearchClear{width:32px!important;min-width:32px!important}
+
+/* Persistent player stays inside viewport and doesn't swallow the page. */
+.music-dock.music-dock-v25{left:10px!important;right:10px!important;bottom:9px!important;width:auto!important;max-width:none!important;z-index:360!important}
+.music-playback-kind.is-loading{color:#d9c8ff!important}
+.music-playback-kind.is-error{color:#ff8e98!important}
+
+/* Admin layout cleanup. */
+.admin-side{width:190px!important}
+.admin-main{margin-left:190px!important;padding:22px 24px 110px!important;min-width:0!important}
+#adminNav button{min-height:38px!important}
+#adminNav button[data-admin="carousel"],#adminNav button[data-admin="live"],#adminNav button[data-admin="lxai"]{border-color:rgba(139,92,246,.18)!important}
+.lx-admin-builder335{display:grid;gap:14px}
+.lx-admin-builder335 .admin-card{overflow:hidden}
+.lx-carousel-grid335{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(0,1.6fr);gap:14px}
+.lx-carousel-controls335{display:grid;gap:10px;align-content:start}
+.lx-carousel-controls335 label{display:grid;gap:6px;color:#9da8b5;font-size:10px}
+.lx-carousel-controls335 input,.lx-carousel-controls335 select{height:40px;border:1px solid var(--line);border-radius:10px;background:#0c1017;color:#fff;padding:0 10px}
+.lx-carousel-previews335{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.lx-device-preview335{position:relative;overflow:hidden;min-height:180px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:#090b10 center/cover no-repeat}
+.lx-device-preview335.mobile{aspect-ratio:9/16;min-height:300px;max-height:430px}.lx-device-preview335.tablet{aspect-ratio:4/3}.lx-device-preview335.desktop{aspect-ratio:16/9}.lx-device-preview335.tv{aspect-ratio:16/9}
+.lx-device-preview335:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.68),transparent 62%),linear-gradient(0deg,rgba(0,0,0,.35),transparent 50%)}
+.lx-device-preview335>span{position:absolute;z-index:2;left:10px;top:10px;padding:5px 7px;border-radius:7px;background:rgba(0,0,0,.58);font-size:8px;font-weight:850}
+.lx-device-preview335>strong{position:absolute;z-index:2;left:12px;bottom:12px;right:12px;font-size:clamp(13px,1.6vw,22px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lx-device-row335{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lx-device-row335 input[type="range"]{width:100%}
+.lx-carousel-list335{display:grid;gap:7px;max-height:360px;overflow:auto}
+.lx-carousel-item335{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;border:1px solid rgba(255,255,255,.07);border-radius:11px;background:rgba(255,255,255,.02)}
+.lx-carousel-item335 img{width:54px;height:34px;object-fit:cover;border-radius:7px;background:#111}.lx-carousel-item335 small,.lx-carousel-item335 strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lx-carousel-item335 small{color:#7f8b98;font-size:8px;margin-top:3px}
+.lx-live-admin335{display:grid;gap:12px}.lx-live-list335{display:grid;gap:8px}.lx-live-row335{display:grid;grid-template-columns:70px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px;border:1px solid rgba(255,255,255,.07);border-radius:12px}.lx-live-row335 img{width:70px;height:42px;object-fit:cover;border-radius:8px;background:#111}
+
+/* LX IA */
+.lx-ai-panel335{position:fixed;z-index:1200;right:14px;top:58px;width:min(390px,calc(100vw - 28px));height:min(620px,calc(100vh - 76px));display:grid;grid-template-rows:auto 1fr auto;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:rgba(9,10,15,.97);box-shadow:0 28px 80px rgba(0,0,0,.5);backdrop-filter:blur(24px);overflow:hidden}
+.lx-ai-panel335.hidden{display:none}.lx-ai-head335{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border-bottom:1px solid rgba(255,255,255,.06)}.lx-ai-head335 span{font-size:9px;letter-spacing:.12em;color:#b993ff}.lx-ai-head335 h3{margin:2px 0 0;font-size:16px}.lx-ai-head335 button{width:32px;height:32px;border:0;border-radius:9px;background:rgba(255,255,255,.06);color:#fff}.lx-ai-log335{padding:14px;overflow:auto;display:grid;align-content:start;gap:9px}.lx-ai-msg335{max-width:86%;padding:9px 11px;border-radius:12px;background:rgba(255,255,255,.055);font-size:11px;line-height:1.5}.lx-ai-msg335.me{justify-self:end;background:rgba(139,92,246,.22)}.lx-ai-form335{display:grid;grid-template-columns:1fr auto;gap:7px;padding:10px;border-top:1px solid rgba(255,255,255,.06)}.lx-ai-form335 input{height:40px;border:1px solid rgba(255,255,255,.09);border-radius:10px;background:#10131a;color:#fff;padding:0 11px}.lx-ai-form335 button{height:40px;padding:0 14px;border:0;border-radius:10px;background:#fff;color:#090a0d;font-weight:850}
+
+@media(max-width:1100px){
+ :root{--lx-topbar-h:78px}
+ #app .topbar .brand{display:none!important}
+ #app .premium-top-btn,#app .admin-top-btn,#app .themeBtn{display:none!important}
+ #app .community-top-btn b{display:none!important}
+ #app .community-top-btn{width:34px!important;padding:0!important}
+ #app .hero{min-height:480px!important;height:62vh!important}
+ .lx-carousel-grid335{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+ :root{--lx-topbar-h:72px}
+ #app .topbar-row{height:40px!important;padding:0 7px!important;gap:4px!important}
+ #app .mode-switch button{font-size:0!important;width:34px!important;padding:0!important}
+ #app .mode-switch button span{font-size:13px!important;margin:0!important}
+ #app .category-nav{height:32px!important;min-height:32px!important;padding:1px 6px 3px!important}
+ #app .category-nav button{height:27px!important;font-size:9px!important}
+ #app .search-wrap.open{position:absolute!important;left:7px!important;right:7px!important;top:3px!important;width:auto!important;z-index:4!important}
+ #app .community-top-btn{display:none!important}
+ .lx-ai-top335 span{display:none}.lx-ai-top335{width:34px!important;padding:0!important}
+ #app .hero{min-height:430px!important;height:58vh!important}
+ #app .hero-copy{width:86vw!important;padding:0 16px 56px!important}
+ #app .hero-copy h1{font-size:clamp(38px,12vw,60px)!important}
+ #app .welcome{padding:9px 10px 16px!important}.welcome-card{width:100%!important}.mode-summary{display:none!important}
+ .lx-music-search-box{grid-template-columns:34px minmax(0,1fr) 30px 62px!important;height:48px!important}.lx-music-search-box button[type="submit"]{width:58px!important;min-width:58px!important;padding:0 5px!important;font-size:9px!important}
+ .music-dock.music-dock-v25{left:4px!important;right:4px!important;bottom:5px!important}
+ .admin-side{width:100%!important}.admin-main{margin-left:0!important;padding:86px 10px 100px!important}.lx-carousel-previews335{grid-template-columns:1fr}.lx-device-preview335.mobile{max-height:330px}
+}
+#app #searchBtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}

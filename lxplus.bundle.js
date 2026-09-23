@@ -24,12 +24,12 @@
 
 
 /* ===== lxplus.js ===== */
-window.__LX_JS_BUILD='32.3';
+window.__LX_JS_BUILD='33.5';
 
 /* ===== config.js · LX Plus v25.50 ===== */
 window.LX=window.LX||{};
 LX.config={
-  version:'32.2',
+  version:'33.5',
   environment:'cloud-ready',
   production:true,
   apiBase:'',
@@ -1491,14 +1491,23 @@ function cacheMusicSource(ref,value){if(!ref||!value)return value;musicSourceCac
 function cachedMusicSource(ref){return ref?musicSourceCache.get(String(ref))||null:null}
 async function fetchMusicTicket(ref,expires=7200){
  if(!String(ref||'').startsWith('cloud:')||!LX.cloud?.db?.())return null;
+ const key=String(ref),db=LX.cloud.db(),path=key.slice(6).replace(/^\/+/,''),bucket=LX.config?.supabase?.mediaBucket||'lx-media';
+ const timed=(promise,ms=5000)=>Promise.race([Promise.resolve(promise),new Promise((_,reject)=>setTimeout(()=>reject(new Error('MEDIA_TIMEOUT')),ms))]);
+ // Fast path: create the signed Storage URL directly in the authenticated browser.
  try{
-  const db=LX.cloud.db(),sessionRes=await db.auth.getSession(),access=sessionRes?.data?.session?.access_token||'';
-  if(!access)return null;
-  const {data,error}=await db.functions.invoke('lx-media-ticket',{body:{key:String(ref),expires},headers:{Authorization:`Bearer ${access}`}});
-  if(error||!data?.url){console.warn('LX media ticket unavailable',error||data);return null}
-  if(data.signedUrl)musicSignedFallbackCache.set(String(ref),data.signedUrl);
-  return data.url;
- }catch(error){console.warn('LX media ticket request failed',error);return null}
+  const signed=await timed(db.storage.from(bucket).createSignedUrl(path,7200),4500);
+  if(!signed?.error&&signed?.data?.signedUrl){musicSignedFallbackCache.set(key,signed.data.signedUrl);return signed.data.signedUrl}
+ }catch(error){console.warn('LX direct signed music URL failed',error)}
+ // Server ticket is a fallback, never an unbounded blocker.
+ try{
+  const sessionRes=await timed(db.auth.getSession(),3000),access=sessionRes?.data?.session?.access_token||'';
+  if(access){
+   const invoked=await timed(db.functions.invoke('lx-media-ticket',{body:{key,expires},headers:{Authorization:`Bearer ${access}`}}),5000);
+   const data=invoked?.data,error=invoked?.error;
+   if(!error&&(data?.signedUrl||data?.url)){const url=data.signedUrl||data.url;musicSignedFallbackCache.set(key,url);return url}
+  }
+ }catch(error){console.warn('LX media ticket fallback failed',error)}
+ return null
 }
 function primeMusicMedia(ref,value){cacheMusicSource(ref,value);return true}
 function musicMime(name='',fallback=''){
@@ -1525,10 +1534,11 @@ async function prewarmMusicRef(ref){
  const task=(async()=>{
   const d=LX.mediaSources?.describe?.(key);if(d?.kind==='embed')return null;if(d?.kind==='direct'&&d.src)return cacheMusicSource(key,d.src);
   if(key.startsWith('cloud:')){
-   const ticket=await fetchMusicTicket(key,7200);if(ticket)return cacheMusicSource(key,ticket);
-   if(LX.cloud?.db?.()){try{const path=key.slice(6).replace(/^\/+/, '');const signed=await LX.cloud.db().storage.from(LX.config?.supabase?.mediaBucket||'lx-media').createSignedUrl(path,7200);if(!signed.error&&signed.data?.signedUrl){musicSignedFallbackCache.set(key,signed.data.signedUrl);return cacheMusicSource(key,signed.data.signedUrl)}}catch(e){console.warn('LX signed music fallback',key,e)}}
+   const direct=await fetchMusicTicket(key,7200);if(direct)return cacheMusicSource(key,direct);
+   try{const value=await Promise.race([S.getMedia(key),new Promise((_,reject)=>setTimeout(()=>reject(new Error('MEDIA_LOCAL_TIMEOUT')),6500))]);if(value)return cacheMusicSource(key,value)}catch(e){console.warn('LX cloud music fallback',key,e)}
+   return null
   }
-  try{const value=await S.getMedia(key);return value?cacheMusicSource(key,value):null}catch(e){console.warn('LX prewarm music source',key,e);return null}
+  try{const value=await Promise.race([S.getMedia(key),new Promise((_,reject)=>setTimeout(()=>reject(new Error('MEDIA_LOCAL_TIMEOUT')),6500))]);return value?cacheMusicSource(key,value):null}catch(e){console.warn('LX prewarm music source',key,e);return null}
  })().finally(()=>musicSourcePromises.delete(key));musicSourcePromises.set(key,task);return task
 }
 function musicRefsForContent(x={}){const tracks=x.tracks?.length?x.tracks:[x],refs=[];for(const t of tracks){const ref=t.authorizedAudioUrl||t.authorizedStreamUrl||t.authorizedAudioKey||t.fullMediaKey||t.audioKey||t.audioUrl||t.mediaKey||t.url||x.authorizedAudioUrl||x.authorizedStreamUrl||x.authorizedAudioKey||x.fullMediaKey||x.audioKey||x.audioUrl||x.mediaKey;if(ref&&!refs.includes(ref))refs.push(ref)}return refs}
@@ -1541,9 +1551,9 @@ function unlockMusicGesture(){
  try{const AC=window.AudioContext||window.webkitAudioContext;if(AC){LX.__musicAudioContext=LX.__musicAudioContext||new AC();LX.__musicAudioContext.resume?.().catch(()=>{})}}catch{}
  if(musicGestureUnlocked)return;try{musicUnlockAudio=musicUnlockAudio||new Audio(LX_SILENT_WAV);musicUnlockAudio.volume=0;const p=musicUnlockAudio.play();Promise.resolve(p).then(()=>{musicGestureUnlocked=true;musicUnlockAudio.pause()}).catch(()=>{})}catch{}
 }
-function waitForMusicReady(a,timeout=8500){
- if(!a)return Promise.reject(new Error('AUDIO_ELEMENT_MISSING'));if(a.readyState>=2)return Promise.resolve(true);
- return new Promise((resolve,reject)=>{let done=false;const clean=()=>{clearTimeout(tm);a.removeEventListener('canplay',ok);a.removeEventListener('loadeddata',ok);a.removeEventListener('error',bad)};const ok=()=>{if(done)return;done=true;clean();resolve(true)};const bad=()=>{if(done)return;done=true;clean();reject(a.error||new Error('AUDIO_MEDIA_ERROR'))};const tm=setTimeout(()=>{if(done)return;done=true;clean();reject(new Error('AUDIO_READY_TIMEOUT'))},timeout);a.addEventListener('canplay',ok,{once:true});a.addEventListener('loadeddata',ok,{once:true});a.addEventListener('error',bad,{once:true})})
+function waitForMusicReady(a,timeout=6500){
+ if(!a)return Promise.reject(new Error('AUDIO_ELEMENT_MISSING'));if(a.readyState>=1&&Number.isFinite(a.duration))return Promise.resolve(true);
+ return new Promise((resolve,reject)=>{let done=false;const clean=()=>{clearTimeout(tm);['canplay','loadeddata','loadedmetadata','durationchange'].forEach(ev=>a.removeEventListener(ev,ok));a.removeEventListener('error',bad)};const ok=()=>{if(done)return;if(a.readyState<1)return;done=true;clean();resolve(true)};const bad=()=>{if(done)return;done=true;clean();reject(a.error||new Error('AUDIO_MEDIA_ERROR'))};const tm=setTimeout(()=>{if(done)return;done=true;clean();reject(new Error('AUDIO_READY_TIMEOUT'))},Math.min(timeout,6500));['canplay','loadeddata','loadedmetadata','durationchange'].forEach(ev=>a.addEventListener(ev,ok));a.addEventListener('error',bad,{once:true})})
 }
 
 function currentMusic(){return state.musicQueue?.[state.musicIndex]||null}
@@ -1661,7 +1671,7 @@ function music(id,index=0,autoplay=true){
  loadTrack(autoplay).finally(()=>rememberMusicStart(id,nextIndex))
 }
 let musicLoadTicket=0,musicReadyPromise=Promise.resolve(false);
-function setMusicStatus(text='',kind=''){const el=$('musicPlaybackKind');if(!el)return;el.textContent=text||'Faixa completa';el.classList.remove('hidden','is-loading','is-error','is-ready');if(kind)el.classList.add('is-'+kind);const play=$('musicPlay');if(play){play.disabled=kind==='loading';play.title=kind==='error'?'Tentar reproduzir novamente':kind==='loading'?'Carregando áudio':'Reproduzir ou pausar'}}
+function setMusicStatus(text='',kind=''){const el=$('musicPlaybackKind');if(!el)return;el.textContent=text||'Faixa completa';el.classList.remove('hidden','is-loading','is-error','is-ready');if(kind)el.classList.add('is-'+kind);const play=$('musicPlay');if(play){play.disabled=false;play.title=kind==='error'?'Tentar reproduzir novamente':kind==='loading'?'Preparando áudio…':'Reproduzir ou pausar'}}
 async function cloudBlobFallback(ref,item={}){if(!String(ref||'').startsWith('cloud:'))return null;try{let blob=await LX.cloud?.downloadMedia?.(String(ref));if(!blob)return null;blob=playableMusicBlob(blob,item,ref);cacheMusicSource(ref,blob);return blob}catch(e){console.warn('LX cloud blob fallback',e);return null}}
 async function recoverNativeMusicSource(t,autoplay=true,previousError=null,quiet=false,expectedTicket=musicLoadTicket){
  const a=$('musicAudio'),ref=a?.dataset?.sourceRef||t?.mediaKey||'';
@@ -1673,7 +1683,7 @@ async function recoverNativeMusicSource(t,autoplay=true,previousError=null,quiet
    let source=media;
    if(source instanceof Blob){source=playableMusicBlob(source,t,ref);if(musicObjectUrl?.startsWith?.('blob:'))URL.revokeObjectURL(musicObjectUrl);musicObjectUrl=URL.createObjectURL(source);source=musicObjectUrl}
    if(!current())return false;
-   a.dataset.sourceRef=String(ref);a.src=String(source);a.load();await waitForMusicReady(a,10000);
+   a.dataset.sourceRef=String(ref);a.src=String(source);a.load();await waitForMusicReady(a,6500);
    if(!current())return false;
    if(autoplay)await a.play();
    if(!current())return false;
@@ -1704,7 +1714,7 @@ async function loadTrack(autoplay=false){
    let media=cachedMusicSource(ref);if(!media&&desc?.kind==='direct'&&desc.src)media=cacheMusicSource(ref,desc.src);if(!media)media=await prewarmMusicRef(ref);if(ticket!==musicLoadTicket)return false;if(!media)continue;
    try{
     let source=media;if(source instanceof Blob){source=playableMusicBlob(source,t,ref);musicObjectUrl=URL.createObjectURL(source);source=musicObjectUrl}
-    a.dataset.sourceRef=String(ref);a.preload='auto';a.src=String(source);a.load();await waitForMusicReady(a,8500);if(ticket!==musicLoadTicket)return false;
+    a.dataset.sourceRef=String(ref);a.preload='auto';a.src=String(source);a.load();await waitForMusicReady(a,6500);if(ticket!==musicLoadTicket)return false;
     if(autoplay)await a.play();providerPlayback={kind:'native',paused:!autoplay,desc:null};setMusicStatus('Faixa completa','ready');updateMusicUI();return true
    }catch(error){if(ticket!==musicLoadTicket)return false;if(error?.name==='NotAllowedError'&&a.readyState>=2){setMusicStatus('Pronta · toque em ▶ para iniciar','ready');updateMusicUI();return true}lastError=error;console.warn('LX music source failed',error);musicSourceCache.delete(String(ref));a.pause();a.removeAttribute('src');a.load();if(musicObjectUrl?.startsWith?.('blob:'))try{URL.revokeObjectURL(musicObjectUrl)}catch{}musicObjectUrl=null;if(ticket!==musicLoadTicket)return false}
   }
@@ -2812,3 +2822,64 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
 
  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['v32.2-resilient-audio']='32.2';
 })();
+
+/* ===== LX Plus v33.5 · recovery-ui.js ===== */
+(()=>{
+ const LX=window.LX;if(!LX?.ui||!LX?.data)return;
+ const U=LX.ui,D=LX.data,S=LX.store,$=id=>document.getElementById(id),esc=U.esc||((x)=>String(x??''));
+ const devices=['desktop','tablet','mobile','tv'];
+ const deviceLabel={desktop:'PC',tablet:'Tablet',mobile:'Celular',tv:'TV'};
+ const timeout=(p,ms=6000)=>Promise.race([Promise.resolve(p),new Promise((_,reject)=>setTimeout(()=>reject(new Error('TIMEOUT')),ms))]);
+
+ /* ---- top-level profile / AI ---- */
+ function aiPanel(){let el=$('lxAiPanel335');if(el)return el;el=document.createElement('aside');el.id='lxAiPanel335';el.className='lx-ai-panel335 hidden';el.innerHTML=`<header class="lx-ai-head335"><div><span>LX IA · BETA</span><h3>Assistente da LX Plus</h3></div><button type="button" data-ai-close>×</button></header><div class="lx-ai-log335" id="lxAiLog335"><div class="lx-ai-msg335">Posso ajudar a encontrar conteúdos, explicar a LX Plus e orientar você dentro do catálogo.</div></div><form class="lx-ai-form335" id="lxAiForm335"><input id="lxAiInput335" autocomplete="off" placeholder="Pergunte sobre filmes, séries, músicas…"><button>Enviar</button></form>`;document.body.appendChild(el);el.querySelector('[data-ai-close]').onclick=()=>el.classList.add('hidden');el.querySelector('form').onsubmit=e=>{e.preventDefault();const input=$('lxAiInput335'),q=input.value.trim();if(!q)return;input.value='';appendAI(q,true);setTimeout(()=>appendAI(answerAI(q),false),120)};return el}
+ function appendAI(text,me=false){const log=$('lxAiLog335')||aiPanel().querySelector('#lxAiLog335'),m=document.createElement('div');m.className='lx-ai-msg335'+(me?' me':'');m.textContent=text;log.appendChild(m);log.scrollTop=log.scrollHeight}
+ function answerAI(q){const n=String(q).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),cat=D.catalog().filter(x=>x.published!==false);if(/(filme|serie|musica|livro|anime|dorama|assistir|ouvir|ler)/.test(n)){const words=n.replace(/\b(quero|achar|procure|buscar|filme|serie|musica|livro|anime|dorama|assistir|ouvir|ler|sobre|uma|um|de|do|da|por|favor)\b/g,' ').replace(/\s+/g,' ').trim();const hits=words?(D.search?.(cat,words)||[]):cat.slice(0,5);if(hits.length)return 'Encontrei: '+hits.slice(0,5).map(x=>x.title).join(' · ')+'. Você pode usar a busca para abrir o conteúdo.';return 'Não encontrei um título correspondente no catálogo atual.'}if(/(perfil|foto|avatar)/.test(n))return 'Abra sua foto no canto superior direito para acessar Meu perfil e as configurações da conta.';if(/(adm|administr)/.test(n))return U.state?.user?.admin?'Sua conta tem acesso ao Painel ADM. Use o botão ADM no topo ou o menu administrativo.':'O Painel ADM aparece apenas para contas autorizadas.';if(/(ajuda|como funciona|o que voce faz)/.test(n))return 'Eu sou a LX IA Beta. Nesta versão ajudo com navegação e catálogo; depois podemos ampliar minhas respostas e ferramentas.';return 'Posso ajudar com o catálogo, músicas, filmes, séries, livros, perfil e uso da LX Plus. Tente perguntar por um título ou categoria.'}
+ function openAI(){aiPanel().classList.toggle('hidden');setTimeout(()=>$('lxAiInput335')?.focus(),30)}
+ document.addEventListener('click',e=>{if(e.target.closest?.('#lxAiTop335'))openAI()});
+ LX.openAI335=openAI;
+
+ /* ---- resilient cloud music diagnostics / retry ---- */
+ async function signedMusicUrl(ref){if(!String(ref||'').startsWith('cloud:')||!LX.cloud?.db?.())return null;const db=LX.cloud.db(),path=String(ref).slice(6).replace(/^\/+/,''),bucket=LX.config?.supabase?.mediaBucket||'lx-media';try{const r=await timeout(db.storage.from(bucket).createSignedUrl(path,7200),5000);if(!r?.error&&r?.data?.signedUrl)return r.data.signedUrl}catch(e){console.warn('LX335 signed music',e)}try{const session=await timeout(db.auth.getSession(),2500),token=session?.data?.session?.access_token;if(token){const r=await timeout(db.functions.invoke('lx-media-ticket',{body:{key:String(ref),expires:7200},headers:{Authorization:`Bearer ${token}`}}),5000);if(!r?.error&&(r?.data?.signedUrl||r?.data?.url))return r.data.signedUrl||r.data.url}}catch(e){console.warn('LX335 ticket music',e)}return null}
+ async function retryCurrentCloud(){const state=U.state,t=state?.musicQueue?.[state.musicIndex],audio=$('musicAudio');if(!t||!audio)return false;const ref=t.mediaKey||t.sourceMediaKey||'';if(!String(ref).startsWith('cloud:'))return false;const status=$('musicPlaybackKind');if(status){status.textContent='Preparando áudio…';status.className='music-playback-kind is-loading'};const src=await signedMusicUrl(ref);if(!src){if(status){status.textContent='Áudio indisponível · tente novamente';status.className='music-playback-kind is-error'}return false}try{audio.src=src;audio.preload='auto';audio.load();await timeout(new Promise((resolve,reject)=>{const ok=()=>{clean();resolve(true)},bad=()=>{clean();reject(audio.error||new Error('AUDIO_ERROR'))},clean=()=>{audio.removeEventListener('loadedmetadata',ok);audio.removeEventListener('canplay',ok);audio.removeEventListener('error',bad)};audio.addEventListener('loadedmetadata',ok,{once:true});audio.addEventListener('canplay',ok,{once:true});audio.addEventListener('error',bad,{once:true})}),6500);try{await audio.play()}catch(e){if(e?.name!=='NotAllowedError')throw e}if(status){status.textContent=audio.paused?'Pronta · toque em ▶':'Faixa completa';status.className='music-playback-kind is-ready'}return true}catch(e){console.warn('LX335 audio retry',e);if(status){status.textContent='Falha no áudio · toque em ▶';status.className='music-playback-kind is-error'}return false}}
+ const musicPlay=$('musicPlay');if(musicPlay){const previous=musicPlay.onclick;musicPlay.onclick=async e=>{const audio=$('musicAudio'),t=U.state?.musicQueue?.[U.state.musicIndex];if(t&&String(t.mediaKey||t.sourceMediaKey||'').startsWith('cloud:')&&(!audio?.src||audio?.error||audio?.readyState===0)){const ok=await retryCurrentCloud();if(ok)return}return previous?.call(musicPlay,e)}}
+ LX.retryCurrentCloud335=retryCurrentCloud;
+
+ /* ---- responsive hero art ---- */
+ function heroDevice(){const w=window.innerWidth;return w<=620?'mobile':w<=1100?'tablet':w>=2200?'tv':'desktop'}
+ function featuredRows(){const all=D.catalog().filter(x=>x.published!==false&&['Filme','Série','Anime','Dorama'].includes(x.type)),branding=D.branding?.()||{},ids=(branding.featuredIds||[]).map(Number);let f=all.filter(x=>ids.includes(Number(x.id)));if(!f.length)f=all.filter(x=>x.featured);if(!f.length)f=all.slice(0,4);return f}
+ function heroArtFor(x,device=heroDevice()){return x?.heroArt?.[device]||x?.heroArt?.desktop||x?.carouselImage||x?.banner||x?.cover||''}
+ function heroFocusFor(x,device=heroDevice()){const v=x?.heroFocus?.[device]||x?.heroFocus?.desktop||{};return {x:Number(v.x??50),y:Number(v.y??35)}}
+ function syncHero335(){const hero=$('hero');if(!hero)return;const rows=featuredRows(),dev=heroDevice(),slides=hero.querySelectorAll('.hero-slide');slides.forEach((slide,i)=>{const x=rows[i];if(!x)return;const bg=slide.querySelector('.hero-bg'),art=heroArtFor(x,dev),focus=heroFocusFor(x,dev);if(bg&&art){bg.style.backgroundImage=`url(${JSON.stringify(art)})`;bg.style.backgroundPosition=`${focus.x}% ${focus.y}%`;bg.style.backgroundSize='cover'}})}
+ let heroSyncTimer;window.addEventListener('resize',()=>{clearTimeout(heroSyncTimer);heroSyncTimer=setTimeout(syncHero335,100)});if($('hero'))new MutationObserver(()=>queueMicrotask(syncHero335)).observe($('hero'),{childList:true,subtree:true});setTimeout(syncHero335,300);
+ LX.syncHero335=syncHero335;
+
+ /* ---- Carousel ADM ---- */
+ let carouselSelected=null,previewUrls={};
+ function releasePreview(){Object.values(previewUrls).forEach(u=>{if(String(u).startsWith('blob:'))try{URL.revokeObjectURL(u)}catch{}});previewUrls={}}
+ function carouselItem(){return D.catalog().find(x=>String(x.id)===String(carouselSelected))||featuredRows()[0]||D.catalog().find(x=>['Filme','Série','Anime','Dorama'].includes(x.type))}
+ function previewUrl(item,dev){return previewUrls[dev]||heroArtFor(item,dev)||''}
+ function carouselAdmin(m){releasePreview();const list=D.catalog().filter(x=>['Filme','Série','Anime','Dorama'].includes(x.type));if(!carouselSelected)carouselSelected=String(featuredRows()[0]?.id||list[0]?.id||'');const x=carouselItem();m.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN · HOME</span><h1>Carrossel</h1><p>Escolha os destaques e ajuste a arte separadamente para celular, tablet, PC e TV.</p></div></div><div class="lx-admin-builder335"><section class="admin-card lx-carousel-grid335"><div class="lx-carousel-controls335"><label>Conteúdo<select id="lxCarItem335">${list.map(row=>`<option value="${row.id}" ${String(row.id)===String(x?.id)?'selected':''}>${esc(row.title)} · ${esc(row.type)}</option>`).join('')}</select></label><label class="check"><input id="lxCarFeatured335" type="checkbox" ${x?.featured?'checked':''}><span>Mostrar no carrossel principal</span></label><label>Prioridade<input id="lxCarPriority335" type="number" min="-100" max="100" value="${Number(x?.priority||0)}"></label><div class="lx-carousel-list335">${list.filter(r=>r.featured).sort((a,b)=>(+b.priority||0)-(+a.priority||0)).map(r=>`<div class="lx-carousel-item335"><img src="${esc(heroArtFor(r,'desktop'))}" alt=""><div><strong>${esc(r.title)}</strong><small>Prioridade ${Number(r.priority||0)}</small></div><button class="glass-btn" data-car-edit="${r.id}">Editar</button></div>`).join('')||'<small>Nenhum destaque marcado ainda.</small>'}</div><button class="glass-btn" id="lxCarAuto335" type="button">✦ Auto enquadrar</button><button class="primary-btn" id="lxCarSave335" type="button">Salvar carrossel</button><small id="lxCarStatus335"></small></div><div><div class="lx-carousel-previews335">${devices.map(dev=>`<div class="lx-device-preview335 ${dev}" id="lxPrev_${dev}" style="background-image:url('${esc(previewUrl(x,dev)).replace(/'/g,'%27')}');background-position:${heroFocusFor(x,dev).x}% ${heroFocusFor(x,dev).y}%"><span>${deviceLabel[dev]}</span><strong>${esc(x?.title||'Prévia')}</strong></div>`).join('')}</div><div class="lx-device-row335" style="margin-top:12px">${devices.map(dev=>`<label class="field">${deviceLabel[dev]} · imagem<input type="file" accept="image/*" id="lxCarFile_${dev}"></label>`).join('')}</div><div class="lx-device-row335" style="margin-top:12px">${devices.map(dev=>{const f=heroFocusFor(x,dev);return `<div class="admin-card"><b>${deviceLabel[dev]} · foco</b><label>X <input type="range" min="0" max="100" value="${f.x}" id="lxCarX_${dev}"></label><label>Y <input type="range" min="0" max="100" value="${f.y}" id="lxCarY_${dev}"></label></div>`}).join('')}</div></div></section></div>`;bindCarouselAdmin(x)}
+ function updateCarouselPreview(x,dev){const el=$('lxPrev_'+dev),fx=+$('lxCarX_'+dev)?.value||50,fy=+$('lxCarY_'+dev)?.value||35;if(el){el.style.backgroundImage=`url(${JSON.stringify(previewUrl(x,dev))})`;el.style.backgroundPosition=`${fx}% ${fy}%`}}
+ function bindCarouselAdmin(x){$('lxCarItem335')?.addEventListener('change',e=>{carouselSelected=e.target.value;LX.admin.render('carousel')});document.querySelectorAll('[data-car-edit]').forEach(b=>b.onclick=()=>{carouselSelected=b.dataset.carEdit;LX.admin.render('carousel')});devices.forEach(dev=>{$('lxCarFile_'+dev)?.addEventListener('change',e=>{const file=e.target.files?.[0];if(!file)return;if(previewUrls[dev]?.startsWith?.('blob:'))URL.revokeObjectURL(previewUrls[dev]);previewUrls[dev]=URL.createObjectURL(file);updateCarouselPreview(x,dev)});['X','Y'].forEach(axis=>$('lxCar'+axis+'_'+dev)?.addEventListener('input',()=>updateCarouselPreview(x,dev)))});$('lxCarAuto335')?.addEventListener('click',()=>autoFrame335(x));$('lxCarSave335')?.addEventListener('click',()=>saveCarousel335(x))}
+ async function autoFrame335(x){const status=$('lxCarStatus335');if(status)status.textContent='Analisando enquadramento…';let point={x:50,y:38};const src=previewUrl(x,'desktop');try{if(src&&'FaceDetector'in window){const img=new Image();img.crossOrigin='anonymous';img.src=src;await timeout(img.decode(),3500);const faces=await timeout(new FaceDetector({fastMode:true,maxDetectedFaces:4}).detect(img),3500);if(faces?.length){const box=faces[0].boundingBox;point={x:Math.round((box.x+box.width/2)/img.naturalWidth*100),y:Math.round((box.y+box.height/2)/img.naturalHeight*100)}}}}catch(e){console.warn('LX auto frame',e)}devices.forEach(dev=>{const y=dev==='mobile'?Math.min(48,point.y+5):point.y;if($('lxCarX_'+dev))$('lxCarX_'+dev).value=point.x;if($('lxCarY_'+dev))$('lxCarY_'+dev).value=y;updateCarouselPreview(x,dev)});if(status)status.textContent='Enquadramento automático aplicado. Confira as quatro prévias antes de salvar.'}
+ async function saveCarousel335(x){if(!x)return;const btn=$('lxCarSave335'),status=$('lxCarStatus335');if(btn){btn.disabled=true;btn.textContent='Salvando…'}try{const heroArt={...(x.heroArt||{})},heroFocus={...(x.heroFocus||{})};for(const dev of devices){const file=$('lxCarFile_'+dev)?.files?.[0];if(file){if((file.size||0)>15*1024*1024)throw new Error(`Imagem ${deviceLabel[dev]} maior que 15 MB`);heroArt[dev]=await LX.store.putAsset(`carousel_${x.id}_${dev}_${Date.now()}_${file.name}`,file,'assets')}heroFocus[dev]={x:+$('lxCarX_'+dev)?.value||50,y:+$('lxCarY_'+dev)?.value||35}}const next={...x,featured:!!$('lxCarFeatured335')?.checked,priority:+$('lxCarPriority335')?.value||0,heroArt,heroFocus,carouselImage:heroArt.desktop||x.carouselImage||x.banner||x.cover||''};await D.saveCatalogItem(next);if(status)status.textContent='✓ Carrossel salvo no catálogo.';LX.toast?.('Carrossel atualizado.');syncHero335();setTimeout(()=>LX.admin.render('carousel'),250)}catch(e){console.warn(e);if(status)status.textContent='Erro: '+(e?.message||'não foi possível salvar');LX.toast?.('Não foi possível salvar o carrossel.')}finally{if(btn){btn.disabled=false;btn.textContent='Salvar carrossel'}}}
+
+ /* ---- Manual Ao Vivo ADM + runtime ---- */
+ let liveEditId=null;
+ function liveRows(){return D.catalog().filter(x=>x.type==='Ao Vivo')}
+ function liveAdmin(m){const rows=liveRows(),x=rows.find(r=>String(r.id)===String(liveEditId));m.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN</span><h1>Ao Vivo</h1><p>Cadastre somente as transmissões que você quer exibir dentro da LX Plus.</p></div></div><section class="admin-card lx-live-admin335"><div class="form-grid"><label class="field span2">Nome do evento<input id="lxLiveTitle335" value="${esc(x?.title||'') }" placeholder="Flamengo x Palmeiras"></label><label class="field">Competição<input id="lxLiveLeague335" value="${esc(x?.genre||x?.league||'')}"></label><label class="field">Status<select id="lxLiveStatus335">${['Em breve','Ao vivo','Intervalo','Encerrado'].map(v=>`<option ${String(x?.liveStatus||'Em breve')===v?'selected':''}>${v}</option>`).join('')}</select></label><label class="field">Time / lado 1<input id="lxLiveHome335" value="${esc(x?.home||'')}"></label><label class="field">Time / lado 2<input id="lxLiveAway335" value="${esc(x?.away||'')}"></label><label class="field">Data e hora<input id="lxLiveStart335" type="datetime-local" value="${x?.scheduledAt?new Date(x.scheduledAt).toISOString().slice(0,16):''}"></label><label class="field">Fonte<select id="lxLiveProvider335">${['direct','gdrive','youtube','archive'].map(v=>`<option value="${v}">${v==='direct'?'HLS/MP4 HTTPS':v==='gdrive'?'Google Drive':v==='youtube'?'YouTube':'Archive.org'}</option>`).join('')}</select></label><label class="field span2">Link da transmissão<input id="lxLiveSource335" value="${esc(x?.sourceInput||LX.mediaSources?.toInput?.(x?.mediaKey)||'')}" placeholder="https://..."></label><label class="field">Banner<input id="lxLiveBanner335" type="file" accept="image/*"></label><label class="check"><input id="lxLivePublished335" type="checkbox" ${x?.published!==false?'checked':''}><span>Publicado</span></label></div><div class="hero-actions"><button class="primary-btn" id="lxLiveSave335">${x?'Salvar evento':'Adicionar transmissão'}</button>${x?'<button class="glass-btn" id="lxLiveCancel335">Cancelar edição</button>':''}</div><div class="lx-live-list335">${rows.map(r=>`<div class="lx-live-row335"><img src="${esc(r.banner||r.cover||'')}" alt=""><div><strong>${esc(r.title)}</strong><small>${esc(r.liveStatus||'Em breve')} · ${esc(r.genre||'Ao Vivo')}</small></div><div><button class="glass-btn" data-live-edit="${r.id}">Editar</button> <button class="glass-btn" data-live-del="${r.id}">Excluir</button></div></div>`).join('')||'<p>Nenhuma transmissão cadastrada.</p>'}</div></section>`;bindLiveAdmin(x)}
+ function bindLiveAdmin(x){$('lxLiveCancel335')&&($('lxLiveCancel335').onclick=()=>{liveEditId=null;LX.admin.render('live')});document.querySelectorAll('[data-live-edit]').forEach(b=>b.onclick=()=>{liveEditId=b.dataset.liveEdit;LX.admin.render('live')});document.querySelectorAll('[data-live-del]').forEach(b=>b.onclick=async()=>{if(!confirm('Excluir esta transmissão?'))return;await D.deleteCatalogItem(+b.dataset.liveDel);LX.admin.render('live')});$('lxLiveSave335')?.addEventListener('click',async()=>{const title=$('lxLiveTitle335').value.trim(),raw=$('lxLiveSource335').value.trim();if(!title||!raw)return LX.toast?.('Informe nome e fonte da transmissão.');const btn=$('lxLiveSave335');btn.disabled=true;try{const provider=$('lxLiveProvider335').value,mediaKey=LX.mediaSources.normalize(provider,raw);let banner=x?.banner||'';const file=$('lxLiveBanner335').files?.[0];if(file)banner=await LX.store.putAsset(`live_${Date.now()}_${file.name}`,file,'assets');const row={...(x||{}),id:x?.id||Date.now(),title,type:'Ao Vivo',genre:$('lxLiveLeague335').value.trim()||'Ao Vivo',home:$('lxLiveHome335').value.trim(),away:$('lxLiveAway335').value.trim(),liveStatus:$('lxLiveStatus335').value,scheduledAt:$('lxLiveStart335').value?new Date($('lxLiveStart335').value).toISOString():null,mediaKey,sourceInput:raw,banner,cover:banner,published:$('lxLivePublished335').checked,createdAt:x?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};await D.saveCatalogItem(row);liveEditId=null;LX.toast?.('Transmissão salva.');LX.admin.render('live')}catch(e){console.warn(e);LX.toast?.('Não foi possível salvar a transmissão.')}finally{btn.disabled=false}})}
+ function renderManualLive(){const hero=$('hero'),welcome=$('welcome'),home=$('homeContent');if(hero)hero.innerHTML='';if(welcome)welcome.innerHTML='';const rows=liveRows().filter(x=>x.published!==false).sort((a,b)=>+new Date(a.scheduledAt||0)-+new Date(b.scheduledAt||0));if(!home)return;home.innerHTML=`<section style="padding:110px 4vw 120px"><div class="rail-head"><div><span class="eyebrow">LX AO VIVO</span><h2>Transmissões</h2><p>Eventos publicados pelo ADM.</p></div></div>${rows.length?`<div class="lx-live-list335">${rows.map(r=>`<article class="admin-card" style="min-height:160px;background:linear-gradient(90deg,rgba(0,0,0,.78),rgba(0,0,0,.18)),url('${String(r.banner||r.cover||'').replace(/'/g,'%27')}') center/cover"><span class="eyebrow">${esc(r.liveStatus||'Em breve')}</span><h2>${esc(r.title)}</h2><p>${esc(r.genre||'Ao Vivo')} ${r.scheduledAt?'· '+new Date(r.scheduledAt).toLocaleString('pt-BR'):''}</p><button class="primary-btn" onclick="LX.play(${r.id})">▶ Assistir dentro da LX Plus</button></article>`).join('')}</div>`:'<div class="official-empty"><h2>Nenhuma transmissão no momento</h2><p>Quando o ADM publicar um evento, ele aparecerá aqui.</p></div>'}</section>`}
+ if(LX.contentHub)LX.contentHub.renderLive=renderManualLive;
+
+ /* ---- ADM router extensions ---- */
+ if(LX.admin?.render){const originalAdminRender=LX.admin.render.bind(LX.admin);LX.admin.render=function(page='dashboard'){if(page==='carousel'){U.state.adminPage=page;carouselAdmin($('adminMain'));document.querySelectorAll('#adminNav [data-admin]').forEach(b=>b.classList.toggle('active',b.dataset.admin===page));return}if(page==='live'){U.state.adminPage=page;liveAdmin($('adminMain'));document.querySelectorAll('#adminNav [data-admin]').forEach(b=>b.classList.toggle('active',b.dataset.admin===page));return}if(page==='lxai'){U.state.adminPage=page;const m=$('adminMain');m.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN</span><h1>LX IA</h1><p>Assistente interno em fase Beta. O foco atual é ajuda, navegação e busca no catálogo.</p></div></div><section class="admin-card"><h2>Status</h2><div class="health-grid"><div class="health-card"><span class="status">Interface</span><strong>Ativa</strong><small>Botão IA na barra superior</small></div><div class="health-card"><span class="status">Conhecimento</span><strong>Catálogo LX</strong><small>Filmes, séries, músicas e livros publicados</small></div></div><button class="primary-btn" style="margin-top:14px" onclick="LX.openAI335()">Abrir LX IA</button></section>`;document.querySelectorAll('#adminNav [data-admin]').forEach(b=>b.classList.toggle('active',b.dataset.admin===page));return}return originalAdminRender(page)}}
+
+ /* Clicking the visible profile avatar always opens the real profile menu. */
+ $('profileBtn')?.setAttribute('title','Meu perfil');
+ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['recovery-ui']='33.5';
+})();
+
+/* v33.5 music load watchdog */
+(()=>{let token=0;document.addEventListener('lx:music-changed',()=>{const mine=++token;setTimeout(()=>{if(mine!==token)return;const s=document.getElementById('musicPlaybackKind'),a=document.getElementById('musicAudio');if(s?.classList.contains('is-loading')&&(!a?.src||a.readyState<1))window.LX?.retryCurrentCloud335?.()},4200)});})();
