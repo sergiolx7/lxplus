@@ -456,9 +456,9 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['services']='25.
 
 /* ===== ui.js · LX Plus v27.0 ===== */
 (()=>{const LX=window.LX,D=LX.data,S=LX.store,$=id=>document.getElementById(id),$$=s=>Array.from(document.querySelectorAll(s));
-const state=LX.state={screen:'splash',mode:'Assistir',category:'Início',query:'',user:null,profile:null,hero:0,heroTimer:null,musicQueue:[],musicIndex:0,musicView:'home',musicGenre:'Todos',musicSort:'recent',rankingPeriod:'Mensal',rankingKind:'Geral',readerSize:20,readerPaper:false,readerTheme:'night',libraryType:'Todos'};
+const state=LX.state={screen:'auth',mode:'Assistir',category:'Início',query:'',user:null,profile:null,hero:0,heroTimer:null,musicQueue:[],musicIndex:0,musicView:'home',musicGenre:'Todos',musicSort:'recent',rankingPeriod:'Mensal',rankingKind:'Geral',readerSize:20,readerPaper:false,readerTheme:'night',libraryType:'Todos'};
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));LX.esc=esc;
-const show=id=>{if(id==='splash'&&window.__LX_INTRO_DONE)id='auth';['splash','auth','profiles','app','admin'].forEach(x=>$(x)?.classList.add('hidden'));const target=$(id);if(target){target.classList.remove('hidden');if(id!=='splash'&&target.style.display==='none')target.style.removeProperty('display')}if(id!=='splash'){const sp=$('splash');if(sp){sp.style.setProperty('display','none','important');sp.style.pointerEvents='none'}}state.screen=id};LX.show=show;
+const show=id=>{if(id==='splash')id='auth';['splash','auth','profiles','app','admin'].forEach(x=>$(x)?.classList.add('hidden'));const target=$(id);if(target){target.classList.remove('hidden');if(id!=='splash'&&target.style.display==='none')target.style.removeProperty('display')}if(id!=='splash'){const sp=$('splash');if(sp){sp.style.setProperty('display','none','important');sp.style.pointerEvents='none'}}state.screen=id};LX.show=show;
 const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('show'),2300)};LX.toast=toast;
 const initials=n=>(n||'LX').split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();LX.initials=initials;
 const greeting=()=>new Date().getHours()<12?'Bom dia':new Date().getHours()<18?'Boa tarde':'Boa noite';
@@ -2916,4 +2916,4 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['v33-control-center']='33.0';
 })();
 
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['v33.2-boot-lock']='33.2';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['v33.3-safe-boot']='33.3';
