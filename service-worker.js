@@ -1,4 +1,4 @@
-const CACHE='lxplus-disabled-v333';
-self.addEventListener('install',event=>event.waitUntil(self.skipWaiting()));
-self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith('lxplus-'))await caches.delete(key);await self.registration.unregister();const clients=await self.clients.matchAll({type:'window'});for(const c of clients)c.postMessage({type:'LX_SW_DISABLED',build:'33.3'});})()));
-self.addEventListener('fetch',()=>{});
+const LX_BUILD="33.4";
+self.addEventListener("install",e=>{self.skipWaiting();});
+self.addEventListener("activate",e=>{e.waitUntil((async()=>{for(const k of await caches.keys()){if(k.startsWith("lxplus-"))await caches.delete(k)}await self.clients.claim()})())});
+self.addEventListener("fetch",e=>{if(e.request.method!=="GET")return;e.respondWith(fetch(e.request).catch(async()=>{if(e.request.mode==="navigate")return new Response(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;background:#050506;color:white;font:16px system-ui;display:grid;place-items:center;min-height:100vh;text-align:center;padding:24px}button{padding:12px 18px;border:0;border-radius:12px;font-weight:800}</style><main><h1>LX Plus</h1><p>Sem conexão com o servidor. Tente novamente.</p><button onclick="location.reload()">Recarregar</button></main>`,{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store"}});return new Response("Offline",{status:503})}));});
