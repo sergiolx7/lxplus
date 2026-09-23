@@ -5989,4 +5989,46 @@ input,select,textarea,button{max-width:100%}
 .music-dock.external-provider.provider-spotify.provider-open .music-provider-panel{display:block!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important}
 .music-dock.external-provider.provider-youtube #musicProviderFrame{display:block!important;background:#000!important}
 .music-dock .music-provider-foot{display:block!important}
+
+/* v32.3 · ADM por tipo de conteúdo e estados de áudio legíveis */
+@media (min-width:1181px){.admin-side nav{min-height:0;overflow-y:auto;scrollbar-width:thin}}
+.lx-admin-catalog-stats{margin:0 0 16px}
+.lx-admin-catalog-page{min-width:0}
+.lx-admin-catalog-overflow{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.lx-admin-catalog-table{min-width:660px}
+.lx-admin-catalog-table td{vertical-align:middle}
+.lx-admin-catalog-title{display:flex;align-items:center;gap:12px;min-width:190px}
+.lx-admin-catalog-title img{width:48px;height:64px;flex:0 0 48px;border-radius:8px;object-fit:cover;background:#102030}
+.lx-admin-catalog-title span{min-width:0;display:grid;gap:5px}
+.lx-admin-catalog-title b,.lx-admin-catalog-title small{overflow-wrap:anywhere}
+.lx-admin-catalog-title small,.lx-admin-catalog-source,.lx-admin-result-count{display:block;color:var(--muted);font-size:11px;line-height:1.4}
+.lx-admin-catalog-table td:nth-child(2){min-width:130px}
+.lx-admin-catalog-table .catalog-actions{min-width:210px}
+.lx-admin-empty{text-align:center!important;padding:26px!important;color:var(--muted)}
+.music-dock #musicPlay:disabled{opacity:.55;cursor:wait}
+.music-playback-kind.is-error{color:#ff9c89}
+.music-playback-kind.is-loading{color:#ffce83}
+#welcome:has(.welcome-card){padding-bottom:8px!important}
+#welcome .welcome-card{width:min(460px,100%);max-width:100%;min-height:0;display:flex;flex-direction:row;align-items:center;gap:10px;padding:8px 11px!important;box-shadow:0 8px 22px rgba(0,0,0,.2)}
+#welcome .welcome-user{min-width:0;align-items:center;gap:9px}
+#welcome .welcome-avatar{width:34px!important;height:34px!important;min-width:34px!important;border-radius:10px!important}
+#welcome .welcome-card h2{font-size:clamp(12px,1.05vw,14px)!important;line-height:1.25;margin:2px 0 0}
+#welcome .welcome-card p,#welcome .experience-strip{display:none!important}
+#welcome .mode-summary{width:auto;gap:9px;margin-left:auto;flex:0 0 auto}
+#welcome .mode-summary strong{font-size:12px}
+#welcome .mode-summary small{font-size:6px}
+#welcome .mode-summary div:last-child{display:none}
+@media (max-width:760px){
+ .lx-admin-catalog-page .admin-toolbar>*{min-width:0;width:100%;flex:1 1 100%}
+ .lx-admin-catalog-table,.lx-admin-catalog-table tbody,.lx-admin-catalog-table tr,.lx-admin-catalog-table td{display:block;min-width:0!important;width:100%}
+ .lx-admin-catalog-table thead{display:none}
+ .lx-admin-catalog-table tr{padding:10px 0;border-bottom:1px solid var(--line)}
+ .lx-admin-catalog-table td{padding:5px 3px!important;border:0!important}
+ .lx-admin-catalog-table .catalog-actions{min-width:0;gap:6px}
+ .lx-admin-catalog-table .catalog-actions button{min-height:36px}
+ .lx-admin-catalog-title img{width:43px;height:57px;flex-basis:43px}
+ .lx-admin-catalog-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ #welcome .welcome-card{width:min(370px,100%)}
+}
+@media (max-width:430px){#welcome .mode-summary{display:none}#welcome .welcome-card{width:min(290px,100%)}}
 @media(max-width:760px){.music-dock.external-provider.provider-youtube .music-provider-panel{width:min(360px,calc(100vw - 16px))!important;left:auto!important;right:0!important}.music-dock.external-provider.provider-youtube #musicProviderFrame{height:202px!important;min-height:202px!important}}

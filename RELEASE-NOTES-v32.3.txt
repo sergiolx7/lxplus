@@ -1,0 +1,25 @@
+LX Plus v32.3 — atualização do frontend GitHub Pages
+
+Entregue nesta build
+- ADM com páginas independentes para Filmes, Séries (incluindo Anime/Dorama), Músicas e Livros, cada uma com busca, filtro de status, contadores e ações próprias.
+- Teste de música no ADM: abre o player persistente e confirma o evento de reprodução de áudio nativo; players oficiais precisam de conferência visual/auditiva no provedor.
+- Player LX Music: tenta fontes diretas em sequência; evita tentativas concorrentes no mesmo elemento; mostra carregamento, falha e opção de nova tentativa sem deixar a faixa presa em 0:00 / 0:00.
+- Capa prioriza a arte da faixa/álbum; miniatura do provedor e capa padrão continuam como alternativas caso a imagem falhe.
+- YouTube: mantém o player oficial visível, aguarda o estado real do iframe antes de marcar como tocando e pausa quando a página fica oculta. Áudio separado só usa uma fonte direta que o ADM fornecer e puder utilizar.
+- Spotify: mantém a integração por iframe oficial existente. Uma fonte direta autorizada, se fornecida, usa o player nativo. O funcionamento em segundo plano depende da fonte, do método autorizado e do navegador.
+- Editor de músicas separa a fonte principal da URL direta de áudio, mostra provedor/ID remoto e recusa URLs de página/embed nos campos de áudio direto.
+- Saudação da Home reduzida a um widget compacto. Layout de tabelas ADM adaptado para celular/tablet.
+- Cache do service worker atualizado; recursos JS/CSS não recebem HTML por engano como fallback offline.
+
+Verificações locais
+- Sintaxe do bundle, do service worker e dos nove scripts inline verificada.
+- Testes simulados: fonte inicial inválida seguida de fonte válida; todas as fontes inválidas; troca rápida de faixa; ordem de fallback da capa; isolamento das quatro páginas do ADM.
+
+A conferir no ambiente real antes de publicar
+- Login, leitura do catálogo e permissões/RLS no Supabase.
+- Uma faixa MP3/R2/Supabase, uma faixa YouTube e uma faixa Spotify com URLs reais e contas habilitadas; áudio, duração, pausa, avanço, capa e navegação entre páginas.
+- Testar iOS/Android, tela bloqueada e rede móvel nas fontes que permitem segundo plano.
+- Testar largura 360, 390, 768, 1024 e 1366 px em navegador real.
+
+Limite dos arquivos recebidos
+- O material de entrada é apenas a build estática para GitHub Pages; não contém fontes do backend, migrations, Edge Functions, chaves, catálogo nem amostras de áudio. Esta versão não altera banco de dados nem promete corrigir um endpoint remoto indisponível. Não constitui o ZIP de projeto completo pedido na especificação mestre.
