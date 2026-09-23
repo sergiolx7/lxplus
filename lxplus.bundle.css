@@ -6066,3 +6066,21 @@ input,select,textarea,button{max-width:100%}
   .music-search input,.admin-search input,.lx-universal-search input{width:100%!important;flex:1 1 auto!important}
   .music-search button,.admin-search button,.lx-universal-search button{width:auto!important;max-width:92px!important;padding-inline:14px!important}
 }
+
+
+/* ===== LX Plus v33.1 · Splash Recovery ===== */
+.lx-splash-v27 .lx27-logo-stage{gap:8px!important;min-height:255px!important;align-content:center!important}
+.lx-splash-v27 .lx27-face-wrap{position:relative!important;width:clamp(92px,12vw,132px)!important;height:clamp(116px,15vw,166px)!important;display:grid!important;place-items:center!important;margin:0 auto 4px!important;opacity:1!important;visibility:visible!important;transform:none!important;z-index:4!important}
+.lx-splash-v27 .lx27-face-logo{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;opacity:1!important;visibility:visible!important;clip-path:none!important;transform:none!important;animation:none!important;filter:drop-shadow(0 14px 30px rgba(0,0,0,.8))!important}
+.lx-splash-v27 .lx27-face-css{display:none;position:absolute;inset:0}
+.lx-splash-v27 .lx27-face-wrap.face-fallback .lx27-face-css{display:block}
+.lx-splash-v27 .lx27-face-css i{position:absolute;top:28%;width:38%;height:13%;background:#fff;border-radius:999px;transform:rotate(33deg);box-shadow:0 0 16px rgba(255,255,255,.16)}
+.lx-splash-v27 .lx27-face-css i:first-child{left:7%}
+.lx-splash-v27 .lx27-face-css i:nth-child(2){right:7%;transform:rotate(-33deg)}
+.lx-splash-v27 .lx27-face-css b{position:absolute;left:17%;right:17%;bottom:24%;height:8%;background:#fff;border-radius:999px;transform:rotate(-2deg)}
+.lx-splash-v27 .lx27-wordmark{margin-top:2px!important;font-size:clamp(2rem,5vw,4rem)!important}
+@media(max-width:640px){
+  .lx-splash-v27 .lx27-logo-stage{min-height:220px!important}
+  .lx-splash-v27 .lx27-face-wrap{width:92px!important;height:116px!important}
+  .lx-splash-v27 .lx27-wordmark{font-size:2.35rem!important}
+}
