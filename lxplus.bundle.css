@@ -6084,3 +6084,7 @@ input,select,textarea,button{max-width:100%}
   .lx-splash-v27 .lx27-face-wrap{width:92px!important;height:116px!important}
   .lx-splash-v27 .lx27-wordmark{font-size:2.35rem!important}
 }
+
+
+/* ===== LX Plus v33.2 · One-way Splash Lock ===== */
+html.lx-intro-complete #splash,#splash.lx-intro-complete{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
