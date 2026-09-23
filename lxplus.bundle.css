@@ -5982,7 +5982,7 @@ input,select,textarea,button{max-width:100%}
 @media(max-width:760px){.music-dock.external-provider.provider-youtube .music-provider-panel,.music-dock.external-provider.provider-spotify .music-provider-panel{left:0!important;right:0!important;bottom:68px!important;width:auto!important;max-width:none!important}.music-dock.external-provider.provider-youtube #musicProviderFrame{height:200px!important}.music-dock.external-provider .music-provider-toggle{display:grid!important}}
 
 
-/* ===== LX Plus v32.1 · music recovery ===== */
+/* ===== LX Plus v32.2 · music recovery ===== */
 #musicCover.lx-artwork{background:#15161b url('assets/lx-music-fallback.svg') center/cover no-repeat!important}
 #musicCover.lx-artwork>img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;opacity:1!important;visibility:visible!important}
 .music-dock.external-provider.provider-youtube.provider-open .music-provider-panel,

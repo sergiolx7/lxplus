@@ -1,0 +1,8 @@
+LX Plus v32.2 — Music Playback Repair
+
+- Novo lx-media-stream com token temporário e suporte a Range para MP3 privado.
+- lx-media-ticket v2 entrega stream LX e URL assinada de fallback.
+- Prewarm de fontes de áudio ao abrir a área Música e ao apontar/tocar cartões.
+- Capa do dock é definida imediatamente e possui fallback persistente.
+- Recuperação em cadeia: LX Stream -> URL assinada -> download Blob local.
+- Cache PWA novo: lxplus-shell-v3220.
