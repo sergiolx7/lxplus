@@ -24,12 +24,12 @@
 
 
 /* ===== lxplus.js ===== */
-window.__LX_JS_BUILD='33.5';
+window.__LX_JS_BUILD='33.7';
 
 /* ===== config.js · LX Plus v25.50 ===== */
 window.LX=window.LX||{};
 LX.config={
-  version:'33.5',
+  version:'33.7',
   environment:'cloud-ready',
   production:true,
   apiBase:'',
@@ -2883,8 +2883,188 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
  async function saveAIKey336(){const input=$('lxOpenAIKey336'),btn=$('lxSaveAIKey336'),value=input?.value.trim()||'';if(!value)return LX.toast?.('Cole a OpenAI API Key.');if(btn){btn.disabled=true;btn.textContent='Salvando…'}try{const c=LX.cloud?.db?.();if(!c)throw new Error('Nuvem indisponível');const {error}=await c.rpc('lx_admin_set_integration_secret',{p_key:'openai_api_key',p_value:value});if(error)throw error;input.value='';const {data,error:aiError}=await c.functions.invoke('lx-ai',{body:{message:'Responda apenas: LX IA conectada.'}});if(aiError||data?.error)throw aiError||new Error(data.error);LX.toast?.('LX IA conectada e testada.');await refreshAIStatus336()}catch(error){console.warn('LX IA setup',error);LX.toast?.(/owner required/i.test(error?.message||'')?'Somente o Dono pode alterar a chave da IA.':'Não foi possível validar a IA. Confira a chave.')}finally{if(btn){btn.disabled=false;btn.textContent='Salvar e testar IA'}}}
  LX.refreshAIStatus336=refreshAIStatus336;LX.saveAIKey336=saveAIKey336;
  $('profileBtn')?.setAttribute('title','Meu perfil');
- window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['recovery-ui']='33.6';
+ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['recovery-ui']='33.7';
 })();
 
 /* v33.5 music load watchdog */
 (()=>{let token=0;document.addEventListener('lx:music-changed',()=>{const mine=++token;setTimeout(()=>{if(mine!==token)return;const s=document.getElementById('musicPlaybackKind'),a=document.getElementById('musicAudio');if(s?.classList.contains('is-loading')&&(!a?.src||a.readyState<1))window.LX?.retryCurrentCloud335?.()},4200)});})();
+
+/* ===== LX Plus v33.7 · AI + Music Core + Carousel + ADM Runtime ===== */
+(()=>{
+  const BUILD='33.7';
+  let booted=false, aiBound=false, musicSeq=0, heartbeatTimer=null, monitorTimer=null, jsErrors=0;
+  const $=id=>document.getElementById(id);
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  const withTimeout=(p,ms=10000)=>Promise.race([Promise.resolve(p),new Promise((_,rej)=>setTimeout(()=>rej(new Error('TIMEOUT')),ms))]);
+  const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  window.addEventListener('error',()=>{jsErrors++});
+  window.addEventListener('unhandledrejection',()=>{jsErrors++});
+
+  function waitLX(){
+    return new Promise(resolve=>{
+      let n=0;const t=setInterval(()=>{
+        if(window.LX?.ui&&window.LX?.data){clearInterval(t);resolve(window.LX);}
+        else if(++n>80){clearInterval(t);resolve(window.LX||null)}
+      },125);
+    });
+  }
+
+  /* ---------------- LX IA: click always opens ---------------- */
+  function localAI(q){
+    const LX=window.LX, n=String(q||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    const cat=LX?.data?.catalog?.()||[];
+    if(/(perfil|avatar|foto)/.test(n))return 'Clique na sua foto no canto superior direito para abrir o perfil.';
+    if(/(aparencia|barra lateral|navegacao|menu)/.test(n))return 'Abra Aparência e escolha se prefere a navegação em cima ou na barra lateral.';
+    if(/(musica|filme|serie|livro|anime|dorama)/.test(n)){
+      const words=n.replace(/\b(quero|achar|buscar|procure|filme|serie|musica|livro|anime|dorama|assistir|ouvir|ler|uma|um|de|do|da|por|favor)\b/g,' ').trim();
+      let rows=cat.filter(x=>x?.published!==false);
+      if(words)rows=rows.filter(x=>JSON.stringify([x.title,x.artist,x.author,x.genre,x.year]).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(words));
+      rows=rows.slice(0,5);
+      return rows.length?'Encontrei no catálogo: '+rows.map(x=>x.title).join(' · ')+'.':'Não encontrei algo correspondente no catálogo atual.';
+    }
+    return 'Sou a LX IA. Posso ajudar com o catálogo, perfil, navegação, música e funções da LX Plus.';
+  }
+  function ensureAI337(){
+    let p=$('lxAiPanel337'); if(p)return p;
+    p=document.createElement('aside');p.id='lxAiPanel337';p.className='lx-ai-panel337 hidden';
+    p.innerHTML=`<header><div><span>LX IA</span><h3>Assistente LX Plus</h3><small id="lxAiMode337">Modo local inteligente</small></div><button type="button" data-close>×</button></header><div id="lxAiLog337" class="lx-ai-log337"><div class="lx-ai-bubble337">Olá! Estou pronta para ajudar dentro da LX Plus.</div></div><form id="lxAiForm337"><input id="lxAiInput337" autocomplete="off" placeholder="Pergunte qualquer coisa…"><button>Enviar</button></form>`;
+    document.body.appendChild(p);
+    p.querySelector('[data-close]').onclick=()=>p.classList.add('hidden');
+    p.querySelector('form').onsubmit=async e=>{
+      e.preventDefault();const input=$('lxAiInput337'),q=input?.value.trim();if(!q)return;input.value='';
+      const log=$('lxAiLog337');
+      const me=document.createElement('div');me.className='lx-ai-bubble337 me';me.textContent=q;log.appendChild(me);
+      const ans=document.createElement('div');ans.className='lx-ai-bubble337 pending';ans.textContent='Pensando…';log.appendChild(ans);log.scrollTop=log.scrollHeight;
+      try{
+        const LX=window.LX,c=LX?.cloud?.db?.();
+        if(!c)throw new Error('SEM_NUVEM');
+        const history=[...log.querySelectorAll('.lx-ai-bubble337')].slice(-8,-1).map(el=>({role:el.classList.contains('me')?'user':'assistant',content:el.textContent||''}));
+        const r=await withTimeout(c.functions.invoke('lx-ai',{body:{message:q,history}}),18000);
+        if(r?.error||r?.data?.error)throw r?.error||new Error(r?.data?.error);
+        ans.textContent=r?.data?.answer||localAI(q);ans.classList.remove('pending');
+        $('lxAiMode337').textContent=r?.data?.mode==='openai'?'IA online · OpenAI':'Modo local inteligente';
+      }catch(err){console.warn('LX IA 33.7',err);ans.textContent=localAI(q);ans.classList.remove('pending');$('lxAiMode337').textContent='Modo local inteligente';}
+      log.scrollTop=log.scrollHeight;
+    };
+    return p;
+  }
+  function openAI337(){const p=ensureAI337();p.classList.remove('hidden');setTimeout(()=>$('lxAiInput337')?.focus(),30)}
+  function bindAI337(){if(aiBound)return;aiBound=true;
+    document.addEventListener('click',e=>{
+      const target=e.target.closest?.('#lxAiTop335,[data-open-lx-ai],button[data-admin="lxai"]');
+      if(!target)return;
+      if(target.matches('button[data-admin="lxai"]'))return; // ADM page keeps its own action
+      e.preventDefault();e.stopPropagation();openAI337();
+    },true);
+    window.LX=window.LX||{};window.LX.openAI337=openAI337;window.LX.openAI335=openAI337;
+  }
+
+  /* ---------------- MUSIC: deterministic MP3 playback ---------------- */
+  function musicStatus(text,kind='ready'){
+    const el=$('musicPlaybackKind');if(el){el.textContent=text;el.className='music-playback-kind is-'+kind;}
+    const btn=$('musicPlay');if(btn){btn.disabled=false;btn.title=kind==='loading'?'Carregando áudio':kind==='error'?'Tentar novamente':'Reproduzir ou pausar';}
+  }
+  function setCover337(item,content){
+    const LX=window.LX,cover=item?.cover||content?.cover||item?.youtubeThumbnail||content?.youtubeThumbnail||content?.banner||'';
+    const host=$('musicCover');if(host){host.innerHTML='';host.style.backgroundImage=cover?`url(${JSON.stringify(cover)})`:'';host.style.backgroundSize='cover';host.style.backgroundPosition='center';}
+    const btn=$('musicCoverBtn');if(btn&&cover)btn.style.setProperty('--music-cover',`url(${JSON.stringify(cover)})`);
+  }
+  async function mediaTicket337(ref){
+    const LX=window.LX,c=LX?.cloud?.db?.();if(!c)throw new Error('NUVEM_INDISPONIVEL');
+    const session=await withTimeout(c.auth.getSession(),4000),access=session?.data?.session?.access_token;
+    if(!access)throw new Error('SESSAO_EXPIRADA');
+    const r=await withTimeout(c.functions.invoke('lx-media-ticket',{body:{key:String(ref),expires:7200}}),10000);
+    if(r?.error||r?.data?.error)throw r?.error||new Error(r?.data?.error||'MEDIA_TICKET');
+    if(!r?.data?.streamUrl&&!r?.data?.url&&!r?.data?.signedUrl)throw new Error('MEDIA_URL_AUSENTE');
+    return r.data;
+  }
+  function waitAudio337(a,ms=12000){
+    return new Promise((resolve,reject)=>{
+      let done=false;const finish=(ok,val)=>{if(done)return;done=true;clearTimeout(tm);['loadedmetadata','canplay','loadeddata','error','stalled'].forEach(ev=>a.removeEventListener(ev,handlers[ev]));ok?resolve(val):reject(val)};
+      const handlers={loadedmetadata:()=>finish(true,'metadata'),canplay:()=>finish(true,'canplay'),loadeddata:()=>finish(true,'data'),error:()=>finish(false,a.error||new Error('AUDIO_ERROR')),stalled:()=>{}};
+      Object.entries(handlers).forEach(([ev,fn])=>a.addEventListener(ev,fn));
+      const tm=setTimeout(()=>{if(a.readyState>=1||a.currentSrc)finish(true,'timeout-with-source');else finish(false,new Error('AUDIO_TIMEOUT'))},ms);
+    });
+  }
+  async function setAudioSource337(url,fallback,item,seq,autoplay){
+    const a=$('musicAudio');if(!a||seq!==musicSeq)return false;
+    a.dataset.lx337Managed='1';a.crossOrigin='anonymous';a.preload='auto';a.src=url;a.load();
+    try{await waitAudio337(a,12000)}catch(err){
+      console.warn('LX337 primary audio',err);
+      if(fallback&&fallback!==url&&seq===musicSeq){a.src=fallback;a.load();await waitAudio337(a,10000)}else throw err;
+    }
+    if(seq!==musicSeq)return false;
+    const d=Number(a.duration);$('musicDuration').textContent=Number.isFinite(d)&&d>0?window.LX?.fmt?.(d)||Math.round(d)+'s':'—';
+    musicStatus('Pronta','ready');
+    if(autoplay){try{await a.play();musicStatus('Faixa completa','ready')}catch(err){if(err?.name==='NotAllowedError')musicStatus('Pronta · toque em ▶','ready');else throw err}}
+    return true;
+  }
+  async function playManaged337(id,index=0,autoplay=true){
+    const LX=window.LX,U=LX?.ui,D=LX?.data;if(!U||!D)return false;
+    const x=D.catalog().find(i=>String(i.id)===String(id));if(!x)return false;
+    const tracks=x.tracks?.length?x.tracks:((x.mediaKey||x.authorizedAudioUrl)?[{title:x.title,artist:x.artist,mediaKey:x.mediaKey||x.authorizedAudioUrl,cover:x.cover}]:[]);
+    if(!tracks.length){LX.toast?.('Esta música ainda não possui arquivo de áudio.');return true}
+    const i=Math.max(0,Math.min(Number(index)||0,tracks.length-1)),t0=tracks[i]||{};
+    const ref=t0.authorizedAudioUrl||t0.authorizedStreamUrl||t0.mediaKey||t0.url||x.authorizedAudioUrl||x.authorizedStreamUrl||x.mediaKey||'';
+    const desc=LX.mediaSources?.describe?.(ref);
+    if(desc?.kind==='embed')return false;
+    if(!String(ref).startsWith('cloud:')&&!/^https?:\/\//i.test(String(ref)))return false;
+    if(/^https?:\/\//i.test(String(ref))&&desc&&desc.kind!=='direct')return false;
+    const queue=tracks.map((t,n)=>({ ...t,contentId:id,index:n,title:t.title||x.title||'Faixa',artist:t.artist||x.artist||'LX Music',cover:t.cover||x.cover||'',mediaKey:t.authorizedAudioUrl||t.authorizedStreamUrl||t.mediaKey||t.url||x.authorizedAudioUrl||x.authorizedStreamUrl||x.mediaKey||''}));
+    U.state.musicQueue=queue;U.state.musicIndex=i;
+    const item=queue[i],seq=++musicSeq,a=$('musicAudio');
+    $('musicDock')?.classList.remove('hidden');$('musicTitle').textContent=item.title;$('musicArtist').textContent=item.artist;setCover337(item,x);$('musicProgress').value=0;$('musicTime').textContent='0:00';$('musicDuration').textContent='—';musicStatus('Preparando áudio…','loading');
+    if(a){try{a.pause()}catch{}a.removeAttribute('src');a.load();a.dataset.sourceRef=String(ref)}
+    try{
+      let primary=String(ref),fallback='';
+      if(String(ref).startsWith('cloud:')){const t=await mediaTicket337(ref);primary=t.streamUrl||t.url||t.signedUrl;fallback=t.signedUrl||'';}
+      await setAudioSource337(primary,fallback,item,seq,autoplay);
+      try{D.track?.('music',{id,title:x.title})}catch{}
+      window.LX?.syncMusicCardState?.();
+    }catch(err){if(seq!==musicSeq)return true;console.warn('LX337 music',err);musicStatus('Falha no áudio · toque em ▶','error');LX.toast?.('Não foi possível tocar esta faixa. Tente novamente.');}
+    return true;
+  }
+  function bindMusic337(){
+    const LX=window.LX;if(!LX?.music)return;
+    if(LX.__music337Bound)return;LX.__music337Bound=true;
+    const oldMusic=LX.music.bind(LX);LX.__music337Original=oldMusic;
+    LX.music=async(id,index=0,autoplay=true)=>{const handled=await playManaged337(id,index,autoplay);if(!handled){const a=$('musicAudio');if(a)delete a.dataset.lx337Managed;return oldMusic(id,index,autoplay)}};
+    const play=$('musicPlay'),prev=$('musicPrev'),next=$('musicNext'),audio=$('musicAudio');
+    if(play){const old=play.onclick;play.onclick=async e=>{if(audio?.dataset?.lx337Managed==='1'){
+      if(!audio.src||audio.error){const t=window.LX?.ui?.state?.musicQueue?.[window.LX.ui.state.musicIndex];if(t)return playManaged337(t.contentId,t.index,true)}
+      try{if(audio.paused){await audio.play();musicStatus('Faixa completa','ready')}else audio.pause()}catch(err){console.warn('LX337 manual',err);const t=window.LX?.ui?.state?.musicQueue?.[window.LX.ui.state.musicIndex];if(t)await playManaged337(t.contentId,t.index,true)}return;
+    }return old?.call(play,e)}}
+    const step=delta=>{const s=window.LX?.ui?.state,q=s?.musicQueue||[];if(!q.length)return;const ni=(Number(s.musicIndex||0)+delta+q.length)%q.length, t=q[ni];playManaged337(t.contentId,ni,true)};
+    if(prev){const old=prev.onclick;prev.onclick=e=>audio?.dataset?.lx337Managed==='1'?step(-1):old?.call(prev,e)}
+    if(next){const old=next.onclick;next.onclick=e=>audio?.dataset?.lx337Managed==='1'?step(1):old?.call(next,e)}
+    if(audio){const oldEnd=audio.onended;audio.onended=e=>audio.dataset.lx337Managed==='1'?step(1):oldEnd?.call(audio,e);audio.addEventListener('loadedmetadata',()=>{if(audio.dataset.lx337Managed==='1'){const d=Number(audio.duration);$('musicDuration').textContent=Number.isFinite(d)&&d>0?(window.LX?.fmt?.(d)||Math.round(d)+'s'):'—';musicStatus('Pronta','ready')}});audio.addEventListener('playing',()=>{if(audio.dataset.lx337Managed==='1')musicStatus('Faixa completa','ready')});}
+    LX.music337Health=()=>({managed:audio?.dataset?.lx337Managed==='1',src:audio?.currentSrc||audio?.src||'',readyState:audio?.readyState,networkState:audio?.networkState,error:audio?.error?{code:audio.error.code,message:audio.error.message||''}:null,status:$('musicPlaybackKind')?.textContent||''});
+  }
+
+  /* ---------------- Carousel ADM: existing titles only ---------------- */
+  let carouselId='';const carFiles={};
+  function carArt(x,d){return x?.heroArt?.[d]||x?.heroArt?.desktop||x?.carouselImage||x?.banner||x?.cover||''}
+  function carFocus(x,d){const f=x?.heroFocus?.[d]||x?.heroFocus?.desktop||{};return {x:Number(f.x??50),y:Number(f.y??35)}}
+  function renderCarousel337(){
+    const LX=window.LX,D=LX?.data,U=LX?.ui,m=$('adminMain');if(!D||!m)return;
+    const rows=D.catalog().filter(x=>x?.published!==false&&['Filme','Série','Anime','Dorama'].includes(x.type));if(!carouselId)carouselId=String(rows.find(x=>x.featured)?.id||rows[0]?.id||'');
+    const x=rows.find(r=>String(r.id)===String(carouselId))||rows[0];
+    m.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN · CARROSSEL</span><h1>Capas do carrossel</h1><p>Escolha um título que já existe no site. Aqui você não cadastra filme: apenas decide o que aparece no carrossel e qual imagem usar em cada tela.</p></div></div><section class="admin-card lx-car337"><div class="lx-car337-controls"><label class="field">Filme/série já cadastrado<select id="carTitle337">${rows.map(r=>`<option value="${r.id}" ${String(r.id)===String(x?.id)?'selected':''}>${esc(r.title)} · ${esc(r.type)}</option>`).join('')}</select></label><label class="check"><input id="carFeatured337" type="checkbox" ${x?.featured?'checked':''}><span>Exibir este título no carrossel</span></label><label class="field">Prioridade<input id="carPriority337" type="number" value="${Number(x?.priority||0)}"></label><button class="primary-btn" id="carSave337">Salvar carrossel</button><small id="carStatus337"></small></div><div class="lx-car337-devices">${['desktop','tablet','mobile','tv'].map(d=>{const f=carFocus(x,d),lab={desktop:'PC',tablet:'Tablet',mobile:'Celular',tv:'TV'}[d];return `<article><header><b>${lab}</b><span>Imagem do carrossel</span></header><div class="lx-car337-preview ${d}" id="carPrev337_${d}" style="background-image:url(${JSON.stringify(carArt(x,d))});background-position:${f.x}% ${f.y}%"><strong>${esc(x?.title||'Prévia')}</strong></div><label class="field">Trocar imagem<input id="carFile337_${d}" type="file" accept="image/*"></label><label>X <input id="carX337_${d}" type="range" min="0" max="100" value="${f.x}"></label><label>Y <input id="carY337_${d}" type="range" min="0" max="100" value="${f.y}"></label></article>`}).join('')}</div></section>`;
+    $('carTitle337').onchange=e=>{carouselId=e.target.value;for(const k of Object.keys(carFiles))delete carFiles[k];renderCarousel337()};
+    ['desktop','tablet','mobile','tv'].forEach(d=>{
+      $('carFile337_'+d).onchange=e=>{const file=e.target.files?.[0];if(!file)return;carFiles[d]=file;const u=URL.createObjectURL(file),p=$('carPrev337_'+d);p.style.backgroundImage=`url(${JSON.stringify(u)})`};
+      const upd=()=>{$('carPrev337_'+d).style.backgroundPosition=`${+$('carX337_'+d).value}% ${+$('carY337_'+d).value}%`};$('carX337_'+d).oninput=upd;$('carY337_'+d).oninput=upd;
+    });
+    $('carSave337').onclick=async()=>{const btn=$('carSave337'),st=$('carStatus337');btn.disabled=true;btn.textContent='Salvando…';try{const art={...(x.heroArt||{})},focus={...(x.heroFocus||{})};for(const d of ['desktop','tablet','mobile','tv']){if(carFiles[d])art[d]=await LX.store.putAsset(`carousel_${x.id}_${d}_${Date.now()}_${carFiles[d].name}`,carFiles[d],'assets');focus[d]={x:+$('carX337_'+d).value||50,y:+$('carY337_'+d).value||35}}await D.saveCatalogItem({...x,featured:$('carFeatured337').checked,priority:+$('carPriority337').value||0,heroArt:art,heroFocus:focus,carouselImage:art.desktop||x.carouselImage||x.banner||x.cover||''});st.textContent='✓ Salvo. O carrossel usa essas imagens conforme o aparelho.';LX.toast?.('Carrossel atualizado.')}catch(err){console.warn(err);st.textContent='Erro ao salvar.'}finally{btn.disabled=false;btn.textContent='Salvar carrossel'}};
+    U.state.adminPage='carousel';document.querySelectorAll('#adminNav [data-admin]').forEach(b=>b.classList.toggle('active',b.dataset.admin==='carousel'));
+  }
+  function bindCarousel337(){document.addEventListener('click',e=>{const b=e.target.closest?.('#adminNav [data-admin="carousel"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();renderCarousel337()},true);window.LX.renderCarousel337=renderCarousel337;}
+
+  /* ---------------- Presence heartbeat + ADM runtime monitor ---------------- */
+  async function heartbeat337(){try{const LX=window.LX,c=LX?.cloud?.db?.(),u=LX?.ui?.state?.user;if(!c||!u?.id)return;await c.from('lx_active_sessions').upsert({user_id:u.id,last_seen:new Date().toISOString(),route:`${LX.ui.state.screen||''}/${LX.ui.state.mode||''}`,device:(navigator.userAgent||'').slice(0,180),updated_at:new Date().toISOString()},{onConflict:'user_id'})}catch(e){}}
+  async function runtime337(){const LX=window.LX,c=LX?.cloud?.db?.(),main=$('adminMain');if(!c||!main||LX?.ui?.state?.adminPage!=='dashboard')return;let box=$('lxRuntime337');if(!box){box=document.createElement('section');box.id='lxRuntime337';box.className='admin-card lx-runtime337';main.prepend(box)}const start=performance.now();try{const {data,error}=await c.rpc('lx_admin_runtime_status');if(error)throw error;const latency=Math.round(performance.now()-start),stable=navigator.onLine&&latency<1800&&jsErrors<5;box.innerHTML=`<div><span>PESSOAS ONLINE AGORA</span><strong>${Number(data?.online_now||0)}</strong><small>atividade nos últimos 2 min</small></div><div><span>ATIVOS EM 10 MIN</span><strong>${Number(data?.active_10m||0)}</strong><small>usuários recentes</small></div><div><span>LATÊNCIA SUPABASE</span><strong>${latency} ms</strong><small>consulta do monitor</small></div><div><span>ESTABILIDADE</span><strong class="${stable?'ok':'warn'}">${stable?'Estável':'Atenção'}</strong><small>${navigator.onLine?'rede online':'sem conexão'} · ${jsErrors} erros JS nesta sessão</small></div>`}catch(e){box.innerHTML=`<div><span>ESTABILIDADE</span><strong class="warn">Indisponível</strong><small>Não foi possível consultar o monitor agora.</small></div>`}}
+  function bindRuntime337(){heartbeat337();heartbeatTimer=setInterval(heartbeat337,45000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)heartbeat337()});const LX=window.LX;if(LX?.admin?.render&&!LX.__runtime337Wrap){LX.__runtime337Wrap=true;const old=LX.admin.render.bind(LX.admin);LX.admin.render=function(page='dashboard'){const r=old(page);if(page==='dashboard'){setTimeout(runtime337,150);clearInterval(monitorTimer);monitorTimer=setInterval(runtime337,20000)}return r}}}
+
+  async function boot337(){if(booted)return;booted=true;const LX=await waitLX();bindAI337();ensureAI337();if(LX){bindMusic337();bindCarousel337();bindRuntime337();window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['focus-ai-music']='33.7';}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot337,{once:true});else boot337();
+})();
