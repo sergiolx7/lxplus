@@ -2458,7 +2458,7 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
   /* ---------- Cargos e painel ADM ---------- */
   const roleLabels={owner:'Dono',administrator:'Administrador',editor:'Editor',moderator:'Moderador'};
   const normalizeRole=value=>({admin:'administrator',manager:'administrator',owner:'owner',administrator:'administrator',editor:'editor',moderator:'moderator'}[String(value||'').toLowerCase()]||'administrator');
-  const pageCaps={dashboard:['owner','administrator','editor','moderator'],library:['owner','administrator','editor'],movies:['owner','administrator','editor'],series:['owner','administrator','editor'],music:['owner','administrator','editor'],books:['owner','administrator','editor'],importer:['owner','administrator','editor'],uploads:['owner','administrator','editor'],requests:['owner','administrator','moderator'],community:['owner','administrator','moderator'],admins:['owner'],premium:['owner','administrator'],analytics:['owner','administrator'],notifications:['owner','administrator','moderator'],appearance:['owner','administrator'],settings:['owner','administrator']};
+  const pageCaps={dashboard:['owner','administrator','editor','moderator'],library:['owner','administrator','editor'],movies:['owner','administrator','editor'],series:['owner','administrator','editor'],music:['owner','administrator','editor'],books:['owner','administrator','editor'],live:['owner','administrator','editor'],carousel:['owner','administrator','editor'],lxai:['owner','administrator','editor','moderator'],importer:['owner','administrator','editor'],uploads:['owner','administrator','editor'],requests:['owner','administrator','moderator'],community:['owner','administrator','moderator'],admins:['owner'],premium:['owner','administrator'],analytics:['owner','administrator'],notifications:['owner','administrator','moderator'],appearance:['owner','administrator'],settings:['owner','administrator']};
   function canPage(page){return (pageCaps[page]||['owner']).includes(normalizeRole(role()))}
   function applyAdminPermissions(){
     const currentRole=normalizeRole(role());$$('#adminNav [data-admin]').forEach(button=>{const allowed=(pageCaps[button.dataset.admin]||['owner']).includes(currentRole);button.classList.toggle('lx-role-hidden',!allowed);button.disabled=!allowed});
@@ -2823,248 +2823,174 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['v32.2-resilient-audio']='32.2';
 })();
 
-/* ===== LX Plus v33.5 · recovery-ui.js ===== */
+/* ===== LX Plus v34.0 · clean control center: AI + Music + Carousel + Live ===== */
 (()=>{
- const LX=window.LX;if(!LX?.ui||!LX?.data)return;
- const U=LX.ui,D=LX.data,S=LX.store,$=id=>document.getElementById(id),esc=U.esc||((x)=>String(x??''));
- const devices=['desktop','tablet','mobile','tv'];
- const deviceLabel={desktop:'PC',tablet:'Tablet',mobile:'Celular',tv:'TV'};
- const timeout=(p,ms=6000)=>Promise.race([Promise.resolve(p),new Promise((_,reject)=>setTimeout(()=>reject(new Error('TIMEOUT')),ms))]);
-
- /* ---- top-level profile / AI ---- */
- function aiPanel(){let el=$('lxAiPanel335');if(el)return el;el=document.createElement('aside');el.id='lxAiPanel335';el.className='lx-ai-panel335 hidden';el.innerHTML=`<header class="lx-ai-head335"><div><span>LX IA</span><h3>Assistente da LX Plus</h3><small id="lxAiMode336">Conectando…</small></div><button type="button" data-ai-close>×</button></header><div class="lx-ai-log335" id="lxAiLog335"><div class="lx-ai-msg335">Olá! Posso ajudar com o catálogo, explicar funções da LX Plus e responder perguntas. Quando a IA online estiver configurada no ADM, uso respostas completas; sem ela continuo funcionando em modo local.</div></div><form class="lx-ai-form335" id="lxAiForm335"><input id="lxAiInput335" autocomplete="off" placeholder="Pergunte alguma coisa…"><button>Enviar</button></form>`;document.body.appendChild(el);el.querySelector('[data-ai-close]').onclick=()=>el.classList.add('hidden');el.querySelector('form').onsubmit=async e=>{e.preventDefault();const input=$('lxAiInput335'),q=input.value.trim();if(!q)return;input.value='';appendAI(q,true);const pending=appendAI('Pensando…',false,true);try{const data=await askAI336(q);pending.textContent=data.answer||answerAI(q);const mode=$('lxAiMode336');if(mode)mode.textContent=data.mode==='openai'?'IA online · GPT':'Modo local inteligente'}catch(error){console.warn('LX IA',error);pending.textContent=answerAI(q);const mode=$('lxAiMode336');if(mode)mode.textContent='Modo local inteligente'};const log=$('lxAiLog335');if(log)log.scrollTop=log.scrollHeight};return el}
- function appendAI(text,me=false,pending=false){const log=$('lxAiLog335')||aiPanel().querySelector('#lxAiLog335'),m=document.createElement('div');m.className='lx-ai-msg335'+(me?' me':'')+(pending?' is-pending':'');m.textContent=text;log.appendChild(m);log.scrollTop=log.scrollHeight;return m}
- async function askAI336(q){const c=LX.cloud?.db?.();if(!c)throw new Error('CLOUD_NOT_CONFIGURED');const history=[...document.querySelectorAll('#lxAiLog335 .lx-ai-msg335')].slice(-8).map(x=>({role:x.classList.contains('me')?'user':'assistant',content:x.textContent})).filter(x=>x.content&&x.content!=='Pensando…');const {data,error}=await c.functions.invoke('lx-ai',{body:{message:q,history}});if(error)throw error;if(data?.error)throw new Error(data.error);return data||{}}
- function answerAI(q){const n=String(q).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),cat=D.catalog().filter(x=>x.published!==false);if(/(filme|serie|musica|livro|anime|dorama|assistir|ouvir|ler)/.test(n)){const words=n.replace(/\b(quero|achar|procure|buscar|filme|serie|musica|livro|anime|dorama|assistir|ouvir|ler|sobre|uma|um|de|do|da|por|favor)\b/g,' ').replace(/\s+/g,' ').trim();const hits=words?(D.search?.(cat,words)||[]):cat.slice(0,5);if(hits.length)return 'Encontrei no catálogo: '+hits.slice(0,5).map(x=>x.title).join(' · ')+'.';return 'Não encontrei um título correspondente no catálogo atual.'}if(/(perfil|foto|avatar)/.test(n))return 'Clique na sua foto no canto superior direito para abrir Meu perfil e as configurações.';if(/(aparencia|barra lateral|navegacao|menu)/.test(n))return 'Abra Aparência e escolha “Em cima” ou “Barra lateral” em Posição da navegação.';if(/(adm|administr)/.test(n))return U.state?.user?.admin?'Sua conta tem acesso ao Painel ADM.':'O Painel ADM aparece apenas para contas autorizadas.';if(/(ajuda|como funciona|o que voce faz)/.test(n))return 'Eu sou a LX IA. Posso ajudar com catálogo, navegação, perfil, reprodução e funções da plataforma.';return 'Posso ajudar com filmes, séries, músicas, livros, perfil e uso da LX Plus. Se a IA online estiver configurada no ADM, também respondo perguntas gerais.'}
- function openAI(){const panel=aiPanel();panel.classList.toggle('hidden');if(!panel.classList.contains('hidden')){setTimeout(()=>$('lxAiInput335')?.focus(),30);checkAIMode336()}}
- async function checkAIMode336(){const mode=$('lxAiMode336');if(!mode)return;try{const c=LX.cloud?.db?.(),{data,error}=await c.rpc('lx_integration_status');if(error)throw error;const keys=new Set((data||[]).map(x=>x.key));mode.textContent=keys.has('openai_api_key')?'IA online · GPT':'Modo local inteligente'}catch{mode.textContent='Modo local inteligente'}}
- document.addEventListener('click',e=>{if(e.target.closest?.('#lxAiTop335'))openAI()});
- LX.openAI335=openAI;
-
- /* ---- resilient cloud music diagnostics / retry ---- */
- async function signedMusicUrl(ref){if(!String(ref||'').startsWith('cloud:')||!LX.cloud?.db?.())return null;const db=LX.cloud.db(),path=String(ref).slice(6).replace(/^\/+/,''),bucket=LX.config?.supabase?.mediaBucket||'lx-media';try{const r=await timeout(db.storage.from(bucket).createSignedUrl(path,7200),5000);if(!r?.error&&r?.data?.signedUrl)return r.data.signedUrl}catch(e){console.warn('LX335 signed music',e)}try{const session=await timeout(db.auth.getSession(),2500),token=session?.data?.session?.access_token;if(token){const r=await timeout(db.functions.invoke('lx-media-ticket',{body:{key:String(ref),expires:7200},headers:{Authorization:`Bearer ${token}`}}),5000);if(!r?.error&&(r?.data?.signedUrl||r?.data?.url))return r.data.signedUrl||r.data.url}}catch(e){console.warn('LX335 ticket music',e)}return null}
- async function retryCurrentCloud(){const state=U.state,t=state?.musicQueue?.[state.musicIndex],audio=$('musicAudio');if(!t||!audio)return false;const ref=t.mediaKey||t.sourceMediaKey||'';if(!String(ref).startsWith('cloud:'))return false;const status=$('musicPlaybackKind');if(status){status.textContent='Preparando áudio…';status.className='music-playback-kind is-loading'};const src=await signedMusicUrl(ref);if(!src){if(status){status.textContent='Áudio indisponível · tente novamente';status.className='music-playback-kind is-error'}return false}try{audio.src=src;audio.preload='auto';audio.load();await timeout(new Promise((resolve,reject)=>{const ok=()=>{clean();resolve(true)},bad=()=>{clean();reject(audio.error||new Error('AUDIO_ERROR'))},clean=()=>{audio.removeEventListener('loadedmetadata',ok);audio.removeEventListener('canplay',ok);audio.removeEventListener('error',bad)};audio.addEventListener('loadedmetadata',ok,{once:true});audio.addEventListener('canplay',ok,{once:true});audio.addEventListener('error',bad,{once:true})}),6500);try{await audio.play()}catch(e){if(e?.name!=='NotAllowedError')throw e}if(status){status.textContent=audio.paused?'Pronta · toque em ▶':'Faixa completa';status.className='music-playback-kind is-ready'}return true}catch(e){console.warn('LX335 audio retry',e);if(status){status.textContent='Falha no áudio · toque em ▶';status.className='music-playback-kind is-error'}return false}}
- const musicPlay=$('musicPlay');if(musicPlay){const previous=musicPlay.onclick;musicPlay.onclick=async e=>{const audio=$('musicAudio'),t=U.state?.musicQueue?.[U.state.musicIndex];if(t&&String(t.mediaKey||t.sourceMediaKey||'').startsWith('cloud:')&&(!audio?.src||audio?.error||audio?.readyState===0)){const ok=await retryCurrentCloud();if(ok)return}return previous?.call(musicPlay,e)}}
- LX.retryCurrentCloud335=retryCurrentCloud;
-
- /* ---- responsive hero art ---- */
- function heroDevice(){const w=window.innerWidth;return w<=620?'mobile':w<=1100?'tablet':w>=2200?'tv':'desktop'}
- function featuredRows(){const all=D.catalog().filter(x=>x.published!==false&&['Filme','Série','Anime','Dorama'].includes(x.type)),branding=D.branding?.()||{},ids=(branding.featuredIds||[]).map(Number);let f=all.filter(x=>ids.includes(Number(x.id)));if(!f.length)f=all.filter(x=>x.featured);if(!f.length)f=all.slice(0,4);return f}
- function heroArtFor(x,device=heroDevice()){return x?.heroArt?.[device]||x?.heroArt?.desktop||x?.carouselImage||x?.banner||x?.cover||''}
- function heroFocusFor(x,device=heroDevice()){const v=x?.heroFocus?.[device]||x?.heroFocus?.desktop||{};return {x:Number(v.x??50),y:Number(v.y??35)}}
- function syncHero335(){const hero=$('hero');if(!hero)return;const rows=featuredRows(),dev=heroDevice(),slides=hero.querySelectorAll('.hero-slide');slides.forEach((slide,i)=>{const x=rows[i];if(!x)return;const bg=slide.querySelector('.hero-bg'),art=heroArtFor(x,dev),focus=heroFocusFor(x,dev);if(bg&&art){bg.style.backgroundImage=`url(${JSON.stringify(art)})`;bg.style.backgroundPosition=`${focus.x}% ${focus.y}%`;bg.style.backgroundSize='cover'}})}
- let heroSyncTimer;window.addEventListener('resize',()=>{clearTimeout(heroSyncTimer);heroSyncTimer=setTimeout(syncHero335,100)});if($('hero'))new MutationObserver(()=>queueMicrotask(syncHero335)).observe($('hero'),{childList:true,subtree:true});setTimeout(syncHero335,300);
- LX.syncHero335=syncHero335;
-
- /* ---- Carousel ADM ---- */
- let carouselSelected=null,previewUrls={};
- function releasePreview(){Object.values(previewUrls).forEach(u=>{if(String(u).startsWith('blob:'))try{URL.revokeObjectURL(u)}catch{}});previewUrls={}}
- function carouselItem(){return D.catalog().find(x=>String(x.id)===String(carouselSelected))||featuredRows()[0]||D.catalog().find(x=>['Filme','Série','Anime','Dorama'].includes(x.type))}
- function previewUrl(item,dev){return previewUrls[dev]||heroArtFor(item,dev)||''}
- function carouselAdmin(m){releasePreview();const list=D.catalog().filter(x=>['Filme','Série','Anime','Dorama'].includes(x.type));if(!carouselSelected)carouselSelected=String(featuredRows()[0]?.id||list[0]?.id||'');const x=carouselItem();m.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN · HOME</span><h1>Carrossel</h1><p>Escolha os destaques e ajuste a arte separadamente para celular, tablet, PC e TV.</p></div></div><div class="lx-admin-builder335"><section class="admin-card lx-carousel-grid335"><div class="lx-carousel-controls335"><label>Conteúdo<select id="lxCarItem335">${list.map(row=>`<option value="${row.id}" ${String(row.id)===String(x?.id)?'selected':''}>${esc(row.title)} · ${esc(row.type)}</option>`).join('')}</select></label><label class="check"><input id="lxCarFeatured335" type="checkbox" ${x?.featured?'checked':''}><span>Mostrar no carrossel principal</span></label><label>Prioridade<input id="lxCarPriority335" type="number" min="-100" max="100" value="${Number(x?.priority||0)}"></label><div class="lx-carousel-list335">${list.filter(r=>r.featured).sort((a,b)=>(+b.priority||0)-(+a.priority||0)).map(r=>`<div class="lx-carousel-item335"><img src="${esc(heroArtFor(r,'desktop'))}" alt=""><div><strong>${esc(r.title)}</strong><small>Prioridade ${Number(r.priority||0)}</small></div><button class="glass-btn" data-car-edit="${r.id}">Editar</button></div>`).join('')||'<small>Nenhum destaque marcado ainda.</small>'}</div><button class="glass-btn" id="lxCarAuto335" type="button">✦ Auto enquadrar</button><button class="primary-btn" id="lxCarSave335" type="button">Salvar carrossel</button><small id="lxCarStatus335"></small></div><div><div class="lx-carousel-previews335">${devices.map(dev=>`<div class="lx-device-preview335 ${dev}" id="lxPrev_${dev}" style="background-image:url('${esc(previewUrl(x,dev)).replace(/'/g,'%27')}');background-position:${heroFocusFor(x,dev).x}% ${heroFocusFor(x,dev).y}%"><span>${deviceLabel[dev]}</span><strong>${esc(x?.title||'Prévia')}</strong></div>`).join('')}</div><div class="lx-device-row335" style="margin-top:12px">${devices.map(dev=>`<label class="field">${deviceLabel[dev]} · imagem<input type="file" accept="image/*" id="lxCarFile_${dev}"></label>`).join('')}</div><div class="lx-device-row335" style="margin-top:12px">${devices.map(dev=>{const f=heroFocusFor(x,dev);return `<div class="admin-card"><b>${deviceLabel[dev]} · foco</b><label>X <input type="range" min="0" max="100" value="${f.x}" id="lxCarX_${dev}"></label><label>Y <input type="range" min="0" max="100" value="${f.y}" id="lxCarY_${dev}"></label></div>`}).join('')}</div></div></section></div>`;bindCarouselAdmin(x)}
- function updateCarouselPreview(x,dev){const el=$('lxPrev_'+dev),fx=+$('lxCarX_'+dev)?.value||50,fy=+$('lxCarY_'+dev)?.value||35;if(el){el.style.backgroundImage=`url(${JSON.stringify(previewUrl(x,dev))})`;el.style.backgroundPosition=`${fx}% ${fy}%`}}
- function bindCarouselAdmin(x){$('lxCarItem335')?.addEventListener('change',e=>{carouselSelected=e.target.value;LX.admin.render('carousel')});document.querySelectorAll('[data-car-edit]').forEach(b=>b.onclick=()=>{carouselSelected=b.dataset.carEdit;LX.admin.render('carousel')});devices.forEach(dev=>{$('lxCarFile_'+dev)?.addEventListener('change',e=>{const file=e.target.files?.[0];if(!file)return;if(previewUrls[dev]?.startsWith?.('blob:'))URL.revokeObjectURL(previewUrls[dev]);previewUrls[dev]=URL.createObjectURL(file);updateCarouselPreview(x,dev)});['X','Y'].forEach(axis=>$('lxCar'+axis+'_'+dev)?.addEventListener('input',()=>updateCarouselPreview(x,dev)))});$('lxCarAuto335')?.addEventListener('click',()=>autoFrame335(x));$('lxCarSave335')?.addEventListener('click',()=>saveCarousel335(x))}
- async function autoFrame335(x){const status=$('lxCarStatus335');if(status)status.textContent='Analisando enquadramento…';let point={x:50,y:38};const src=previewUrl(x,'desktop');try{if(src&&'FaceDetector'in window){const img=new Image();img.crossOrigin='anonymous';img.src=src;await timeout(img.decode(),3500);const faces=await timeout(new FaceDetector({fastMode:true,maxDetectedFaces:4}).detect(img),3500);if(faces?.length){const box=faces[0].boundingBox;point={x:Math.round((box.x+box.width/2)/img.naturalWidth*100),y:Math.round((box.y+box.height/2)/img.naturalHeight*100)}}}}catch(e){console.warn('LX auto frame',e)}devices.forEach(dev=>{const y=dev==='mobile'?Math.min(48,point.y+5):point.y;if($('lxCarX_'+dev))$('lxCarX_'+dev).value=point.x;if($('lxCarY_'+dev))$('lxCarY_'+dev).value=y;updateCarouselPreview(x,dev)});if(status)status.textContent='Enquadramento automático aplicado. Confira as quatro prévias antes de salvar.'}
- async function saveCarousel335(x){if(!x)return;const btn=$('lxCarSave335'),status=$('lxCarStatus335');if(btn){btn.disabled=true;btn.textContent='Salvando…'}try{const heroArt={...(x.heroArt||{})},heroFocus={...(x.heroFocus||{})};for(const dev of devices){const file=$('lxCarFile_'+dev)?.files?.[0];if(file){if((file.size||0)>15*1024*1024)throw new Error(`Imagem ${deviceLabel[dev]} maior que 15 MB`);heroArt[dev]=await LX.store.putAsset(`carousel_${x.id}_${dev}_${Date.now()}_${file.name}`,file,'assets')}heroFocus[dev]={x:+$('lxCarX_'+dev)?.value||50,y:+$('lxCarY_'+dev)?.value||35}}const next={...x,featured:!!$('lxCarFeatured335')?.checked,priority:+$('lxCarPriority335')?.value||0,heroArt,heroFocus,carouselImage:heroArt.desktop||x.carouselImage||x.banner||x.cover||''};await D.saveCatalogItem(next);if(status)status.textContent='✓ Carrossel salvo no catálogo.';LX.toast?.('Carrossel atualizado.');syncHero335();setTimeout(()=>LX.admin.render('carousel'),250)}catch(e){console.warn(e);if(status)status.textContent='Erro: '+(e?.message||'não foi possível salvar');LX.toast?.('Não foi possível salvar o carrossel.')}finally{if(btn){btn.disabled=false;btn.textContent='Salvar carrossel'}}}
-
- /* ---- Manual Ao Vivo ADM + runtime ---- */
- let liveEditId=null;
- function liveRows(){return D.catalog().filter(x=>x.type==='Ao Vivo')}
- function liveAdmin(m){const rows=liveRows(),x=rows.find(r=>String(r.id)===String(liveEditId));m.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN</span><h1>Ao Vivo</h1><p>Cadastre somente as transmissões que você quer exibir dentro da LX Plus.</p></div></div><section class="admin-card lx-live-admin335"><div class="form-grid"><label class="field span2">Nome do evento<input id="lxLiveTitle335" value="${esc(x?.title||'') }" placeholder="Flamengo x Palmeiras"></label><label class="field">Competição<input id="lxLiveLeague335" value="${esc(x?.genre||x?.league||'')}"></label><label class="field">Status<select id="lxLiveStatus335">${['Em breve','Ao vivo','Intervalo','Encerrado'].map(v=>`<option ${String(x?.liveStatus||'Em breve')===v?'selected':''}>${v}</option>`).join('')}</select></label><label class="field">Time / lado 1<input id="lxLiveHome335" value="${esc(x?.home||'')}"></label><label class="field">Time / lado 2<input id="lxLiveAway335" value="${esc(x?.away||'')}"></label><label class="field">Data e hora<input id="lxLiveStart335" type="datetime-local" value="${x?.scheduledAt?new Date(x.scheduledAt).toISOString().slice(0,16):''}"></label><label class="field">Fonte<select id="lxLiveProvider335">${['direct','gdrive','youtube','archive'].map(v=>`<option value="${v}">${v==='direct'?'HLS/MP4 HTTPS':v==='gdrive'?'Google Drive':v==='youtube'?'YouTube':'Archive.org'}</option>`).join('')}</select></label><label class="field span2">Link da transmissão<input id="lxLiveSource335" value="${esc(x?.sourceInput||LX.mediaSources?.toInput?.(x?.mediaKey)||'')}" placeholder="https://..."></label><label class="field">Banner<input id="lxLiveBanner335" type="file" accept="image/*"></label><label class="check"><input id="lxLivePublished335" type="checkbox" ${x?.published!==false?'checked':''}><span>Publicado</span></label></div><div class="hero-actions"><button class="primary-btn" id="lxLiveSave335">${x?'Salvar evento':'Adicionar transmissão'}</button>${x?'<button class="glass-btn" id="lxLiveCancel335">Cancelar edição</button>':''}</div><div class="lx-live-list335">${rows.map(r=>`<div class="lx-live-row335"><img src="${esc(r.banner||r.cover||'')}" alt=""><div><strong>${esc(r.title)}</strong><small>${esc(r.liveStatus||'Em breve')} · ${esc(r.genre||'Ao Vivo')}</small></div><div><button class="glass-btn" data-live-edit="${r.id}">Editar</button> <button class="glass-btn" data-live-del="${r.id}">Excluir</button></div></div>`).join('')||'<p>Nenhuma transmissão cadastrada.</p>'}</div></section>`;bindLiveAdmin(x)}
- function bindLiveAdmin(x){$('lxLiveCancel335')&&($('lxLiveCancel335').onclick=()=>{liveEditId=null;LX.admin.render('live')});document.querySelectorAll('[data-live-edit]').forEach(b=>b.onclick=()=>{liveEditId=b.dataset.liveEdit;LX.admin.render('live')});document.querySelectorAll('[data-live-del]').forEach(b=>b.onclick=async()=>{if(!confirm('Excluir esta transmissão?'))return;await D.deleteCatalogItem(+b.dataset.liveDel);LX.admin.render('live')});$('lxLiveSave335')?.addEventListener('click',async()=>{const title=$('lxLiveTitle335').value.trim(),raw=$('lxLiveSource335').value.trim();if(!title||!raw)return LX.toast?.('Informe nome e fonte da transmissão.');const btn=$('lxLiveSave335');btn.disabled=true;try{const provider=$('lxLiveProvider335').value,mediaKey=LX.mediaSources.normalize(provider,raw);let banner=x?.banner||'';const file=$('lxLiveBanner335').files?.[0];if(file)banner=await LX.store.putAsset(`live_${Date.now()}_${file.name}`,file,'assets');const row={...(x||{}),id:x?.id||Date.now(),title,type:'Ao Vivo',genre:$('lxLiveLeague335').value.trim()||'Ao Vivo',home:$('lxLiveHome335').value.trim(),away:$('lxLiveAway335').value.trim(),liveStatus:$('lxLiveStatus335').value,scheduledAt:$('lxLiveStart335').value?new Date($('lxLiveStart335').value).toISOString():null,mediaKey,sourceInput:raw,banner,cover:banner,published:$('lxLivePublished335').checked,createdAt:x?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()};await D.saveCatalogItem(row);liveEditId=null;LX.toast?.('Transmissão salva.');LX.admin.render('live')}catch(e){console.warn(e);LX.toast?.('Não foi possível salvar a transmissão.')}finally{btn.disabled=false}})}
- function renderManualLive(){const hero=$('hero'),welcome=$('welcome'),home=$('homeContent');if(hero)hero.innerHTML='';if(welcome)welcome.innerHTML='';const rows=liveRows().filter(x=>x.published!==false).sort((a,b)=>+new Date(a.scheduledAt||0)-+new Date(b.scheduledAt||0));if(!home)return;home.innerHTML=`<section style="padding:110px 4vw 120px"><div class="rail-head"><div><span class="eyebrow">LX AO VIVO</span><h2>Transmissões</h2><p>Eventos publicados pelo ADM.</p></div></div>${rows.length?`<div class="lx-live-list335">${rows.map(r=>`<article class="admin-card" style="min-height:160px;background:linear-gradient(90deg,rgba(0,0,0,.78),rgba(0,0,0,.18)),url('${String(r.banner||r.cover||'').replace(/'/g,'%27')}') center/cover"><span class="eyebrow">${esc(r.liveStatus||'Em breve')}</span><h2>${esc(r.title)}</h2><p>${esc(r.genre||'Ao Vivo')} ${r.scheduledAt?'· '+new Date(r.scheduledAt).toLocaleString('pt-BR'):''}</p><button class="primary-btn" onclick="LX.play(${r.id})">▶ Assistir dentro da LX Plus</button></article>`).join('')}</div>`:'<div class="official-empty"><h2>Nenhuma transmissão no momento</h2><p>Quando o ADM publicar um evento, ele aparecerá aqui.</p></div>'}</section>`}
- if(LX.contentHub)LX.contentHub.renderLive=renderManualLive;
-
- /* ---- ADM router extensions ---- */
- if(LX.admin?.render){const originalAdminRender=LX.admin.render.bind(LX.admin);LX.admin.render=function(page='dashboard'){if(page==='carousel'){U.state.adminPage=page;carouselAdmin($('adminMain'));document.querySelectorAll('#adminNav [data-admin]').forEach(b=>b.classList.toggle('active',b.dataset.admin===page));return}if(page==='live'){U.state.adminPage=page;liveAdmin($('adminMain'));document.querySelectorAll('#adminNav [data-admin]').forEach(b=>b.classList.toggle('active',b.dataset.admin===page));return}if(page==='lxai'){U.state.adminPage=page;const m=$('adminMain');m.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN</span><h1>LX IA</h1><p>Assistente da plataforma com modo local e IA online opcional.</p></div></div><section class="admin-card"><h2>Motor da IA</h2><p style="color:var(--muted)">Sem chave, a LX IA continua respondendo sobre catálogo e navegação. Com uma chave OpenAI, passa a responder perguntas gerais usando o catálogo da LX Plus como contexto.</p><label class="field">OpenAI API Key<input id="lxOpenAIKey336" type="password" autocomplete="new-password" placeholder="Cole a chave somente aqui no ADM"></label><div class="hero-actions"><button class="primary-btn" id="lxSaveAIKey336">Salvar e testar IA</button><button class="glass-btn" onclick="LX.openAI335()">Abrir LX IA</button></div><div id="lxAIStatus336" class="import-key-status">Verificando…</div></section><section class="admin-card"><h2>O que a LX IA conhece</h2><div class="health-grid"><div class="health-card"><span class="status">Catálogo</span><strong>Conectado</strong><small>Filmes, séries, músicas e livros publicados</small></div><div class="health-card"><span class="status">Conta</span><strong>Contextual</strong><small>Ajuda com navegação e funções da plataforma</small></div></div></section>`;document.querySelectorAll('#adminNav [data-admin]').forEach(b=>b.classList.toggle('active',b.dataset.admin===page));setTimeout(()=>{LX.refreshAIStatus336?.();const b=$('lxSaveAIKey336');if(b)b.onclick=()=>LX.saveAIKey336?.()},0);return}return originalAdminRender(page)}}
-
- /* Clicking the visible profile avatar always opens the real profile menu. */
- async function refreshAIStatus336(){const el=$('lxAIStatus336');if(!el)return;try{const c=LX.cloud?.db?.(),{data,error}=await c.rpc('lx_integration_status');if(error)throw error;const keys=new Set((data||[]).map(x=>x.key));el.innerHTML=keys.has('openai_api_key')?'<span class="ok">OpenAI ✓ configurada · LX IA online</span>':'<span class="warn">OpenAI não configurada · modo local ativo</span>'}catch{el.textContent='Modo local ativo. Não foi possível consultar integrações.'}}
- async function saveAIKey336(){const input=$('lxOpenAIKey336'),btn=$('lxSaveAIKey336'),value=input?.value.trim()||'';if(!value)return LX.toast?.('Cole a OpenAI API Key.');if(btn){btn.disabled=true;btn.textContent='Salvando…'}try{const c=LX.cloud?.db?.();if(!c)throw new Error('Nuvem indisponível');const {error}=await c.rpc('lx_admin_set_integration_secret',{p_key:'openai_api_key',p_value:value});if(error)throw error;input.value='';const {data,error:aiError}=await c.functions.invoke('lx-ai',{body:{message:'Responda apenas: LX IA conectada.'}});if(aiError||data?.error)throw aiError||new Error(data.error);LX.toast?.('LX IA conectada e testada.');await refreshAIStatus336()}catch(error){console.warn('LX IA setup',error);LX.toast?.(/owner required/i.test(error?.message||'')?'Somente o Dono pode alterar a chave da IA.':'Não foi possível validar a IA. Confira a chave.')}finally{if(btn){btn.disabled=false;btn.textContent='Salvar e testar IA'}}}
- LX.refreshAIStatus336=refreshAIStatus336;LX.saveAIKey336=saveAIKey336;
- $('profileBtn')?.setAttribute('title','Meu perfil');
- window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['recovery-ui']='33.7';
-})();
-
-/* v33.5 music load watchdog */
-(()=>{let token=0;document.addEventListener('lx:music-changed',()=>{const mine=++token;setTimeout(()=>{if(mine!==token)return;const s=document.getElementById('musicPlaybackKind'),a=document.getElementById('musicAudio');if(s?.classList.contains('is-loading')&&(!a?.src||a.readyState<1))window.LX?.retryCurrentCloud335?.()},4200)});})();
-
-/* ===== LX Plus v33.7 · AI + Music Core + Carousel + ADM Runtime ===== */
-(()=>{
-  const BUILD='33.7';
-  let booted=false, aiBound=false, musicSeq=0, heartbeatTimer=null, monitorTimer=null, jsErrors=0;
+  'use strict';
+  const BUILD='34.0';
   const $=id=>document.getElementById(id);
-  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-  const withTimeout=(p,ms=10000)=>Promise.race([Promise.resolve(p),new Promise((_,rej)=>setTimeout(()=>rej(new Error('TIMEOUT')),ms))]);
+  const $$=(s,r=document)=>[...r.querySelectorAll(s)];
   const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-  window.addEventListener('error',()=>{jsErrors++});
-  window.addEventListener('unhandledrejection',()=>{jsErrors++});
+  const norm=s=>String(s??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  const timed=(p,ms=10000,label='TIMEOUT')=>Promise.race([Promise.resolve(p),new Promise((_,rej)=>setTimeout(()=>rej(new Error(label)),ms))]);
+  let booted=false, oldAdminRender=null, oldMusic=null, musicToken=0, currentNative=null, aiHistory=[];
+  const mediaCache=new Map();
 
-  function waitLX(){
-    return new Promise(resolve=>{
-      let n=0;const t=setInterval(()=>{
-        if(window.LX?.ui&&window.LX?.data){clearInterval(t);resolve(window.LX);}
-        else if(++n>80){clearInterval(t);resolve(window.LX||null)}
-      },125);
-    });
-  }
-
-  /* ---------------- LX IA: click always opens ---------------- */
-  function localAI(q){
-    const LX=window.LX, n=String(q||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-    const cat=LX?.data?.catalog?.()||[];
-    if(/(perfil|avatar|foto)/.test(n))return 'Clique na sua foto no canto superior direito para abrir o perfil.';
-    if(/(aparencia|barra lateral|navegacao|menu)/.test(n))return 'Abra Aparência e escolha se prefere a navegação em cima ou na barra lateral.';
-    if(/(musica|filme|serie|livro|anime|dorama)/.test(n)){
-      const words=n.replace(/\b(quero|achar|buscar|procure|filme|serie|musica|livro|anime|dorama|assistir|ouvir|ler|uma|um|de|do|da|por|favor)\b/g,' ').trim();
-      let rows=cat.filter(x=>x?.published!==false);
-      if(words)rows=rows.filter(x=>JSON.stringify([x.title,x.artist,x.author,x.genre,x.year]).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(words));
-      rows=rows.slice(0,5);
-      return rows.length?'Encontrei no catálogo: '+rows.map(x=>x.title).join(' · ')+'.':'Não encontrei algo correspondente no catálogo atual.';
+  async function waitLX(){
+    for(let i=0;i<120;i++){
+      if(window.LX?.ui&&window.LX?.data&&window.LX?.store)return window.LX;
+      await sleep(100);
     }
-    return 'Sou a LX IA. Posso ajudar com o catálogo, perfil, navegação, música e funções da LX Plus.';
+    return window.LX||null;
   }
-  function ensureAI337(){
-    let p=$('lxAiPanel337'); if(p)return p;
-    p=document.createElement('aside');p.id='lxAiPanel337';p.className='lx-ai-panel337 hidden';
-    p.innerHTML=`<header><div><span>LX IA</span><h3>Assistente LX Plus</h3><small id="lxAiMode337">Modo local inteligente</small></div><button type="button" data-close>×</button></header><div id="lxAiLog337" class="lx-ai-log337"><div class="lx-ai-bubble337">Olá! Estou pronta para ajudar dentro da LX Plus.</div></div><form id="lxAiForm337"><input id="lxAiInput337" autocomplete="off" placeholder="Pergunte qualquer coisa…"><button>Enviar</button></form>`;
+
+  /* ---------------- LX IA ---------------- */
+  function localAnswer(q){
+    const LX=window.LX,n=norm(q),cat=LX?.data?.catalog?.().filter(x=>x?.published!==false)||[];
+    if(/perfil|avatar|foto/.test(n))return 'Clique na sua foto no canto superior direito para abrir o perfil.';
+    if(/aparencia|barra lateral|navegacao|menu/.test(n))return 'Abra Aparência para escolher a navegação em cima ou na barra lateral.';
+    if(/musica|filme|serie|livro|anime|dorama|assistir|ouvir|ler/.test(n)){
+      const terms=n.replace(/\b(quero|achar|buscar|procure|filme|serie|musica|livro|anime|dorama|assistir|ouvir|ler|uma|um|de|do|da|por|favor)\b/g,' ').split(' ').filter(Boolean);
+      const ranked=cat.map(x=>{const h=norm([x.title,x.artist,x.author,x.genre,x.year,x.type].filter(Boolean).join(' '));return {x,s:terms.reduce((a,t)=>a+(h.includes(t)?1:0),0)}}).filter(z=>z.s>0).sort((a,b)=>b.s-a.s).slice(0,5).map(z=>z.x);
+      return ranked.length?'Encontrei no catálogo: '+ranked.map(x=>x.title).join(' · ')+'.':'Não encontrei um título correspondente no catálogo atual.';
+    }
+    return 'Sou a LX IA. Posso ajudar com catálogo, música, perfil, navegação e funções da LX Plus.';
+  }
+  async function askAI(q){
+    const LX=window.LX,c=LX?.cloud?.db?.();
+    if(!c)return {answer:localAnswer(q),mode:'local'};
+    try{
+      const r=await timed(c.functions.invoke('lx-ai',{body:{message:q,history:aiHistory.slice(-8)}}),20000,'AI_TIMEOUT');
+      if(r?.error||r?.data?.error)throw r?.error||new Error(r?.data?.error||'AI_ERROR');
+      return {answer:r?.data?.answer||localAnswer(q),mode:r?.data?.mode||'local'};
+    }catch(e){
+      console.warn('LX34 AI fallback',e);
+      return {answer:localAnswer(q),mode:'local'};
+    }
+  }
+  function ensureAIPanel(){
+    let p=$('lxAI34');if(p)return p;
+    p=document.createElement('aside');p.id='lxAI34';p.className='lx-ai34 hidden';
+    p.innerHTML=`<header><div><span>LX IA</span><h3>Assistente LX Plus</h3><small id="lxAI34Mode">Modo local inteligente</small></div><button type="button" data-ai34-close>×</button></header><div id="lxAI34Log" class="lx-ai34-log"><div class="lx-ai34-msg">Olá! Como posso ajudar?</div></div><form id="lxAI34Form"><input id="lxAI34Input" autocomplete="off" placeholder="Pergunte qualquer coisa…"><button>Enviar</button></form>`;
     document.body.appendChild(p);
-    p.querySelector('[data-close]').onclick=()=>p.classList.add('hidden');
-    p.querySelector('form').onsubmit=async e=>{
-      e.preventDefault();const input=$('lxAiInput337'),q=input?.value.trim();if(!q)return;input.value='';
-      const log=$('lxAiLog337');
-      const me=document.createElement('div');me.className='lx-ai-bubble337 me';me.textContent=q;log.appendChild(me);
-      const ans=document.createElement('div');ans.className='lx-ai-bubble337 pending';ans.textContent='Pensando…';log.appendChild(ans);log.scrollTop=log.scrollHeight;
-      try{
-        const LX=window.LX,c=LX?.cloud?.db?.();
-        if(!c)throw new Error('SEM_NUVEM');
-        const history=[...log.querySelectorAll('.lx-ai-bubble337')].slice(-8,-1).map(el=>({role:el.classList.contains('me')?'user':'assistant',content:el.textContent||''}));
-        const r=await withTimeout(c.functions.invoke('lx-ai',{body:{message:q,history}}),18000);
-        if(r?.error||r?.data?.error)throw r?.error||new Error(r?.data?.error);
-        ans.textContent=r?.data?.answer||localAI(q);ans.classList.remove('pending');
-        $('lxAiMode337').textContent=r?.data?.mode==='openai'?'IA online · OpenAI':'Modo local inteligente';
-      }catch(err){console.warn('LX IA 33.7',err);ans.textContent=localAI(q);ans.classList.remove('pending');$('lxAiMode337').textContent='Modo local inteligente';}
-      log.scrollTop=log.scrollHeight;
-    };
+    p.querySelector('[data-ai34-close]').onclick=()=>p.classList.add('hidden');
+    p.querySelector('form').onsubmit=async e=>{e.preventDefault();const input=$('lxAI34Input'),q=input?.value.trim();if(!q)return;input.value='';appendAI(q,true);aiHistory.push({role:'user',content:q});const pending=appendAI('Pensando…',false,true);const r=await askAI(q);pending.textContent=r.answer;pending.classList.remove('pending');aiHistory.push({role:'assistant',content:r.answer});$('lxAI34Mode').textContent=r.mode==='openai'?'IA online · OpenAI':'Modo local inteligente';const log=$('lxAI34Log');log.scrollTop=log.scrollHeight};
     return p;
   }
-  function openAI337(){const p=ensureAI337();p.classList.remove('hidden');setTimeout(()=>$('lxAiInput337')?.focus(),30)}
-  function bindAI337(){if(aiBound)return;aiBound=true;
-    document.addEventListener('click',e=>{
-      const target=e.target.closest?.('#lxAiTop335,[data-open-lx-ai],button[data-admin="lxai"]');
-      if(!target)return;
-      if(target.matches('button[data-admin="lxai"]'))return; // ADM page keeps its own action
-      e.preventDefault();e.stopPropagation();openAI337();
-    },true);
-    window.LX=window.LX||{};window.LX.openAI337=openAI337;window.LX.openAI335=openAI337;
-  }
+  function appendAI(text,me=false,pending=false){const log=$('lxAI34Log')||ensureAIPanel().querySelector('#lxAI34Log'),m=document.createElement('div');m.className='lx-ai34-msg'+(me?' me':'')+(pending?' pending':'');m.textContent=text;log.appendChild(m);log.scrollTop=log.scrollHeight;return m}
+  function openAI(){const p=ensureAIPanel();p.classList.remove('hidden');setTimeout(()=>$('lxAI34Input')?.focus(),30)}
 
-  /* ---------------- MUSIC: deterministic MP3 playback ---------------- */
-  function musicStatus(text,kind='ready'){
-    const el=$('musicPlaybackKind');if(el){el.textContent=text;el.className='music-playback-kind is-'+kind;}
-    const btn=$('musicPlay');if(btn){btn.disabled=false;btn.title=kind==='loading'?'Carregando áudio':kind==='error'?'Tentar novamente':'Reproduzir ou pausar';}
+  function adminAI(main){
+    main.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN · IA</span><h1>LX IA</h1><p>Converse com a IA e configure o modo online.</p></div></div><div class="lx-ai-admin34"><section class="admin-card"><div class="lx-ai34-page-log" id="lxAI34PageLog"><div class="lx-ai34-msg">Olá! Esta é a LX IA dentro do painel ADM.</div></div><form id="lxAI34PageForm" class="lx-ai34-page-form"><input id="lxAI34PageInput" placeholder="Pergunte à LX IA…" autocomplete="off"><button class="primary-btn">Enviar</button></form></section><section class="admin-card"><h2>IA online</h2><p style="color:var(--muted)">Sem chave a IA funciona em modo local. Com uma OpenAI API Key salva aqui, usa o backend seguro da LX Plus.</p><label class="field">OpenAI API Key<input id="lxAI34Key" type="password" autocomplete="new-password" placeholder="Cole a chave aqui"></label><div class="hero-actions"><button class="primary-btn" id="lxAI34SaveKey">Salvar e testar</button><button class="glass-btn" id="lxAI34OpenFloat">Abrir chat flutuante</button></div><div id="lxAI34Status" class="import-key-status">Verificando…</div></section></div>`;
+    const log=$('lxAI34PageLog');
+    $('lxAI34PageForm').onsubmit=async e=>{e.preventDefault();const input=$('lxAI34PageInput'),q=input.value.trim();if(!q)return;input.value='';const me=document.createElement('div');me.className='lx-ai34-msg me';me.textContent=q;log.appendChild(me);const ans=document.createElement('div');ans.className='lx-ai34-msg pending';ans.textContent='Pensando…';log.appendChild(ans);aiHistory.push({role:'user',content:q});const r=await askAI(q);ans.textContent=r.answer;ans.classList.remove('pending');aiHistory.push({role:'assistant',content:r.answer});log.scrollTop=log.scrollHeight};
+    $('lxAI34OpenFloat').onclick=openAI;
+    $('lxAI34SaveKey').onclick=saveAIKey;
+    refreshAIStatus();
   }
-  function setCover337(item,content){
-    const LX=window.LX,cover=item?.cover||content?.cover||item?.youtubeThumbnail||content?.youtubeThumbnail||content?.banner||'';
-    const host=$('musicCover');if(host){host.innerHTML='';host.style.backgroundImage=cover?`url(${JSON.stringify(cover)})`:'';host.style.backgroundSize='cover';host.style.backgroundPosition='center';}
-    const btn=$('musicCoverBtn');if(btn&&cover)btn.style.setProperty('--music-cover',`url(${JSON.stringify(cover)})`);
-  }
-  async function mediaTicket337(ref){
+  async function refreshAIStatus(){const el=$('lxAI34Status');if(!el)return;try{const c=window.LX?.cloud?.db?.();if(!c)throw new Error('SEM_NUVEM');const {data,error}=await c.rpc('lx_integration_status');if(error)throw error;const on=(data||[]).some(x=>x.key==='openai_api_key');el.innerHTML=on?'<span class="ok">OpenAI configurada · IA online disponível</span>':'<span class="warn">Sem OpenAI API Key · modo local ativo</span>'}catch{el.textContent='Modo local ativo.'}}
+  async function saveAIKey(){const input=$('lxAI34Key'),btn=$('lxAI34SaveKey'),value=input?.value.trim();if(!value)return window.LX?.toast?.('Cole a OpenAI API Key.');btn.disabled=true;btn.textContent='Salvando…';try{const c=window.LX?.cloud?.db?.();if(!c)throw new Error('SEM_NUVEM');const {error}=await c.rpc('lx_admin_set_integration_secret',{p_key:'openai_api_key',p_value:value});if(error)throw error;const t=await timed(c.functions.invoke('lx-ai',{body:{message:'Responda apenas: LX IA conectada.'}}),20000);if(t?.error||t?.data?.error)throw t?.error||new Error(t?.data?.error);input.value='';window.LX?.toast?.('LX IA conectada.');refreshAIStatus()}catch(e){console.warn('LX34 AI setup',e);window.LX?.toast?.('Não foi possível validar a IA. Confira a chave.')}finally{btn.disabled=false;btn.textContent='Salvar e testar'}}
+
+  /* ---------------- MUSIC ---------------- */
+  function nativeRefFor(track,content){return track?.authorizedAudioUrl||track?.authorizedStreamUrl||track?.fullMediaKey||track?.audioKey||track?.audioUrl||track?.mediaKey||track?.url||content?.authorizedAudioUrl||content?.authorizedStreamUrl||content?.fullMediaKey||content?.audioKey||content?.audioUrl||content?.mediaKey||''}
+  function queueFor(content){const tracks=content?.tracks?.length?content.tracks:[content];return tracks.map((t,i)=>({...t,contentId:content.id,index:i,title:String(t?.title||content.title||'Faixa'),artist:String(t?.artist||content.artist||'LX Music'),cover:t?.cover||content.cover||t?.youtubeThumbnail||content.youtubeThumbnail||'',mediaKey:nativeRefFor(t,content)}))}
+  function setMusicStatus(text,kind='ready'){const el=$('musicPlaybackKind');if(el){el.textContent=text;el.className='music-playback-kind is-'+kind;el.classList.remove('hidden')}const b=$('musicPlay');if(b){b.disabled=false;b.title=kind==='error'?'Tentar novamente':kind==='loading'?'Carregando áudio':'Reproduzir ou pausar'}}
+  function setDock(track,content){const LX=window.LX;$('musicDock')?.classList.remove('hidden');$('musicTitle').textContent=track.title||'Faixa';$('musicArtist').textContent=track.artist||'LX Music';$('musicTime').textContent='0:00';$('musicDuration').textContent=Number(track.duration)>0?LX.fmt?.(track.duration)||'—':'—';$('musicProgress').value=0;try{const host=$('musicCover');if(host){host.innerHTML='';LX.artwork?.set?.(host,track,content);host.style.backgroundImage=`url(${JSON.stringify(track.cover||content.cover||LX.artwork?.fallback||'')})`;host.style.backgroundSize='cover';host.style.backgroundPosition='center'}}catch{}try{LX.syncMusicCardState?.()}catch{}}
+  async function resolveCloud(ref){
+    if(mediaCache.has(ref))return mediaCache.get(ref);
     const LX=window.LX,c=LX?.cloud?.db?.();if(!c)throw new Error('NUVEM_INDISPONIVEL');
-    const session=await withTimeout(c.auth.getSession(),4000),access=session?.data?.session?.access_token;
-    if(!access)throw new Error('SESSAO_EXPIRADA');
-    const r=await withTimeout(c.functions.invoke('lx-media-ticket',{body:{key:String(ref),expires:7200}}),10000);
-    if(r?.error||r?.data?.error)throw r?.error||new Error(r?.data?.error||'MEDIA_TICKET');
-    if(!r?.data?.streamUrl&&!r?.data?.url&&!r?.data?.signedUrl)throw new Error('MEDIA_URL_AUSENTE');
-    return r.data;
-  }
-  function waitAudio337(a,ms=12000){
-    return new Promise((resolve,reject)=>{
-      let done=false;const finish=(ok,val)=>{if(done)return;done=true;clearTimeout(tm);['loadedmetadata','canplay','loadeddata','error','stalled'].forEach(ev=>a.removeEventListener(ev,handlers[ev]));ok?resolve(val):reject(val)};
-      const handlers={loadedmetadata:()=>finish(true,'metadata'),canplay:()=>finish(true,'canplay'),loadeddata:()=>finish(true,'data'),error:()=>finish(false,a.error||new Error('AUDIO_ERROR')),stalled:()=>{}};
-      Object.entries(handlers).forEach(([ev,fn])=>a.addEventListener(ev,fn));
-      const tm=setTimeout(()=>{if(a.readyState>=1||a.currentSrc)finish(true,'timeout-with-source');else finish(false,new Error('AUDIO_TIMEOUT'))},ms);
-    });
-  }
-  async function setAudioSource337(url,fallback,item,seq,autoplay){
-    const a=$('musicAudio');if(!a||seq!==musicSeq)return false;
-    a.dataset.lx337Managed='1';a.crossOrigin='anonymous';a.preload='auto';a.src=url;a.load();
-    try{await waitAudio337(a,12000)}catch(err){
-      console.warn('LX337 primary audio',err);
-      if(fallback&&fallback!==url&&seq===musicSeq){a.src=fallback;a.load();await waitAudio337(a,10000)}else throw err;
+    const path=String(ref).slice(6).replace(/^\/+/,''),bucket=LX.config?.supabase?.mediaBucket||'lx-media';
+    let signed='',stream='';
+    try{const r=await timed(c.storage.from(bucket).createSignedUrl(path,7200),6000,'SIGNED_TIMEOUT');if(!r?.error&&r?.data?.signedUrl)signed=r.data.signedUrl}catch(e){console.warn('LX34 signed URL',e)}
+    try{const r=await timed(c.functions.invoke('lx-media-ticket',{body:{key:String(ref),expires:7200}}),9000,'TICKET_TIMEOUT');if(!r?.error&&!r?.data?.error){stream=r.data.streamUrl||r.data.url||'';signed=signed||r.data.signedUrl||''}}catch(e){console.warn('LX34 ticket',e)}
+    const result={primary:signed||stream,alternate:stream&&stream!==signed?stream:''};
+    if(!result.primary){
+      try{const raw=await timed(LX.store.getMedia(ref),9000,'MEDIA_FALLBACK_TIMEOUT');if(raw instanceof Blob){result.primary=URL.createObjectURL(raw);result.objectUrl=true}else if(typeof raw==='string')result.primary=raw}catch(e){console.warn('LX34 media fallback',e)}
     }
-    if(seq!==musicSeq)return false;
-    const d=Number(a.duration);$('musicDuration').textContent=Number.isFinite(d)&&d>0?window.LX?.fmt?.(d)||Math.round(d)+'s':'—';
-    musicStatus('Pronta','ready');
-    if(autoplay){try{await a.play();musicStatus('Faixa completa','ready')}catch(err){if(err?.name==='NotAllowedError')musicStatus('Pronta · toque em ▶','ready');else throw err}}
-    return true;
+    if(!result.primary)throw new Error('MEDIA_URL_AUSENTE');mediaCache.set(ref,result);return result;
   }
-  async function playManaged337(id,index=0,autoplay=true){
-    const LX=window.LX,U=LX?.ui,D=LX?.data;if(!U||!D)return false;
-    const x=D.catalog().find(i=>String(i.id)===String(id));if(!x)return false;
-    const tracks=x.tracks?.length?x.tracks:((x.mediaKey||x.authorizedAudioUrl)?[{title:x.title,artist:x.artist,mediaKey:x.mediaKey||x.authorizedAudioUrl,cover:x.cover}]:[]);
-    if(!tracks.length){LX.toast?.('Esta música ainda não possui arquivo de áudio.');return true}
-    const i=Math.max(0,Math.min(Number(index)||0,tracks.length-1)),t0=tracks[i]||{};
-    const ref=t0.authorizedAudioUrl||t0.authorizedStreamUrl||t0.mediaKey||t0.url||x.authorizedAudioUrl||x.authorizedStreamUrl||x.mediaKey||'';
-    const desc=LX.mediaSources?.describe?.(ref);
-    if(desc?.kind==='embed')return false;
-    if(!String(ref).startsWith('cloud:')&&!/^https?:\/\//i.test(String(ref)))return false;
-    if(/^https?:\/\//i.test(String(ref))&&desc&&desc.kind!=='direct')return false;
-    const queue=tracks.map((t,n)=>({ ...t,contentId:id,index:n,title:t.title||x.title||'Faixa',artist:t.artist||x.artist||'LX Music',cover:t.cover||x.cover||'',mediaKey:t.authorizedAudioUrl||t.authorizedStreamUrl||t.mediaKey||t.url||x.authorizedAudioUrl||x.authorizedStreamUrl||x.mediaKey||''}));
-    U.state.musicQueue=queue;U.state.musicIndex=i;
-    const item=queue[i],seq=++musicSeq,a=$('musicAudio');
-    $('musicDock')?.classList.remove('hidden');$('musicTitle').textContent=item.title;$('musicArtist').textContent=item.artist;setCover337(item,x);$('musicProgress').value=0;$('musicTime').textContent='0:00';$('musicDuration').textContent='—';musicStatus('Preparando áudio…','loading');
-    if(a){try{a.pause()}catch{}a.removeAttribute('src');a.load();a.dataset.sourceRef=String(ref)}
+  async function resolveNative(ref){
+    const LX=window.LX,desc=LX.mediaSources?.describe?.(ref);
+    if(String(ref).startsWith('cloud:'))return resolveCloud(String(ref));
+    if(desc?.kind==='direct'&&desc.src)return {primary:desc.src,alternate:''};
+    if(/^https?:\/\//i.test(String(ref))&&(!desc||desc.kind==='direct'))return {primary:String(ref),alternate:''};
+    const raw=await LX.store.getMedia(ref);if(raw instanceof Blob)return {primary:URL.createObjectURL(raw),alternate:'',objectUrl:true};if(typeof raw==='string')return {primary:raw,alternate:''};throw new Error('MEDIA_NOT_AVAILABLE');
+  }
+  function cleanupNative(){const a=$('musicAudio');if(a){try{a.pause()}catch{}a.removeAttribute('src');a.load();delete a.dataset.lx34;delete a.dataset.ref}if(currentNative?.objectUrl&&currentNative.primary?.startsWith('blob:'))try{URL.revokeObjectURL(currentNative.primary)}catch{}currentNative=null}
+  async function startNative(id,index=0,autoplay=true){
+    const LX=window.LX,U=LX.ui,D=LX.data,content=D.catalog().find(x=>String(x.id)===String(id));if(!content)return false;
+    const queue=queueFor(content),i=Math.max(0,Math.min(Number(index)||0,queue.length-1)),track=queue[i],ref=track.mediaKey||'';
+    const desc=LX.mediaSources?.describe?.(ref);if(desc?.kind==='embed'||/^youtube:|^spotify:/i.test(ref))return false;
+    if(!ref)return false;
+    const seq=++musicToken;U.state.musicQueue=queue;U.state.musicIndex=i;setDock(track,content);setMusicStatus('Preparando áudio…','loading');cleanupNative();
+    const audio=$('musicAudio');audio.dataset.lx34='1';audio.dataset.ref=ref;audio.preload='metadata';
     try{
-      let primary=String(ref),fallback='';
-      if(String(ref).startsWith('cloud:')){const t=await mediaTicket337(ref);primary=t.streamUrl||t.url||t.signedUrl;fallback=t.signedUrl||'';}
-      await setAudioSource337(primary,fallback,item,seq,autoplay);
-      try{D.track?.('music',{id,title:x.title})}catch{}
-      window.LX?.syncMusicCardState?.();
-    }catch(err){if(seq!==musicSeq)return true;console.warn('LX337 music',err);musicStatus('Falha no áudio · toque em ▶','error');LX.toast?.('Não foi possível tocar esta faixa. Tente novamente.');}
-    return true;
+      const resolved=await resolveNative(ref);if(seq!==musicToken)return true;currentNative=resolved;
+      const trySource=async url=>{audio.src=url;audio.load();if(autoplay){try{await timed(audio.play(),9000,'PLAY_TIMEOUT');return true}catch(e){if(e?.name==='NotAllowedError'){setMusicStatus('Pronta · toque em ▶','ready');return true}throw e}}return true};
+      try{await trySource(resolved.primary)}catch(first){console.warn('LX34 primary audio',first);if(resolved.alternate&&resolved.alternate!==resolved.primary){await trySource(resolved.alternate)}else throw first}
+      if(seq!==musicToken)return true;setMusicStatus(audio.paused?'Pronta · toque em ▶':'Faixa completa','ready');try{LX.data.track?.('music',{id,title:content.title})}catch{}try{LX.syncMusicCardState?.()}catch{}return true;
+    }catch(e){if(seq!==musicToken)return true;console.error('LX34 music failed',e);setMusicStatus('Falha no áudio · toque em ▶','error');window.LX?.toast?.('Não foi possível abrir o MP3. Toque em ▶ para tentar novamente.');return true}
   }
-  function bindMusic337(){
-    const LX=window.LX;if(!LX?.music)return;
-    if(LX.__music337Bound)return;LX.__music337Bound=true;
-    const oldMusic=LX.music.bind(LX);LX.__music337Original=oldMusic;
-    LX.music=async(id,index=0,autoplay=true)=>{const handled=await playManaged337(id,index,autoplay);if(!handled){const a=$('musicAudio');if(a)delete a.dataset.lx337Managed;return oldMusic(id,index,autoplay)}};
+  function bindAudioEvents(){
+    const a=$('musicAudio');if(!a||a.dataset.lx34Events)return;a.dataset.lx34Events='1';
+    a.addEventListener('loadedmetadata',()=>{if(a.dataset.lx34!=='1')return;const d=Number(a.duration);$('musicDuration').textContent=Number.isFinite(d)&&d>0?(window.LX?.fmt?.(d)||Math.round(d)+'s'):'—';setMusicStatus(a.paused?'Pronta · toque em ▶':'Faixa completa','ready')});
+    a.addEventListener('playing',()=>{if(a.dataset.lx34==='1')setMusicStatus('Faixa completa','ready')});
+    a.addEventListener('waiting',()=>{if(a.dataset.lx34==='1')setMusicStatus('Carregando áudio…','loading')});
+    a.addEventListener('stalled',()=>{if(a.dataset.lx34==='1')setMusicStatus('Conexão lenta · tentando continuar','loading')});
+    a.addEventListener('error',()=>{if(a.dataset.lx34==='1'){console.warn('LX34 media element',a.error);setMusicStatus('Falha no áudio · toque em ▶','error')}});
+  }
+  function bindMusic(){
+    const LX=window.LX;if(!LX?.music||LX.__music34)return;LX.__music34=true;oldMusic=LX.music.bind(LX);bindAudioEvents();
+    LX.music=async(id,index=0,autoplay=true)=>{const content=LX.data.catalog().find(x=>String(x.id)===String(id));if(!content)return;const q=queueFor(content),track=q[Math.max(0,Math.min(Number(index)||0,q.length-1))],ref=track?.mediaKey||'',desc=LX.mediaSources?.describe?.(ref);if(String(ref).startsWith('cloud:')||(desc?.kind==='direct'&&!/^youtube|spotify/i.test(desc?.provider||''))||(/^https?:\/\//i.test(ref)&&desc?.kind!=='embed'))return startNative(id,index,autoplay);cleanupNative();return oldMusic(id,index,autoplay)};
     const play=$('musicPlay'),prev=$('musicPrev'),next=$('musicNext'),audio=$('musicAudio');
-    if(play){const old=play.onclick;play.onclick=async e=>{if(audio?.dataset?.lx337Managed==='1'){
-      if(!audio.src||audio.error){const t=window.LX?.ui?.state?.musicQueue?.[window.LX.ui.state.musicIndex];if(t)return playManaged337(t.contentId,t.index,true)}
-      try{if(audio.paused){await audio.play();musicStatus('Faixa completa','ready')}else audio.pause()}catch(err){console.warn('LX337 manual',err);const t=window.LX?.ui?.state?.musicQueue?.[window.LX.ui.state.musicIndex];if(t)await playManaged337(t.contentId,t.index,true)}return;
-    }return old?.call(play,e)}}
-    const step=delta=>{const s=window.LX?.ui?.state,q=s?.musicQueue||[];if(!q.length)return;const ni=(Number(s.musicIndex||0)+delta+q.length)%q.length, t=q[ni];playManaged337(t.contentId,ni,true)};
-    if(prev){const old=prev.onclick;prev.onclick=e=>audio?.dataset?.lx337Managed==='1'?step(-1):old?.call(prev,e)}
-    if(next){const old=next.onclick;next.onclick=e=>audio?.dataset?.lx337Managed==='1'?step(1):old?.call(next,e)}
-    if(audio){const oldEnd=audio.onended;audio.onended=e=>audio.dataset.lx337Managed==='1'?step(1):oldEnd?.call(audio,e);audio.addEventListener('loadedmetadata',()=>{if(audio.dataset.lx337Managed==='1'){const d=Number(audio.duration);$('musicDuration').textContent=Number.isFinite(d)&&d>0?(window.LX?.fmt?.(d)||Math.round(d)+'s'):'—';musicStatus('Pronta','ready')}});audio.addEventListener('playing',()=>{if(audio.dataset.lx337Managed==='1')musicStatus('Faixa completa','ready')});}
-    LX.music337Health=()=>({managed:audio?.dataset?.lx337Managed==='1',src:audio?.currentSrc||audio?.src||'',readyState:audio?.readyState,networkState:audio?.networkState,error:audio?.error?{code:audio.error.code,message:audio.error.message||''}:null,status:$('musicPlaybackKind')?.textContent||''});
+    if(play){const old=play.onclick;play.onclick=async e=>{if(audio?.dataset?.lx34==='1'){if(audio.error||!audio.src){const t=LX.ui.state.musicQueue?.[LX.ui.state.musicIndex];if(t)return startNative(t.contentId,t.index,true)}try{if(audio.paused)await audio.play();else audio.pause()}catch{const t=LX.ui.state.musicQueue?.[LX.ui.state.musicIndex];if(t)return startNative(t.contentId,t.index,true)}return}return old?.call(play,e)}}
+    const step=delta=>{const q=LX.ui.state.musicQueue||[];if(!q.length)return;const ni=(Number(LX.ui.state.musicIndex||0)+delta+q.length)%q.length,t=q[ni];if(audio?.dataset?.lx34==='1')startNative(t.contentId,t.index,true);else oldMusic(t.contentId,t.index,true)};
+    if(prev){const old=prev.onclick;prev.onclick=e=>audio?.dataset?.lx34==='1'?step(-1):old?.call(prev,e)}
+    if(next){const old=next.onclick;next.onclick=e=>audio?.dataset?.lx34==='1'?step(1):old?.call(next,e)}
+    LX.musicHealth34=()=>({mode:audio?.dataset?.lx34==='1'?'native-v34':'provider/core',ref:audio?.dataset?.ref||'',src:audio?.currentSrc||audio?.src||'',readyState:audio?.readyState,networkState:audio?.networkState,error:audio?.error?{code:audio.error.code,message:audio.error.message||''}:null,status:$('musicPlaybackKind')?.textContent||''});
   }
 
-  /* ---------------- Carousel ADM: existing titles only ---------------- */
-  let carouselId='';const carFiles={};
-  function carArt(x,d){return x?.heroArt?.[d]||x?.heroArt?.desktop||x?.carouselImage||x?.banner||x?.cover||''}
-  function carFocus(x,d){const f=x?.heroFocus?.[d]||x?.heroFocus?.desktop||{};return {x:Number(f.x??50),y:Number(f.y??35)}}
-  function renderCarousel337(){
-    const LX=window.LX,D=LX?.data,U=LX?.ui,m=$('adminMain');if(!D||!m)return;
-    const rows=D.catalog().filter(x=>x?.published!==false&&['Filme','Série','Anime','Dorama'].includes(x.type));if(!carouselId)carouselId=String(rows.find(x=>x.featured)?.id||rows[0]?.id||'');
-    const x=rows.find(r=>String(r.id)===String(carouselId))||rows[0];
-    m.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN · CARROSSEL</span><h1>Capas do carrossel</h1><p>Escolha um título que já existe no site. Aqui você não cadastra filme: apenas decide o que aparece no carrossel e qual imagem usar em cada tela.</p></div></div><section class="admin-card lx-car337"><div class="lx-car337-controls"><label class="field">Filme/série já cadastrado<select id="carTitle337">${rows.map(r=>`<option value="${r.id}" ${String(r.id)===String(x?.id)?'selected':''}>${esc(r.title)} · ${esc(r.type)}</option>`).join('')}</select></label><label class="check"><input id="carFeatured337" type="checkbox" ${x?.featured?'checked':''}><span>Exibir este título no carrossel</span></label><label class="field">Prioridade<input id="carPriority337" type="number" value="${Number(x?.priority||0)}"></label><button class="primary-btn" id="carSave337">Salvar carrossel</button><small id="carStatus337"></small></div><div class="lx-car337-devices">${['desktop','tablet','mobile','tv'].map(d=>{const f=carFocus(x,d),lab={desktop:'PC',tablet:'Tablet',mobile:'Celular',tv:'TV'}[d];return `<article><header><b>${lab}</b><span>Imagem do carrossel</span></header><div class="lx-car337-preview ${d}" id="carPrev337_${d}" style="background-image:url(${JSON.stringify(carArt(x,d))});background-position:${f.x}% ${f.y}%"><strong>${esc(x?.title||'Prévia')}</strong></div><label class="field">Trocar imagem<input id="carFile337_${d}" type="file" accept="image/*"></label><label>X <input id="carX337_${d}" type="range" min="0" max="100" value="${f.x}"></label><label>Y <input id="carY337_${d}" type="range" min="0" max="100" value="${f.y}"></label></article>`}).join('')}</div></section>`;
-    $('carTitle337').onchange=e=>{carouselId=e.target.value;for(const k of Object.keys(carFiles))delete carFiles[k];renderCarousel337()};
-    ['desktop','tablet','mobile','tv'].forEach(d=>{
-      $('carFile337_'+d).onchange=e=>{const file=e.target.files?.[0];if(!file)return;carFiles[d]=file;const u=URL.createObjectURL(file),p=$('carPrev337_'+d);p.style.backgroundImage=`url(${JSON.stringify(u)})`};
-      const upd=()=>{$('carPrev337_'+d).style.backgroundPosition=`${+$('carX337_'+d).value}% ${+$('carY337_'+d).value}%`};$('carX337_'+d).oninput=upd;$('carY337_'+d).oninput=upd;
-    });
-    $('carSave337').onclick=async()=>{const btn=$('carSave337'),st=$('carStatus337');btn.disabled=true;btn.textContent='Salvando…';try{const art={...(x.heroArt||{})},focus={...(x.heroFocus||{})};for(const d of ['desktop','tablet','mobile','tv']){if(carFiles[d])art[d]=await LX.store.putAsset(`carousel_${x.id}_${d}_${Date.now()}_${carFiles[d].name}`,carFiles[d],'assets');focus[d]={x:+$('carX337_'+d).value||50,y:+$('carY337_'+d).value||35}}await D.saveCatalogItem({...x,featured:$('carFeatured337').checked,priority:+$('carPriority337').value||0,heroArt:art,heroFocus:focus,carouselImage:art.desktop||x.carouselImage||x.banner||x.cover||''});st.textContent='✓ Salvo. O carrossel usa essas imagens conforme o aparelho.';LX.toast?.('Carrossel atualizado.')}catch(err){console.warn(err);st.textContent='Erro ao salvar.'}finally{btn.disabled=false;btn.textContent='Salvar carrossel'}};
-    U.state.adminPage='carousel';document.querySelectorAll('#adminNav [data-admin]').forEach(b=>b.classList.toggle('active',b.dataset.admin==='carousel'));
+  /* ---------------- Carousel ADM ---------------- */
+  const carFiles={};let carId='';
+  function device(){const w=innerWidth;return w<=620?'mobile':w<=1100?'tablet':w>=2000?'tv':'desktop'}
+  function heroArt(x,d=device()){return x?.heroArt?.[d]||x?.heroArt?.desktop||x?.carouselImage||x?.banner||x?.cover||''}
+  function heroFocus(x,d=device()){const f=x?.heroFocus?.[d]||x?.heroFocus?.desktop||{};return{x:Number(f.x??50),y:Number(f.y??35)}}
+  function renderCarousel(main){
+    const LX=window.LX,D=LX.data,rows=D.catalog().filter(x=>x?.published!==false&&['Filme','Série','Anime','Dorama'].includes(x.type));if(!carId)carId=String(rows.find(x=>x.featured)?.id||rows[0]?.id||'');const x=rows.find(r=>String(r.id)===carId)||rows[0];
+    main.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN · CARROSSEL</span><h1>Carrossel da Home</h1><p>Escolha um título que já existe no catálogo e configure somente as imagens que ele usa no carrossel.</p></div></div><section class="admin-card lx-car34"><aside class="lx-car34-controls"><label class="field">Título existente<select id="car34Title">${rows.map(r=>`<option value="${r.id}" ${String(r.id)===String(x?.id)?'selected':''}>${esc(r.title)} · ${esc(r.type)}</option>`).join('')}</select></label><label class="check"><input id="car34Featured" type="checkbox" ${x?.featured?'checked':''}><span>Mostrar no carrossel</span></label><label class="field">Prioridade<input id="car34Priority" type="number" value="${Number(x?.priority||0)}"></label><button class="primary-btn" id="car34Save">Salvar carrossel</button><small id="car34Status"></small></aside><div class="lx-car34-grid">${['desktop','tablet','mobile','tv'].map(d=>{const f=heroFocus(x,d),lab={desktop:'PC',tablet:'Tablet',mobile:'Celular',tv:'TV'}[d];return`<article><header><b>${lab}</b><span>Prévia real</span></header><div class="lx-car34-preview ${d}" id="car34Prev_${d}" style="background-image:url(${JSON.stringify(heroArt(x,d))});background-position:${f.x}% ${f.y}%"><strong>${esc(x?.title||'Prévia')}</strong></div><label class="field">Imagem para ${lab}<input id="car34File_${d}" type="file" accept="image/*"></label><label>Horizontal <input id="car34X_${d}" type="range" min="0" max="100" value="${f.x}"></label><label>Vertical <input id="car34Y_${d}" type="range" min="0" max="100" value="${f.y}"></label></article>`}).join('')}</div></section>`;
+    $('car34Title').onchange=e=>{carId=e.target.value;Object.keys(carFiles).forEach(k=>delete carFiles[k]);renderCarousel(main)};
+    for(const d of ['desktop','tablet','mobile','tv']){$('car34File_'+d).onchange=e=>{const f=e.target.files?.[0];if(!f)return;carFiles[d]=f;$('car34Prev_'+d).style.backgroundImage=`url(${JSON.stringify(URL.createObjectURL(f))})`};const upd=()=>{$('car34Prev_'+d).style.backgroundPosition=`${+$('car34X_'+d).value}% ${+$('car34Y_'+d).value}%`};$('car34X_'+d).oninput=upd;$('car34Y_'+d).oninput=upd}
+    $('car34Save').onclick=async()=>{const btn=$('car34Save'),st=$('car34Status');btn.disabled=true;btn.textContent='Salvando…';try{const art={...(x.heroArt||{})},focus={...(x.heroFocus||{})};for(const d of ['desktop','tablet','mobile','tv']){if(carFiles[d])art[d]=await LX.store.putAsset(`carousel_${x.id}_${d}_${Date.now()}_${carFiles[d].name}`,carFiles[d],'assets');focus[d]={x:+$('car34X_'+d).value||50,y:+$('car34Y_'+d).value||35}}await D.saveCatalogItem({...x,featured:$('car34Featured').checked,priority:+$('car34Priority').value||0,heroArt:art,heroFocus:focus,carouselImage:art.desktop||x.carouselImage||x.banner||x.cover||''});st.textContent='✓ Salvo';window.LX.toast?.('Carrossel atualizado.');syncHero()}catch(e){console.warn(e);st.textContent='Erro ao salvar'}finally{btn.disabled=false;btn.textContent='Salvar carrossel'}};
   }
-  function bindCarousel337(){document.addEventListener('click',e=>{const b=e.target.closest?.('#adminNav [data-admin="carousel"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();renderCarousel337()},true);window.LX.renderCarousel337=renderCarousel337;}
+  function syncHero(){const LX=window.LX,hero=$('hero');if(!hero)return;const rows=LX.data.catalog().filter(x=>x?.published!==false&&['Filme','Série','Anime','Dorama'].includes(x.type)&&x.featured).sort((a,b)=>(+b.priority||0)-(+a.priority||0));hero.querySelectorAll('.hero-slide').forEach((slide,i)=>{const x=rows[i];if(!x)return;const bg=slide.querySelector('.hero-bg'),f=heroFocus(x);if(bg){bg.style.backgroundImage=`url(${JSON.stringify(heroArt(x))})`;bg.style.backgroundPosition=`${f.x}% ${f.y}%`;bg.style.backgroundSize='cover'}})}
 
-  /* ---------------- Presence heartbeat + ADM runtime monitor ---------------- */
-  async function heartbeat337(){try{const LX=window.LX,c=LX?.cloud?.db?.(),u=LX?.ui?.state?.user;if(!c||!u?.id)return;await c.from('lx_active_sessions').upsert({user_id:u.id,last_seen:new Date().toISOString(),route:`${LX.ui.state.screen||''}/${LX.ui.state.mode||''}`,device:(navigator.userAgent||'').slice(0,180),updated_at:new Date().toISOString()},{onConflict:'user_id'})}catch(e){}}
-  async function runtime337(){const LX=window.LX,c=LX?.cloud?.db?.(),main=$('adminMain');if(!c||!main||LX?.ui?.state?.adminPage!=='dashboard')return;let box=$('lxRuntime337');if(!box){box=document.createElement('section');box.id='lxRuntime337';box.className='admin-card lx-runtime337';main.prepend(box)}const start=performance.now();try{const {data,error}=await c.rpc('lx_admin_runtime_status');if(error)throw error;const latency=Math.round(performance.now()-start),stable=navigator.onLine&&latency<1800&&jsErrors<5;box.innerHTML=`<div><span>PESSOAS ONLINE AGORA</span><strong>${Number(data?.online_now||0)}</strong><small>atividade nos últimos 2 min</small></div><div><span>ATIVOS EM 10 MIN</span><strong>${Number(data?.active_10m||0)}</strong><small>usuários recentes</small></div><div><span>LATÊNCIA SUPABASE</span><strong>${latency} ms</strong><small>consulta do monitor</small></div><div><span>ESTABILIDADE</span><strong class="${stable?'ok':'warn'}">${stable?'Estável':'Atenção'}</strong><small>${navigator.onLine?'rede online':'sem conexão'} · ${jsErrors} erros JS nesta sessão</small></div>`}catch(e){box.innerHTML=`<div><span>ESTABILIDADE</span><strong class="warn">Indisponível</strong><small>Não foi possível consultar o monitor agora.</small></div>`}}
-  function bindRuntime337(){heartbeat337();heartbeatTimer=setInterval(heartbeat337,45000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)heartbeat337()});const LX=window.LX;if(LX?.admin?.render&&!LX.__runtime337Wrap){LX.__runtime337Wrap=true;const old=LX.admin.render.bind(LX.admin);LX.admin.render=function(page='dashboard'){const r=old(page);if(page==='dashboard'){setTimeout(runtime337,150);clearInterval(monitorTimer);monitorTimer=setInterval(runtime337,20000)}return r}}}
+  /* ---------------- Live ADM + public page ---------------- */
+  let liveEdit='';
+  function liveRows(){return window.LX.data.catalog().filter(x=>x?.type==='Ao Vivo')}
+  function renderLiveAdmin(main){const D=window.LX.data,rows=liveRows(),x=rows.find(r=>String(r.id)===String(liveEdit));main.innerHTML=`<div class="admin-head"><div><span class="eyebrow">LX ADMIN · AO VIVO</span><h1>Ao Vivo</h1><p>Cadastre somente as transmissões que você quer mostrar dentro da LX Plus.</p></div></div><section class="admin-card"><div class="form-grid"><label class="field">Nome do evento<input id="live34Title" value="${esc(x?.title||'')}" placeholder="Flamengo x Palmeiras"></label><label class="field">Competição<input id="live34League" value="${esc(x?.genre||'')}"></label><label class="field">Status<select id="live34Status">${['Em breve','Ao vivo','Intervalo','Encerrado'].map(v=>`<option ${String(x?.liveStatus||'Em breve')===v?'selected':''}>${v}</option>`).join('')}</select></label><label class="field">Data e hora<input id="live34Start" type="datetime-local" value="${x?.scheduledAt?new Date(x.scheduledAt).toISOString().slice(0,16):''}"></label><label class="field">Fonte<select id="live34Provider"><option value="direct">HLS / MP4 HTTPS</option><option value="gdrive">Google Drive</option><option value="youtube">YouTube</option></select></label><label class="field span2">Link da transmissão<input id="live34Source" value="${esc(x?.sourceInput||window.LX.mediaSources?.toInput?.(x?.mediaKey)||'')}" placeholder="https://..."></label><label class="field">Banner/capa<input id="live34Banner" type="file" accept="image/*"></label><label class="check"><input id="live34Published" type="checkbox" ${x?.published!==false?'checked':''}><span>Publicado</span></label></div><div class="hero-actions"><button class="primary-btn" id="live34Save">${x?'Salvar evento':'Adicionar transmissão'}</button>${x?'<button class="glass-btn" id="live34Cancel">Cancelar</button>':''}</div></section><section class="admin-card"><h2>Transmissões cadastradas</h2><div class="lx-live34-list">${rows.map(r=>`<article><img src="${esc(r.banner||r.cover||'')}" alt=""><div><strong>${esc(r.title)}</strong><small>${esc(r.liveStatus||'Em breve')} · ${esc(r.genre||'Ao Vivo')}</small></div><div><button class="glass-btn" data-live34-edit="${r.id}">Editar</button><button class="glass-btn" data-live34-del="${r.id}">Excluir</button></div></article>`).join('')||'<p>Nenhuma transmissão cadastrada.</p>'}</div></section>`;
+    $$('[data-live34-edit]').forEach(b=>b.onclick=()=>{liveEdit=b.dataset.live34Edit;renderLiveAdmin(main)});$$('[data-live34-del]').forEach(b=>b.onclick=async()=>{if(confirm('Excluir esta transmissão?')){await D.deleteCatalogItem(+b.dataset.live34Del);renderLiveAdmin(main)}});if($('live34Cancel'))$('live34Cancel').onclick=()=>{liveEdit='';renderLiveAdmin(main)};
+    $('live34Save').onclick=async()=>{const title=$('live34Title').value.trim(),raw=$('live34Source').value.trim();if(!title||!raw)return window.LX.toast?.('Informe o nome e a fonte.');const btn=$('live34Save');btn.disabled=true;try{const provider=$('live34Provider').value,mediaKey=window.LX.mediaSources.normalize(provider,raw);let banner=x?.banner||'';const file=$('live34Banner').files?.[0];if(file)banner=await window.LX.store.putAsset(`live_${Date.now()}_${file.name}`,file,'assets');await D.saveCatalogItem({...x,id:x?.id||Date.now(),title,type:'Ao Vivo',genre:$('live34League').value.trim()||'Ao Vivo',liveStatus:$('live34Status').value,scheduledAt:$('live34Start').value?new Date($('live34Start').value).toISOString():null,mediaKey,sourceInput:raw,banner,cover:banner,published:$('live34Published').checked,createdAt:x?.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()});liveEdit='';window.LX.toast?.('Transmissão salva.');renderLiveAdmin(main)}catch(e){console.warn(e);window.LX.toast?.('Não foi possível salvar a transmissão.')}finally{btn.disabled=false}};
+  }
+  function renderPublicLive(){const LX=window.LX,home=$('homeContent'),hero=$('hero'),welcome=$('welcome'),rows=liveRows().filter(x=>x.published!==false).sort((a,b)=>+new Date(a.scheduledAt||0)-+new Date(b.scheduledAt||0));if(hero)hero.innerHTML='';if(welcome)welcome.innerHTML='';if(!home)return;home.innerHTML=`<section style="padding:96px 4vw 120px"><div class="rail-head"><div><span class="eyebrow">LX AO VIVO</span><h2>Transmissões</h2><p>Eventos publicados pelo ADM.</p></div></div>${rows.length?`<div class="lx-live34-public">${rows.map(r=>`<article style="background-image:linear-gradient(90deg,rgba(0,0,0,.82),rgba(0,0,0,.2)),url(${JSON.stringify(r.banner||r.cover||'')})"><span>${esc(r.liveStatus||'Em breve')}</span><h2>${esc(r.title)}</h2><p>${esc(r.genre||'Ao Vivo')} ${r.scheduledAt?'· '+new Date(r.scheduledAt).toLocaleString('pt-BR'):''}</p><button class="primary-btn" onclick="LX.play(${r.id})">▶ Assistir ao vivo</button></article>`).join('')}</div>`:'<div class="official-empty"><h2>Nenhuma transmissão no momento</h2><p>Quando o ADM publicar um evento, ele aparecerá aqui.</p></div>'}</section>`}
 
-  async function boot337(){if(booted)return;booted=true;const LX=await waitLX();bindAI337();ensureAI337();if(LX){bindMusic337();bindCarousel337();bindRuntime337();window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['focus-ai-music']='33.7';}}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot337,{once:true});else boot337();
+  /* ---------------- Admin router ---------------- */
+  function customAdmin(page){const main=$('adminMain');if(!main)return false;if(page==='carousel'){renderCarousel(main);return true}if(page==='live'){renderLiveAdmin(main);return true}if(page==='lxai'){adminAI(main);return true}return false}
+  function bindAdmin(){const LX=window.LX;if(!LX?.admin||LX.__admin34)return;LX.__admin34=true;oldAdminRender=LX.admin.render.bind(LX.admin);LX.admin.render=function(page='dashboard'){if(customAdmin(page)){LX.ui.state.adminPage=page;$$('#adminNav [data-admin]').forEach(b=>b.classList.toggle('active',b.dataset.admin===page));return}return oldAdminRender(page)};
+    document.addEventListener('click',e=>{const b=e.target.closest?.('#adminNav [data-admin="carousel"],#adminNav [data-admin="live"],#adminNav [data-admin="lxai"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();LX.admin.render(b.dataset.admin)},true);
+  }
+
+  function bindGlobal(){document.addEventListener('click',e=>{const ai=e.target.closest?.('#lxAiTop335,[data-open-lx-ai]');if(ai){e.preventDefault();e.stopImmediatePropagation();openAI()}},true);window.LX.openAI34=openAI;window.LX.openAI335=openAI;window.LX.openAI337=openAI}
+
+  async function boot(){if(booted)return;booted=true;const LX=await waitLX();if(!LX)return;bindGlobal();bindMusic();bindAdmin();ensureAIPanel();if(LX.contentHub)LX.contentHub.renderLive=renderPublicLive;setTimeout(syncHero,250);new MutationObserver(()=>queueMicrotask(syncHero)).observe($('hero')||document.body,{childList:true,subtree:true});window.addEventListener('resize',()=>setTimeout(syncHero,60));window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['clean-control-center']='34.0';}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
+
+/* ===== LX Plus v34.0 · lightweight ADM runtime monitor ===== */
+(()=>{
+  const $=id=>document.getElementById(id);let hb=null,mon=null,errors=0,bound=false;
+  addEventListener('error',()=>errors++);addEventListener('unhandledrejection',()=>errors++);
+  async function heartbeat(){try{const LX=window.LX,c=LX?.cloud?.db?.(),u=LX?.ui?.state?.user;if(!c||!u?.id)return;await c.from('lx_active_sessions').upsert({user_id:u.id,last_seen:new Date().toISOString(),route:`${LX.ui.state.screen||''}/${LX.ui.state.mode||''}`,device:(navigator.userAgent||'').slice(0,180),updated_at:new Date().toISOString()},{onConflict:'user_id'})}catch{}}
+  async function monitor(){try{const LX=window.LX,c=LX?.cloud?.db?.(),main=$('adminMain');if(!c||!main||LX?.ui?.state?.adminPage!=='dashboard')return;let box=$('lxRuntime34');if(!box){box=document.createElement('section');box.id='lxRuntime34';box.className='admin-card lx-runtime34';main.prepend(box)}const t=performance.now(),{data,error}=await c.rpc('lx_admin_runtime_status');if(error)throw error;const latency=Math.round(performance.now()-t),stable=navigator.onLine&&latency<1800&&errors<5;box.innerHTML=`<div><span>ONLINE AGORA</span><strong>${Number(data?.online_now||0)}</strong><small>últimos 2 minutos</small></div><div><span>ATIVOS 10 MIN</span><strong>${Number(data?.active_10m||0)}</strong><small>usuários recentes</small></div><div><span>LATÊNCIA</span><strong>${latency} ms</strong><small>Supabase</small></div><div><span>ESTABILIDADE</span><strong class="${stable?'ok':'warn'}">${stable?'Estável':'Atenção'}</strong><small>${navigator.onLine?'rede online':'sem rede'} · ${errors} erros JS</small></div>`}catch(e){const box=$('lxRuntime34');if(box)box.innerHTML='<div><span>ESTABILIDADE</span><strong class="warn">Indisponível</strong><small>Monitor não respondeu.</small></div>'}}
+  async function boot(){if(bound)return;for(let i=0;i<100&&!window.LX?.admin;i++)await new Promise(r=>setTimeout(r,100));const LX=window.LX;if(!LX?.admin)return;bound=true;heartbeat();hb=setInterval(heartbeat,45000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)heartbeat()});const old=LX.admin.render.bind(LX.admin);LX.admin.render=function(page='dashboard'){const out=old(page);if(page==='dashboard'){setTimeout(monitor,120);clearInterval(mon);mon=setInterval(monitor,20000)}return out};if(LX.ui?.state?.adminPage==='dashboard')setTimeout(monitor,200)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
