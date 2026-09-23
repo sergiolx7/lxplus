@@ -6173,3 +6173,43 @@ input,select,textarea,button{max-width:100%}
  .admin-side{width:100%!important}.admin-main{margin-left:0!important;padding:86px 10px 100px!important}.lx-carousel-previews335{grid-template-columns:1fr}.lx-device-preview335.mobile{max-height:330px}
 }
 #app #searchBtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+
+
+/* =========================================================
+   LX Plus v33.6 · Navigation Choice + Functional LX IA
+   ========================================================= */
+.lx-top-center336{position:absolute;left:50%;top:7px;transform:translateX(-50%);display:flex;align-items:baseline;gap:4px;pointer-events:none;user-select:none;color:#fff;opacity:.92;z-index:0;white-space:nowrap;text-shadow:0 5px 18px rgba(0,0,0,.35)}
+.lx-top-center336 strong{font:900 18px/1 system-ui,sans-serif;letter-spacing:-.06em}.lx-top-center336 span{font:500 16px/1 system-ui,sans-serif;letter-spacing:-.05em;color:#d9dce2}
+#app .topbar-row{position:relative}
+#app .mode-switch,#app .top-actions,#app .brand{position:relative;z-index:1}
+
+/* Navigation can be selected by each user in Appearance. */
+body[data-nav-placement="top"] .lx-desktop-rail{display:none!important}
+@media(min-width:1281px){
+ body[data-nav-placement="side"]{--lx-topbar-h:46px}
+ body[data-nav-placement="side"] .lx-desktop-rail{display:flex!important;width:196px!important;padding:10px 10px 12px!important;background:#08080a!important;border-right:1px solid rgba(255,255,255,.065)!important;box-shadow:none!important;z-index:150!important}
+ body[data-nav-placement="side"] #app .topbar{left:196px!important;right:0!important;top:0!important}
+ body[data-nav-placement="side"] #app .category-nav{display:none!important}
+ body[data-nav-placement="side"] #app>main{margin-left:196px!important;width:calc(100% - 196px)!important;padding-top:46px!important}
+ body[data-nav-placement="side"] .lx-shell-brand{height:58px!important;margin-bottom:10px!important;padding:6px 8px!important}
+ body[data-nav-placement="side"] .lx-shell-logo{width:42px!important;height:46px!important;object-fit:contain!important;margin:0!important}
+ body[data-nav-placement="side"] .lx-shell-primary{gap:4px!important}
+ body[data-nav-placement="side"] .lx-shell-primary button{height:42px!important;grid-template-columns:28px 1fr!important;padding:0 10px!important;border-radius:10px!important}
+ body[data-nav-placement="side"] .lx-shell-format{display:block!important;margin-top:16px!important;padding:12px 8px!important}
+ body[data-nav-placement="side"] .lx-shell-user{margin-top:auto!important}
+ body[data-nav-placement="side"] .lx-top-center336{left:50%}
+ body[data-nav-placement="side"] .hero{border-radius:0!important}
+}
+@media(max-width:1280px){body[data-nav-placement="side"] .lx-desktop-rail{display:none!important}body[data-nav-placement="side"] #app>main{margin-left:0!important;width:100%!important}.lx-top-center336{display:none!important}}
+
+.lx-nav-choice336 .layout-choice{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.lx-nav-choice336 .layout-choice button{min-height:70px!important}
+
+/* LX IA status and thinking state. */
+.lx-ai-head335>div{min-width:0}.lx-ai-head335 small{display:block;margin-top:3px;color:#788697;font-size:8px;font-weight:700}
+.lx-ai-msg335.is-pending{opacity:.68;font-style:italic}
+.lx-ai-panel335{width:min(430px,calc(100vw - 24px));height:min(680px,calc(100dvh - 72px))}
+.lx-ai-form335 input:focus{outline:0;border-color:color-mix(in srgb,var(--accent) 55%,rgba(255,255,255,.12));box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}
+
+@media(max-width:1180px){.lx-top-center336{display:none!important}}
+@media(max-width:900px){.lx-nav-choice336 .layout-choice{grid-template-columns:1fr!important}}
