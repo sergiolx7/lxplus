@@ -1,0 +1,56 @@
+LX Plus v33.0 — Recovery + Control Center
+23/09/2026
+
+BASE
+- Construída por cima da v32.3 enviada pelo usuário.
+- Mantém o ADM separado por Filmes, Séries, Músicas e Livros.
+- Cache/PWA atualizado para v33.0.
+
+MÚSICA — PRIORIDADE CRÍTICA
+- MP3/cloud usa URL assinada direta do Supabase Storage como primeira rota.
+- lx-media-ticket v3 ativo no Supabase, com URL assinada preferencial e stream como fallback.
+- Fallback adicional pelo mecanismo de mídia local do LX Plus.
+- O botão Play fica em carregamento enquanto resolve a fonte e mostra erro recuperável se falhar.
+- Capa da faixa é pintada independentemente do carregamento do áudio.
+- YouTube e Spotify mantêm o caminho oficial/estável existente em vez de forçar áudio puro escondido.
+- Importação de links YouTube continua com detecção automática de título/canal/capa e enriquecimento apenas quando confiável.
+
+CARROSSEL
+- Nova página ADM > Carrossel.
+- Escolha de filme/série, ordem e remoção.
+- Imagem separada para Celular, Tablet, PC e TV.
+- Upload de arte por dispositivo.
+- Prévia das quatro telas.
+- Foco horizontal/vertical.
+- Botão Ajustar automático usando o motor de artwork atual.
+- O carrossel público respeita a ordem escolhida.
+
+AO VIVO
+- Nova página ADM > Ao Vivo.
+- Cadastro manual de transmissão, sem depender da lista automática de partidas.
+- Evento, esporte, competição, data/hora, status, equipes, escudos, banner e fonte.
+- Reprodução dentro da LX Plus para fonte compatível.
+- Cast quando a fonte direta/dispositivo permitem.
+- Filtro visual opcional do usuário.
+
+INTERFACE
+- Topbar em largura total e mais compacta.
+- Avatar real sincronizado no topo e no card Meu perfil.
+- Clique no perfil abre o perfil.
+- Busca endurecida para evitar botão cortado em mobile/desktop.
+- Card de saudação compacto da v32.3 preservado.
+
+LX IA
+- Novo botão IA no topo e página ADM > LX IA.
+- Primeira versão responde sobre o catálogo e como usar a LX Plus.
+- Estrutura separada para receber um modelo geral posteriormente.
+
+TESTES DE BUILD
+- JavaScript validado com node --check.
+- Service Worker validado com node --check.
+- HTML sem IDs duplicados.
+- Todos os arquivos principais responderam HTTP 200 em servidor local.
+- Checagens estáticas de rotas, módulos e cache executadas antes da compactação.
+
+NOTA
+- A reprodução real de mídia autenticada ainda depende da sessão do usuário e do navegador. O pacote evita declarar sucesso apenas por compilação; foi corrigida a cadeia de resolução para usar Storage assinado diretamente, mas o teste final de som precisa ocorrer no domínio com uma conta autenticada.
