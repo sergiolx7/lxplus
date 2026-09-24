@@ -6210,3 +6210,101 @@ body[data-nav-placement="top"] .lx-desktop-rail{display:none!important}
 @media(max-width:760px){#app.lx-music-mode{--lx-music-top:58px;--lx-music-dock:177px}#app.lx-music-mode .lx-music-app-shell{display:block!important;min-height:0!important}#app.lx-music-mode .lx-music-side,#app.lx-music-mode .lx-music-detail-rail{display:none!important}#app.lx-music-mode .lx-music-main{min-height:calc(100dvh - 58px)!important;padding:0 0 18px!important}.music-dock.music-dock-v25,.music-dock-v25.external-provider,.music-dock-v25.external-provider.provider-spotify{bottom:calc(58px + env(safe-area-inset-bottom))!important;left:4px!important;right:4px!important;height:108px!important;min-height:108px!important;display:grid!important;grid-template-columns:40px minmax(0,1fr) 166px!important;grid-template-rows:46px 42px!important;column-gap:7px!important;row-gap:1px!important;padding:7px!important}.music-dock #musicCoverBtn,.music-dock #musicCover{width:40px!important;height:40px!important}.music-dock .music-info{grid-column:2!important;grid-row:1!important;min-width:0}.music-dock .music-info #musicPlaybackKind{display:block!important;font-size:9px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.music-dock .music-center-controls{grid-column:1/-1!important;grid-row:2!important;display:grid!important;grid-template-columns:minmax(0,1fr) 110px!important;align-items:center;min-width:0}.music-dock .music-transport{grid-column:1!important;display:flex!important;justify-content:center!important;gap:0!important}.music-dock .music-transport button:not(#musicPlay){display:grid!important;width:28px!important;height:28px!important}.music-dock #musicPlay{width:34px!important;height:34px!important}.music-dock .music-timeline{display:grid!important;grid-column:2!important;grid-template-columns:25px minmax(0,1fr) 25px!important;gap:3px!important;min-width:0;font-size:9px}.music-dock .music-right-controls{grid-column:3!important;grid-row:1!important;display:flex!important;gap:2px!important;justify-content:flex-end!important}.music-dock .music-right-controls button{display:grid!important;width:28px!important;height:28px!important}.music-dock .music-right-controls input,.music-dock .music-right-controls span{display:none!important}.lx-nova-row,.lx-nova-devices,.lx-nova-monitor>div{grid-template-columns:1fr}.lx-nova-ai-panel{right:5px;top:48px;width:calc(100vw - 10px);height:calc(100dvh - 112px)}}
 
 .lx-nova-teams{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0}.lx-nova-live-grid .lx-nova-teams img{width:36px;height:36px;aspect-ratio:1;object-fit:contain;border-radius:50%;background:#eee}
+
+/* NOVA follow-up: official providers stay compact and the YouTube video stays visible while playing. */
+.music-dock.external-provider.provider-youtube .music-provider-panel:not(.hidden){left:auto!important;right:8px!important;bottom:calc(100% + 8px)!important;width:min(300px,calc(100vw - 20px))!important;max-width:300px!important;max-height:240px!important;overflow:visible!important}
+.music-dock.external-provider.provider-youtube #musicProviderFrame:not(.hidden){height:200px!important;min-height:200px!important;width:100%!important;aspect-ratio:auto!important}
+.music-dock.external-provider.provider-spotify .music-provider-panel:not(.hidden){left:auto!important;right:8px!important;bottom:calc(100% + 8px)!important;width:min(342px,calc(100vw - 20px))!important;max-width:342px!important;max-height:190px!important}
+.music-dock #musicVolume:disabled{opacity:.42;cursor:not-allowed}
+
+/* ADM Spotify: actual track artwork, editable metadata, explicit review. */
+.lx-nova-spotify-bulk{margin:18px 0;padding:20px;display:grid;gap:14px;min-width:0}
+.lx-nova-spotify-bulk>.lx-nova-heading{margin:0}
+.lx-nova-spotify-bulk label,.lx-nova-spotify-list label,.lx-nova-live-select{display:grid;gap:7px;color:#c9cbd5;font-size:12px}
+.lx-nova-spotify-bulk>label textarea,.lx-nova-spotify-bulk>label select,.lx-nova-spotify-list input:not([type=checkbox]),.lx-nova-live-select select{width:100%;min-width:0;box-sizing:border-box;border:1px solid #353743;border-radius:9px;background:#191b23;color:#fff;padding:10px;font:inherit}
+.lx-nova-spotify-bulk>label textarea{min-height:120px;resize:vertical}
+.lx-nova-spotify-bulk>label select{max-width:260px}
+.lx-nova-spotify-preview h3{margin:12px 0}
+.lx-nova-spotify-list{display:grid;gap:10px;margin:12px 0}
+.lx-nova-spotify-list article{display:grid;grid-template-columns:80px minmax(0,1fr) 76px;gap:12px;align-items:start;padding:12px;border:1px solid #343641;border-radius:12px;background:#15161c}
+.lx-nova-spotify-list article>img{width:80px;height:80px;object-fit:cover;border-radius:8px}
+.lx-nova-spotify-list article>div{display:grid;gap:9px;min-width:0}
+.lx-nova-spotify-list article>div>strong{font-size:12px}
+.lx-nova-spotify-list article small{color:#a8a9b4}
+.lx-nova-spotify-list article>label{display:flex;align-items:center;gap:5px;cursor:pointer}
+.lx-nova-live-select{max-width:500px;margin-bottom:15px}
+.lx-nova-live-grid article h2{margin:12px 0}
+@media(max-width:760px){
+ .music-dock.external-provider.provider-youtube .music-provider-panel:not(.hidden),.music-dock.external-provider.provider-spotify .music-provider-panel:not(.hidden){left:auto!important;right:0!important;bottom:calc(100% + 8px)!important}
+ .lx-nova-spotify-bulk{padding:14px}
+ .lx-nova-spotify-list article{grid-template-columns:56px minmax(0,1fr);gap:9px}
+ .lx-nova-spotify-list article>img{width:56px;height:56px}
+ .lx-nova-spotify-list article>label{grid-column:2}
+}
+
+/* Atendimento humano e importação de MP3 na mesma build. */
+.lx-support-panel{grid-template-rows:auto minmax(0,1fr)}
+.lx-support-content{display:grid;grid-template-rows:auto auto minmax(120px,1fr) auto auto;gap:0;min-height:0;overflow:hidden}
+.lx-support-content [data-help-topics],.lx-support-content [data-help-tickets]{padding:10px 14px;border-bottom:1px solid #34323b}
+.lx-support-content h3,.lx-support-admin h3{font-size:13px;margin:2px 0 8px}
+.lx-support-content p,.lx-support-admin p{font-size:12px;line-height:1.45;margin:6px 0;color:#b9bbc7}
+.lx-support-topics,.lx-support-tickets{display:flex;gap:6px;overflow:auto;scrollbar-width:thin}
+.lx-support-topics button,.lx-support-tickets button,.lx-support-admin [data-help="status"]{flex:none;border:1px solid #484458;border-radius:9px;background:#1b1b27;color:#eae8f2;padding:7px 9px;cursor:pointer;font-size:11px}
+.lx-support-topics button.active,.lx-support-tickets button.active{background:#69549d;border-color:#b89bff}
+.lx-support-tickets button{min-width:125px;text-align:left;max-width:190px}
+.lx-support-tickets b,.lx-support-tickets small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lx-support-tickets small{color:#c4c1d0}
+.lx-support-answer{padding:8px 11px;border:1px solid #4d426a;border-radius:9px}
+.lx-support-content [data-help="start"]{font-size:11px;padding:7px 9px;margin:4px 0}
+.lx-support-conversation-title{justify-self:stretch;color:#c9b6ff!important;border-bottom:1px solid #363541;padding:0 0 7px}
+.lx-support-content form textarea{flex:1;min-width:0;min-height:43px;resize:vertical;box-sizing:border-box;padding:10px;border:1px solid #393a46;border-radius:9px;background:#191b24;color:#fff;font:inherit}
+.lx-support-content form[hidden],.lx-support-admin form[hidden]{display:none}
+.lx-support-content output,.lx-support-admin output{display:block;min-height:21px;padding:2px 12px 5px;color:#d3bdff;font-size:11px;overflow-wrap:anywhere}
+.lx-support-admin{height:min(75dvh,760px);display:grid;grid-template-columns:minmax(190px,270px) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto auto;min-width:0}
+.lx-support-admin [data-help-topics]{display:none}
+.lx-support-admin [data-help-tickets]{grid-column:1;grid-row:1/4;overflow:auto;border-right:1px solid #34323b;padding:12px}
+.lx-support-admin .lx-support-tickets{display:grid;max-height:none}
+.lx-support-admin .lx-support-tickets button{max-width:none}
+.lx-support-admin [data-help-log]{grid-column:2;grid-row:1;min-height:0}
+.lx-support-admin form{grid-column:2;grid-row:2}
+.lx-support-admin output{grid-column:2;grid-row:3}
+.lx-nova-mp3-import{padding:18px;margin:20px 0;min-width:0}
+.lx-nova-mp3-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.lx-nova-mp3-form label{display:grid;gap:6px;font-size:12px;color:#d0ced9;min-width:0}
+.lx-nova-mp3-form label:nth-child(-n+2),.lx-nova-mp3-form output{grid-column:1/-1}
+.lx-nova-mp3-form input:not([type=checkbox]),.lx-nova-mp3-form textarea,.lx-nova-mp3-form select{min-width:0;width:100%;box-sizing:border-box;border:1px solid #393a46;border-radius:9px;padding:10px;background:#191b24;color:#fff;font:inherit}
+.lx-nova-mp3-form .lx-nova-check{display:flex;align-items:center}
+.lx-nova-mp3-form output{color:#d2bdff;overflow-wrap:anywhere}
+.lx-admin-source-tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;padding:2px 0 16px}
+.lx-admin-source-tabs button{white-space:nowrap;flex:none;padding:9px 12px;border:1px solid #34323b;border-radius:10px;background:#181923;color:#ccc;cursor:pointer}
+.lx-admin-source-tabs button.active{background:#604194;color:#fff;border-color:#a47af6}
+@media(max-width:760px){
+ #app.lx-music-mode{--lx-music-top:72px;--lx-music-dock:calc(186px + env(safe-area-inset-bottom))}
+ .lx-support-panel{top:max(8px,env(safe-area-inset-top));right:5px;width:calc(100vw - 10px);height:calc(100dvh - max(16px,env(safe-area-inset-top)) - 64px)}
+ .lx-support-content [data-help-topics]{max-height:156px;overflow-y:auto}
+ .lx-support-admin{height:auto;min-height:450px;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(250px,52dvh) auto auto}
+ .lx-support-admin [data-help-tickets]{grid-column:1;grid-row:1;max-height:165px;border-right:0;border-bottom:1px solid #34323b}
+ .lx-support-admin .lx-support-tickets{display:flex;max-height:90px}
+ .lx-support-admin [data-help-log]{grid-column:1;grid-row:2}
+ .lx-support-admin form{grid-column:1;grid-row:3}
+ .lx-support-admin output{grid-column:1;grid-row:4}
+ .lx-nova-mp3-form{grid-template-columns:minmax(0,1fr)}
+ .lx-nova-mp3-form label,.lx-nova-mp3-form output{grid-column:1/-1}
+ .lx-nova-mp3-import{padding:13px}
+ .music-dock.music-dock-v25{grid-template-columns:40px minmax(0,1fr) minmax(100px,130px)!important}
+}
+@media(max-width:380px){.music-dock.music-dock-v25{grid-template-columns:36px minmax(0,1fr) 94px!important}.music-dock .music-right-controls button{width:24px!important;height:24px!important}}
+
+/* Web Audio controls are confined to the native MP3 player. */
+#musicEffectsBtn.active{color:#caa8ff!important;background:rgba(156,112,248,.23)!important}
+.lx-music-effects-panel{position:fixed;z-index:1610;bottom:110px;right:12px;width:min(360px,calc(100vw - 24px));max-height:min(570px,calc(100dvh - 140px));overflow:auto;box-sizing:border-box;border:1px solid #514265;border-radius:16px;background:#15151f;color:#fff;box-shadow:0 20px 70px #000c;padding:15px;display:grid;gap:12px}
+.lx-music-effects-panel header{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.lx-music-effects-panel header strong{font-size:16px}.lx-music-effects-panel header button{background:none;border:0;color:#fff;font-size:25px;cursor:pointer}
+.lx-music-effects-panel label{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;font-size:13px;color:#dddde8}
+.lx-music-effects-panel label input[type=range],.lx-music-effects-panel label select{grid-column:1/-1;width:100%;accent-color:#a885ff;box-sizing:border-box}
+.lx-music-effects-panel label select{background:#232434;color:#fff;border:1px solid #4b4659;border-radius:8px;padding:9px}
+.lx-music-effects-panel .lx-effect-toggle{display:flex;gap:9px;align-items:center;font-weight:800}
+.lx-music-effects-panel output{color:#d3b9ff;font-weight:800}
+.lx-music-effects-panel p{margin:0;font-size:12px;color:#cbb8f5;line-height:1.4}
+.lx-music-effects-panel small{color:#aeb0bc;font-size:11px;line-height:1.4}
+@media(max-width:760px){.lx-music-effects-panel{right:5px;bottom:calc(178px + env(safe-area-inset-bottom));width:min(350px,calc(100vw - 10px));max-height:calc(100dvh - 260px)}.music-dock .music-right-controls{display:grid!important;grid-template-columns:repeat(3,24px)!important;grid-auto-rows:24px!important;align-content:start!important;justify-content:end!important;gap:1px!important;grid-row:1!important}.music-dock .music-right-controls button{width:24px!important;height:24px!important;min-width:24px!important;font-size:13px!important}}
