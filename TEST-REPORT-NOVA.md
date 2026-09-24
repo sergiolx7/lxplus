@@ -1,8 +1,8 @@
-# Verificação da LX Plus NOVA R3
+# Verificação da LX Plus NOVA R3B
 
 ## Executado
 
-- Arquivos da R2-AUDIO comparados com a versão `main` publicada antes das alterações da R3.
+- Arquivos da R2-AUDIO comparados com a versão `main` publicada antes das alterações da R3B.
 - Conferência estática do fluxo de música: fonte assinada, proxy alternativo, timeout, metadata e `play()` nativo. Conferência do início do vídeo nativo e dos estados de erro.
 - `node --check` nos arquivos JavaScript da distribuição.
 - Inspeção do site público no navegador e validação do marcador de build após publicação: resultado anotado quando realizado.

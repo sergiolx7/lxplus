@@ -24,12 +24,12 @@
 
 
 /* ===== lxplus.js ===== */
-window.__LX_JS_BUILD='NOVA-20260924-R3';
+window.__LX_JS_BUILD='NOVA-20260924-R3B';
 
 /* ===== config.js · LX Plus v25.50 ===== */
 window.LX=window.LX||{};
 LX.config={
-  version:'NOVA-20260924-R3',
+  version:'NOVA-20260924-R3B',
   environment:'cloud-ready',
   production:true,
   apiBase:'',
@@ -1717,7 +1717,7 @@ let musicLoadTicket=0,musicReadyPromise=Promise.resolve(false),musicLoadGuard=nu
 function musicErrorText(error){const code=Number(error?.code||0);if(code===3)return 'Arquivo de áudio incompatível ou corrompido';if(code===4)return 'Fonte não suportada ou acesso negado';if(code===2)return 'Falha de rede ao buscar o áudio';if(error?.name==='NotAllowedError')return 'O navegador bloqueou o início automático';if(/TIMEOUT/i.test(String(error?.message||'')))return 'Tempo esgotado ao carregar o áudio';return String(error?.message||'Fonte indisponível').slice(0,90)}
 function updateMusicDuration(a=$('musicAudio')){const actual=Number(a?.duration),fallback=Number(currentMusic()?.duration)||0,duration=Number.isFinite(actual)&&actual>0?actual:fallback;if($('musicDuration'))$('musicDuration').textContent=duration>0?LX.fmt(duration):'—';return duration}
 function setMusicStatus(text='',kind=''){const el=$('musicPlaybackKind');if(!el)return;el.textContent=text||'Faixa completa';el.classList.remove('hidden','is-loading','is-error','is-ready');if(kind)el.classList.add('is-'+kind);const play=$('musicPlay');if(play){play.disabled=false;play.title=kind==='error'?'Tentar reproduzir novamente':kind==='loading'?'Preparando áudio…':'Reproduzir ou pausar'}}
-async function cloudBlobFallback(ref,item={}){if(!String(ref||'').startsWith('cloud:'))return null;try{let blob=await musicDeadline(LX.cloud?.downloadMedia?.(String(ref)),7500,'MEDIA_DOWNLOAD_TIMEOUT');if(!blob)return null;blob=playableMusicBlob(blob,item,ref);cacheMusicSource(ref,blob);return blob}catch(e){console.warn('LX cloud blob fallback',e);return null}}
+async function cloudBlobFallback(ref,item={}){if(!String(ref||'').startsWith('cloud:'))return null;try{let blob=await musicDeadline(LX.cloud?.downloadMedia?.(String(ref)),6500,'MEDIA_DOWNLOAD_TIMEOUT');if(!blob)return null;blob=playableMusicBlob(blob,item,ref);cacheMusicSource(ref,blob);return blob}catch(e){console.warn('LX cloud blob fallback',e);return null}}
 async function recoverNativeMusicSource(t,autoplay=true,previousError=null,quiet=false,expectedTicket=musicLoadTicket){
  const a=$('musicAudio'),ref=a?.dataset?.sourceRef||t?.mediaKey||'';
  if(!a||!String(ref).startsWith('cloud:'))return false;
@@ -1730,7 +1730,7 @@ async function recoverNativeMusicSource(t,autoplay=true,previousError=null,quiet
    if(!current())return false;
    a.dataset.sourceRef=String(ref);a.crossOrigin='anonymous';a.preload='metadata';a.src=String(source);a.load();
    const started=autoplay?a.play().then(()=>null,error=>error):null;
-   await waitForMusicReady(a,7000);
+   await waitForMusicReady(a,5200);
    if(!current())return false;
    if(started){const playError=await musicDeadline(started,7000,'PLAY_TIMEOUT');if(playError)throw playError}
    if(!current())return false;
@@ -1738,13 +1738,15 @@ async function recoverNativeMusicSource(t,autoplay=true,previousError=null,quiet
   }catch(error){if(error?.name==='NotAllowedError'&&current()&&a.readyState>=2){setMusicStatus('Pronta · toque em ▶ para iniciar','ready');return true}console.warn('LX media source recovery',error);return false}
  };
  try{
-  const ticket=await fetchMusicTicket(ref,7200);if(await trySource(ticket))return true;if(!current())return false;
-  const saved=musicStreamFallbackCache.get(String(ref))||musicSignedFallbackCache.get(String(ref));if(saved&&saved!==ticket&&await trySource(saved))return true;if(!current())return false;
-  if(LX.cloud?.db?.()){
+  const stream=musicStreamFallbackCache.get(String(ref));if(stream){setMusicStatus('Tentando outra fonte de áudio…','loading');if(await trySource(stream))return true}if(!current())return false;
+  // The main attempt already tried the cached signed URL. Avoid spending another
+  // seven seconds on that same failing source before trying the MP3 download.
+  if(!musicSignedFallbackCache.has(String(ref))&&!stream){const fresh=await fetchMusicTicket(ref,7200);if(await trySource(fresh))return true;if(!current())return false}
+  if(!musicSignedFallbackCache.has(String(ref))&&LX.cloud?.db?.()){
    try{const path=String(ref).slice(6).replace(/^\/+/,''),bucket=LX.config?.supabase?.mediaBucket||'lx-media';const signed=await musicDeadline(LX.cloud.db().storage.from(bucket).createSignedUrl(path,7200),4500,'SIGNED_TIMEOUT');if(!signed.error&&signed.data?.signedUrl){musicSignedFallbackCache.set(String(ref),signed.data.signedUrl);if(await trySource(signed.data.signedUrl))return true}}catch(error){console.warn('LX music signed URL',error)}
   }
   if(!current())return false;
-  const blob=await cloudBlobFallback(ref,t);if(await trySource(blob))return true
+  setMusicStatus('Preparando download seguro do MP3…','loading');const blob=await cloudBlobFallback(ref,t);if(await trySource(blob))return true
  }catch(error){console.warn('LX native recovery failed',previousError,error)}
  if(current()&&!quiet){setMusicStatus('Falha no áudio: '+musicErrorText(previousError),'error');LX.toast('Não foi possível abrir esta faixa: '+musicErrorText(previousError))}
  return false
@@ -1752,7 +1754,7 @@ async function recoverNativeMusicSource(t,autoplay=true,previousError=null,quiet
 async function loadTrack(autoplay=false){
  const t=currentMusic();if(!t)return false;const ticket=++musicLoadTicket,a=$('musicAudio'),content=currentMusicContent()||{},trackMark=String(t.contentId)+'|'+String(t.index??state.musicIndex);
  clearTimeout(musicLoadGuard);clearTimeout(musicStallGuard);
- musicLoadGuard=setTimeout(()=>{if(ticket!==musicLoadTicket)return;++musicLoadTicket;a.pause();a.removeAttribute('src');a.load();delete a.dataset.loadingTrackTicket;setMusicStatus('Tempo esgotado · toque em ▶ para tentar novamente','error');updateMusicUI()},18000);
+ musicLoadGuard=setTimeout(()=>{if(ticket!==musicLoadTicket)return;++musicLoadTicket;a.pause();a.removeAttribute('src');a.load();delete a.dataset.loadingTrackTicket;setMusicStatus('Tempo esgotado · toque em ▶ para tentar novamente','error');updateMusicUI()},21000);
  if(autoplay)unlockMusicGesture();if(a.dataset.trackMark!==trackMark){a.dataset.trackMark=trackMark;delete a.dataset.recovery}a.dataset.loadingTrackTicket=String(ticket);a.dataset.sourceRef='';setMusicStatus('Carregando áudio…','loading');
  a.pause();a.removeAttribute('src');a.load();if(musicObjectUrl?.startsWith?.('blob:'))try{URL.revokeObjectURL(musicObjectUrl)}catch{}musicObjectUrl=null;resetMusicProvider();
  $('musicTitle').textContent=t.title||'Faixa';$('musicArtist').textContent=t.artist||'LX Music';LX.syncMusicProviderBrand?.(t);setMusicDockArtwork(t,content);$('musicProgress').value=0;$('musicTime').textContent='0:00';$('musicDuration').textContent=Number(t.duration)>0?LX.fmt(t.duration):'—';if($('musicProviderLabel'))$('musicProviderLabel').textContent='LX Music';syncMusicMediaSession(t);syncMusicCardState();document.dispatchEvent(new CustomEvent('lx:music-changed',{detail:{item:t,index:state.musicIndex,provider:musicProvider(content)}}));
@@ -1825,7 +1827,7 @@ function stopMiniPlayer(closeOverlay=true){const v=activeVideoEl;if(v){try{if(v.
 $('legalAboutBtn')?.addEventListener('click',()=>openLegal('about'));$('legalTermsBtn')?.addEventListener('click',()=>openLegal('terms'));$('legalPrivacyBtn')?.addEventListener('click',()=>openLegal('privacy'));
 $('miniRestore').onclick=restoreMiniPlayer;$('miniClose').onclick=()=>stopMiniPlayer(true);$('miniPlay').onclick=()=>{const v=activeVideoEl;if(v)v.paused?v.play():v.pause()};
 $('overlay').onclick=e=>{if(e.target===$('overlay'))U.close()};$('playerOverlay').onclick=e=>{if(e.target===$('playerOverlay'))U.closePlayer()};$('readerOverlay').onclick=e=>{if(e.target===$('readerOverlay'))U.closeReader()};document.addEventListener('keydown',e=>{if(e.key==='Escape'){U.close();U.closePlayer();U.closeReader()}});
-LX.musicHealthCheck=()=>{const a=$('musicAudio'),t=currentMusic();return {build:'NOVA-20260924-R3',mode:state.mode,screen:state.screen,track:t?.title||null,sourceRef:a?.dataset?.sourceRef||t?.mediaKey||null,src:a?.currentSrc||a?.src||null,paused:a?.paused??true,readyState:a?.readyState??0,networkState:a?.networkState??0,error:a?.error?{code:a.error.code,message:a.error.message||''}:null,status:$('musicPlaybackKind')?.textContent||'',cloud:!!String(a?.dataset?.sourceRef||t?.mediaKey||'').startsWith('cloud:')}};
+LX.musicHealthCheck=()=>{const a=$('musicAudio'),t=currentMusic();return {build:'NOVA-20260924-R3B',mode:state.mode,screen:state.screen,track:t?.title||null,sourceRef:a?.dataset?.sourceRef||t?.mediaKey||null,src:a?.currentSrc||a?.src||null,paused:a?.paused??true,readyState:a?.readyState??0,networkState:a?.networkState??0,error:a?.error?{code:a.error.code,message:a.error.message||''}:null,status:$('musicPlaybackKind')?.textContent||'',cloud:!!String(a?.dataset?.sourceRef||t?.mediaKey||'').startsWith('cloud:')}};
 LX.musicHealth=()=>{const a=$('musicAudio');return {title:currentMusic()?.title||'',readyState:a?.readyState??0,networkState:a?.networkState??0,duration:Number.isFinite(a?.duration)?a.duration:null,position:a?.currentTime||0,playing:!!a&&!a.paused&&!a.ended,status:$('musicPlaybackKind')?.textContent||'',mediaError:a?.error?.code||null}};LX.primeMusicMedia=primeMusicMedia;LX.prewarmMusicCatalog=prewarmMusicCatalog;LX.syncMusicCardState=syncMusicCardState;LX.musicToggleSaved=musicToggleSaved;LX.musicToggleSavedCurrent=musicToggleSavedCurrent;LX.openMusicLyrics=openMusicLyrics;LX.loadMusicTrack=loadTrack;LX.currentMusic=currentMusic;LX.refreshMusicUI=updateMusicUI;
 LX.toggleCurrentMusic=toggleCurrentMusic;LX.prewarmMusicCatalog=prewarmMusicCatalog;LX.prewarmMusicContent=prewarmMusicContent;LX.playOnlineMusicPreview=()=>LX.toast('Prévia desativada. A LX Music reproduz somente faixas completas do próprio catálogo.');LX.primary=primary;LX.detail=detail;LX.openMusicAlbum=openMusicAlbum;LX.openMusicQueue=openMusicQueue;LX.musicQueuePlay=i=>{state.musicIndex=+i||0;loadTrack(true);U.close()};LX.musicShuffleAlbum=id=>{musicShuffleMode=true;music(id,0,true)};LX.toggleList=toggleList;LX.rate=rate;LX.play=play;LX.selectSeason=(id,season)=>{const x=D.catalog().find(z=>z.id===id);if(!x)return;const el=$('detailTab');if(el)el.innerHTML=episodesTab(x,+season||1)};LX.read=read;LX.music=music;LX.openRequests=openRequests;LX.openRanking=openRanking;LX.openProfile=openProfile;LX.openNotifications=()=>LX.noticeCenter?.open?.();LX.openPremium=openPremium;LX.choosePlan=choosePlan;LX.toggleGenre=toggleGenre;LX.openTheme=openTheme;LX.scroll=U.scroll;LX.openAdmin=()=>{if(!state.user?.admin||!LX.admin)return LX.toast('Acesso ADM indisponível.');LX.admin.render(U.state.adminPage||'dashboard');U.show('admin');saveView()};LX.openLegal=openLegal;LX.applyBranding=applyBranding;LX.saveProfileDetails=saveProfileDetails;LX.setProfileShape=setProfileShape;LX.setProfileFrame=setProfileFrame;LX.minimizePlayer=minimizePlayer;LX.restoreMiniPlayer=restoreMiniPlayer;LX.stopMiniPlayer=stopMiniPlayer;LX.saveView=saveView;LX.restoreView=restoreView;LX.rankPeriod=x=>{state.rankingPeriod=x;openRanking()};LX.rankKind=x=>{state.rankingKind=x;openRanking()};LX.readAll=()=>{const n=D.notices().map(x=>({...x,read:true})),ids=n.map(x=>x.id);S.writeLocal(S.keys.notices,n);S.write(S.keys.noticeReads,ids);U.updateNoticeCount();LX.toast('Tudo marcado como lido e sincronizado.')};LX.setTheme=t=>{S.write(S.keys.theme,t);applyTheme()};LX.setAccent=c=>{S.write(S.keys.accent,c);applyTheme()};LX.setLayout=setLayout;LX.setMotion=setMotion;LX.setUiPref=setUiPref;LX.applyTheme=applyTheme;LX.installApp=installApp;LX.setProfilePreset=setProfilePreset;LX.setGalleryAvatar=setGalleryAvatar;LX.clearProfileImage=clearProfileImage;LX.tvMode=tvMode;
 setInterval(()=>{if(state.screen==='app'){U.updateNoticeCount?.();if(state.mode==='Ouvir'){syncMusicCardState();updateMusicUI()}}},60000);
