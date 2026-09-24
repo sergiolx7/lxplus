@@ -1,3 +1,12 @@
+# NOVA R8 — MP3 AUTO FIX
+
+- Corrige a rotina primária de metadados MP3, não apenas um override tardio.
+- Evita falha quando `LX.ui.state` ainda não existe.
+- Fallback obrigatório pelo nome do arquivo: título/artista sempre são preenchidos.
+- O aviso antigo de falha total foi removido.
+- Bundle físico renomeado para `lxplus.bundle.r8.js` para furar cache/CDN antigo.
+- Build: `NOVA-20260924-R8-MP3AUTO-FIX`.
+
 
 ## R6 · LX Player + Backblaze B2
 
