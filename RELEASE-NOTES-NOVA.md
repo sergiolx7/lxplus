@@ -1,3 +1,10 @@
+# LX Plus NOVA R5 — correção crítica da Música
+
+- Corrigido o erro `musicGenresOf is not defined` ao abrir uma música. A causa era o player (app.js) chamando helpers privados do módulo de interface (ui.js); agora os helpers de catálogo/gênero são exportados e existe uma ponte segura entre os módulos.
+- Corrigida a criação/edição de playlists e álbuns pessoais, que sofria do mesmo problema de escopo ao chamar `musicCatalog()`.
+- O botão de adicionar à playlist foi redesenhado com um ícone próprio de lista + adição, mais limpo no desktop e no celular.
+- Build/cache atualizado para `NOVA-20260924-R5` para evitar que navegador/PWA continue servindo o JavaScript antigo.
+
 # LX Plus NOVA — 2026-09-24, R4
 
 Esta versão recupera a R3B, substituída no `main` por um commit posterior que voltou a publicar arquivos da R1. O banco, usuários, catálogo, arquivos, histórico e favoritos existentes permanecem no Supabase. Nenhuma migração ou exclusão de dados foi executada.
@@ -11,7 +18,7 @@ Esta versão recupera a R3B, substituída no `main` por um commit posterior que 
 
 ## Distribuição
 
-`index.html`, JavaScript, CSS, manifest e service worker usam a mesma build `NOVA-20260924-R4`. A troca da versão invalida o cache antigo. Os arquivos de origem da aplicação e das Edge Functions seguem no pacote completo.
+`index.html`, JavaScript, CSS, manifest e service worker usam a mesma build `NOVA-20260924-R5`. A troca da versão invalida o cache antigo. Os arquivos de origem da aplicação e das Edge Functions seguem no pacote completo.
 
 ## Limite de verificação
 

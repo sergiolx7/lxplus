@@ -6363,3 +6363,27 @@ body[data-nav-placement="top"] .lx-desktop-rail{display:none!important}
 button.lx-music-feature-art{display:block;flex:none;border:0;padding:0;cursor:pointer;background-position:center;background-size:cover}
 @media(max-width:1180px){.admin-side nav .lx-admin-nav-label{display:none!important}.lx-admin-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.lx-notice-head{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;padding:12px 0}.lx-notice-emblem{height:40px;flex-basis:40px;font-size:23px}.lx-notice-head .glass-btn{grid-column:1/-1;justify-self:start}.lx-notice-center .lx-notice-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.lx-notice-center .lx-notice-tabs button{flex:none}.lx-notice-center .lx-notice-item{grid-template-columns:34px minmax(0,1fr);gap:9px;padding:11px}.lx-notice-center .lx-notice-icon{width:34px;height:34px}.lx-notice-center .lx-notice-badge{grid-column:2;justify-self:start}.lx-admin-workspace{margin:12px 0 18px;padding:13px}.lx-admin-workspace-head{display:block}.lx-admin-workspace-head h2{font-size:20px}.lx-admin-workspace-head>span{display:inline-block;margin-top:8px}.lx-admin-shortcuts{gap:7px;margin-top:12px}.lx-admin-shortcuts button{padding:10px}.lx-admin-shortcuts strong{font-size:12px}.lx-admin-shortcuts small{font-size:10px}}
+
+
+/* NOVA R5: playlist controls polished and touch-safe. */
+.lx-music-card-copy .lx-music-collection-add{
+  width:31px!important;height:31px!important;min-width:31px!important;border-radius:10px!important;
+  border:1px solid rgba(195,168,255,.30)!important;
+  background:linear-gradient(145deg,rgba(139,92,246,.20),rgba(255,255,255,.035))!important;
+  color:#d8c5ff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.07);
+}
+.lx-music-card-copy .lx-music-collection-add svg{width:17px;height:17px;display:block}
+.lx-music-card-copy .lx-music-collection-add:hover,.lx-music-card-copy .lx-music-collection-add:focus-visible{
+  transform:translateY(-1px);background:linear-gradient(145deg,#8b5cf6,#6841bd)!important;color:#fff!important;
+  border-color:rgba(225,211,255,.65)!important;box-shadow:0 8px 20px rgba(89,52,170,.28);
+}
+.music-dock #musicCollectionBtn svg{width:18px;height:18px}
+.lx-music-side-library>button[data-lx-collection-new] > i{
+  border:1px solid rgba(194,168,255,.18);background:linear-gradient(145deg,#3a2856,#1c1824);color:#dbc9ff;
+}
+.lx-music-side-library>button[data-lx-collection-new] > i svg{width:19px;height:19px}
+@media(max-width:760px){
+  .lx-music-card-copy{grid-template-columns:minmax(0,1fr) 28px 26px!important}
+  .lx-music-card-copy .lx-music-collection-add{width:28px!important;height:28px!important;min-width:28px!important;border-radius:9px!important}
+  .lx-music-card-copy .lx-music-collection-add svg{width:15px;height:15px}
+}
