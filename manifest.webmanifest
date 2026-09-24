@@ -3,7 +3,7 @@
   "short_name": "LX Plus",
   "description": "Filmes, séries, música, livros e comunidade em uma experiência premium.",
   "id": "./",
-  "start_url": "./?v=NOVA-20260924-R8-LX-STORAGE-AUTO",
+  "start_url": "./?v=NOVA-20260924-R10-AUDIO-AUTO",
   "scope": "./",
   "display": "standalone",
   "background_color": "#020306",
@@ -17,5 +17,5 @@
       "purpose": "any maskable"
     }
   ],
-  "version": "NOVA-20260924-R8-LX-STORAGE-AUTO"
+  "version": "NOVA-20260924-R10-AUDIO-AUTO"
 }
