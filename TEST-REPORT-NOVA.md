@@ -1,17 +1,16 @@
-# TEST REPORT — LX Plus R7 LX Storage / Drive
+# TEST REPORT — LX Plus R8 LX Storage automático
 
-Build: `NOVA-20260924-R7-LX-STORAGE-DRIVE`
+## Verificações locais
 
-## Verificações executadas
-- `node --check lxplus.bundle.js`: OK
-- `node --check cloudflare-worker/lx-drive-storage-worker.js`: OK
-- Build/versionamento atualizado no `index.html`, `manifest.webmanifest` e `service-worker.js`.
-- Fonte padrão de vídeo nova continua sendo Google Drive, agora tratada como `LX Storage / Drive`.
-- Parser mantém compatibilidade com links antigos `gdrive:` e links normais `drive.google.com/file/d/...`.
-- Ordem de reprodução: LX Storage Worker → rota direta Drive usercontent → rota `uc` → preview Drive como último fallback.
-- Painel ADM contém endpoint do LX Storage, teste `/health` e salvamento da configuração global.
-- Worker não contém credenciais embutidas; usa Secrets `GOOGLE_CLIENT_EMAIL` e `GOOGLE_PRIVATE_KEY`.
-- Worker repassa `Range` ao Google Drive API e expõe `Content-Range`, `Content-Length` e `Accept-Ranges` ao navegador.
+- [x] JavaScript principal mantém sintaxe válida.
+- [x] Worker contém `/health` e `/v/:fileId`.
+- [x] Worker aceita `Range` e repassa cabeçalhos de streaming.
+- [x] Modo `public-drive` não exige credenciais Google.
+- [x] Modo Service Account permanece disponível.
+- [x] Template Cloudflare contém `wrangler.toml` e `package.json`.
+- [x] ADM possui botão de geração automática do endpoint.
+- [x] Cache/build R8 atualizado.
 
-## Dependência para teste real de vídeo
-Para um teste end-to-end real é necessário publicar o Worker e configurar uma Service Account com acesso à pasta do Google Drive. Sem essas credenciais externas, a build usa as rotas antigas do Drive como fallback.
+## Teste externo necessário
+
+O deploy real depende da autorização da conta Cloudflare do proprietário e de um arquivo real do Google Drive compartilhado por link.

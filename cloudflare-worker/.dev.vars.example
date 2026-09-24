@@ -1,0 +1,5 @@
+# OPCIONAL — só preencha se quiser acessar arquivos privados do Drive.
+# Sem estas duas variáveis, o Worker funciona com arquivos compartilhados
+# como “Qualquer pessoa com o link · Leitor”.
+GOOGLE_CLIENT_EMAIL=
+GOOGLE_PRIVATE_KEY=

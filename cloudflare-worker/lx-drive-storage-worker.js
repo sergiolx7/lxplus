@@ -1,6 +1,7 @@
 /**
  * LX Storage — Google Drive byte proxy for Cloudflare Workers
- * Secrets required:
+ * Zero-config mode: public Drive files shared as "Anyone with the link".
+ * Optional secrets for private Drive files:
  *   GOOGLE_CLIENT_EMAIL
  *   GOOGLE_PRIVATE_KEY
  * Optional variable:
@@ -91,13 +92,47 @@ async function googleToken(env, force = false) {
   return tokenCache.token;
 }
 
-async function driveFetch(request, env, fileId, forceToken = false) {
+function hasServiceAccount(env) {
+  return Boolean(env.GOOGLE_CLIENT_EMAIL && env.GOOGLE_PRIVATE_KEY);
+}
+
+async function authenticatedDriveFetch(request, env, fileId, forceToken = false) {
   const token = await googleToken(env, forceToken);
   const headers = new Headers({ Authorization: `Bearer ${token}` });
   const range = request.headers.get('Range');
   if (range) headers.set('Range', range);
   const url = `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media&supportsAllDrives=true`;
   return fetch(url, { method: request.method === 'HEAD' ? 'HEAD' : 'GET', headers, redirect: 'follow' });
+}
+
+async function publicDriveFetch(request, fileId) {
+  const headers = new Headers();
+  const range = request.headers.get('Range');
+  if (range) headers.set('Range', range);
+  headers.set('User-Agent', 'Mozilla/5.0 LX-Storage/1.0');
+  const base = `https://drive.usercontent.google.com/download?id=${encodeURIComponent(fileId)}&export=download&confirm=t&authuser=0`;
+  let upstream = await fetch(base, { method: request.method === 'HEAD' ? 'HEAD' : 'GET', headers, redirect: 'follow' });
+
+  // Some large public Drive files first return a small confirmation HTML page.
+  // Resolve its form/href once, then retry the byte request with Range preserved.
+  const ct = String(upstream.headers.get('content-type') || '').toLowerCase();
+  if (request.method !== 'HEAD' && upstream.ok && ct.includes('text/html')) {
+    const html = await upstream.text();
+    const form = html.match(/<form[^>]+action=["']([^"']+)["'][^>]*>([\s\S]*?)<\/form>/i);
+    if (form) {
+      let action = form[1].replace(/&amp;/g, '&');
+      try { action = new URL(action, 'https://drive.usercontent.google.com').toString(); } catch {}
+      const u = new URL(action);
+      for (const m of form[2].matchAll(/<input[^>]+name=["']([^"']+)["'][^>]+value=["']([^"']*)["']/gi)) u.searchParams.set(m[1], m[2].replace(/&amp;/g, '&'));
+      upstream = await fetch(u.toString(), { method: 'GET', headers, redirect: 'follow' });
+    }
+  }
+  return upstream;
+}
+
+async function driveFetch(request, env, fileId, forceToken = false) {
+  if (hasServiceAccount(env)) return authenticatedDriveFetch(request, env, fileId, forceToken);
+  return publicDriveFetch(request, fileId);
 }
 
 export default {
@@ -110,7 +145,8 @@ export default {
       return json({
         ok: true,
         service: 'LX Storage',
-        googleConfigured: Boolean(env.GOOGLE_CLIENT_EMAIL && env.GOOGLE_PRIVATE_KEY),
+        googleConfigured: hasServiceAccount(env),
+        mode: hasServiceAccount(env) ? 'service-account' : 'public-drive',
       }, 200, c);
     }
 
@@ -119,7 +155,7 @@ export default {
 
     try {
       let upstream = await driveFetch(request, env, match[1], false);
-      if (upstream.status === 401) upstream = await driveFetch(request, env, match[1], true);
+      if (hasServiceAccount(env) && upstream.status === 401) upstream = await driveFetch(request, env, match[1], true);
 
       if (!upstream.ok && upstream.status !== 206) {
         let detail = '';

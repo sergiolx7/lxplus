@@ -6392,3 +6392,9 @@ button.lx-music-feature-art{display:block;flex:none;border:0;padding:0;cursor:po
 .lx-legacy-storage{padding:14px 16px}.lx-legacy-storage>summary{cursor:pointer;font-weight:800;color:var(--muted)}
 .lx-drive-storage-card .field.span2{grid-column:1/-1}
 @media(max-width:720px){.lx-drive-storage-card .r2-config-actions{display:grid;grid-template-columns:1fr}.lx-drive-storage-card .r2-config-actions button{width:100%}}
+
+
+/* R8 · LX Storage automatic endpoint setup */
+.lx-storage-auto-box{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 15px;border:1px solid color-mix(in srgb,var(--accent,#8a2be2) 45%,transparent);border-radius:16px;background:linear-gradient(135deg,rgba(138,43,226,.13),rgba(255,255,255,.025));}
+.lx-storage-auto-box>div{display:grid;gap:5px;min-width:0}.lx-storage-auto-box b{font-size:14px}.lx-storage-auto-box small{color:var(--muted);line-height:1.45}.lx-storage-auto-box code{font-size:.9em;color:#dba8ff}.lx-storage-auto-box .primary-btn{white-space:nowrap;min-height:42px}
+@media(max-width:680px){.lx-storage-auto-box{align-items:stretch;flex-direction:column}.lx-storage-auto-box .primary-btn{width:100%}}

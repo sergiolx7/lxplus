@@ -309,11 +309,13 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['cloud']='25.50'
 window.__LX_MODULES['r2-media']='25.50';
 
 
-/* ===== lx-drive-storage.js · LX Plus R7 =====
-   Google Drive is used only as the byte store. Playback goes through the LX Storage endpoint. */
+/* ===== lx-drive-storage.js · LX Plus R8 =====
+   Google Drive is used only as the byte store. Playback goes through the LX Storage endpoint.
+   R8 adds a one-click Cloudflare deployment flow for the Worker template stored in the LX Plus repo. */
 (()=>{
  const LX=window.LX=window.LX||{};
  const LOCAL_KEY='lxplus_drive_storage_endpoint';
+ const WORKER_REPO='https://github.com/sergiolx7/lxplus/tree/main/cloudflare-worker';
  const clean=v=>String(v||'').trim().replace(/\/+$/,'');
  function endpoint(){
   let local='';try{local=clean(localStorage.getItem(LOCAL_KEY)||'')}catch{}
@@ -323,11 +325,21 @@ window.__LX_MODULES['r2-media']='25.50';
  }
  function configured(){return /^https:\/\//i.test(endpoint())}
  function streamUrl(fileId){const ep=endpoint(),id=String(fileId||'').trim();return ep&&id?`${ep}/v/${encodeURIComponent(id)}`:''}
+ function deployUrl(){
+  const repo=clean(window.LX_WORKER_TEMPLATE_REPO||WORKER_REPO);
+  return `https://deploy.workers.cloudflare.com/?url=${encodeURIComponent(repo)}`;
+ }
+ function openAutoDeploy(){
+  const url=deployUrl();
+  const w=window.open(url,'_blank','noopener,noreferrer');
+  if(!w) location.href=url;
+  return url;
+ }
  async function test(ep=endpoint()){
   ep=clean(ep);if(!/^https:\/\//i.test(ep))throw new Error('LX_STORAGE_ENDPOINT_INVALID');
   const r=await fetch(`${ep}/health`,{cache:'no-store'});let data={};try{data=await r.json()}catch{}
   if(!r.ok||data.ok===false)throw new Error(data.error||`LX_STORAGE_HTTP_${r.status}`);
-  return {ok:true,endpoint:ep,googleConfigured:data.googleConfigured!==false,service:data.service||'LX Storage'};
+  return {ok:true,endpoint:ep,googleConfigured:data.googleConfigured===true,mode:data.mode||'public-drive',service:data.service||'LX Storage'};
  }
  async function saveEndpoint(ep,{global=true}={}){
   ep=clean(ep);if(ep&&!/^https:\/\//i.test(ep))throw new Error('LX_STORAGE_ENDPOINT_INVALID');
@@ -335,9 +347,9 @@ window.__LX_MODULES['r2-media']='25.50';
   if(global&&LX.data?.saveBranding){const b=LX.data.branding?.()||{};await LX.data.saveBranding({...b,driveStorageEndpoint:ep})}
   return ep;
  }
- LX.driveStorage={endpoint,configured,streamUrl,test,saveEndpoint};
+ LX.driveStorage={endpoint,configured,streamUrl,test,saveEndpoint,deployUrl,openAutoDeploy,workerRepo:WORKER_REPO};
 })();
-window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['drive-storage']='R7';
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['drive-storage']='R8';
 
 /* ===== free-media-hub.js · LX Plus v25.50 =====
    Link adapters only. No provider password/token is ever stored in the public build. */
@@ -1047,10 +1059,11 @@ function uploads(m){
  <section class="admin-card r2-storage-card lx-drive-storage-card">
   <div class="r2-storage-head"><div><span class="eyebrow">LX STORAGE · DRIVE</span><h2>Google Drive + LX Player</h2><p>O Drive guarda o arquivo. O Worker busca os bytes pela API e entrega para o LX Player, sem depender do preview/processamento do Google Drive.</p></div><div id="driveStorageStatusBadge" class="r2-status warn">Verificando…</div></div>
   <div class="form-grid r2-config-grid">
-   <label class="field span2">Endpoint do LX Storage Worker<input id="driveStorageEndpoint" inputmode="url" autocomplete="off" placeholder="https://lx-storage.seuusuario.workers.dev"></label>
+   <div class="span2 lx-storage-auto-box"><div><b>⚡ Configuração automática</b><small>A Cloudflare cria o Worker a partir da pasta <code>cloudflare-worker</code> do GitHub. Você só autoriza a conta e, no final, cola aqui o endereço <code>workers.dev</code> gerado.</small></div><button id="autoDeployDriveStorage" class="primary-btn" type="button">Gerar endpoint automaticamente</button></div>
+   <label class="field span2">Endpoint do LX Storage Worker<input id="driveStorageEndpoint" inputmode="url" autocomplete="off" placeholder="https://lx-storage-drive.seuusuario.workers.dev"></label>
    <div class="span2 r2-config-actions"><button id="saveDriveStorage" class="primary-btn" type="button">Salvar endpoint</button><button id="testDriveStorage" class="glass-btn" type="button">Testar LX Storage</button></div>
   </div>
-  <div id="driveStorageHelp" class="r2-help"><b>Fluxo:</b> Drive → Drive API → LX Storage Worker → LX Player. O endpoint não é segredo e pode ficar sincronizado na configuração global.</div>
+  <div id="driveStorageHelp" class="r2-help"><b>Fluxo:</b> Drive → LX Storage Worker → LX Player. No modo automático, o Worker já funciona com arquivos do Drive compartilhados como “Qualquer pessoa com o link”. Conta de serviço do Google fica opcional para arquivos privados.</div>
  </section>
  <details class="admin-card r2-storage-card lx-legacy-storage"><summary>Armazenamento antigo / opcional (R2)</summary><div style="margin-top:12px">
  <section class="r2-storage-card">
@@ -1133,7 +1146,8 @@ function bind(page){
   $$('[data-lib]').forEach(b=>b.onclick=()=>{U.state.libraryType=b.dataset.lib;render('library')});$$('[data-libsummary]').forEach(b=>b.onclick=()=>{U.state.libraryType=b.dataset.libsummary;render('library')});$('libSearch').oninput=apply;$('libStatus').onchange=apply;$('newContent').onclick=()=>edit(null,U.state.libraryType==='Todos'?'Filme':U.state.libraryType)
  }
  if(page==='uploads'){
-  const refreshDriveStorage=async()=>{const badge=$('driveStorageStatusBadge'),help=$('driveStorageHelp'),inp=$('driveStorageEndpoint');if(inp&&!inp.value)inp.value=LX.driveStorage?.endpoint?.()||'';if(!badge)return;const ep=(inp?.value||LX.driveStorage?.endpoint?.()||'').trim();if(!ep){badge.textContent='Endpoint ainda não configurado';badge.className='r2-status warn';if(help)help.innerHTML='<b>Falta 1 passo:</b> publique o Worker incluído no ZIP e cole aqui a URL dele.';return}badge.textContent='Testando…';badge.className='r2-status warn';try{const st=await LX.driveStorage.test(ep);badge.textContent=st.googleConfigured?'LX Storage online · Drive conectado':'Worker online · falta Google';badge.className=st.googleConfigured?'r2-status ok':'r2-status warn';if(help)help.innerHTML=st.googleConfigured?'<b>Pronto:</b> links do Google Drive serão reproduzidos pelo LX Player via LX Storage.':'<b>Worker publicado:</b> agora configure as credenciais da conta de serviço do Google Drive no Worker.'}catch(e){badge.textContent='LX Storage offline';badge.className='r2-status warn';if(help)help.textContent='Não consegui acessar o endpoint. Confira a URL do Worker e a configuração.'}};
+  const refreshDriveStorage=async()=>{const badge=$('driveStorageStatusBadge'),help=$('driveStorageHelp'),inp=$('driveStorageEndpoint');if(inp&&!inp.value)inp.value=LX.driveStorage?.endpoint?.()||'';if(!badge)return;const ep=(inp?.value||LX.driveStorage?.endpoint?.()||'').trim();if(!ep){badge.textContent='Endpoint ainda não configurado';badge.className='r2-status warn';if(help)help.innerHTML='<b>Falta só o endpoint:</b> toque em <b>Gerar endpoint automaticamente</b>, entre/autorize a Cloudflare e use a URL <code>workers.dev</code> que ela criar.';return}badge.textContent='Testando…';badge.className='r2-status warn';try{const st=await LX.driveStorage.test(ep);const publicMode=st.mode==='public-drive'&&!st.googleConfigured;badge.textContent=st.googleConfigured?'LX Storage online · Drive privado':publicMode?'LX Storage online · Drive por link':'LX Storage online';badge.className='r2-status ok';if(help)help.innerHTML=st.googleConfigured?'<b>Pronto:</b> Worker autenticado no Google. Links do Drive passam pelo LX Player.':'<b>Pronto:</b> modo sem credenciais ativo. Compartilhe cada vídeo no Drive como <b>Qualquer pessoa com o link · Leitor</b> e use o link normal no cadastro.'}catch(e){badge.textContent='LX Storage offline';badge.className='r2-status warn';if(help)help.textContent='Não consegui acessar o endpoint. Confira a URL do Worker e tente novamente.'}};
+  $('autoDeployDriveStorage')?.addEventListener('click',()=>{LX.driveStorage?.openAutoDeploy?.();LX.toast('A Cloudflare abriu. Autorize e conclua o Deploy; depois copie a URL workers.dev para este campo.')});
   $('saveDriveStorage')?.addEventListener('click',async()=>{const b=$('saveDriveStorage'),ep=$('driveStorageEndpoint')?.value?.trim()||'';b.disabled=true;try{await LX.driveStorage.saveEndpoint(ep,{global:true});LX.toast(ep?'Endpoint LX Storage salvo para todos os dispositivos.':'Endpoint LX Storage removido.');await refreshDriveStorage()}catch(e){console.warn(e);LX.toast(e?.message==='LX_STORAGE_ENDPOINT_INVALID'?'Use uma URL HTTPS válida do Worker.':'Não foi possível salvar o endpoint agora.')}finally{b.disabled=false}});
   $('testDriveStorage')?.addEventListener('click',refreshDriveStorage);
   refreshDriveStorage();
