@@ -5,8 +5,9 @@
 - Confirmação de que a versão `main` anterior publicava o marcador R1, embora o commit R3B já tivesse corrigido o fluxo de áudio. A R4 parte da R3B e mantém os arquivos adicionais do repositório.
 - Consulta somente leitura ao Supabase: `lx_catalog` contém 31 músicas publicadas; CUIDA DO PET, Para Ti Eu Vou e SEMI NUA 2 referenciam arquivos privados `cloud:media/...` e possuem uma faixa cada. A tabela `lx_user_state` possui `user_id` e `data jsonb`, compatíveis com coleções por conta.
 - `node --check` nos quatro JavaScript da distribuição e em 11 scripts embutidos no HTML; verificação de IDs estáticos duplicados (zero).
-- `node qa-music-r4.cjs`: confirma que o clique no card chega ao player, o dock abre antes do carregamento, uma música sem arquivo não desaparece, a fila automática preserva o gênero e a fila pessoal segue a coleção.
-- Comparação dos marcadores de build nos arquivos entregues e verificação do site público depois do commit: preencher com resultado observado após a publicação.
+- `node qa-music-r4.cjs`: confirma que o clique no card chega ao player, o dock abre antes do carregamento, uma música sem arquivo não desaparece, a fila automática preserva o gênero, a fila pessoal segue a coleção e as coleções entram e saem do estado sincronizado.
+- GitHub `main`: commit `8fb3f3210671d8914e118bdd38a796b9a4fc2b37`; os hashes dos oito arquivos enviados coincidiram com os hashes locais. No site público, a página carregou HTML, JavaScript e CSS com marcador `NOVA-20260924-R4`, e o botão de adicionar à coleção existe no DOM.
+- Console do navegador público: sem erro originado no site durante a tela de login. Os avisos observados vieram apenas da extensão do navegador de teste.
 
 ## Requer sessão autenticada
 

@@ -48,5 +48,14 @@ const extract = (start, end) => {
   bindContext.bindMusicExperience();
   root.onclick({ target: { closest: () => ({ dataset: { lxPlayId: '2' } }) } });
   assert.equal(selected, 2, 'A click on a music card reaches the player');
-  process.stdout.write('R4 music interactions: PASS (dock, same genre, collection order, empty source, card click)\n');
+  const keys = Object.fromEntries('history list ratings preferences profileStyles noticeReads chatThreads stickers musicCollections theme accent layoutMode motion playerPrefs uiPrefs chatPrefs'.split(' ').map(key => [key, key]));
+  const stored = new Map([['musicCollections', [{ id: 'personal-1', kind: 'playlist', title: 'Gospel', items: [1, 2] }]]]);
+  const cloudContext = vm.createContext({ currentAuth: { email: 'listener@example.invalid' }, S: { keys, read: (key, fallback) => stored.has(key) ? stored.get(key) : fallback }, cache: (key, value) => stored.set(key, value) });
+  vm.runInContext(extract('function buildState(){', '\nasync function prepareLocalStateForCloud'), cloudContext);
+  const snapshot = cloudContext.buildState();
+  assert.equal(snapshot.musicCollections[0].id, 'personal-1', 'Cloud snapshot includes collections');
+  vm.runInContext(extract('function cacheUserState(', '\nfunction subscribeUserState('), cloudContext);
+  cloudContext.cacheUserState({ musicCollections: [{ id: 'personal-2', items: [3] }] }, 'listener@example.invalid');
+  assert.equal(stored.get('musicCollections')[0].id, 'personal-2', 'Cloud refresh restores collections');
+  process.stdout.write('R4 music interactions: PASS (dock, same genre, collection order, empty source, card click, cloud state)\n');
 })().catch(error => { console.error(error); process.exitCode = 1 });
