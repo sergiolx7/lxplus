@@ -24,12 +24,12 @@
 
 
 /* ===== lxplus.js ===== */
-window.__LX_JS_BUILD='NOVA-20260924-R7-MP3AUTO';
+window.__LX_JS_BUILD='NOVA-20260924-R7-LX-STORAGE-DRIVE';
 
 /* ===== config.js · LX Plus v25.50 ===== */
 window.LX=window.LX||{};
 LX.config={
-  version:'NOVA-20260924-R7-MP3AUTO',
+  version:'NOVA-20260924-R7-LX-STORAGE-DRIVE',
   environment:'cloud-ready',
   production:true,
   apiBase:'',
@@ -309,6 +309,36 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['cloud']='25.50'
 window.__LX_MODULES['r2-media']='25.50';
 
 
+/* ===== lx-drive-storage.js · LX Plus R7 =====
+   Google Drive is used only as the byte store. Playback goes through the LX Storage endpoint. */
+(()=>{
+ const LX=window.LX=window.LX||{};
+ const LOCAL_KEY='lxplus_drive_storage_endpoint';
+ const clean=v=>String(v||'').trim().replace(/\/+$/,'');
+ function endpoint(){
+  let local='';try{local=clean(localStorage.getItem(LOCAL_KEY)||'')}catch{}
+  const global=clean(LX.data?.branding?.()?.driveStorageEndpoint||'');
+  const baked=clean(window.LX_DRIVE_STORAGE_ENDPOINT||'');
+  return local||global||baked||'';
+ }
+ function configured(){return /^https:\/\//i.test(endpoint())}
+ function streamUrl(fileId){const ep=endpoint(),id=String(fileId||'').trim();return ep&&id?`${ep}/v/${encodeURIComponent(id)}`:''}
+ async function test(ep=endpoint()){
+  ep=clean(ep);if(!/^https:\/\//i.test(ep))throw new Error('LX_STORAGE_ENDPOINT_INVALID');
+  const r=await fetch(`${ep}/health`,{cache:'no-store'});let data={};try{data=await r.json()}catch{}
+  if(!r.ok||data.ok===false)throw new Error(data.error||`LX_STORAGE_HTTP_${r.status}`);
+  return {ok:true,endpoint:ep,googleConfigured:data.googleConfigured!==false,service:data.service||'LX Storage'};
+ }
+ async function saveEndpoint(ep,{global=true}={}){
+  ep=clean(ep);if(ep&&!/^https:\/\//i.test(ep))throw new Error('LX_STORAGE_ENDPOINT_INVALID');
+  try{ep?localStorage.setItem(LOCAL_KEY,ep):localStorage.removeItem(LOCAL_KEY)}catch{}
+  if(global&&LX.data?.saveBranding){const b=LX.data.branding?.()||{};await LX.data.saveBranding({...b,driveStorageEndpoint:ep})}
+  return ep;
+ }
+ LX.driveStorage={endpoint,configured,streamUrl,test,saveEndpoint};
+})();
+window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['drive-storage']='R7';
+
 /* ===== free-media-hub.js · LX Plus v25.50 =====
    Link adapters only. No provider password/token is ever stored in the public build. */
 (()=>{
@@ -318,7 +348,7 @@ window.__LX_MODULES['r2-media']='25.50';
  const htmlSrc=v=>{const m=clean(v).match(/<iframe[^>]+src=["']([^"']+)["']/i);return m?m[1].replace(/&amp;/g,'&'):clean(v)};
  const https=v=>{let u;try{u=new URL(clean(v))}catch{return null}return u.protocol==='https:'?u:null};
  const driveId=v=>{v=clean(v);const a=v.match(/\/file\/d\/([a-zA-Z0-9_-]{10,})/),b=v.match(/[?&]id=([a-zA-Z0-9_-]{10,})/),c=v.match(/\/d\/([a-zA-Z0-9_-]{10,})/);return (a||b||c)?.[1]||''};
- const driveStreamCandidates=id=>{id=clean(id);if(!id)return[];const q=encodeURIComponent(id);return [`https://drive.usercontent.google.com/download?id=${q}&export=download&confirm=t`,`https://drive.google.com/uc?export=download&id=${q}&confirm=t`]};
+ const driveStreamCandidates=id=>{id=clean(id);if(!id)return[];const q=encodeURIComponent(id),lx=LX.driveStorage?.streamUrl?.(id)||'';return [lx,`https://drive.usercontent.google.com/download?id=${q}&export=download&confirm=t`,`https://drive.google.com/uc?export=download&id=${q}&confirm=t`].filter(Boolean)};
  const youtubeId=v=>{v=clean(v);if(/^youtube:[a-zA-Z0-9_-]{11}$/i.test(v))return v.slice(8);if(/^[a-zA-Z0-9_-]{11}$/.test(v))return v;try{const u=new URL(v);const host=u.hostname.toLowerCase().replace(/^www\./,'');if(host==='youtu.be')return (u.pathname.split('/').filter(Boolean)[0]||'').slice(0,11);if(!/(^|\.)(youtube\.com|youtube-nocookie\.com)$/.test(host))return'';const q=u.searchParams.get('v');if(q&&/^[a-zA-Z0-9_-]{11}$/.test(q))return q;const m=u.pathname.match(/^\/(?:embed|shorts|live|v)\/([a-zA-Z0-9_-]{11})/i);return m?.[1]||''}catch{return''}};
  const youtubePlaylistId=v=>{try{const raw=clean(v);if(/^youtube-playlist:/i.test(raw))return raw.slice(17);const u=new URL(raw);return u.searchParams.get('list')||''}catch{return''}};
  const youtubeEmbedSrc=(id,list='')=>{const path=list?`videoseries?list=${encodeURIComponent(list)}`:`${encodeURIComponent(id)}?`;const params=new URLSearchParams();params.set('rel','0');params.set('playsinline','1');params.set('enablejsapi','1');if(/^https?:$/.test(location.protocol)){params.set('origin',location.origin);params.set('widget_referrer',location.href)}return `https://www.youtube.com/embed/${path}${list?'&':'&'}${params.toString()}`.replace('?&','?')};
@@ -373,10 +403,10 @@ window.__LX_MODULES['r2-media']='25.50';
    const sp=spotifyRef(raw);if(sp)return spotifyDesc(sp);
    const yid=youtubeId(raw),ylist=youtubePlaylistId(raw);if(yid)return {kind:'embed',provider:'YouTube',label:'YouTube',src:youtubeEmbedSrc(yid),openUrl:`https://www.youtube.com/watch?v=${encodeURIComponent(yid)}`,embedHeight:270};
    if(ylist&&/(?:youtube\.com|youtu\.be|music\.youtube\.com)/i.test(raw))return {kind:'embed',provider:'YouTube',label:'YouTube Playlist',src:youtubeEmbedSrc('',ylist),openUrl:`https://www.youtube.com/playlist?list=${encodeURIComponent(ylist)}`,embedHeight:220};
-   const did=driveId(raw);if(did&&/drive\.google\.com/i.test(raw)){const previewSrc=`https://drive.google.com/file/d/${encodeURIComponent(did)}/preview`,streamCandidates=driveStreamCandidates(did);return {kind:'direct',provider:'Google Drive',label:'LX Stream · Google Drive',src:streamCandidates[0]||previewSrc,streamCandidates,previewSrc,driveId:did}};
+   const did=driveId(raw);if(did&&/drive\.google\.com/i.test(raw)){const previewSrc=`https://drive.google.com/file/d/${encodeURIComponent(did)}/preview`,streamCandidates=driveStreamCandidates(did);return {kind:'direct',provider:'LX Storage · Drive',label:'LX Storage · Google Drive',src:streamCandidates[0]||previewSrc,streamCandidates,previewSrc,driveId:did}};
    const scu=soundcloudUrl(raw);if(scu)return {kind:'embed',provider:'SoundCloud',label:'SoundCloud',src:`https://w.soundcloud.com/player/?url=${encodeURIComponent(scu)}&color=%238a2be2&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&visual=false`,openUrl:scu,embedHeight:166};
   }
-  if(raw.startsWith('gdrive:')){const id=raw.slice(7),previewSrc=`https://drive.google.com/file/d/${encodeURIComponent(id)}/preview`,streamCandidates=driveStreamCandidates(id);return {kind:'direct',provider:'Google Drive',label:'LX Stream · Google Drive',src:streamCandidates[0]||previewSrc,streamCandidates,previewSrc,driveId:id}};
+  if(raw.startsWith('gdrive:')){const id=raw.slice(7),previewSrc=`https://drive.google.com/file/d/${encodeURIComponent(id)}/preview`,streamCandidates=driveStreamCandidates(id);return {kind:'direct',provider:'LX Storage · Drive',label:'LX Storage · Google Drive',src:streamCandidates[0]||previewSrc,streamCandidates,previewSrc,driveId:id}};
   if(raw.startsWith('youtube-playlist:')){const id=raw.slice(17);return {kind:'embed',provider:'YouTube',label:'YouTube Playlist',src:youtubeEmbedSrc('',id),openUrl:`https://www.youtube.com/playlist?list=${encodeURIComponent(id)}`,embedHeight:220}};
   if(raw.startsWith('youtube:')){const id=raw.slice(8);return {kind:'embed',provider:'YouTube',label:'YouTube',src:youtubeEmbedSrc(id),openUrl:`https://www.youtube.com/watch?v=${encodeURIComponent(id)}`,embedHeight:270}};
   if(raw.startsWith('spotify:')){const [,type,id]=raw.split(':');return spotifyDesc({type,id})};
@@ -396,7 +426,7 @@ window.__LX_MODULES['r2-media']='25.50';
  function modeFor(ref){const raw=clean(ref);if(raw.startsWith('gdrive:'))return'gdrive';if(raw.startsWith('b2:'))return'b2';if(raw.startsWith('dropbox:'))return'dropbox';if(raw.startsWith('youtube:')||raw.startsWith('youtube-playlist:'))return'youtube';if(raw.startsWith('spotify:'))return'spotify';if(raw.startsWith('soundcloud:'))return'soundcloud';if(raw.startsWith('onedrive:'))return'onedrive';if(raw.startsWith('archive:'))return'archive';if(/^https?:\/\//i.test(raw)){if(spotifyRef(raw))return'spotify';if(youtubeId(raw)||youtubePlaylistId(raw))return'youtube';if(driveId(raw)&&/drive\.google\.com/i.test(raw))return'gdrive';if(soundcloudUrl(raw))return'soundcloud';return'direct'}return'upload'}
  const info={
   upload:{label:'Enviar arquivo',placeholder:'',help:'Upload pelo LX. Arquivos grandes usam R2 quando o R2 estiver configurado.'},
-  gdrive:{label:'Google Drive',placeholder:'https://drive.google.com/file/d/.../view',help:'A LX Plus tenta reproduzir o arquivo diretamente no LX Player, sem abrir a tela do Drive. Compartilhe como “Qualquer pessoa com o link”. Para catálogo grande e qualidade controlada de verdade, prefira R2/LX Stream ou HLS.'},
+  gdrive:{label:'LX Storage · Google Drive',placeholder:'https://drive.google.com/file/d/.../view',help:'Cole o link do arquivo no Google Drive. Se o endpoint LX Storage estiver configurado, o LX Player busca os bytes pela API/Worker e ignora o preview do Drive. Compartilhe a pasta com a conta de serviço configurada no Worker.'},
   dropbox:{label:'Dropbox',placeholder:'https://www.dropbox.com/scl/fi/...',help:'Cole o link compartilhado. A LX Plus converte automaticamente para raw=1 para reprodução direta quando o navegador permitir.'},
   youtube:{label:'YouTube / YouTube Music',placeholder:'https://youtu.be/... ou https://music.youtube.com/watch?v=...',help:'Aceita vídeo, YouTube Music e playlist pública/não listada. A reprodução usa o player oficial do YouTube.'},
   spotify:{label:'Spotify',placeholder:'https://open.spotify.com/track/...',help:'Cole um link de música, álbum, playlist, artista, episódio ou show. A LX Plus abre o player oficial interativo do Spotify; não tenta reproduzir a página do Spotify como se fosse um arquivo de áudio.'},
@@ -410,7 +440,7 @@ window.__LX_MODULES['r2-media']='25.50';
  function preview(provider,value){const key=normalize(provider,value),d=describe(key);return {key,...d}}
  LX.mediaSources={normalize,describe,directUrl,label,toInput,modeFor,info,allowedFor,preview,providers:['upload','b2','gdrive','dropbox','youtube','spotify','onedrive','archive','direct']};
 })();
-window.__LX_MODULES['free-media-hub']='30.1-b2';
+window.__LX_MODULES['free-media-hub']='31.0-drive-storage';
 
 /* ===== services.js · LX Plus v25.36 ===== */
 (()=>{const LX=window.LX,S=LX.store,$=id=>document.getElementById(id);
@@ -1013,8 +1043,17 @@ function importer(m){if(LX.importer?.render)LX.importer.render(m);else m.innerHT
 function uploads(m){
  const epWorks=D.catalog().filter(x=>['Série','Anime','Dorama'].includes(x.type));
  const musicWorks=D.catalog().filter(x=>x.type==='Música');
- m.innerHTML=head('Mídia & Upload','Use LX Player com Backblaze B2, R2 ou links externos. O Supabase continua cuidando de contas, catálogo e capas.')+`
- <section class="admin-card r2-storage-card">
+ m.innerHTML=head('Mídia & Upload','LX Storage usa seu Google Drive como disco e o LX Player como reprodução. Supabase continua cuidando de contas, catálogo e capas.')+`
+ <section class="admin-card r2-storage-card lx-drive-storage-card">
+  <div class="r2-storage-head"><div><span class="eyebrow">LX STORAGE · DRIVE</span><h2>Google Drive + LX Player</h2><p>O Drive guarda o arquivo. O Worker busca os bytes pela API e entrega para o LX Player, sem depender do preview/processamento do Google Drive.</p></div><div id="driveStorageStatusBadge" class="r2-status warn">Verificando…</div></div>
+  <div class="form-grid r2-config-grid">
+   <label class="field span2">Endpoint do LX Storage Worker<input id="driveStorageEndpoint" inputmode="url" autocomplete="off" placeholder="https://lx-storage.seuusuario.workers.dev"></label>
+   <div class="span2 r2-config-actions"><button id="saveDriveStorage" class="primary-btn" type="button">Salvar endpoint</button><button id="testDriveStorage" class="glass-btn" type="button">Testar LX Storage</button></div>
+  </div>
+  <div id="driveStorageHelp" class="r2-help"><b>Fluxo:</b> Drive → Drive API → LX Storage Worker → LX Player. O endpoint não é segredo e pode ficar sincronizado na configuração global.</div>
+ </section>
+ <details class="admin-card r2-storage-card lx-legacy-storage"><summary>Armazenamento antigo / opcional (R2)</summary><div style="margin-top:12px">
+ <section class="r2-storage-card">
   <div class="r2-storage-head"><div><span class="eyebrow">FREE MEDIA STORAGE</span><h2>Cloudflare R2</h2><p>Arquivos grandes ficam no R2; catálogo, login e comunidade continuam no Supabase.</p></div><div id="r2StatusBadge" class="r2-status warn">Verificando…</div></div>
   <details id="r2Setup"><summary>Configurar armazenamento R2</summary><div class="form-grid r2-config-grid">
    <label class="field">Account ID<input id="r2AccountId" autocomplete="off" placeholder="Cloudflare Account ID"></label>
@@ -1024,18 +1063,18 @@ function uploads(m){
    <div class="span2 r2-config-actions"><button id="saveR2" class="primary-btn" type="button">Salvar e testar R2</button><button id="testR2" class="glass-btn" type="button">Testar conexão</button></div>
   </div><small>As credenciais ficam na tabela protegida de integrações do Supabase e nunca são incluídas no código público do site.</small></details>
   <div id="r2Help" class="r2-help">Depois de configurar, filmes e episódios enviados pelo ADM passam automaticamente para o R2. Arquivos pequenos continuam com fallback seguro.</div>
- </section>
+ </section></div></details>
  <section class="admin-card free-media-hub-card">
-  <div class="free-media-hub-head"><div><span class="eyebrow">FREE MEDIA HUB</span><h2>Mais espaço sem centralizar tudo em um único storage</h2><p>Cadastre a mídia no serviço gratuito que preferir e cole o link na Publicação rápida. A LX Plus reconhece a fonte e abre dentro do site quando o provedor permite.</p></div><span class="free-media-zero">R$ 0 para integrar</span></div>
+  <div class="free-media-hub-head"><div><span class="eyebrow">LX STORAGE</span><h2>Google Drive como disco principal</h2><p>Suba o vídeo para a pasta LX Storage no Drive e cole o link na Publicação rápida. Com o Worker configurado, o LX Player recebe o arquivo bruto pela API.</p></div><span class="free-media-zero">R$ 0 para integrar</span></div>
   <div class="free-media-provider-grid">
-   <article><b>Backblaze B2 · LX Cloud</b><small>MP4/HLS → LX Player próprio, sem interface do provedor</small></article><article><b>Google Drive</b><small>Link público → compatibilidade/fallback dentro da LX Plus</small></article>
+   <article><b>Google Drive · LX Storage</b><small>Drive API + Worker → LX Player próprio</small></article><article><b>Drive direto (fallback)</b><small>Se o Worker estiver fora, tenta rota pública de compatibilidade</small></article>
    <article><b>Dropbox</b><small>Link compartilhado → reprodução raw</small></article>
    <article><b>YouTube</b><small>Público/não listado → embed</small></article>
    <article><b>OneDrive</b><small>Link de Incorporar → embed</small></article>
    <article><b>Archive.org</b><small>Details/embed → player incorporado</small></article>
    <article><b>HTTPS direto</b><small>CDN/servidor compatível → player LX</small></article>
   </div>
-  <div class="free-media-legal-note"><b>Importante:</b> os limites, disponibilidade e tráfego continuam sendo definidos por cada provedor. Use somente arquivos que você possa distribuir.</div>
+  <div class="free-media-legal-note"><b>Importante:</b> o Google Drive e o plano gratuito do Worker continuam sujeitos a quotas. Use somente arquivos que você possa distribuir.</div>
  </section>
  <div class="admin-card">
   <div class="upload-mode-tabs">
@@ -1087,13 +1126,17 @@ async function removeAdmin(id){
  const x=D.users().find(z=>String(z.id)===String(id));if(!x)return LX.toast('Usuário não encontrado.');
  try{await LX.cloud.setAdminRole(x.id,false);LX.toast(`Acesso ADM removido de ${x.name}.`);render('admins')}catch(err){console.warn(err);LX.toast('Não foi possível remover o ADM agora.')}
 }
-function settings(m){const st=LX.cloud?.status?.()||{configured:false,connected:false,admin:false,approved:false,mediaBucket:'lx-media',assetBucket:'lx-assets'};m.innerHTML=head('Produção & Nuvem','O Supabase é a fonte oficial de contas, catálogo, identidade, progresso e mídia em todos os dispositivos.')+`<div class="admin-grid"><div class="admin-card"><h2>Status da nuvem</h2><div class="health-grid"><div class="health-card"><span class="status ${st.configured?'':'warn'}">Supabase</span><strong>${st.configured?'Configurado':'Não configurado'}</strong><small>${st.configured?'Projeto conectado à LX Plus':'Revise a configuração do projeto'}</small></div><div class="health-card"><span class="status ${st.user?'':'warn'}">Sessão</span><strong>${st.user?'Conectada':'Sem sessão cloud'}</strong><small>${esc(st.user||'Entre com uma conta Supabase')}</small></div><div class="health-card"><span class="status ${st.admin?'':'warn'}">ADM</span><strong>${st.admin?'Autorizado':'Sem privilégio cloud'}</strong><small>Permissões administrativas ficam no banco.</small></div><div class="health-card"><span class="status ${st.approved?'':'warn'}">Acesso</span><strong>${st.approved?'Aprovado':'Pendente'}</strong><small>${esc(st.approvalStatus||'status da conta')}</small></div><div class="health-card"><span class="status ${st.configured?'':'warn'}">Storage</span><strong>R2 + ${esc(st.assetBucket||'lx-assets')}</strong><small>Vídeos grandes no R2; assets e fallback no Supabase.</small></div></div></div><div class="admin-card"><h2>Sincronização global</h2><p style="color:var(--muted);line-height:1.6">O catálogo do Supabase é a <b>fonte de verdade</b>. Adicionar, editar ou excluir conteúdo só é confirmado na interface depois que a gravação na nuvem dá certo. Outros celulares, computadores e navegadores recebem a atualização pelo Realtime.</p><div class="sync-lock-note"><b>Modo de escrita:</b> ${esc(st.catalogWriteMode||'RPC')} · o navegador nunca grava diretamente em lx_catalog. Adicionar, editar e excluir passam pelas funções protegidas do Supabase.</div></div></div><div class="admin-card" style="margin-top:12px"><h2>Segurança</h2><p style="color:var(--muted);line-height:1.6">A LX Plus usa aprovação de conta no banco, RLS e funções administrativas protegidas, com escrita de catálogo exclusivamente via RPC. A build de produção não contém senha ADM de demonstração e nunca deve receber Service Role Key no GitHub.</p></div>`}
+function settings(m){const st=LX.cloud?.status?.()||{configured:false,connected:false,admin:false,approved:false,mediaBucket:'lx-media',assetBucket:'lx-assets'};m.innerHTML=head('Produção & Nuvem','O Supabase é a fonte oficial de contas, catálogo, identidade, progresso e mídia em todos os dispositivos.')+`<div class="admin-grid"><div class="admin-card"><h2>Status da nuvem</h2><div class="health-grid"><div class="health-card"><span class="status ${st.configured?'':'warn'}">Supabase</span><strong>${st.configured?'Configurado':'Não configurado'}</strong><small>${st.configured?'Projeto conectado à LX Plus':'Revise a configuração do projeto'}</small></div><div class="health-card"><span class="status ${st.user?'':'warn'}">Sessão</span><strong>${st.user?'Conectada':'Sem sessão cloud'}</strong><small>${esc(st.user||'Entre com uma conta Supabase')}</small></div><div class="health-card"><span class="status ${st.admin?'':'warn'}">ADM</span><strong>${st.admin?'Autorizado':'Sem privilégio cloud'}</strong><small>Permissões administrativas ficam no banco.</small></div><div class="health-card"><span class="status ${st.approved?'':'warn'}">Acesso</span><strong>${st.approved?'Aprovado':'Pendente'}</strong><small>${esc(st.approvalStatus||'status da conta')}</small></div><div class="health-card"><span class="status ${st.configured?'':'warn'}">Storage</span><strong>LX Storage · Drive</strong><small>Vídeos pelo Google Drive/Worker; assets e catálogo no Supabase.</small></div></div></div><div class="admin-card"><h2>Sincronização global</h2><p style="color:var(--muted);line-height:1.6">O catálogo do Supabase é a <b>fonte de verdade</b>. Adicionar, editar ou excluir conteúdo só é confirmado na interface depois que a gravação na nuvem dá certo. Outros celulares, computadores e navegadores recebem a atualização pelo Realtime.</p><div class="sync-lock-note"><b>Modo de escrita:</b> ${esc(st.catalogWriteMode||'RPC')} · o navegador nunca grava diretamente em lx_catalog. Adicionar, editar e excluir passam pelas funções protegidas do Supabase.</div></div></div><div class="admin-card" style="margin-top:12px"><h2>Segurança</h2><p style="color:var(--muted);line-height:1.6">A LX Plus usa aprovação de conta no banco, RLS e funções administrativas protegidas, com escrita de catálogo exclusivamente via RPC. A build de produção não contém senha ADM de demonstração e nunca deve receber Service Role Key no GitHub.</p></div>`}
 function bind(page){
  if(page==='library'){
   const apply=()=>{const q=$('libSearch').value.toLowerCase(),s=$('libStatus').value,t=U.state.libraryType,now=Date.now();const a=D.catalog().filter(x=>(t==='Todos'||x.type===t)&&(!q||D.normalize([x.title,x.genre,x.type,x.artist,x.author,x.director,x.creator,x.studio].join(' ')).includes(D.normalize(q)))&&(s==='Todos os status'||(s==='Publicado'?x.published!==false&&(!x.scheduledAt||+new Date(x.scheduledAt)<=now):s==='Agendado'?x.published!==false&&x.scheduledAt&&+new Date(x.scheduledAt)>now:x.published===false)));$('libRows').innerHTML=rows(a)};
   $$('[data-lib]').forEach(b=>b.onclick=()=>{U.state.libraryType=b.dataset.lib;render('library')});$$('[data-libsummary]').forEach(b=>b.onclick=()=>{U.state.libraryType=b.dataset.libsummary;render('library')});$('libSearch').oninput=apply;$('libStatus').onchange=apply;$('newContent').onclick=()=>edit(null,U.state.libraryType==='Todos'?'Filme':U.state.libraryType)
  }
  if(page==='uploads'){
+  const refreshDriveStorage=async()=>{const badge=$('driveStorageStatusBadge'),help=$('driveStorageHelp'),inp=$('driveStorageEndpoint');if(inp&&!inp.value)inp.value=LX.driveStorage?.endpoint?.()||'';if(!badge)return;const ep=(inp?.value||LX.driveStorage?.endpoint?.()||'').trim();if(!ep){badge.textContent='Endpoint ainda não configurado';badge.className='r2-status warn';if(help)help.innerHTML='<b>Falta 1 passo:</b> publique o Worker incluído no ZIP e cole aqui a URL dele.';return}badge.textContent='Testando…';badge.className='r2-status warn';try{const st=await LX.driveStorage.test(ep);badge.textContent=st.googleConfigured?'LX Storage online · Drive conectado':'Worker online · falta Google';badge.className=st.googleConfigured?'r2-status ok':'r2-status warn';if(help)help.innerHTML=st.googleConfigured?'<b>Pronto:</b> links do Google Drive serão reproduzidos pelo LX Player via LX Storage.':'<b>Worker publicado:</b> agora configure as credenciais da conta de serviço do Google Drive no Worker.'}catch(e){badge.textContent='LX Storage offline';badge.className='r2-status warn';if(help)help.textContent='Não consegui acessar o endpoint. Confira a URL do Worker e a configuração.'}};
+  $('saveDriveStorage')?.addEventListener('click',async()=>{const b=$('saveDriveStorage'),ep=$('driveStorageEndpoint')?.value?.trim()||'';b.disabled=true;try{await LX.driveStorage.saveEndpoint(ep,{global:true});LX.toast(ep?'Endpoint LX Storage salvo para todos os dispositivos.':'Endpoint LX Storage removido.');await refreshDriveStorage()}catch(e){console.warn(e);LX.toast(e?.message==='LX_STORAGE_ENDPOINT_INVALID'?'Use uma URL HTTPS válida do Worker.':'Não foi possível salvar o endpoint agora.')}finally{b.disabled=false}});
+  $('testDriveStorage')?.addEventListener('click',refreshDriveStorage);
+  refreshDriveStorage();
   const refreshR2=async(force=false)=>{const badge=$('r2StatusBadge'),help=$('r2Help');if(!badge)return;badge.textContent='Verificando…';badge.className='r2-status warn';try{const st=await LX.r2?.status?.(force);if(st?.configured){badge.textContent=`R2 conectado · ${st.bucket||'bucket pronto'}`;badge.className='r2-status ok';if(help)help.innerHTML='<b>Pronto:</b> novos filmes, episódios e áudios do catálogo serão enviados ao Cloudflare R2.'}else{badge.textContent='R2 ainda não configurado';if(help)help.innerHTML='<b>Falta configurar:</b> informe Account ID, bucket e as chaves S3 do R2.'}}catch(e){badge.textContent='R2 ainda não configurado';if(help)help.textContent=LX.r2?.explain?.(e)||'Configure as credenciais do R2.'}};
   const saveSecret=async(key,value)=>{const c=LX.cloud?.db?.();if(!c)throw new Error('CLOUD_NOT_CONFIGURED');const {error}=await c.rpc('lx_admin_set_integration_secret',{p_key:key,p_value:value});if(error)throw error};
   $('saveR2')?.addEventListener('click',async()=>{const b=$('saveR2');b.disabled=true;b.textContent='Salvando…';try{const vals={r2_account_id:$('r2AccountId').value.trim(),r2_bucket:$('r2Bucket').value.trim()||'lxplus-media',r2_access_key_id:$('r2AccessKey').value.trim(),r2_secret_access_key:$('r2SecretKey').value.trim()};if(Object.values(vals).some(v=>!v))throw new Error('R2_FIELDS_REQUIRED');for(const [k,v] of Object.entries(vals))await saveSecret(k,v);$('r2AccessKey').value='';$('r2SecretKey').value='';await LX.r2?.test?.();LX.toast('Cloudflare R2 conectado e pronto para os filmes.');await refreshR2(true)}catch(e){console.warn(e);LX.toast(e?.message==='R2_FIELDS_REQUIRED'?'Preencha os quatro campos do R2.':(LX.r2?.explain?.(e)||'Não foi possível validar o R2.'))}finally{b.disabled=false;b.textContent='Salvar e testar R2'}});
@@ -1140,7 +1183,7 @@ async function edit(id=null,initialType=null,prefill=null){
    <label class="field">Título<input id="cTitle" required maxlength="120" value="${esc(x?.title||prefill?.title||'')}" placeholder="Nome do conteúdo"></label>
    <label class="field span2">Descrição<textarea id="cDesc" required rows="4" placeholder="Uma descrição curta para aparecer na LX Plus">${esc(x?.desc||prefill?.message||'')}</textarea></label>
    <div id="quickSeasonArea" class="quick-season-area span2 ${['Série','Anime','Dorama'].includes(type)?'':'hidden'}"><label class="field">Temporada que você está editando<input id="cSeason" type="number" min="1" max="99" value="1"></label><div class="quick-season-summary"><small>TEMPORADAS CADASTRADAS</small><div id="quickSeasonChips"></div><p>Escolha a temporada. Para links externos, você pode colar todos os episódios de uma vez; E01, E02, E03… são atualizados sem criar duplicados.</p></div></div>
-   <div class="media-source-switch media-source-switch-v2542 span2"><button type="button" class="active" data-media-source="upload">↑ Arquivo/R2</button><button type="button" data-media-source="b2">B2 / LX</button><button type="button" data-media-source="gdrive">Drive</button><button type="button" data-media-source="dropbox">Dropbox</button><button type="button" data-media-source="youtube">YouTube</button><button type="button" data-media-source="spotify">Spotify</button><button type="button" data-media-source="onedrive">OneDrive</button><button type="button" data-media-source="archive">Archive</button><button type="button" data-media-source="direct">HTTPS</button><small>Para músicas, você pode usar arquivo completo da LX Plus, Dropbox/HTTPS direto ou links oficiais do YouTube e Spotify.</small></div>
+   <div class="media-source-switch media-source-switch-v2542 span2"><button type="button" class="active" data-media-source="upload">↑ Arquivo/R2</button><button type="button" data-media-source="gdrive">☁ LX Storage / Drive</button><button type="button" data-media-source="b2" class="lx-legacy-source">B2 legado</button><button type="button" data-media-source="dropbox">Dropbox</button><button type="button" data-media-source="youtube">YouTube</button><button type="button" data-media-source="spotify">Spotify</button><button type="button" data-media-source="onedrive">OneDrive</button><button type="button" data-media-source="archive">Archive</button><button type="button" data-media-source="direct">HTTPS</button><small>Para músicas, você pode usar arquivo completo da LX Plus, Dropbox/HTTPS direto ou links oficiais do YouTube e Spotify.</small></div>
    <label id="uploadMediaField" class="field span2 quick-upload"><span id="quickUploadLabel">${uploadLabel(type)}</span><input id="typeMedia" type="file" accept="${acceptFor(type)}" ${['Série','Anime','Dorama'].includes(type)?'multiple':''}><small id="quickUploadHelp">${x?.mediaKey||x?.episodes?.length?'Já existe mídia cadastrada. Envie somente se quiser substituir ou adicionar.':'Selecione o arquivo master na melhor qualidade disponível.'}</small><small id="selectedMediaInfo" class="selected-media-info"></small></label>
    <label id="externalMediaField" class="field span2 hidden"><span id="externalMediaLabel">Link da mídia</span><input id="cExternalMedia" type="text" inputmode="url" autocomplete="off" placeholder="https://..."><div class="external-media-assist"><small id="externalMediaHelp">Cole o link compartilhado da fonte escolhida.</small><button id="testExternalMedia" class="glass-btn" type="button">Testar link</button></div><small id="externalMediaDetected" class="selected-media-info"></small></label>
    <label id="episodeBulkField" class="field span2 episode-bulk-field hidden"><span>Links dos episódios da temporada</span><textarea id="cEpisodeLinks" rows="8" spellcheck="false" placeholder="Um link por linha. Ex.:\nhttps://drive.google.com/file/d/.../view\nhttps://drive.google.com/file/d/.../view\n\nOpcional: E03 | Nome do episódio | https://..."></textarea><div class="external-media-assist"><small id="episodeBulkHelp">A ordem das linhas vira E01, E02, E03… Ao editar uma temporada, números já existentes são substituídos pelo link novo — não duplicados.</small><button id="testEpisodeLinks" class="glass-btn" type="button">Testar todos</button></div><small id="episodeBulkDetected" class="selected-media-info"></small></label>
@@ -1190,7 +1233,7 @@ async function edit(id=null,initialType=null,prefill=null){
  const updateExternalFields=()=>{const episodic=isEpisodic(),external=mediaSource!=='upload',drive=mediaSource==='gdrive';$('externalMediaField')?.classList.toggle('hidden',!external||episodic);$('episodeBulkField')?.classList.toggle('hidden',!external||!episodic);$('driveQualityField')?.classList.toggle('hidden',!drive);$('driveMovieQualities')?.classList.toggle('hidden',!drive||episodic);$('driveEpisodeQualities')?.classList.toggle('hidden',!drive||!episodic);if(external&&episodic)fillSeasonLinks();if(drive&&!episodic)fillDriveMovieQualities()};
  const updateUpload=()=>{const t=$('cType').value,inp=$('typeMedia'),episodic=['Série','Anime','Dorama'].includes(t),music=t==='Música';$('quickUploadLabel').textContent=uploadLabel(t);inp.accept=acceptFor(t);inp.multiple=episodic;$('quickUploadHelp').textContent=(x?.mediaKey||x?.episodes?.length)?'Já existe mídia cadastrada. Envie somente se quiser substituir ou adicionar.':'Selecione o arquivo master na melhor qualidade disponível.';$('quickSeasonArea')?.classList.toggle('hidden',!episodic);$('cMusicGenresField')?.classList.toggle('hidden',!music);$('musicProviderField')?.classList.toggle('hidden',!music);$('musicRemoteField')?.classList.toggle('hidden',!music);$('authorizedAudioField')?.classList.toggle('hidden',!music);if($('cGenreLabel'))$('cGenreLabel').textContent=music?'Gênero principal':'Gênero';if(music&&$('cGenre')?.value==='Geral')$('cGenre').value='Outros';renderSeasonSummary();updateExternalFields()};
  const existingRef=x?.mediaKey||x?.episodes?.find?.(e=>e.mediaKey)?.mediaKey||x?.tracks?.find?.(t=>t.mediaKey)?.mediaKey||'';const videoType=['Filme','Série','Anime','Dorama'].includes(type),musicType=type==='Música';let mediaSource=existingRef?(LX.mediaSources?.modeFor?.(existingRef)||'upload'):(videoType?'gdrive':'upload');
- const updateMusicIdentity=()=>{if($('cType')?.value!=='Música')return;const names={upload:'LX Media',b2:'LX Cloud · B2',youtube:'YouTube',spotify:'Spotify',dropbox:'Dropbox',direct:'HTTPS',gdrive:'Google Drive',onedrive:'OneDrive',archive:'Archive.org'},raw=String($('cExternalMedia')?.value||((LX.mediaSources?.modeFor?.(existingRef)||'upload')===mediaSource?existingRef:'')).trim();if($('cMusicProvider'))$('cMusicProvider').value=names[mediaSource]||mediaSource;const remote=mediaSource==='youtube'?(raw.match(/(?:youtube:|[?&]v=|youtu\.be\/|\/shorts\/|\/embed\/)([\w-]{11})/)||[])[1]:mediaSource==='spotify'?(raw.match(/(?:spotify:track:|\/track\/)([\w]{22})/)||[])[1]:'';if($('cMusicRemote'))$('cMusicRemote').value=remote||''};
+ const updateMusicIdentity=()=>{if($('cType')?.value!=='Música')return;const names={upload:'LX Media',b2:'LX Cloud · B2',youtube:'YouTube',spotify:'Spotify',dropbox:'Dropbox',direct:'HTTPS',gdrive:'LX Storage · Drive',onedrive:'OneDrive',archive:'Archive.org'},raw=String($('cExternalMedia')?.value||((LX.mediaSources?.modeFor?.(existingRef)||'upload')===mediaSource?existingRef:'')).trim();if($('cMusicProvider'))$('cMusicProvider').value=names[mediaSource]||mediaSource;const remote=mediaSource==='youtube'?(raw.match(/(?:youtube:|[?&]v=|youtu\.be\/|\/shorts\/|\/embed\/)([\w-]{11})/)||[])[1]:mediaSource==='spotify'?(raw.match(/(?:spotify:track:|\/track\/)([\w]{22})/)||[])[1]:'';if($('cMusicRemote'))$('cMusicRemote').value=remote||''};
  const setMediaSource=mode=>{if(!LX.mediaSources?.allowedFor?.($('cType').value,mode)){LX.toast('Essa fonte não é compatível com esse tipo de conteúdo.');mode='upload'}mediaSource=mode;$$('[data-media-source]').forEach(b=>{const ok=!!LX.mediaSources?.allowedFor?.($('cType').value,b.dataset.mediaSource);b.classList.toggle('active',b.dataset.mediaSource===mode);b.disabled=!ok;b.hidden=$('cType').value==='Música'&&!ok});$('uploadMediaField')?.classList.toggle('hidden',mode!=='upload');const info=LX.mediaSources?.info?.[mode];if(info&&mode!=='upload'){$('externalMediaLabel').textContent=info.label;$('cExternalMedia').placeholder=info.placeholder;$('externalMediaHelp').textContent=info.help;$('externalMediaDetected').textContent='';$('episodeBulkHelp').textContent=`${info.label}: cole um episódio por linha. A LX valida e salva todos de uma vez; ao editar, E01/E02/etc. são substituídos pelo link novo.`}updateExternalFields();updateMusicIdentity()};
  $$('[data-media-source]').forEach(b=>b.onclick=()=>setMediaSource(b.dataset.mediaSource));
  const existingMode=existingRef?(LX.mediaSources?.modeFor?.(existingRef)||'upload'):(videoType?'gdrive':'upload');if(existingMode!=='upload'&&!['Série','Anime','Dorama'].includes(type))$('cExternalMedia').value=LX.mediaSources?.toInput?.(existingRef)||'';setMediaSource(existingMode);renderSeasonSummary();fillSeasonLinks();fillDriveMovieQualities();
@@ -1459,10 +1502,10 @@ async function play(id,epNum=1,epSeason=null){
  host.dataset.lxSourceProvider=sourceInfo.provider||'LX Storage';
  if(sourceInfo.kind==='embed'){
   const shadow=host.attachShadow({mode:'open'}),meta=ep?`S${ep.season||1}:E${ep.number} · ${esc(ep.title||'')}`:`${esc(x.year||'')} · ${esc(x.genre||'')}`;
-  const mediaQualities=LX.driveQuality?.normalizeMap?.(media?.qualitySources||{})||{},qualityRefs=sourceInfo.provider==='Google Drive'?{auto:key,...mediaQualities}:{auto:key};
+  const mediaQualities=LX.driveQuality?.normalizeMap?.(media?.qualitySources||{})||{},qualityRefs=!!sourceInfo.driveId?{auto:key,...mediaQualities}:{auto:key};
   const qualityRows=Object.entries(qualityRefs).map(([q,ref])=>{const d=LX.mediaSources?.describe?.(ref);return d?.kind==='embed'?{q,ref,src:d.src,label:q==='auto'?'Auto':(LX.driveQuality?.label?.(q)||q)}:null}).filter(Boolean);
   const nextText=nextEp?`S${nextEp.season||1}:E${nextEp.number} · ${esc(nextEp.title||`Episódio ${nextEp.number}`)}`:'';
-  shadow.innerHTML=`<style>:host{all:initial;position:fixed;inset:0;background:#000;color:#fff;font-family:Inter,Arial,sans-serif}.wrap{position:absolute;inset:0;background:#000}.top{position:absolute;z-index:5;left:0;right:0;top:0;min-height:72px;display:flex;align-items:center;gap:10px;padding:10px 18px;background:linear-gradient(180deg,rgba(0,0,0,.94),rgba(0,0,0,.25),transparent);pointer-events:none}.top>*{pointer-events:auto}.back,.open,.next,.quality{height:40px;border:1px solid rgba(255,255,255,.18);background:rgba(15,15,15,.72);color:#fff;border-radius:12px;cursor:pointer;backdrop-filter:blur(12px)}.back{width:44px;font-size:24px}.copy{min-width:0}.copy b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}.copy small{display:block;color:#b8bec7;margin-top:3px;font-size:10px}.badge{margin-left:auto;padding:7px 10px;border-radius:999px;background:rgba(66,165,255,.14);border:1px solid rgba(66,165,255,.32);font-size:10px;font-weight:800}.open,.next,.quality{padding:0 12px;font-size:11px;font-weight:800}.next{border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.12)}.qualityWrap{position:relative}.qualityMenu{position:absolute;right:0;top:46px;width:150px;padding:7px;background:rgba(10,10,10,.96);border:1px solid rgba(255,255,255,.14);border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.45)}.qualityMenu.hide{display:none}.qualityMenu button{width:100%;height:36px;border:0;border-radius:8px;background:transparent;color:#fff;text-align:left;padding:0 10px;cursor:pointer}.qualityMenu button:hover,.qualityMenu button.active{background:rgba(255,255,255,.11)}.frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}.note{position:absolute;z-index:3;left:50%;bottom:16px;transform:translateX(-50%);padding:8px 12px;border-radius:999px;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.12);color:#c9ced5;font-size:10px;pointer-events:none}@media(max-width:740px){.top{padding:max(8px,env(safe-area-inset-top)) 8px 8px;min-height:56px;gap:6px}.badge,.open,.copy small{display:none}.back{width:36px;height:36px;font-size:20px}.copy{flex:1;min-width:70px}.copy b{font-size:12px}.quality,.next{height:38px;padding:0 10px;font-size:10px;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.qualityMenu{right:0;top:41px;width:132px}.note{bottom:max(10px,env(safe-area-inset-bottom));max-width:88%;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}</style><div class="wrap"><iframe id="driveFrame" class="frame" src="${String(sourceInfo.src||'').replace(/"/g,'%22')}" title="${esc(x.title)}" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><div class="top"><button id="back" class="back">←</button><div class="copy"><b>${esc(x.title)}</b><small>${meta}</small></div><span class="badge">${esc(sourceInfo.provider||'Fonte externa')}</span>${sourceInfo.provider==='Google Drive'?`<div class="qualityWrap"><button id="quality" class="quality">Qualidade · Auto</button><div id="qualityMenu" class="qualityMenu hide">${qualityRows.map(z=>`<button data-drive-quality="${z.q}" class="${z.q==='auto'?'active':''}">${z.label}${z.q==='auto'?' · Drive':''}</button>`).join('')}</div></div>`:''}${nextEp?`<button id="next" class="next" title="${nextText}">Próximo · T${nextEp.season||1} E${nextEp.number} ›</button>`:''}<button id="open" class="open">Abrir fonte ↗</button></div><div class="note">${sourceInfo.provider==='Google Drive'?(qualityRows.length>1?'Google Drive · qualidade manual usa arquivos separados':'Google Drive · qualidade automática do player'):'Fonte externa · o progresso exato depende do provedor'}</div></div>`;
+  shadow.innerHTML=`<style>:host{all:initial;position:fixed;inset:0;background:#000;color:#fff;font-family:Inter,Arial,sans-serif}.wrap{position:absolute;inset:0;background:#000}.top{position:absolute;z-index:5;left:0;right:0;top:0;min-height:72px;display:flex;align-items:center;gap:10px;padding:10px 18px;background:linear-gradient(180deg,rgba(0,0,0,.94),rgba(0,0,0,.25),transparent);pointer-events:none}.top>*{pointer-events:auto}.back,.open,.next,.quality{height:40px;border:1px solid rgba(255,255,255,.18);background:rgba(15,15,15,.72);color:#fff;border-radius:12px;cursor:pointer;backdrop-filter:blur(12px)}.back{width:44px;font-size:24px}.copy{min-width:0}.copy b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}.copy small{display:block;color:#b8bec7;margin-top:3px;font-size:10px}.badge{margin-left:auto;padding:7px 10px;border-radius:999px;background:rgba(66,165,255,.14);border:1px solid rgba(66,165,255,.32);font-size:10px;font-weight:800}.open,.next,.quality{padding:0 12px;font-size:11px;font-weight:800}.next{border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.12)}.qualityWrap{position:relative}.qualityMenu{position:absolute;right:0;top:46px;width:150px;padding:7px;background:rgba(10,10,10,.96);border:1px solid rgba(255,255,255,.14);border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.45)}.qualityMenu.hide{display:none}.qualityMenu button{width:100%;height:36px;border:0;border-radius:8px;background:transparent;color:#fff;text-align:left;padding:0 10px;cursor:pointer}.qualityMenu button:hover,.qualityMenu button.active{background:rgba(255,255,255,.11)}.frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}.note{position:absolute;z-index:3;left:50%;bottom:16px;transform:translateX(-50%);padding:8px 12px;border-radius:999px;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.12);color:#c9ced5;font-size:10px;pointer-events:none}@media(max-width:740px){.top{padding:max(8px,env(safe-area-inset-top)) 8px 8px;min-height:56px;gap:6px}.badge,.open,.copy small{display:none}.back{width:36px;height:36px;font-size:20px}.copy{flex:1;min-width:70px}.copy b{font-size:12px}.quality,.next{height:38px;padding:0 10px;font-size:10px;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.qualityMenu{right:0;top:41px;width:132px}.note{bottom:max(10px,env(safe-area-inset-bottom));max-width:88%;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}</style><div class="wrap"><iframe id="driveFrame" class="frame" src="${String(sourceInfo.src||'').replace(/"/g,'%22')}" title="${esc(x.title)}" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><div class="top"><button id="back" class="back">←</button><div class="copy"><b>${esc(x.title)}</b><small>${meta}</small></div><span class="badge">${esc(sourceInfo.provider||'Fonte externa')}</span>${!!sourceInfo.driveId?`<div class="qualityWrap"><button id="quality" class="quality">Qualidade · Auto</button><div id="qualityMenu" class="qualityMenu hide">${qualityRows.map(z=>`<button data-drive-quality="${z.q}" class="${z.q==='auto'?'active':''}">${z.label}${z.q==='auto'?' · Drive':''}</button>`).join('')}</div></div>`:''}${nextEp?`<button id="next" class="next" title="${nextText}">Próximo · T${nextEp.season||1} E${nextEp.number} ›</button>`:''}<button id="open" class="open">Abrir fonte ↗</button></div><div class="note">${!!sourceInfo.driveId?(qualityRows.length>1?'Google Drive · qualidade manual usa arquivos separados':'Google Drive · qualidade automática do player'):'Fonte externa · o progresso exato depende do provedor'}</div></div>`;
   activePlayerMeta={id,title:x.title,meta,context,ep,x};activeVideoEl=null;saveProgress(id,Math.max(1,Number(ep?hist.episodeProgress:hist.progress)||0),0,0,context,ep);saveView();
   const goNext=()=>{if(!nextEp)return;stopMiniPlayer(true);setTimeout(()=>play(id,nextEp.number,nextEp.season||1),40)};
   shadow.getElementById('back').onclick=()=>stopMiniPlayer(true);shadow.getElementById('open').onclick=()=>window.open(sourceInfo.openUrl||sourceInfo.src,'_blank','noopener');shadow.getElementById('next')?.addEventListener('click',goNext);
@@ -1488,9 +1531,9 @@ async function play(id,epNum=1,epSeason=null){
  const seek=sec=>{if(Number.isFinite(v.duration))v.currentTime=Math.max(0,Math.min(v.duration,(v.currentTime||0)+sec));showControls()};
  const applyResume=()=>{if(resumeApplied||!v.duration)return;resumeApplied=true;const same=hist.context===context;let at=0;if(same&&+hist.position>4&&+hist.position<v.duration-8)at=+hist.position;else{const pct=ep?(same?+hist.episodeProgress||0:0):(+hist.progress||0);if(pct>0&&pct<98)at=(pct/100)*v.duration}if(at>4){v.currentTime=at;resume.textContent=`Continuando de ${LX.fmt(at)}`;resume.classList.remove('hide');setTimeout(()=>resume.classList.add('hide'),2600)}};
  const deactivateDriveFallback=()=>{clearTimeout(driveFallbackTimer);driveFallbackActive=false;root.classList.remove('drive-fallback');if(driveFrame){driveFrame.classList.add('hide');try{driveFrame.src='about:blank'}catch{}}};
- const activateDriveFallback=(reason='auto')=>{const info=LX.mediaSources?.describe?.(key)||sourceInfo,src=info?.previewSrc;if(info?.provider!=='Google Drive'||!src||!driveFrame)return false;clearTimeout(driveFallbackTimer);driveFallbackActive=true;try{v.pause()}catch{};LX.adaptive?.destroy?.(v).catch?.(()=>{});driveFrame.src=src;driveFrame.classList.remove('hide');root.classList.add('drive-fallback');loading.classList.add('hide');error.classList.add('hide');posterEl?.classList.add('hide');const badge=q('#sourceBadge');if(badge)badge.textContent='DRIVE · COMPATIBILIDADE';if(reason!=='silent')LX.toast('Modo compatibilidade do Google Drive ativado dentro da LX Plus.');return true};
- const scheduleDriveFallback=()=>{clearTimeout(driveFallbackTimer);const info=LX.mediaSources?.describe?.(key)||sourceInfo;if(info?.provider!=='Google Drive')return;driveFallbackTimer=setTimeout(()=>{if(!driveFallbackActive&&v.readyState<2)activateDriveFallback('timeout')},6500)};
-  const setSource=async(keepTime=0,autoplay=false)=>{deactivateDriveFallback();loading.classList.remove('hide');error.classList.add('hide');try{const resolved=resolveMedia(key),next=typeof resolved==='string'?resolved:await resolved;if(!next)throw new Error('MEDIA_NOT_AVAILABLE');if(currentObjectUrl?.startsWith('blob:'))try{URL.revokeObjectURL(currentObjectUrl)}catch{}currentObjectUrl=next.startsWith?.('blob:')?next:null;pendingSeek=keepTime>0?keepTime:null;if(/\.(?:m3u8|mpd)(?:$|[?#])/i.test(next)&&LX.adaptive?.load)await LX.adaptive.load(v,next);else{if(sourceRefreshes)await LX.adaptive?.destroy?.(v);v.src=next;v.load()}sourceRefreshes++;scheduleDriveFallback();if(autoplay){v.play().catch(err=>{if(err?.name==='NotAllowedError'){loading.classList.add('hide');errorText.textContent='Toque em ▶ para iniciar o filme neste navegador.';error.classList.remove('hide');showControls()}else console.warn('LX initial video playback',err)})}return true}catch(err){console.warn('LX player source',err);loading.classList.add('hide');const info=LX.mediaSources?.describe?.(key)||sourceInfo;if(info?.provider==='Google Drive'&&activateDriveFallback('source-error'))return true;errorText.textContent='A fonte do vídeo não pôde ser carregada. Verifique a conexão e tente novamente.';error.classList.remove('hide');v.controls=true;nativeMode=true;root.classList.add('native');return false}};
+ const activateDriveFallback=(reason='auto')=>{const info=LX.mediaSources?.describe?.(key)||sourceInfo,src=info?.previewSrc;if(!info?.driveId||!src||!driveFrame)return false;clearTimeout(driveFallbackTimer);driveFallbackActive=true;try{v.pause()}catch{};LX.adaptive?.destroy?.(v).catch?.(()=>{});driveFrame.src=src;driveFrame.classList.remove('hide');root.classList.add('drive-fallback');loading.classList.add('hide');error.classList.add('hide');posterEl?.classList.add('hide');const badge=q('#sourceBadge');if(badge)badge.textContent='DRIVE · FALLBACK';if(reason!=='silent')LX.toast('Rota direta de compatibilidade do Google Drive ativada dentro da LX Plus.');return true};
+ const scheduleDriveFallback=()=>{clearTimeout(driveFallbackTimer);const info=LX.mediaSources?.describe?.(key)||sourceInfo;if(!info?.driveId)return;driveFallbackTimer=setTimeout(()=>{if(!driveFallbackActive&&v.readyState<2)activateDriveFallback('timeout')},6500)};
+  const setSource=async(keepTime=0,autoplay=false)=>{deactivateDriveFallback();loading.classList.remove('hide');error.classList.add('hide');try{const resolved=resolveMedia(key),next=typeof resolved==='string'?resolved:await resolved;if(!next)throw new Error('MEDIA_NOT_AVAILABLE');if(currentObjectUrl?.startsWith('blob:'))try{URL.revokeObjectURL(currentObjectUrl)}catch{}currentObjectUrl=next.startsWith?.('blob:')?next:null;pendingSeek=keepTime>0?keepTime:null;if(/\.(?:m3u8|mpd)(?:$|[?#])/i.test(next)&&LX.adaptive?.load)await LX.adaptive.load(v,next);else{if(sourceRefreshes)await LX.adaptive?.destroy?.(v);v.src=next;v.load()}sourceRefreshes++;scheduleDriveFallback();if(autoplay){v.play().catch(err=>{if(err?.name==='NotAllowedError'){loading.classList.add('hide');errorText.textContent='Toque em ▶ para iniciar o filme neste navegador.';error.classList.remove('hide');showControls()}else console.warn('LX initial video playback',err)})}return true}catch(err){console.warn('LX player source',err);loading.classList.add('hide');const info=LX.mediaSources?.describe?.(key)||sourceInfo;if(!!info?.driveId&&activateDriveFallback('source-error'))return true;errorText.textContent='A fonte do vídeo não pôde ser carregada. Verifique a conexão e tente novamente.';error.classList.remove('hide');v.controls=true;nativeMode=true;root.classList.add('native');return false}};
  const startTV=async()=>{
   try{
    if(typeof v.webkitShowPlaybackTargetPicker==='function'){v.webkitShowPlaybackTargetPicker();return}
@@ -1510,13 +1553,13 @@ async function play(id,epNum=1,epSeason=null){
  const toggleNative=()=>{nativeMode=!nativeMode;v.controls=true;root.classList.toggle('native',nativeMode);settings.classList.add('hide');showControls();LX.toast(nativeMode?'Modo simples ativado.':'Controles LX ativados. Os controles do navegador continuam disponíveis.')};
  const openDrivePreview=()=>{if(!activateDriveFallback('manual'))LX.toast('Modo compatibilidade indisponível para esta fonte.');};
  if(drivePreview)drivePreview.onclick=openDrivePreview;
- if(sourceInfo.provider==='Google Drive'&&!settings.querySelector('[data-drive-compat]')){const b=document.createElement('button');b.dataset.driveCompat='1';b.textContent='Google Drive · modo compatibilidade';b.onclick=()=>{settings.classList.add('hide');activateDriveFallback('manual')};settings.prepend(b)}
+ if(!!sourceInfo.driveId&&!settings.querySelector('[data-drive-compat]')){const b=document.createElement('button');b.dataset.driveCompat='1';b.textContent='Google Drive · modo compatibilidade';b.onclick=()=>{settings.classList.add('hide');activateDriveFallback('manual')};settings.prepend(b)}
  host.__lxQualityRows=nativeQualityRows;host.__lxSetQuality=async row=>{if(!row?.ref)return;const keep=Number.isFinite(v.currentTime)?v.currentTime:0,wasPlaying=!v.paused;key=row.ref;await setSource(keep);if(wasPlaying)v.play().catch(()=>{})};
  v.controls=true;v.playsInline=true;v.disableRemotePlayback=false;v.volume=Math.max(0,Math.min(1,Number(pref.volume??1)));v.muted=!!pref.muted;
  v.onloadedmetadata=()=>{clearTimeout(driveFallbackTimer);duration.textContent=LX.fmt(v.duration||0);if(pendingSeek!=null&&pendingSeek<v.duration){v.currentTime=pendingSeek;pendingSeek=null}else applyResume();setUI();showControls()};
- v.oncanplay=()=>{clearTimeout(driveFallbackTimer);loading.classList.add('hide');error.classList.add('hide');setUI();showControls();v.controls=true;if(sourceInfo.provider==='Google Drive'){const badge=q('#sourceBadge');if(badge&&!driveFallbackActive)badge.textContent='LX PLAYER · DRIVE'}else if(sourceInfo.provider==='LX Cloud · B2'){const badge=q('#sourceBadge');if(badge)badge.textContent='LX PLAYER · B2'}};
+ v.oncanplay=()=>{clearTimeout(driveFallbackTimer);loading.classList.add('hide');error.classList.add('hide');setUI();showControls();v.controls=true;if(!!sourceInfo.driveId){const badge=q('#sourceBadge');if(badge&&!driveFallbackActive)badge.textContent=LX.driveStorage?.configured?.()?'LX PLAYER · LX STORAGE':'LX PLAYER · DRIVE'}else if(sourceInfo.provider==='LX Cloud · B2'){const badge=q('#sourceBadge');if(badge)badge.textContent='LX PLAYER · B2'}};
  v.onwaiting=()=>loading.classList.remove('hide');v.onstalled=()=>loading.classList.remove('hide');v.onplaying=()=>{loading.classList.add('hide');posterEl?.classList.add('hide')};
- v.onerror=async()=>{loading.classList.add('hide');const keep=Number.isFinite(v.currentTime)?v.currentTime:0,currentInfo=LX.mediaSources?.describe?.(key)||sourceInfo;if(currentInfo.provider==='Google Drive'){const candidates=Array.isArray(currentInfo.streamCandidates)?currentInfo.streamCandidates.filter(Boolean):[],idx=Number(mediaCandidateIndex.get(String(key))||0);if(idx<candidates.length-1){mediaCandidateIndex.set(String(key),idx+1);errorText.textContent='Tentando outra rota do Google Drive…';error.classList.remove('hide');await setSource(keep);return}if(activateDriveFallback('direct-blocked'))return;errorText.textContent='Não consegui abrir este arquivo do Google Drive. Verifique se ele está compartilhado para qualquer pessoa com o link.';error.classList.remove('hide');return}if(sourceRefreshes<2){errorText.textContent='Renovando a fonte segura do vídeo…';error.classList.remove('hide');await setSource(keep);return}errorText.textContent='O arquivo não pôde ser reproduzido neste navegador. Tente outra fonte compatível com MP4/HLS.';error.classList.remove('hide');v.controls=true;nativeMode=true;root.classList.add('native')};
+ v.onerror=async()=>{loading.classList.add('hide');const keep=Number.isFinite(v.currentTime)?v.currentTime:0,currentInfo=LX.mediaSources?.describe?.(key)||sourceInfo;if(!!currentInfo.driveId){const candidates=Array.isArray(currentInfo.streamCandidates)?currentInfo.streamCandidates.filter(Boolean):[],idx=Number(mediaCandidateIndex.get(String(key))||0);if(idx<candidates.length-1){mediaCandidateIndex.set(String(key),idx+1);errorText.textContent='Tentando outra rota do Google Drive…';error.classList.remove('hide');await setSource(keep);return}if(activateDriveFallback('direct-blocked'))return;errorText.textContent='Não consegui abrir este arquivo do LX Storage/Drive. Confira o endpoint do LX Storage e se a pasta foi compartilhada com a conta de serviço.';error.classList.remove('hide');return}if(sourceRefreshes<2){errorText.textContent='Renovando a fonte segura do vídeo…';error.classList.remove('hide');await setSource(keep);return}errorText.textContent='O arquivo não pôde ser reproduzido neste navegador. Tente outra fonte compatível com MP4/HLS.';error.classList.remove('hide');v.controls=true;nativeMode=true;root.classList.add('native')};
  v.onplay=()=>{setUI();showControls()};v.onpause=()=>{setUI();root.classList.remove('idle');if(v.duration)saveProgress(id,v.currentTime/v.duration*100,v.currentTime,v.duration,context,ep)};
  v.ontimeupdate=()=>{if(v.duration){const pct=v.currentTime/v.duration*100;progress.value=pct;current.textContent=LX.fmt(v.currentTime);duration.textContent=LX.fmt(v.duration);if(Date.now()-lastSync>4500){lastSync=Date.now();saveProgress(id,pct,v.currentTime,v.duration,context,ep)}}};
  v.onended=()=>{saveProgress(id,100,v.duration,v.duration,context,ep);setUI();root.classList.remove('idle');q('#nextCard')?.classList.remove('hide');if(nextEp){let left=5;const card=q('#nextCard'),btn=q('#nextBtn');if(card){const s=card.querySelector('strong'),playNext=()=>{clearInterval(timer);stopMiniPlayer(true);setTimeout(()=>play(id,nextEp.number,nextEp.season||1),40)},cancel=document.createElement('button');cancel.id='nextCancel';cancel.textContent='Cancelar próximo episódio';cancel.style.cssText='margin-left:7px;background:rgba(255,255,255,.1);color:#fff';btn?.insertAdjacentElement('afterend',cancel);if(s)s.textContent=`Próximo episódio em ${left}s`;const timer=setInterval(()=>{if(!document.getElementById('lxGlobalCinema'))return clearInterval(timer);left--;if(left<=0)playNext();else if(s)s.textContent=`Próximo episódio em ${left}s`},1000);if(btn)btn.onclick=playNext;cancel.onclick=()=>{clearInterval(timer);card.classList.add('hide');if(s)s.textContent='Próximo episódio cancelado'}}}};
@@ -1889,7 +1932,7 @@ function stopMiniPlayer(closeOverlay=true){const v=activeVideoEl;if(v){try{if(v.
 $('legalAboutBtn')?.addEventListener('click',()=>openLegal('about'));$('legalTermsBtn')?.addEventListener('click',()=>openLegal('terms'));$('legalPrivacyBtn')?.addEventListener('click',()=>openLegal('privacy'));
 $('miniRestore').onclick=restoreMiniPlayer;$('miniClose').onclick=()=>stopMiniPlayer(true);$('miniPlay').onclick=()=>{const v=activeVideoEl;if(v)v.paused?v.play():v.pause()};
 $('overlay').onclick=e=>{if(e.target===$('overlay'))U.close()};$('playerOverlay').onclick=e=>{if(e.target===$('playerOverlay'))U.closePlayer()};$('readerOverlay').onclick=e=>{if(e.target===$('readerOverlay'))U.closeReader()};document.addEventListener('keydown',e=>{if(e.key==='Escape'){U.close();U.closePlayer();U.closeReader()}});
-LX.musicHealthCheck=()=>{const a=$('musicAudio'),t=currentMusic();return {build:'NOVA-20260924-R7-MP3AUTO',mode:state.mode,screen:state.screen,track:t?.title||null,sourceRef:a?.dataset?.sourceRef||t?.mediaKey||null,src:a?.currentSrc||a?.src||null,paused:a?.paused??true,readyState:a?.readyState??0,networkState:a?.networkState??0,error:a?.error?{code:a.error.code,message:a.error.message||''}:null,status:$('musicPlaybackKind')?.textContent||'',cloud:!!String(a?.dataset?.sourceRef||t?.mediaKey||'').startsWith('cloud:'),b2:!!String(a?.dataset?.sourceRef||t?.mediaKey||'').startsWith('b2:')}};
+LX.musicHealthCheck=()=>{const a=$('musicAudio'),t=currentMusic();return {build:'NOVA-20260924-R7-LX-STORAGE-DRIVE',mode:state.mode,screen:state.screen,track:t?.title||null,sourceRef:a?.dataset?.sourceRef||t?.mediaKey||null,src:a?.currentSrc||a?.src||null,paused:a?.paused??true,readyState:a?.readyState??0,networkState:a?.networkState??0,error:a?.error?{code:a.error.code,message:a.error.message||''}:null,status:$('musicPlaybackKind')?.textContent||'',cloud:!!String(a?.dataset?.sourceRef||t?.mediaKey||'').startsWith('cloud:'),b2:!!String(a?.dataset?.sourceRef||t?.mediaKey||'').startsWith('b2:')}};
 LX.musicHealth=()=>{const a=$('musicAudio');return {title:currentMusic()?.title||'',readyState:a?.readyState??0,networkState:a?.networkState??0,duration:Number.isFinite(a?.duration)?a.duration:null,position:a?.currentTime||0,playing:!!a&&!a.paused&&!a.ended,status:$('musicPlaybackKind')?.textContent||'',mediaError:a?.error?.code||null}};LX.primeMusicMedia=primeMusicMedia;LX.prewarmMusicCatalog=prewarmMusicCatalog;LX.syncMusicCardState=syncMusicCardState;LX.musicToggleSaved=musicToggleSaved;LX.musicToggleSavedCurrent=musicToggleSavedCurrent;LX.openMusicLyrics=openMusicLyrics;LX.loadMusicTrack=loadTrack;LX.currentMusic=currentMusic;LX.refreshMusicUI=updateMusicUI;
 LX.toggleCurrentMusic=toggleCurrentMusic;LX.prewarmMusicCatalog=prewarmMusicCatalog;LX.prewarmMusicContent=prewarmMusicContent;LX.playOnlineMusicPreview=()=>LX.toast('Prévia desativada. A LX Music reproduz somente faixas completas do próprio catálogo.');LX.primary=primary;LX.detail=detail;LX.openMusicAlbum=openMusicAlbum;LX.openMusicQueue=openMusicQueue;LX.musicQueuePlay=i=>{state.musicIndex=+i||0;loadTrack(true);U.close()};LX.musicShuffleAlbum=id=>{musicShuffleMode=true;music(id,0,true)};LX.toggleList=toggleList;LX.rate=rate;LX.play=play;LX.selectSeason=(id,season)=>{const x=D.catalog().find(z=>z.id===id);if(!x)return;const el=$('detailTab');if(el)el.innerHTML=episodesTab(x,+season||1)};LX.read=read;LX.music=music;LX.openRequests=openRequests;LX.openRanking=openRanking;LX.openProfile=openProfile;LX.openNotifications=()=>LX.noticeCenter?.open?.();LX.openPremium=openPremium;LX.choosePlan=choosePlan;LX.toggleGenre=toggleGenre;LX.openTheme=openTheme;LX.scroll=U.scroll;LX.openAdmin=()=>{if(!state.user?.admin||!LX.admin)return LX.toast('Acesso ADM indisponível.');LX.admin.render(U.state.adminPage||'dashboard');U.show('admin');saveView()};LX.openLegal=openLegal;LX.applyBranding=applyBranding;LX.saveProfileDetails=saveProfileDetails;LX.setProfileShape=setProfileShape;LX.setProfileFrame=setProfileFrame;LX.minimizePlayer=minimizePlayer;LX.restoreMiniPlayer=restoreMiniPlayer;LX.stopMiniPlayer=stopMiniPlayer;LX.saveView=saveView;LX.restoreView=restoreView;LX.rankPeriod=x=>{state.rankingPeriod=x;openRanking()};LX.rankKind=x=>{state.rankingKind=x;openRanking()};LX.readAll=()=>{const n=D.notices().map(x=>({...x,read:true})),ids=n.map(x=>x.id);S.writeLocal(S.keys.notices,n);S.write(S.keys.noticeReads,ids);U.updateNoticeCount();LX.toast('Tudo marcado como lido e sincronizado.')};LX.setTheme=t=>{S.write(S.keys.theme,t);applyTheme()};LX.setAccent=c=>{S.write(S.keys.accent,c);applyTheme()};LX.setLayout=setLayout;LX.setMotion=setMotion;LX.setUiPref=setUiPref;LX.applyTheme=applyTheme;LX.installApp=installApp;LX.setProfilePreset=setProfilePreset;LX.setGalleryAvatar=setGalleryAvatar;LX.clearProfileImage=clearProfileImage;LX.tvMode=tvMode;
 setInterval(()=>{if(state.screen==='app'){U.updateNoticeCount?.();if(state.mode==='Ouvir'){syncMusicCardState();updateMusicUI()}}},60000);
@@ -2399,7 +2442,7 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
     const style=document.createElement('style');style.textContent=`.heading strong,.copy b{font-size:clamp(20px,2.1vw,32px)!important;line-height:1.08!important}.heading small,.copy small{font-size:clamp(12px,1vw,15px)!important}.nextCard strong{font-size:19px!important}.nextCard small{font-size:14px!important;line-height:1.45!important}.stage.lx-image-enhanced video,.stage.lx-image-enhanced .driveFrame{filter:contrast(1.085) saturate(1.045) brightness(1.018);transform:translateZ(0);image-rendering:auto}.lx-enhance-ask{position:absolute;z-index:30;left:50%;bottom:94px;transform:translateX(-50%);width:min(390px,88vw);padding:15px;border-radius:15px;background:rgba(8,8,8,.9);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(18px);box-shadow:0 18px 50px rgba(0,0,0,.48);color:#fff}.lx-enhance-ask strong{display:block;font-size:15px;margin-bottom:5px}.lx-enhance-ask small{display:block;color:#bcc3cb;font-size:11px;line-height:1.4;margin-bottom:10px}.lx-enhance-ask div{display:flex;gap:8px}.lx-enhance-ask button{flex:1;height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.09);color:#fff;font-weight:800;cursor:pointer}.lx-enhance-ask button:first-child{background:#fff;color:#070707}.settings button.active{background:rgba(255,255,255,.14)!important;color:#fff!important}.lx-source-quality{display:block;padding:8px 10px;margin-bottom:4px;border-radius:9px;background:rgba(255,255,255,.055);color:#c8d0d8;font-size:11px}.nextCard{padding:18px!important}@media(max-width:760px){.lx-enhance-ask{bottom:calc(120px + env(safe-area-inset-bottom));padding:13px}.heading strong,.copy b{font-size:17px!important}.heading small,.copy small{font-size:12px!important}.nextCard{bottom:calc(118px + env(safe-area-inset-bottom))!important}.nextCard strong{font-size:17px!important}.nextCard small{font-size:13px!important}}`;
     root.appendChild(style);if(!video)return;
     const settings=root.getElementById('settings'),stage=root.getElementById('stage');if(!settings||!stage)return;
-    const qualityInfo=document.createElement('span');qualityInfo.className='lx-source-quality';qualityInfo.textContent='Fonte detectada · aguardando vídeo';settings.prepend(qualityInfo);const sourceBadge=root.getElementById('sourceBadge');const updateResolution=()=>{const h=Number(video.videoHeight||0),label=h>=2160?'4K real':h>=1440?`${h}p`:h>=1080?'1080p':h>=720?'720p':h>=480?'480p':h?`${h}p`:'Automático',provider=String(host.dataset.lxSourceProvider||'');const providerTag=provider==='LX Cloud · B2'?'B2':provider==='Google Drive'?'DRIVE':'';qualityInfo.textContent=`Fonte detectada · ${providerTag?providerTag+' · ':''}${label}`;if(sourceBadge)sourceBadge.textContent=`LX PLAYER${providerTag?' · '+providerTag:''} · ${label}`};video.addEventListener('loadedmetadata',updateResolution);video.addEventListener('resize',updateResolution);
+    const qualityInfo=document.createElement('span');qualityInfo.className='lx-source-quality';qualityInfo.textContent='Fonte detectada · aguardando vídeo';settings.prepend(qualityInfo);const sourceBadge=root.getElementById('sourceBadge');const updateResolution=()=>{const h=Number(video.videoHeight||0),label=h>=2160?'4K real':h>=1440?`${h}p`:h>=1080?'1080p':h>=720?'720p':h>=480?'480p':h?`${h}p`:'Automático',provider=String(host.dataset.lxSourceProvider||'');const providerTag=provider==='LX Cloud · B2'?'B2':/Drive/.test(provider)?'LX STORAGE':'';qualityInfo.textContent=`Fonte detectada · ${providerTag?providerTag+' · ':''}${label}`;if(sourceBadge)sourceBadge.textContent=`LX PLAYER${providerTag?' · '+providerTag:''} · ${label}`};video.addEventListener('loadedmetadata',updateResolution);video.addEventListener('resize',updateResolution);
     if(!root.getElementById('enhanceV27')){const readPrefs=()=>S.read(S.keys.playerPrefs,{})||{},writeEnhance=on=>{const prefs=readPrefs();S.write(S.keys.playerPrefs,{...prefs,enhanceAsked:true,enhanceVisual:!!on})},applyEnhance=on=>{stage.classList.toggle('lx-image-enhanced',!!on);button.textContent=`Filtro de qualidade · ${on?'ligado':'desligado'}`;button.setAttribute('aria-pressed',String(!!on))},button=document.createElement('button');button.id='enhanceV27';const saved=readPrefs();applyEnhance(!!saved.enhanceVisual);button.onclick=()=>{const on=!stage.classList.contains('lx-image-enhanced');applyEnhance(on);writeEnhance(on);toast(on?'Filtro de qualidade ativado: melhora nitidez, contraste e cor no aparelho. Não transforma baixa resolução em 4K real.':'Filtro de qualidade desligado.')};settings.prepend(button);if(!saved.enhanceAsked){const ask=document.createElement('div');ask.className='lx-enhance-ask';ask.innerHTML=`<strong>Ativar filtro de qualidade?</strong><small>Melhora nitidez, contraste e cor. Pode usar um pouco mais de bateria.</small><div><button data-enhance-yes>Ativar</button><button data-enhance-no>Agora não</button></div>`;stage.appendChild(ask);ask.querySelector('[data-enhance-yes]').onclick=()=>{applyEnhance(true);writeEnhance(true);ask.remove();toast('Filtro de qualidade ativado. Você pode desligar em •••.')};ask.querySelector('[data-enhance-no]').onclick=()=>{applyEnhance(false);writeEnhance(false);ask.remove()}}}
     const rows=host.__lxQualityRows||[];if(rows.length>1&&!settings.querySelector('[data-lx-native-quality]')){const wrap=document.createElement('div');wrap.dataset.lxNativeQuality='1';wrap.innerHTML=`<span style="display:block;padding:7px 10px 4px;color:#9ea6af;font-size:11px;font-weight:800">QUALIDADES DISPONÍVEIS</span>${rows.map((row,index)=>`<button data-quality-index="${index}" class="${index===0?'active':''}">${esc(row.label)}</button>`).join('')}`;settings.prepend(wrap);wrap.querySelectorAll('[data-quality-index]').forEach(button=>button.onclick=async()=>{const row=rows[Number(button.dataset.qualityIndex)];wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===button));await host.__lxSetQuality?.(row);toast(`Qualidade ${row.label} selecionada.`)})}
   }
@@ -2754,183 +2797,4 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
  document.addEventListener('lx:music-changed',()=>{const live=LX.currentMusic?.(),content=live?LX.data?.catalog?.().find(x=>String(x.id)===String(live.contentId)):null,src=musicSource(content||{},live||{}),credit=document.getElementById('musicProviderCredit'),label=document.getElementById('musicProviderLabel');if(credit)credit.textContent=`${src.label} · reprodução pela fonte oficial`;if(label)label.textContent=src.label});
 
  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['v32.2-resilient-audio']='32.2';
-})();
-
-/* ===== LX Plus NOVA R7 · MP3 automatic metadata hardening ===== */
-(()=>{
- 'use strict';
- const LX=window.LX=window.LX||{};
- const previous=LX.musicMeta||{};
- const clean=v=>String(v??'').replace(/\0/g,'').replace(/\s+/g,' ').trim();
- const norm=v=>clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
- const stripNoise=name=>clean(name)
-   .replace(/\.(?:mp3|m4a|aac|flac|wav|ogg|opus)$/i,'')
-   .replace(/[._]+/g,' ')
-   .replace(/\[(?:[^\]]*?)(?:mp3|kbps|kbit|320k|256k|192k|128k|audio|official)(?:[^\]]*?)\]/gi,' ')
-   .replace(/\((?:[^)]*?)(?:clipe\s*oficial|official\s*(?:music\s*)?(?:video|audio)|video\s*oficial|lyrics?|visualizer|audio\s*oficial)(?:[^)]*?)\)/gi,' ')
-   .replace(/\b(?:320|256|192|128)\s*kbps\b/gi,' ')
-   .replace(/\b(?:official\s*(?:music\s*)?(?:video|audio)|clipe\s*oficial|video\s*oficial|lyrics?|visualizer)\b/gi,' ')
-   .replace(/\s{2,}/g,' ').trim();
- const normalizeArtist=v=>clean(v).replace(/\s+-\s+Topic$/i,'').replace(/\s+VEVO$/i,'').replace(/\s+(?:canal\s+)?(?:oficial|official)(?:\s+music)?$/i,'').trim();
- const tokenSet=v=>new Set(norm(v).split(' ').filter(x=>x.length>1));
- const similarity=(a,b)=>{
-   a=norm(a);b=norm(b);if(!a||!b)return 0;if(a===b)return 1;if(a.includes(b)||b.includes(a))return .9;
-   const A=tokenSet(a),B=tokenSet(b);let n=0;A.forEach(x=>B.has(x)&&n++);return n/Math.max(A.size,B.size,1);
- };
- const looksTitle=s=>{
-   const t=clean(s),letters=t.replace(/[^A-Za-zÀ-ÿ]/g,'');if(!letters)return false;
-   const upper=letters.replace(/[^A-ZÀ-Þ]/g,'').length/letters.length;
-   return upper>.75&&t.split(/\s+/).length<=7;
- };
- const looksArtistList=s=>/,|\b(?:mc|dj|feat\.?|ft\.?|participa[cç][aã]o)\b/i.test(s)||clean(s).split(/\s*[,&]\s*/).length>=3;
- function fileParts(name){
-   const raw=stripNoise(name),bits=raw.split(/\s+[\-–—]\s+/).map(clean).filter(Boolean);
-   if(bits.length>=2){
-     const left=bits.shift(),right=bits.join(' - ');
-     // Muitos uploads brasileiros usam "TÍTULO - Artista 1, Artista 2...".
-     if((looksTitle(left)&&looksArtistList(right))||(!looksArtistList(left)&&looksArtistList(right)&&left.split(/\s+/).length<=7))return {title:left,artist:normalizeArtist(right),raw};
-     return {title:right,artist:normalizeArtist(left),raw};
-   }
-   return {title:raw||'Música',artist:'',raw};
- }
- function latin1(bytes){let s='';for(const b of bytes)s+=String.fromCharCode(b);return clean(s)}
- function decodeText(enc,bytes){
-   try{
-     if(!bytes?.length)return'';
-     if(enc===3)return new TextDecoder('utf-8').decode(bytes).replace(/^\uFEFF/,'').replace(/\0+$/g,'').trim();
-     if(enc===1){
-       // BOM decide endian quando presente.
-       if(bytes[0]===0xFE&&bytes[1]===0xFF)return new TextDecoder('utf-16be').decode(bytes.slice(2)).replace(/\0+$/g,'').trim();
-       return new TextDecoder('utf-16le').decode(bytes[0]===0xFF&&bytes[1]===0xFE?bytes.slice(2):bytes).replace(/\0+$/g,'').trim();
-     }
-     if(enc===2)return new TextDecoder('utf-16be').decode(bytes).replace(/\0+$/g,'').trim();
-     try{return new TextDecoder('windows-1252').decode(bytes).replace(/\0+$/g,'').trim()}catch{return latin1(bytes)}
-   }catch{return latin1(bytes)}
- }
- const syncsafe=(a,b,c,d)=>(a<<21)|(b<<14)|(c<<7)|d;
- const u32=(a,b,c,d)=>((a<<24)>>>0)+(b<<16)+(c<<8)+d;
- const dataUrl=blob=>new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=reject;r.readAsDataURL(blob)});
- async function embeddedCover(frame,ver){
-   try{
-     if(!frame?.length)return'';
-     if(ver===2){
-       const enc=frame[0],fmt=String.fromCharCode(...frame.slice(1,4)).toLowerCase(),mime=fmt==='png'?'image/png':'image/jpeg';let i=5;
-       if(enc===1||enc===2){while(i+1<frame.length&&(frame[i]!==0||frame[i+1]!==0))i+=2;i+=2}else{while(i<frame.length&&frame[i]!==0)i++;i++}
-       if(i<frame.length)return await dataUrl(new Blob([frame.slice(i)],{type:mime}));return'';
-     }
-     const enc=frame[0];let i=1;while(i<frame.length&&frame[i]!==0)i++;const mime=latin1(frame.slice(1,i))||'image/jpeg';i++;if(i>=frame.length)return'';i++; // picture type
-     if(enc===1||enc===2){while(i+1<frame.length&&(frame[i]!==0||frame[i+1]!==0))i+=2;i+=2}else{while(i<frame.length&&frame[i]!==0)i++;i++}
-     if(i<frame.length)return await dataUrl(new Blob([frame.slice(i)],{type:mime}));
-   }catch(e){console.warn('LX MP3 cover',e)}return'';
- }
- async function readTags(file){
-   const out={title:'',artist:'',album:'',year:'',genre:'',cover:'',duration:0,tagged:false};
-   if(!file)return out;
-   if(/\.mp3$/i.test(file.name||'')){
-     try{
-       const first=new Uint8Array(await file.slice(0,10).arrayBuffer());
-       if(first.length>=10&&String.fromCharCode(...first.slice(0,3))==='ID3'){
-         out.tagged=true;const ver=first[3],tagSize=syncsafe(first[6],first[7],first[8],first[9]);
-         const max=Math.min(file.size,10+Math.max(0,tagSize),8*1024*1024),buf=new Uint8Array(await file.slice(0,max).arrayBuffer());let pos=10;
-         while(pos<buf.length){
-           try{
-             let fid='',size=0,header=0;
-             if(ver===2){if(pos+6>buf.length)break;fid=String.fromCharCode(...buf.slice(pos,pos+3));size=(buf[pos+3]<<16)|(buf[pos+4]<<8)|buf[pos+5];header=6;if(!/^[A-Z0-9]{3}$/.test(fid))break}
-             else{if(pos+10>buf.length)break;fid=String.fromCharCode(...buf.slice(pos,pos+4));size=ver===4?syncsafe(buf[pos+4],buf[pos+5],buf[pos+6],buf[pos+7]):u32(buf[pos+4],buf[pos+5],buf[pos+6],buf[pos+7]);header=10;if(!/^[A-Z0-9]{4}$/.test(fid))break}
-             if(!size||pos+header+size>buf.length)break;
-             const body=buf.slice(pos+header,pos+header+size),enc=body[0]||0,text=()=>clean(decodeText(enc,body.slice(1)));
-             if(fid==='TIT2'||fid==='TT2')out.title=text();
-             else if(fid==='TPE1'||fid==='TP1')out.artist=text().replace(/\0+/g,' / ');
-             else if(fid==='TALB'||fid==='TAL')out.album=text();
-             else if(fid==='TYER'||fid==='TDRC'||fid==='TYE')out.year=(text().match(/(?:19|20)\d{2}/)||[])[0]||'';
-             else if(fid==='TCON'||fid==='TCO')out.genre=text().replace(/^\(\d+\)\s*/,'');
-             else if((fid==='APIC'||fid==='PIC')&&!out.cover)out.cover=await embeddedCover(body,ver);
-             pos+=header+size;
-           }catch(frameError){console.warn('LX MP3 frame',frameError);pos+=1}
-         }
-       }
-     }catch(e){console.warn('LX MP3 ID3v2',e)}
-     if((!out.title||!out.artist||!out.album||!out.year||!out.genre)&&file.size>=128){
-       try{
-         const tail=new Uint8Array(await file.slice(file.size-128,file.size).arrayBuffer());
-         if(String.fromCharCode(...tail.slice(0,3))==='TAG'){
-           out.tagged=true;out.title=out.title||latin1(tail.slice(3,33));out.artist=out.artist||latin1(tail.slice(33,63));out.album=out.album||latin1(tail.slice(63,93));out.year=out.year||latin1(tail.slice(93,97));
-         }
-       }catch(e){console.warn('LX MP3 ID3v1',e)}
-     }
-   }
-   try{
-     out.duration=await new Promise(resolve=>{
-       if(!document?.createElement||!URL?.createObjectURL)return resolve(0);
-       const audio=document.createElement('audio'),url=URL.createObjectURL(file);let ended=false;
-       const done=v=>{if(ended)return;ended=true;try{URL.revokeObjectURL(url)}catch{}resolve(Number(v)||0)};
-       audio.preload='metadata';audio.onloadedmetadata=()=>done(audio.duration);audio.onerror=()=>done(0);audio.src=url;setTimeout(()=>done(0),4500);
-     });
-   }catch{}
-   return out;
- }
- function scoreTrack(row,guess,raw){
-   const title=clean(row?.trackName),artist=clean(row?.artistName);if(!title)return 0;
-   const titleScore=similarity(guess.title,title),artistScore=guess.artist?similarity(guess.artist,artist):.55,fullScore=similarity(raw,`${title} ${artist}`);
-   let score=titleScore*.52+artistScore*.28+fullScore*.20;
-   if(norm(raw).includes(norm(title)))score+=.08;if(guess.artist&&norm(raw).includes(norm(artist)))score+=.05;
-   return Math.min(1,score);
- }
- async function lookupItunes(guess,fileName){
-   const raw=stripNoise(fileName||''),queries=[`${guess.artist||''} ${guess.title||''}`.trim(),raw].filter(Boolean);let best=null,bestScore=0;
-   for(const q of [...new Set(queries)].slice(0,2)){
-     try{
-       const url=`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=song&limit=15&country=BR`;
-       const r=await fetch(url,{mode:'cors',credentials:'omit',cache:'no-store'});if(!r.ok)continue;const d=await r.json();
-       for(const row of d.results||[]){const s=scoreTrack(row,guess,raw);if(s>bestScore){bestScore=s;best=row}}
-       if(bestScore>=.82)break;
-     }catch(e){console.warn('LX iTunes metadata',e)}
-   }
-   if(!best||bestScore<.46)return null;
-   return {title:clean(best.trackName),artist:clean(best.artistName),album:clean(best.collectionName),year:(clean(best.releaseDate).match(/(?:19|20)\d{2}/)||[])[0]||'',genre:clean(best.primaryGenreName),cover:clean(best.artworkUrl100).replace(/100x100bb\./,'1200x1200bb.'),duration:Number(best.trackTimeMillis||0)/1000,externalUrl:clean(best.trackViewUrl),remoteId:String(best.trackId||''),provider:'Apple Music / iTunes',confidence:bestScore};
- }
- function description(meta){
-   const who=clean(meta.artist)||'Artista não identificado',album=clean(meta.album),year=clean(meta.year);return `${clean(meta.title)||'Música'} — ${who}${album?` · ${album}`:''}${year?` · ${year}`:''}.`;
- }
- async function probeFile(file){
-   const parsed=fileParts(file?.name||'Música.mp3');let tags={};try{tags=await readTags(file)}catch(e){console.warn('LX MP3 tags',e)}
-   const guess={title:clean(tags.title)||parsed.title||'Música',artist:normalizeArtist(tags.artist)||parsed.artist||''};
-   let remote=null;try{remote=await lookupItunes(guess,file?.name||'')}catch(e){console.warn('LX MP3 remote metadata',e)}
-   // Tags reais têm prioridade. Quando não há tags, um match remoto confiável pode corrigir a ordem título/artista do nome do arquivo.
-   const useRemoteBase=!tags.tagged&&remote&&Number(remote.confidence||0)>=.56;
-   const meta={
-     title:clean(tags.title)||(useRemoteBase?remote.title:'')||parsed.title||remote?.title||'Música',
-     artist:normalizeArtist(tags.artist)||(useRemoteBase?remote.artist:'')||parsed.artist||remote?.artist||'LX Music',
-     album:clean(tags.album)||clean(remote?.album),
-     year:clean(tags.year)||clean(remote?.year),
-     genre:clean(tags.genre)||clean(remote?.genre)||'Música',
-     cover:clean(tags.cover)||clean(remote?.cover),
-     duration:Number(tags.duration||remote?.duration||0),
-     externalUrl:clean(remote?.externalUrl),remoteId:remote?.remoteId||'',confidence:Number(remote?.confidence||0),
-     provider:tags.tagged?(remote?'ID3 + Apple Music':'ID3'):remote?'Apple Music / iTunes':'Nome do arquivo MP3'
-   };
-   meta.desc=description(meta);return meta;
- }
- async function applyEditor(meta,{force=false}={}){
-   if(!meta)return null;const q=id=>document.getElementById(id);
-   const set=(id,value,{allowDefault=false}={})=>{const el=q(id);if(!el||value==null||value==='')return;const cur=clean(el.value);if(force||!cur||(allowDefault&&['Geral','Outros','Música'].includes(cur)))el.value=String(value)};
-   set('cTitle',meta.title);set('typeA',meta.artist);set('cYear',meta.year);set('cGenre',meta.genre,{allowDefault:true});set('cDesc',meta.desc);
-   if(LX.ui){LX.ui.state=LX.ui.state||{};LX.ui.state.musicAutoMeta=meta}
-   const info=q('selectedMediaInfo');if(info){const extra=[meta.album,meta.year,meta.cover?'capa automática':''].filter(Boolean).join(' · ');info.textContent=`✓ Automático: ${meta.artist||'Artista'} — ${meta.title||'Faixa'}${extra?' · '+extra:''}`}
-   return meta;
- }
- async function fillEditorFromFile(file,opts={}){
-   const info=document.getElementById('selectedMediaInfo');if(info)info.textContent=`Analisando MP3: ${file?.name||'arquivo'}…`;
-   try{
-     const meta=await probeFile(file);await applyEditor(meta,opts);
-     if(info&&!meta.cover)info.textContent+=meta.provider==='Nome do arquivo MP3'?' · dados lidos do nome do arquivo':' · sem capa embutida';
-     return meta;
-   }catch(e){
-     console.warn('LX MP3 automatic metadata fallback',e);
-     const parsed=fileParts(file?.name||'Música.mp3'),meta={title:parsed.title||'Música',artist:parsed.artist||'LX Music',album:'',year:'',genre:'Música',cover:'',duration:0,provider:'Nome do arquivo MP3',desc:`${parsed.title||'Música'} — ${parsed.artist||'LX Music'}.`};
-     try{await applyEditor(meta,opts)}catch{}if(info)info.textContent=`✓ MP3 selecionado · título/artista preenchidos pelo nome do arquivo.`;return meta;
-   }
- }
- LX.musicMeta={...previous,readId3:readTags,probeFile,applyEditor,fillEditorFromFile};
- window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['music-smart-metadata']='NOVA-R7-MP3-AUTO';
 })();

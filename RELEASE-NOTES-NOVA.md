@@ -1,11 +1,23 @@
-# NOVA R8 — MP3 AUTO FIX
+# LX Plus NOVA — R7 LX Storage / Google Drive
 
-- Corrige a rotina primária de metadados MP3, não apenas um override tardio.
-- Evita falha quando `LX.ui.state` ainda não existe.
-- Fallback obrigatório pelo nome do arquivo: título/artista sempre são preenchidos.
-- O aviso antigo de falha total foi removido.
-- Bundle físico renomeado para `lxplus.bundle.r8.js` para furar cache/CDN antigo.
-- Build: `NOVA-20260924-R8-MP3AUTO-FIX`.
+## Principal
+- Google Drive agora pode funcionar como o disco principal do **LX Storage**.
+- O LX Player tenta primeiro o endpoint do **LX Storage Worker** para obter o arquivo bruto pela Google Drive API.
+- O preview do Drive deixa de ser a rota principal; permanece apenas como fallback de compatibilidade.
+- Novo painel ADM em **Mídia & Upload** para salvar/testar o endpoint do LX Storage.
+- Endpoint pode ser sincronizado na configuração global (branding) e também tem override local.
+- Fonte padrão de filmes/séries continua sendo Drive, agora exibida como **LX Storage / Drive**.
+- Backblaze B2 foi mantido apenas como compatibilidade legada para itens antigos.
+
+## Backend incluído
+- `cloudflare-worker/lx-drive-storage-worker.js`: Worker sem dependências, pronto para Cloudflare Workers.
+- Autenticação com Service Account do Google usando JWT RS256.
+- Encaminhamento de `Range` para streaming/seek de MP4.
+- CORS configurável com `ALLOWED_ORIGIN`.
+- Endpoint `/health` para teste no painel ADM.
+
+## Build
+`NOVA-20260924-R7-LX-STORAGE-DRIVE`
 
 
 ## R6 · LX Player + Backblaze B2
@@ -15,14 +27,14 @@
 - HLS (`master.m3u8`) usa o módulo adaptativo existente e expõe qualidade automática/manual quando disponível.
 - Badge do player identifica **B2** e resolução detectada.
 - Nenhuma chave secreta do Backblaze é armazenada no frontend.
-- Build/cache atualizado para `NOVA-20260924-R7-MP3AUTO`.
+- Build/cache atualizado para `NOVA-20260924-R6-B2`.
 
 # LX Plus NOVA R5 — correção crítica da Música
 
 - Corrigido o erro `musicGenresOf is not defined` ao abrir uma música. A causa era o player (app.js) chamando helpers privados do módulo de interface (ui.js); agora os helpers de catálogo/gênero são exportados e existe uma ponte segura entre os módulos.
 - Corrigida a criação/edição de playlists e álbuns pessoais, que sofria do mesmo problema de escopo ao chamar `musicCatalog()`.
 - O botão de adicionar à playlist foi redesenhado com um ícone próprio de lista + adição, mais limpo no desktop e no celular.
-- Build/cache atualizado para `NOVA-20260924-R7-MP3AUTO` para evitar que navegador/PWA continue servindo o JavaScript antigo.
+- Build/cache atualizado para `NOVA-20260924-R6-B2` para evitar que navegador/PWA continue servindo o JavaScript antigo.
 
 # LX Plus NOVA — 2026-09-24, R4
 
@@ -37,16 +49,8 @@ Esta versão recupera a R3B, substituída no `main` por um commit posterior que 
 
 ## Distribuição
 
-`index.html`, JavaScript, CSS, manifest e service worker usam a mesma build `NOVA-20260924-R7-MP3AUTO`. A troca da versão invalida o cache antigo. Os arquivos de origem da aplicação e das Edge Functions seguem no pacote completo.
+`index.html`, JavaScript, CSS, manifest e service worker usam a mesma build `NOVA-20260924-R6-B2`. A troca da versão invalida o cache antigo. Os arquivos de origem da aplicação e das Edge Functions seguem no pacote completo.
 
 ## Limite de verificação
 
 A página pública e a integridade dos arquivos podem ser verificadas sem conta. Para validar som audível de MP3 privado, reprodução oficial do YouTube/Spotify e persistência das coleções na conta real, é necessária uma sessão LX Plus autenticada. Estes pontos não devem ser marcados como aprovados sem o teste correspondente.
-
-## R7 · MP3 Auto Metadata
-- Corrigido o preenchimento automático ao selecionar arquivos MP3 na Publicação rápida.
-- Leitura mais tolerante de ID3v2.2/v2.3/v2.4 e ID3v1, incluindo título, artista, álbum, ano, gênero e capa embutida.
-- Quando o arquivo não tem tags completas, a LX Plus tenta enriquecer os dados pela busca pública do Apple Music/iTunes.
-- Se a internet ou o catálogo externo não responder, o cadastro não falha: título/artista são extraídos do nome do arquivo e a descrição é preenchida automaticamente.
-- Melhor tratamento de nomes com “Clipe Oficial”, “MP3 - 320kbps” e formatos brasileiros como “TÍTULO - Artista 1, Artista 2”.
-- Build atualizado para `NOVA-20260924-R7-MP3AUTO` para invalidar o JavaScript antigo no navegador/PWA.

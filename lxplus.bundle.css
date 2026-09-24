@@ -6387,3 +6387,8 @@ button.lx-music-feature-art{display:block;flex:none;border:0;padding:0;cursor:po
   .lx-music-card-copy .lx-music-collection-add{width:28px!important;height:28px!important;min-width:28px!important;border-radius:9px!important}
   .lx-music-card-copy .lx-music-collection-add svg{width:15px;height:15px}
 }
+\n/* LX Storage · Drive R7 */
+.lx-legacy-source{opacity:.45}
+.lx-legacy-storage{padding:14px 16px}.lx-legacy-storage>summary{cursor:pointer;font-weight:800;color:var(--muted)}
+.lx-drive-storage-card .field.span2{grid-column:1/-1}
+@media(max-width:720px){.lx-drive-storage-card .r2-config-actions{display:grid;grid-template-columns:1fr}.lx-drive-storage-card .r2-config-actions button{width:100%}}

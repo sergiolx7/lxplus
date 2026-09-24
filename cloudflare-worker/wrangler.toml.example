@@ -1,0 +1,10 @@
+name = "lx-drive-storage"
+main = "lx-drive-storage-worker.js"
+compatibility_date = "2026-09-24"
+
+[vars]
+# Troque pelo domínio real da LX Plus. Para teste temporário, use "*".
+ALLOWED_ORIGIN = "https://SEU-DOMINIO-AQUI"
+
+# Nunca coloque GOOGLE_PRIVATE_KEY aqui.
+# Configure como secret no painel da Cloudflare ou com wrangler secret put.
