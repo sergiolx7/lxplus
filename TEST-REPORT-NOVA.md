@@ -22,3 +22,8 @@ Os testes acima não são substituídos por `node --check`; não declarar reprod
 - QA de interações do player executado.
 - Verificação estática de ponte entre IIFEs (`musicGenresOf`, `musicHasGenre`, `musicCatalog`).
 - Build R5 aplicado no HTML, bundle e service worker.
+
+## R7 · teste do automático MP3
+- `node --check` aprovado em `lxplus.bundle.js`, `lxplus.recovery.js`, `lxplus.support.js`, `lxplus.audiofx.js` e `service-worker.js`.
+- Parser de nome validado com arquivo no formato `TÍTULO - vários artistas (Clipe Oficial) [MP3 - 320kbps].mp3`.
+- Fallback configurado para nunca bloquear o cadastro quando tags/catálogo remoto não responderem.

@@ -1,6 +1,6 @@
 # LX Player + Backblaze B2
 
-Build: **NOVA-20260924-R6-B2**
+Build: **NOVA-20260924-R7-MP3AUTO**
 
 Esta versão adiciona uma fonte **B2 / LX** no ADM. O vídeo continua sendo reproduzido pelo **LX Player**, sem interface do Backblaze.
 

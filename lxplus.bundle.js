@@ -24,12 +24,12 @@
 
 
 /* ===== lxplus.js ===== */
-window.__LX_JS_BUILD='NOVA-20260924-R6-B2';
+window.__LX_JS_BUILD='NOVA-20260924-R7-MP3AUTO';
 
 /* ===== config.js · LX Plus v25.50 ===== */
 window.LX=window.LX||{};
 LX.config={
-  version:'NOVA-20260924-R6-B2',
+  version:'NOVA-20260924-R7-MP3AUTO',
   environment:'cloud-ready',
   production:true,
   apiBase:'',
@@ -1889,7 +1889,7 @@ function stopMiniPlayer(closeOverlay=true){const v=activeVideoEl;if(v){try{if(v.
 $('legalAboutBtn')?.addEventListener('click',()=>openLegal('about'));$('legalTermsBtn')?.addEventListener('click',()=>openLegal('terms'));$('legalPrivacyBtn')?.addEventListener('click',()=>openLegal('privacy'));
 $('miniRestore').onclick=restoreMiniPlayer;$('miniClose').onclick=()=>stopMiniPlayer(true);$('miniPlay').onclick=()=>{const v=activeVideoEl;if(v)v.paused?v.play():v.pause()};
 $('overlay').onclick=e=>{if(e.target===$('overlay'))U.close()};$('playerOverlay').onclick=e=>{if(e.target===$('playerOverlay'))U.closePlayer()};$('readerOverlay').onclick=e=>{if(e.target===$('readerOverlay'))U.closeReader()};document.addEventListener('keydown',e=>{if(e.key==='Escape'){U.close();U.closePlayer();U.closeReader()}});
-LX.musicHealthCheck=()=>{const a=$('musicAudio'),t=currentMusic();return {build:'NOVA-20260924-R6-B2',mode:state.mode,screen:state.screen,track:t?.title||null,sourceRef:a?.dataset?.sourceRef||t?.mediaKey||null,src:a?.currentSrc||a?.src||null,paused:a?.paused??true,readyState:a?.readyState??0,networkState:a?.networkState??0,error:a?.error?{code:a.error.code,message:a.error.message||''}:null,status:$('musicPlaybackKind')?.textContent||'',cloud:!!String(a?.dataset?.sourceRef||t?.mediaKey||'').startsWith('cloud:'),b2:!!String(a?.dataset?.sourceRef||t?.mediaKey||'').startsWith('b2:')}};
+LX.musicHealthCheck=()=>{const a=$('musicAudio'),t=currentMusic();return {build:'NOVA-20260924-R7-MP3AUTO',mode:state.mode,screen:state.screen,track:t?.title||null,sourceRef:a?.dataset?.sourceRef||t?.mediaKey||null,src:a?.currentSrc||a?.src||null,paused:a?.paused??true,readyState:a?.readyState??0,networkState:a?.networkState??0,error:a?.error?{code:a.error.code,message:a.error.message||''}:null,status:$('musicPlaybackKind')?.textContent||'',cloud:!!String(a?.dataset?.sourceRef||t?.mediaKey||'').startsWith('cloud:'),b2:!!String(a?.dataset?.sourceRef||t?.mediaKey||'').startsWith('b2:')}};
 LX.musicHealth=()=>{const a=$('musicAudio');return {title:currentMusic()?.title||'',readyState:a?.readyState??0,networkState:a?.networkState??0,duration:Number.isFinite(a?.duration)?a.duration:null,position:a?.currentTime||0,playing:!!a&&!a.paused&&!a.ended,status:$('musicPlaybackKind')?.textContent||'',mediaError:a?.error?.code||null}};LX.primeMusicMedia=primeMusicMedia;LX.prewarmMusicCatalog=prewarmMusicCatalog;LX.syncMusicCardState=syncMusicCardState;LX.musicToggleSaved=musicToggleSaved;LX.musicToggleSavedCurrent=musicToggleSavedCurrent;LX.openMusicLyrics=openMusicLyrics;LX.loadMusicTrack=loadTrack;LX.currentMusic=currentMusic;LX.refreshMusicUI=updateMusicUI;
 LX.toggleCurrentMusic=toggleCurrentMusic;LX.prewarmMusicCatalog=prewarmMusicCatalog;LX.prewarmMusicContent=prewarmMusicContent;LX.playOnlineMusicPreview=()=>LX.toast('Prévia desativada. A LX Music reproduz somente faixas completas do próprio catálogo.');LX.primary=primary;LX.detail=detail;LX.openMusicAlbum=openMusicAlbum;LX.openMusicQueue=openMusicQueue;LX.musicQueuePlay=i=>{state.musicIndex=+i||0;loadTrack(true);U.close()};LX.musicShuffleAlbum=id=>{musicShuffleMode=true;music(id,0,true)};LX.toggleList=toggleList;LX.rate=rate;LX.play=play;LX.selectSeason=(id,season)=>{const x=D.catalog().find(z=>z.id===id);if(!x)return;const el=$('detailTab');if(el)el.innerHTML=episodesTab(x,+season||1)};LX.read=read;LX.music=music;LX.openRequests=openRequests;LX.openRanking=openRanking;LX.openProfile=openProfile;LX.openNotifications=()=>LX.noticeCenter?.open?.();LX.openPremium=openPremium;LX.choosePlan=choosePlan;LX.toggleGenre=toggleGenre;LX.openTheme=openTheme;LX.scroll=U.scroll;LX.openAdmin=()=>{if(!state.user?.admin||!LX.admin)return LX.toast('Acesso ADM indisponível.');LX.admin.render(U.state.adminPage||'dashboard');U.show('admin');saveView()};LX.openLegal=openLegal;LX.applyBranding=applyBranding;LX.saveProfileDetails=saveProfileDetails;LX.setProfileShape=setProfileShape;LX.setProfileFrame=setProfileFrame;LX.minimizePlayer=minimizePlayer;LX.restoreMiniPlayer=restoreMiniPlayer;LX.stopMiniPlayer=stopMiniPlayer;LX.saveView=saveView;LX.restoreView=restoreView;LX.rankPeriod=x=>{state.rankingPeriod=x;openRanking()};LX.rankKind=x=>{state.rankingKind=x;openRanking()};LX.readAll=()=>{const n=D.notices().map(x=>({...x,read:true})),ids=n.map(x=>x.id);S.writeLocal(S.keys.notices,n);S.write(S.keys.noticeReads,ids);U.updateNoticeCount();LX.toast('Tudo marcado como lido e sincronizado.')};LX.setTheme=t=>{S.write(S.keys.theme,t);applyTheme()};LX.setAccent=c=>{S.write(S.keys.accent,c);applyTheme()};LX.setLayout=setLayout;LX.setMotion=setMotion;LX.setUiPref=setUiPref;LX.applyTheme=applyTheme;LX.installApp=installApp;LX.setProfilePreset=setProfilePreset;LX.setGalleryAvatar=setGalleryAvatar;LX.clearProfileImage=clearProfileImage;LX.tvMode=tvMode;
 setInterval(()=>{if(state.screen==='app'){U.updateNoticeCount?.();if(state.mode==='Ouvir'){syncMusicCardState();updateMusicUI()}}},60000);
@@ -2754,4 +2754,183 @@ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['streak']='27.0-
  document.addEventListener('lx:music-changed',()=>{const live=LX.currentMusic?.(),content=live?LX.data?.catalog?.().find(x=>String(x.id)===String(live.contentId)):null,src=musicSource(content||{},live||{}),credit=document.getElementById('musicProviderCredit'),label=document.getElementById('musicProviderLabel');if(credit)credit.textContent=`${src.label} · reprodução pela fonte oficial`;if(label)label.textContent=src.label});
 
  window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['v32.2-resilient-audio']='32.2';
+})();
+
+/* ===== LX Plus NOVA R7 · MP3 automatic metadata hardening ===== */
+(()=>{
+ 'use strict';
+ const LX=window.LX=window.LX||{};
+ const previous=LX.musicMeta||{};
+ const clean=v=>String(v??'').replace(/\0/g,'').replace(/\s+/g,' ').trim();
+ const norm=v=>clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
+ const stripNoise=name=>clean(name)
+   .replace(/\.(?:mp3|m4a|aac|flac|wav|ogg|opus)$/i,'')
+   .replace(/[._]+/g,' ')
+   .replace(/\[(?:[^\]]*?)(?:mp3|kbps|kbit|320k|256k|192k|128k|audio|official)(?:[^\]]*?)\]/gi,' ')
+   .replace(/\((?:[^)]*?)(?:clipe\s*oficial|official\s*(?:music\s*)?(?:video|audio)|video\s*oficial|lyrics?|visualizer|audio\s*oficial)(?:[^)]*?)\)/gi,' ')
+   .replace(/\b(?:320|256|192|128)\s*kbps\b/gi,' ')
+   .replace(/\b(?:official\s*(?:music\s*)?(?:video|audio)|clipe\s*oficial|video\s*oficial|lyrics?|visualizer)\b/gi,' ')
+   .replace(/\s{2,}/g,' ').trim();
+ const normalizeArtist=v=>clean(v).replace(/\s+-\s+Topic$/i,'').replace(/\s+VEVO$/i,'').replace(/\s+(?:canal\s+)?(?:oficial|official)(?:\s+music)?$/i,'').trim();
+ const tokenSet=v=>new Set(norm(v).split(' ').filter(x=>x.length>1));
+ const similarity=(a,b)=>{
+   a=norm(a);b=norm(b);if(!a||!b)return 0;if(a===b)return 1;if(a.includes(b)||b.includes(a))return .9;
+   const A=tokenSet(a),B=tokenSet(b);let n=0;A.forEach(x=>B.has(x)&&n++);return n/Math.max(A.size,B.size,1);
+ };
+ const looksTitle=s=>{
+   const t=clean(s),letters=t.replace(/[^A-Za-zÀ-ÿ]/g,'');if(!letters)return false;
+   const upper=letters.replace(/[^A-ZÀ-Þ]/g,'').length/letters.length;
+   return upper>.75&&t.split(/\s+/).length<=7;
+ };
+ const looksArtistList=s=>/,|\b(?:mc|dj|feat\.?|ft\.?|participa[cç][aã]o)\b/i.test(s)||clean(s).split(/\s*[,&]\s*/).length>=3;
+ function fileParts(name){
+   const raw=stripNoise(name),bits=raw.split(/\s+[\-–—]\s+/).map(clean).filter(Boolean);
+   if(bits.length>=2){
+     const left=bits.shift(),right=bits.join(' - ');
+     // Muitos uploads brasileiros usam "TÍTULO - Artista 1, Artista 2...".
+     if((looksTitle(left)&&looksArtistList(right))||(!looksArtistList(left)&&looksArtistList(right)&&left.split(/\s+/).length<=7))return {title:left,artist:normalizeArtist(right),raw};
+     return {title:right,artist:normalizeArtist(left),raw};
+   }
+   return {title:raw||'Música',artist:'',raw};
+ }
+ function latin1(bytes){let s='';for(const b of bytes)s+=String.fromCharCode(b);return clean(s)}
+ function decodeText(enc,bytes){
+   try{
+     if(!bytes?.length)return'';
+     if(enc===3)return new TextDecoder('utf-8').decode(bytes).replace(/^\uFEFF/,'').replace(/\0+$/g,'').trim();
+     if(enc===1){
+       // BOM decide endian quando presente.
+       if(bytes[0]===0xFE&&bytes[1]===0xFF)return new TextDecoder('utf-16be').decode(bytes.slice(2)).replace(/\0+$/g,'').trim();
+       return new TextDecoder('utf-16le').decode(bytes[0]===0xFF&&bytes[1]===0xFE?bytes.slice(2):bytes).replace(/\0+$/g,'').trim();
+     }
+     if(enc===2)return new TextDecoder('utf-16be').decode(bytes).replace(/\0+$/g,'').trim();
+     try{return new TextDecoder('windows-1252').decode(bytes).replace(/\0+$/g,'').trim()}catch{return latin1(bytes)}
+   }catch{return latin1(bytes)}
+ }
+ const syncsafe=(a,b,c,d)=>(a<<21)|(b<<14)|(c<<7)|d;
+ const u32=(a,b,c,d)=>((a<<24)>>>0)+(b<<16)+(c<<8)+d;
+ const dataUrl=blob=>new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=reject;r.readAsDataURL(blob)});
+ async function embeddedCover(frame,ver){
+   try{
+     if(!frame?.length)return'';
+     if(ver===2){
+       const enc=frame[0],fmt=String.fromCharCode(...frame.slice(1,4)).toLowerCase(),mime=fmt==='png'?'image/png':'image/jpeg';let i=5;
+       if(enc===1||enc===2){while(i+1<frame.length&&(frame[i]!==0||frame[i+1]!==0))i+=2;i+=2}else{while(i<frame.length&&frame[i]!==0)i++;i++}
+       if(i<frame.length)return await dataUrl(new Blob([frame.slice(i)],{type:mime}));return'';
+     }
+     const enc=frame[0];let i=1;while(i<frame.length&&frame[i]!==0)i++;const mime=latin1(frame.slice(1,i))||'image/jpeg';i++;if(i>=frame.length)return'';i++; // picture type
+     if(enc===1||enc===2){while(i+1<frame.length&&(frame[i]!==0||frame[i+1]!==0))i+=2;i+=2}else{while(i<frame.length&&frame[i]!==0)i++;i++}
+     if(i<frame.length)return await dataUrl(new Blob([frame.slice(i)],{type:mime}));
+   }catch(e){console.warn('LX MP3 cover',e)}return'';
+ }
+ async function readTags(file){
+   const out={title:'',artist:'',album:'',year:'',genre:'',cover:'',duration:0,tagged:false};
+   if(!file)return out;
+   if(/\.mp3$/i.test(file.name||'')){
+     try{
+       const first=new Uint8Array(await file.slice(0,10).arrayBuffer());
+       if(first.length>=10&&String.fromCharCode(...first.slice(0,3))==='ID3'){
+         out.tagged=true;const ver=first[3],tagSize=syncsafe(first[6],first[7],first[8],first[9]);
+         const max=Math.min(file.size,10+Math.max(0,tagSize),8*1024*1024),buf=new Uint8Array(await file.slice(0,max).arrayBuffer());let pos=10;
+         while(pos<buf.length){
+           try{
+             let fid='',size=0,header=0;
+             if(ver===2){if(pos+6>buf.length)break;fid=String.fromCharCode(...buf.slice(pos,pos+3));size=(buf[pos+3]<<16)|(buf[pos+4]<<8)|buf[pos+5];header=6;if(!/^[A-Z0-9]{3}$/.test(fid))break}
+             else{if(pos+10>buf.length)break;fid=String.fromCharCode(...buf.slice(pos,pos+4));size=ver===4?syncsafe(buf[pos+4],buf[pos+5],buf[pos+6],buf[pos+7]):u32(buf[pos+4],buf[pos+5],buf[pos+6],buf[pos+7]);header=10;if(!/^[A-Z0-9]{4}$/.test(fid))break}
+             if(!size||pos+header+size>buf.length)break;
+             const body=buf.slice(pos+header,pos+header+size),enc=body[0]||0,text=()=>clean(decodeText(enc,body.slice(1)));
+             if(fid==='TIT2'||fid==='TT2')out.title=text();
+             else if(fid==='TPE1'||fid==='TP1')out.artist=text().replace(/\0+/g,' / ');
+             else if(fid==='TALB'||fid==='TAL')out.album=text();
+             else if(fid==='TYER'||fid==='TDRC'||fid==='TYE')out.year=(text().match(/(?:19|20)\d{2}/)||[])[0]||'';
+             else if(fid==='TCON'||fid==='TCO')out.genre=text().replace(/^\(\d+\)\s*/,'');
+             else if((fid==='APIC'||fid==='PIC')&&!out.cover)out.cover=await embeddedCover(body,ver);
+             pos+=header+size;
+           }catch(frameError){console.warn('LX MP3 frame',frameError);pos+=1}
+         }
+       }
+     }catch(e){console.warn('LX MP3 ID3v2',e)}
+     if((!out.title||!out.artist||!out.album||!out.year||!out.genre)&&file.size>=128){
+       try{
+         const tail=new Uint8Array(await file.slice(file.size-128,file.size).arrayBuffer());
+         if(String.fromCharCode(...tail.slice(0,3))==='TAG'){
+           out.tagged=true;out.title=out.title||latin1(tail.slice(3,33));out.artist=out.artist||latin1(tail.slice(33,63));out.album=out.album||latin1(tail.slice(63,93));out.year=out.year||latin1(tail.slice(93,97));
+         }
+       }catch(e){console.warn('LX MP3 ID3v1',e)}
+     }
+   }
+   try{
+     out.duration=await new Promise(resolve=>{
+       if(!document?.createElement||!URL?.createObjectURL)return resolve(0);
+       const audio=document.createElement('audio'),url=URL.createObjectURL(file);let ended=false;
+       const done=v=>{if(ended)return;ended=true;try{URL.revokeObjectURL(url)}catch{}resolve(Number(v)||0)};
+       audio.preload='metadata';audio.onloadedmetadata=()=>done(audio.duration);audio.onerror=()=>done(0);audio.src=url;setTimeout(()=>done(0),4500);
+     });
+   }catch{}
+   return out;
+ }
+ function scoreTrack(row,guess,raw){
+   const title=clean(row?.trackName),artist=clean(row?.artistName);if(!title)return 0;
+   const titleScore=similarity(guess.title,title),artistScore=guess.artist?similarity(guess.artist,artist):.55,fullScore=similarity(raw,`${title} ${artist}`);
+   let score=titleScore*.52+artistScore*.28+fullScore*.20;
+   if(norm(raw).includes(norm(title)))score+=.08;if(guess.artist&&norm(raw).includes(norm(artist)))score+=.05;
+   return Math.min(1,score);
+ }
+ async function lookupItunes(guess,fileName){
+   const raw=stripNoise(fileName||''),queries=[`${guess.artist||''} ${guess.title||''}`.trim(),raw].filter(Boolean);let best=null,bestScore=0;
+   for(const q of [...new Set(queries)].slice(0,2)){
+     try{
+       const url=`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=song&limit=15&country=BR`;
+       const r=await fetch(url,{mode:'cors',credentials:'omit',cache:'no-store'});if(!r.ok)continue;const d=await r.json();
+       for(const row of d.results||[]){const s=scoreTrack(row,guess,raw);if(s>bestScore){bestScore=s;best=row}}
+       if(bestScore>=.82)break;
+     }catch(e){console.warn('LX iTunes metadata',e)}
+   }
+   if(!best||bestScore<.46)return null;
+   return {title:clean(best.trackName),artist:clean(best.artistName),album:clean(best.collectionName),year:(clean(best.releaseDate).match(/(?:19|20)\d{2}/)||[])[0]||'',genre:clean(best.primaryGenreName),cover:clean(best.artworkUrl100).replace(/100x100bb\./,'1200x1200bb.'),duration:Number(best.trackTimeMillis||0)/1000,externalUrl:clean(best.trackViewUrl),remoteId:String(best.trackId||''),provider:'Apple Music / iTunes',confidence:bestScore};
+ }
+ function description(meta){
+   const who=clean(meta.artist)||'Artista não identificado',album=clean(meta.album),year=clean(meta.year);return `${clean(meta.title)||'Música'} — ${who}${album?` · ${album}`:''}${year?` · ${year}`:''}.`;
+ }
+ async function probeFile(file){
+   const parsed=fileParts(file?.name||'Música.mp3');let tags={};try{tags=await readTags(file)}catch(e){console.warn('LX MP3 tags',e)}
+   const guess={title:clean(tags.title)||parsed.title||'Música',artist:normalizeArtist(tags.artist)||parsed.artist||''};
+   let remote=null;try{remote=await lookupItunes(guess,file?.name||'')}catch(e){console.warn('LX MP3 remote metadata',e)}
+   // Tags reais têm prioridade. Quando não há tags, um match remoto confiável pode corrigir a ordem título/artista do nome do arquivo.
+   const useRemoteBase=!tags.tagged&&remote&&Number(remote.confidence||0)>=.56;
+   const meta={
+     title:clean(tags.title)||(useRemoteBase?remote.title:'')||parsed.title||remote?.title||'Música',
+     artist:normalizeArtist(tags.artist)||(useRemoteBase?remote.artist:'')||parsed.artist||remote?.artist||'LX Music',
+     album:clean(tags.album)||clean(remote?.album),
+     year:clean(tags.year)||clean(remote?.year),
+     genre:clean(tags.genre)||clean(remote?.genre)||'Música',
+     cover:clean(tags.cover)||clean(remote?.cover),
+     duration:Number(tags.duration||remote?.duration||0),
+     externalUrl:clean(remote?.externalUrl),remoteId:remote?.remoteId||'',confidence:Number(remote?.confidence||0),
+     provider:tags.tagged?(remote?'ID3 + Apple Music':'ID3'):remote?'Apple Music / iTunes':'Nome do arquivo MP3'
+   };
+   meta.desc=description(meta);return meta;
+ }
+ async function applyEditor(meta,{force=false}={}){
+   if(!meta)return null;const q=id=>document.getElementById(id);
+   const set=(id,value,{allowDefault=false}={})=>{const el=q(id);if(!el||value==null||value==='')return;const cur=clean(el.value);if(force||!cur||(allowDefault&&['Geral','Outros','Música'].includes(cur)))el.value=String(value)};
+   set('cTitle',meta.title);set('typeA',meta.artist);set('cYear',meta.year);set('cGenre',meta.genre,{allowDefault:true});set('cDesc',meta.desc);
+   if(LX.ui){LX.ui.state=LX.ui.state||{};LX.ui.state.musicAutoMeta=meta}
+   const info=q('selectedMediaInfo');if(info){const extra=[meta.album,meta.year,meta.cover?'capa automática':''].filter(Boolean).join(' · ');info.textContent=`✓ Automático: ${meta.artist||'Artista'} — ${meta.title||'Faixa'}${extra?' · '+extra:''}`}
+   return meta;
+ }
+ async function fillEditorFromFile(file,opts={}){
+   const info=document.getElementById('selectedMediaInfo');if(info)info.textContent=`Analisando MP3: ${file?.name||'arquivo'}…`;
+   try{
+     const meta=await probeFile(file);await applyEditor(meta,opts);
+     if(info&&!meta.cover)info.textContent+=meta.provider==='Nome do arquivo MP3'?' · dados lidos do nome do arquivo':' · sem capa embutida';
+     return meta;
+   }catch(e){
+     console.warn('LX MP3 automatic metadata fallback',e);
+     const parsed=fileParts(file?.name||'Música.mp3'),meta={title:parsed.title||'Música',artist:parsed.artist||'LX Music',album:'',year:'',genre:'Música',cover:'',duration:0,provider:'Nome do arquivo MP3',desc:`${parsed.title||'Música'} — ${parsed.artist||'LX Music'}.`};
+     try{await applyEditor(meta,opts)}catch{}if(info)info.textContent=`✓ MP3 selecionado · título/artista preenchidos pelo nome do arquivo.`;return meta;
+   }
+ }
+ LX.musicMeta={...previous,readId3:readTags,probeFile,applyEditor,fillEditorFromFile};
+ window.__LX_MODULES=window.__LX_MODULES||{};window.__LX_MODULES['music-smart-metadata']='NOVA-R7-MP3-AUTO';
 })();
