@@ -10,6 +10,8 @@ O Worker consulta o Google Drive pela API autenticada e transmite bytes ao playe
 4. Defina `ALLOWED_ORIGIN` com o endereço exato da LX Plus (já exemplificado em `wrangler.toml`). Implemente o Worker após configurar os secrets.
 5. No ADM → **Mídia & Upload → LX Storage**, salve o endpoint HTTPS e teste um arquivo. Compartilhar arquivos com a conta de serviço é suficiente para os próximos cadastros; cole o link normal do Drive.
 
+O endereço antigo `lxplus.sergio-sousa.workers.dev` não faz mais parte do código padrão do site. O `wrangler.toml` deste pacote implanta o Worker com nome **lx-storage-drive**. Depois do deploy, salve no ADM a URL que a Cloudflare realmente devolver; não presuma que a URL antiga recebeu a atualização. Confira `GET /health?check=1`: a resposta deve incluir `"version":"R12"` e `"googleConnected":true` antes de testar o vídeo.
+
 ## Endpoints
 
 - `GET /health?check=1`: consulta de autenticação real; `googleConnected` só vale `true` após resposta da API.

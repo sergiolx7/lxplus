@@ -1,6 +1,6 @@
-const LX_BUILD = 'R12-NEXUS-20260924';
+const LX_BUILD = 'R12.1-NEXUS-20260924';
 const CACHE = 'lxplus-shell-' + LX_BUILD;
-const CORE = ['./', './index.html', './lxplus.bundle.js', './lxplus.bundle.css',
+const CORE = ['./', './index.html', './lxplus.bundle.js', './lxplus.album-grouping.js', './lxplus.bundle.css',
   './lxplus.recovery.js', './lxplus.support.js', './lxplus.audiofx.js',
   './manifest.webmanifest', './assets/lxplus-logo-v27.png', './assets/lx-music-fallback.svg'];
 const offline = () => new Response('<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;background:#050506;color:white;font:16px system-ui;display:grid;place-items:center;min-height:100vh;text-align:center;padding:24px}button{padding:12px 18px;border:0;border-radius:12px;font-weight:800}</style><main><h1>LX Plus</h1><p>Sem conexão. Verifique sua internet e tente novamente.</p><button onclick="location.reload()">Recarregar</button></main></html>',
@@ -25,7 +25,7 @@ self.addEventListener('message', event => {
 });
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
-    for (const key of await caches.keys()) if (key.startsWith('lxplus-shell-') && key !== CACHE) await caches.delete(key);
+    for (const key of await caches.keys()) if (key.startsWith('lxplus-') && key !== CACHE) await caches.delete(key);
     await self.clients.claim();
   })());
 });
@@ -46,8 +46,9 @@ self.addEventListener('fetch', event => {
       await cache.put(request, response.clone());
       return response;
     } catch {
-      const cached = await caches.match(request) || await caches.match(new URL(url.pathname, url.origin)) ||
-        (request.mode === 'navigate' ? await caches.match(new URL('./index.html', self.registration.scope)) : null);
+      const cache = await caches.open(CACHE);
+      const cached = await cache.match(request) || await cache.match(new URL(url.pathname, url.origin)) ||
+        (request.mode === 'navigate' ? await cache.match(new URL('./index.html', self.registration.scope)) : null);
       return cached || (request.mode === 'navigate' ? offline() : new Response('Offline', { status: 503 }));
     }
   })());

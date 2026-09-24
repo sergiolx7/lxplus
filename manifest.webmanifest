@@ -3,7 +3,7 @@
   "short_name": "LX Plus",
   "description": "Filmes, séries, música, livros e comunidade em uma experiência premium.",
   "id": "./",
-  "start_url": "./?v=R12-NEXUS-20260924",
+  "start_url": "./?v=R12.1-NEXUS-20260924",
   "scope": "./",
   "display": "standalone",
   "background_color": "#020306",
@@ -17,5 +17,5 @@
       "purpose": "any maskable"
     }
   ],
-  "version": "R12-NEXUS-20260924"
+  "version": "R12.1-NEXUS-20260924"
 }

@@ -36,11 +36,12 @@ const frame = (id, text) => {
   assert.equal(fallback.artist, 'The Weeknd');
   assert.equal(fallback.title, 'Blinding Lights');
 
-  const frames = Buffer.concat([frame('TIT2', 'Blinding Lights'), frame('TPE1', 'The Weeknd'), frame('TRCK', '3/12')]);
+  const frames = Buffer.concat([frame('TIT2', 'Blinding Lights'), frame('TPE1', 'The Weeknd'), frame('TALB', 'After Hours'), frame('TRCK', '3/12')]);
   const header = Buffer.from([73, 68, 51, 3, 0, 0, 0, 0, 0, frames.length]);
   const mp3 = await window.LX.musicMeta.readId3(new File([header, frames], 'tagged.mp3'));
   assert.equal(mp3.title, 'Blinding Lights');
   assert.equal(mp3.artist, 'The Weeknd');
+  assert.equal(mp3.album, 'After Hours');
   assert.equal(mp3.trackNumber, 3);
 
   const m4aBytes = Buffer.concat([box('ftyp', Buffer.from('M4A ')),
