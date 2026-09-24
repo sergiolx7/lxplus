@@ -1,4 +1,4 @@
-const LX_BUILD = 'R12.1-NEXUS-20260924';
+const LX_BUILD = 'R12.2-NEXUS-20260924';
 const CACHE = 'lxplus-shell-' + LX_BUILD;
 const CORE = ['./', './index.html', './lxplus.bundle.js', './lxplus.album-grouping.js', './lxplus.bundle.css',
   './lxplus.recovery.js', './lxplus.support.js', './lxplus.audiofx.js',
