@@ -10,11 +10,11 @@ O Worker consulta o Google Drive pela API autenticada e transmite bytes ao playe
 4. Defina `ALLOWED_ORIGIN` com o endereço exato da LX Plus (já exemplificado em `wrangler.toml`). Implemente o Worker após configurar os secrets.
 5. No ADM → **Mídia & Upload → LX Storage**, salve o endpoint HTTPS e teste um arquivo. Compartilhar arquivos com a conta de serviço é suficiente para os próximos cadastros; cole o link normal do Drive.
 
-O endereço antigo `lxplus.sergio-sousa.workers.dev` não faz mais parte do código padrão do site. O `wrangler.toml` deste pacote implanta o Worker com nome **lx-storage-drive**. Depois do deploy, salve no ADM a URL que a Cloudflare realmente devolver; não presuma que a URL antiga recebeu a atualização. Confira `GET /health?check=1`: a resposta deve incluir `"version":"R12"` e `"googleConnected":true` antes de testar o vídeo.
+O site R12.2 usa como endereço inicial o Worker **lxplus** mostrado no painel Cloudflare: `https://lxplus.sergio-sousa.workers.dev`. Uma URL salva no ADM tem prioridade. O `wrangler.toml` desta pasta configura outro nome, **lx-storage-drive**: se você implantar por ele, salve no ADM a nova URL recebida. Confira `GET /health?check=1`: a resposta deve incluir `"version":"R12"` e `"googleConnected":true` antes de testar o vídeo.
 
 ## Endpoints
 
-- `GET /health?check=1`: consulta de autenticação real; `googleConnected` só vale `true` após resposta da API.
+- `GET /health?check=1`: consulta de autenticação real; `googleConnected` só vale `true` após resposta da API. Se a API devolver 403, o Worker informa um código seguro para distinguir API desativada, limite, política do domínio ou recusa genérica. A resposta nunca inclui a mensagem completa do Google nem credenciais.
 - `GET /probe/FILE_ID?resourcekey=...`: metadados, acesso, Range/206 e identificação parcial de codecs. `codec=unknown` significa que o teste não encontrou a informação nos trechos analisados.
 - `GET /v/FILE_ID?resourcekey=...`: vídeo, com encaminhamento de `Range` e 206.
 - `HEAD /v/FILE_ID` e `OPTIONS`: cabeçalhos e preflight CORS.

@@ -18,6 +18,7 @@ const metadata = { id, name: 'video.mp4', size: '1000', mimeType: 'video/mp4',
   capabilities: { canDownload: true }, videoMediaMetadata: { width: 1920, height: 1080, durationMillis: '60000' } };
 const calls = [];
 let mediaStatus = 206, mediaType = 'video/mp4', includeRange = true;
+let healthReply = null;
 let binary = new TextEncoder().encode('ftypisom.....avc1.........mp4a......');
 
 globalThis.fetch = async (input, options = {}) => {
@@ -31,7 +32,7 @@ globalThis.fetch = async (input, options = {}) => {
       headers: { 'Content-Type': mediaType, 'Content-Length': String(binary.length),
         'Content-Range': 'bytes ' + begin + '-' + (begin + binary.length - 1) + '/1000' } });
   }
-  if (url.pathname.endsWith('/about')) return Response.json({ kind: 'drive#about' });
+  if (url.pathname.endsWith('/about')) return healthReply || Response.json({ kind: 'drive#about' });
   if (url.searchParams.has('fields')) return Response.json(metadata);
   if (url.searchParams.get('alt') === 'media') {
     const range = headers.get('range') || 'bytes=0-999';
@@ -50,6 +51,25 @@ test('health distinguishes unconfigured from connected', async () => {
   const connected = await (await worker.fetch(request('/health?check=1'), env)).json();
   assert.equal(connected.googleConnected, true);
   assert.equal(connected.mode, 'drive-api');
+});
+
+test('health explains Drive API 403 without exposing Google response details', async () => {
+  try {
+    healthReply = Response.json({ error: { status: 'PERMISSION_DENIED',
+      details: [{ reason: 'SERVICE_DISABLED' }], message: 'project 123 private details' } }, { status: 403 });
+    let report = await (await worker.fetch(request('/health?check=1'), env)).json();
+    assert.equal(report.googleConnected, false);
+    assert.equal(report.error, 'DRIVE_API_DISABLED');
+    assert.doesNotMatch(JSON.stringify(report), /project 123 private details/);
+
+    healthReply = Response.json({ error: { errors: [{ reason: 'userRateLimitExceeded' }] } }, { status: 403 });
+    report = await (await worker.fetch(request('/health?check=1'), env)).json();
+    assert.equal(report.error, 'DRIVE_QUOTA_EXCEEDED');
+
+    healthReply = Response.json({ error: { status: 'PERMISSION_DENIED' } }, { status: 403 });
+    report = await (await worker.fetch(request('/health?check=1'), env)).json();
+    assert.equal(report.error, 'DRIVE_API_REJECTED');
+  } finally { healthReply = null; }
 });
 
 test('media Range returns 206, matching headers, CORS and resource key', async () => {

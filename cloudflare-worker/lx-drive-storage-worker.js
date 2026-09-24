@@ -66,6 +66,23 @@ function errorCode(status) {
     404: 'FILE_NOT_FOUND_OR_NO_ACCESS', 416: 'RANGE_NOT_SATISFIABLE',
     429: 'DRIVE_QUOTA_EXCEEDED' })[status] || 'DRIVE_HTTP_' + status;
 }
+async function healthError(response) {
+  if (response.status !== 403) return errorCode(response.status);
+  let details = {};
+  try { details = await response.json(); } catch {}
+  const error = details?.error || {};
+  const reasons = [error.status, ...(Array.isArray(error.errors) ? error.errors.map(item => item?.reason) : []),
+    ...(Array.isArray(error.details) ? error.details.map(item => item?.reason) : [])]
+    .map(value => String(value || '').toLowerCase());
+  if (reasons.some(reason => reason === 'service_disabled' || reason === 'accessnotconfigured'))
+    return 'DRIVE_API_DISABLED';
+  if (reasons.some(reason => ['ratelimitexceeded', 'userratelimitexceeded', 'dailylimitexceeded',
+    'quotaexceeded', 'resourceexhausted'].includes(reason.replace(/_/g, ''))))
+    return 'DRIVE_QUOTA_EXCEEDED';
+  if (reasons.some(reason => reason === 'domainpolicy' || reason === 'domain_policy'))
+    return 'DRIVE_DOMAIN_POLICY';
+  return 'DRIVE_API_REJECTED';
+}
 async function drive(url, env, id = '', key = '', range = '') {
   async function get(force) {
     const headers = new Headers({ authorization: 'Bearer ' + await token(env, force) });
@@ -182,7 +199,10 @@ export default {
         else try {
           const r = await drive(API + '/about?fields=kind', env);
           connected = r.ok;
-          if (!r.ok) error = errorCode(r.status);
+          if (!r.ok) {
+            error = await healthError(r);
+            console.error('LX Storage health rejected', { status: r.status, code: error });
+          }
         } catch (e) { error = e.message; }
       }
       return headIfRequested(json({ ok: true, service: 'LX Storage', version: 'R12', mode: active ? 'drive-api' : fallbackEnabled(env) ? 'public-fallback' : 'unconfigured',
