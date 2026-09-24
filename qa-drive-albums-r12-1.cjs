@@ -70,5 +70,5 @@ const health = (version, connected=true) => ({ ok: true, json: async () =>
   });
   await assert.rejects(current.probe('gdrive:abcdefghijklmnop_123456789'), /FILE_NOT_FOUND_OR_NO_ACCESS/);
   assert.equal(calls, 2);
-  console.log('R12.2 video diagnosis and automatic music albums: PASS');
+  console.log('R12.3 video diagnosis and automatic music albums: PASS');
 })().catch(error => { console.error(error); process.exitCode = 1; });
