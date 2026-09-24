@@ -1,14 +1,18 @@
-# LX Plus NOVA — build NOVA-20260924-R1
+# LX Plus NOVA — 2026-09-24, R4
 
-HTML, CSS, JavaScript, manifest e service worker compartilham o identificador da build. O service worker busca a rede e elimina caches anteriores.
+Esta versão recupera a R3B, substituída no `main` por um commit posterior que voltou a publicar arquivos da R1. O banco, usuários, catálogo, arquivos, histórico e favoritos existentes permanecem no Supabase. Nenhuma migração ou exclusão de dados foi executada.
 
-- Comunidade: a conversa aberta não é substituída quando chegam atualizações de perfil ou amizade.
-- Música: Próxima/Anterior percorrem o catálogo publicado do mesmo gênero; player MP3 nativo preserva capa, duração, progresso e navegação. YouTube e Spotify usam seus players oficiais, em área compacta.
-- Música: botão «Ajustes de áudio MP3» com amplificação 50–180%, graves −6 a +12 dB, presets, liga/desliga e limitador. O som do YouTube e do Spotify é controlado pelos próprios provedores.
-- ADM → Músicas: abas Todas, MP3 e Links/outros; envio automático de MP3 próprios ou download de links HTTPS diretos autorizados, leitura ID3, duração, capa, qualidade original e opção de substituir a fonte de música existente. O importador em massa do Spotify busca título/capa da faixa exata e permite revisão.
-- Ajuda: respostas por assunto no botão superior e chat humano persistido no Supabase; ADM → Suporte reúne chamados e respostas. A antiga função `lx-ai` continua implantada, mas não é chamada por essa interface.
-- Carrossel: comparação independente dos campos salvos elimina a falsa mensagem de erro causada pela ordem das chaves JSONB. Prévia do título e ponto focal corrigidos.
-- Ao Vivo: ADM informa título, capa e fonte; aceita YouTube incorporável e MP4/HLS/DASH/WebM diretos. A página pública mostra os eventos cadastrados ou a mensagem de ausência.
-- Tela de assistir: controles móveis reorganizados, transmissão por Google Cast ou transmissão nativa do navegador quando a mídia e a TV são compatíveis. Qualidades adicionais 1440p, 360p e 240p só aparecem com fontes reais cadastradas.
+## Música
 
-O armazenamento, contas, catálogo, mídia, favoritos e histórico existentes foram preservados. Leia `TEST-REPORT-NOVA.md` para distinguir verificações executadas de reprodução ainda não comprovada no navegador.
+- Capa e título das músicas acionam diretamente o mesmo player; um único controlador de clique atende aos cards da tela de Música. O dock aparece de imediato com capa, título e artista mesmo quando o registro não possui áudio; uma fonte ausente produz erro visível.
+- A fila automática inclui as outras músicas publicadas do mesmo gênero. Próxima/anterior percorrem essa fila. O fluxo de MP3 da R3B, com `<audio>` nativo, URL assinada, alternativas de streaming/download, timeout e diagnóstico, foi recuperado; YouTube e Spotify continuam nos players oficiais.
+- O ouvinte pode criar playlists e álbuns pessoais, dar nome, selecionar músicas do catálogo, adicionar pelo botão ＋ de um card ou do player, editar, remover, excluir e reproduzir a coleção em sequência. No celular, a aba Playlists abre essas coleções.
+- As coleções são referências a músicas existentes, gravadas no campo `musicCollections` do JSONB de `lx_user_state` da conta atual. O resultado de sincronização é informado ao usuário; falha na nuvem não é apresentada como confirmação. Nenhum arquivo de áudio é duplicado.
+
+## Distribuição
+
+`index.html`, JavaScript, CSS, manifest e service worker usam a mesma build `NOVA-20260924-R4`. A troca da versão invalida o cache antigo. Os arquivos de origem da aplicação e das Edge Functions seguem no pacote completo.
+
+## Limite de verificação
+
+A página pública e a integridade dos arquivos podem ser verificadas sem conta. Para validar som audível de MP3 privado, reprodução oficial do YouTube/Spotify e persistência das coleções na conta real, é necessária uma sessão LX Plus autenticada. Estes pontos não devem ser marcados como aprovados sem o teste correspondente.
