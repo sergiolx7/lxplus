@@ -1,27 +1,9 @@
-# LX Storage · Drive — R8 Automático
+# LX Storage R12 — configuração e diagnóstico
 
-A R8 reduz a configuração do Worker para um fluxo de implantação automática pela Cloudflare.
+O fluxo de vídeo é **Google Drive → API autenticada → Worker → Range bytes → LX Player**. Consulte [cloudflare-worker/README.md](cloudflare-worker/README.md) para a configuração única da conta de serviço.
 
-## Como usar
+No ADM, abra **Mídia & Upload → LX Storage**, salve a URL do Worker e clique em **Testar conexão**. “Google Drive conectado” aparece apenas quando a API aceita a autenticação. Cole o link de um vídeo em **Testar arquivo antes de publicar**: o resultado separa acesso, Range/206 e compatibilidade do contêiner/codec. O teste de publicação usa o mesmo diagnóstico antes de salvar links novos.
 
-1. Publique esta R8 no repositório `sergiolx7/lxplus`.
-2. No ADM, abra **Mídia & Upload → LX Storage · Drive**.
-3. Clique em **Gerar endpoint automaticamente**.
-4. A Cloudflare abre o fluxo oficial **Deploy to Cloudflare** usando a pasta `cloudflare-worker` do próprio repositório.
-5. Entre/autorize sua conta Cloudflare e conclua o Deploy.
-6. Copie a URL gerada, por exemplo `https://lx-storage-drive.seunome.workers.dev`.
-7. Cole no campo **Endpoint do LX Storage Worker**, clique **Salvar endpoint** e depois **Testar LX Storage**.
-8. No Google Drive, compartilhe cada vídeo como **Qualquer pessoa com o link · Leitor**.
-9. No cadastro do filme, escolha **LX Storage / Drive** e cole o link normal do arquivo.
+Para maior compatibilidade, use **MP4 com H.264 + AAC** e metadados no início do arquivo (faststart). A API não revela diretamente o codec: o diagnóstico examina trechos do arquivo e marca “desconhecido” quando não consegue determinar. Faça também um teste no navegador. Sem as duas credenciais no Worker, ele responde `DRIVE_AUTH_NOT_CONFIGURED`; cadastrar apenas a URL do endpoint não conecta o Google.
 
-## Sem conta de serviço
-
-A R8 possui modo `public-drive`: não exige Service Account para começar. Arquivos compartilhados por link passam pelo Worker e chegam ao LX Player.
-
-## Arquivos privados
-
-Para arquivos privados, `GOOGLE_CLIENT_EMAIL` e `GOOGLE_PRIVATE_KEY` continuam disponíveis como configuração opcional do Worker.
-
-## Limites
-
-Google Drive e Cloudflare continuam sujeitos às quotas próprias. Esta integração não transforma o Drive em CDN ilimitada.
+A interface não armazena a private key. A capacidade de 2 TB da conta pessoal não pode ser inferida dos dados da conta de serviço.

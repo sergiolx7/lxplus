@@ -1,5 +1,3 @@
-# OPCIONAL — só preencha se quiser acessar arquivos privados do Drive.
-# Sem estas duas variáveis, o Worker funciona com arquivos compartilhados
-# como “Qualquer pessoa com o link · Leitor”.
-GOOGLE_CLIENT_EMAIL=
-GOOGLE_PRIVATE_KEY=
+# Exemplo para teste LOCAL. Nunca versionar o arquivo real .dev.vars.
+GOOGLE_CLIENT_EMAIL="sua-conta-de-servico@seu-projeto.iam.gserviceaccount.com"
+GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nCOLE_AQUI_SOMENTE_LOCALMENTE\n-----END PRIVATE KEY-----\n"

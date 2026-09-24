@@ -3,8 +3,9 @@ main = "lx-drive-storage-worker.js"
 compatibility_date = "2026-09-24"
 
 [vars]
-# Troque pelo domínio real da LX Plus. Para teste temporário, use "*".
+# Troque pelo domínio HTTPS exato da LX Plus; para mais de um, separe por vírgulas.
 ALLOWED_ORIGIN = "https://SEU-DOMINIO-AQUI"
+# ALLOW_PUBLIC_FALLBACK = "true" # somente para arquivos públicos; padrão desativado
 
 # Nunca coloque GOOGLE_PRIVATE_KEY aqui.
 # Configure como secret no painel da Cloudflare ou com wrangler secret put.
