@@ -1,4 +1,4 @@
-const LX_BUILD = 'R40.0-NEXUS-20260925';
+const LX_BUILD = 'V40.5-NEXUS-ACCESSIBILITY-20260925';
 const CACHE = 'lxplus-shell-' + LX_BUILD;
 const CORE = ['./', './index.html', './lxplus.bundle.js', './lxplus.album-grouping.js', './lxplus.bundle.css',
   './lxplus.recovery.js', './lxplus.support.js', './lxplus.audiofx.js', './lxplus.v40.js',
