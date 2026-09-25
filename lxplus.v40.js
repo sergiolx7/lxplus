@@ -2,7 +2,7 @@
    No destructive writes. New cloud features degrade to local/fallback mode until the migration is applied. */
 (()=>{
 'use strict';
-const BUILD='V40-COMPLETE-20260925';
+const BUILD='V40-REBUILD-20260925';
 window.__LX_V40_BUILD=BUILD;
 const ready=(fn,tries=180)=>{const tick=()=>{if(window.LX?.ui&&window.LX?.data&&window.LX?.admin)return fn();if(--tries>0)setTimeout(tick,100)};tick()};
 ready(()=>{
