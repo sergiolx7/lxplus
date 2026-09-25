@@ -1,4 +1,4 @@
-name: LX Plus V40 Rebuild Check
+name: LX Plus V40 Reference Check
 
 on:
   pull_request:
@@ -11,7 +11,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,33 +21,37 @@ jobs:
           node --check lxplus.bundle.js
           node --check lxplus.v40.js
           node --check lxplus.rebuild.js
+          node --check lxplus.reference.js
           node --check lxplus.recovery.js
           node --check lxplus.support.js
           node --check lxplus.audiofx.js
+          node --check service-worker.js
 
       - name: Manifest JSON
         run: |
           python3 - <<'PY'
           import json
           p=json.load(open('manifest.webmanifest',encoding='utf-8'))
-          assert p['version']=='V40-REBUILD-FINAL-20260925'
-          assert p['start_url'].endswith('V40-REBUILD-FINAL-20260925')
+          assert p['version']=='V40-REFERENCE-20260925'
+          assert p['start_url'].endswith('V40-REFERENCE-20260925')
           print('manifest ok')
           PY
 
-      - name: Rebuild wiring
+      - name: Reference wiring
         run: |
           python3 - <<'PY'
           from pathlib import Path
           html=Path('index.html').read_text(encoding='utf-8')
           sw=Path('service-worker.js').read_text(encoding='utf-8')
           assert html.count('lxplus.rebuild.css')==1
+          assert html.count('lxplus.reference.css')==1
           assert html.count('lxplus.v40.js')==1
           assert html.count('lxplus.rebuild.js')==1
-          assert 'lxplus.v40.css' not in html
-          for x in ('lxplus.rebuild.css','lxplus.v40.js','lxplus.rebuild.js'):
+          assert html.count('lxplus.reference.js')==1
+          assert 'V40-REFERENCE-20260925' in html
+          for x in ('lxplus.rebuild.css','lxplus.reference.css','lxplus.v40.js','lxplus.rebuild.js','lxplus.reference.js'):
               assert x in sw, x
-          print('wiring ok')
+          print('reference wiring ok')
           PY
 
       - name: Required assets
@@ -57,10 +61,13 @@ jobs:
           test -s lxplus.bundle.js
           test -s lxplus.rebuild.css
           test -s lxplus.rebuild.js
+          test -s lxplus.reference.css
+          test -s lxplus.reference.js
           test -s lxplus.v40.js
           test -s assets/lx-music-logo.svg
           test -s supabase/migrations/20260925154634_lxplus_v40_complete.sql
           test -s supabase/migrations/20260925165208_lxplus_v40_hardening.sql
+          test -s supabase/migrations/20260925213738_lxplus_v40_reference_security.sql
 
       - name: Static server smoke test
         run: |
@@ -68,12 +75,9 @@ jobs:
           PID=$!
           trap 'kill $PID' EXIT
           sleep 1
-          curl -fsS http://127.0.0.1:4173/index.html >/dev/null
-          curl -fsS http://127.0.0.1:4173/lxplus.rebuild.css >/dev/null
-          curl -fsS http://127.0.0.1:4173/lxplus.v40.js >/dev/null
-          curl -fsS http://127.0.0.1:4173/lxplus.rebuild.js >/dev/null
-          curl -fsS http://127.0.0.1:4173/service-worker.js >/dev/null
-          curl -fsS http://127.0.0.1:4173/manifest.webmanifest >/dev/null
+          for x in index.html lxplus.bundle.css lxplus.bundle.js lxplus.rebuild.css lxplus.v40.js lxplus.rebuild.js lxplus.reference.css lxplus.reference.js service-worker.js manifest.webmanifest; do
+            curl -fsS "http://127.0.0.1:4173/$x" >/dev/null
+          done
 
       - name: No destructive migration statements in V40 migrations
         run: |
@@ -85,3 +89,66 @@ jobs:
                   assert bad not in s, f'{bad} in {p}'
           print('migration safety scan ok')
           PY
+
+  browser-smoke:
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install browser runner
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Boot desktop, tablet and mobile
+        env:
+          BROWSER: ${{ matrix.browser }}
+        run: |
+          python3 -m http.server 4173 >/tmp/lx-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          sleep 1
+          cat > /tmp/lx-browser-smoke.cjs <<'JS'
+          const { chromium, firefox, webkit } = require(process.cwd() + '/node_modules/playwright');
+          const assert = require('node:assert');
+          const engines={chromium,firefox,webkit};
+          (async()=>{
+            const browser=await engines[process.env.BROWSER].launch({headless:true});
+            const viewports=[
+              {name:'desktop',width:1440,height:900},
+              {name:'tablet',width:820,height:1180},
+              {name:'mobile',width:390,height:844}
+            ];
+            for(const vp of viewports){
+              const context=await browser.newContext({viewport:{width:vp.width,height:vp.height}});
+              const page=await context.newPage();
+              const fatal=[];
+              page.on('pageerror',e=>fatal.push(String(e)));
+              const response=await page.goto('http://127.0.0.1:4173/index.html',{waitUntil:'domcontentloaded',timeout:30000});
+              assert(response && response.ok(), vp.name+' HTTP boot failed');
+              await page.waitForTimeout(5000);
+              const state=await page.evaluate(()=>({
+                body:document.body.innerText.length,
+                ref:document.documentElement.dataset.lxReference||'',
+                width:document.documentElement.scrollWidth,
+                client:document.documentElement.clientWidth,
+                visible:['auth','profiles','app','admin'].some(id=>{const e=document.getElementById(id);return e&&!e.classList.contains('hidden')})
+              }));
+              assert(state.body>20,vp.name+' blank body');
+              assert(state.ref==='V40-REFERENCE-20260925',vp.name+' reference layer missing');
+              assert(state.visible,vp.name+' no usable screen after boot');
+              assert(state.width<=state.client+12,vp.name+' horizontal overflow '+state.width+'/'+state.client);
+              assert(fatal.length===0,vp.name+' page errors: '+fatal.join(' | '));
+              await context.close();
+            }
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+          node /tmp/lx-browser-smoke.cjs
