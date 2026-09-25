@@ -335,4 +335,36 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installPremiereShelf,{once:true});else installPremiereShelf();
 
+  /* Admin catalog drafts stay on this device and recover after reload or network loss. */
+  function installAdminDraftRecovery(){
+    const admin=window.LX?.admin;if(!admin||typeof admin.edit!=='function'||admin.edit.__lx40Drafts)return false;
+    const original=admin.edit.bind(admin);
+    const wrapped=async(...args)=>{
+      const result=await original(...args),form=document.getElementById('contentForm');if(!form)return result;
+      const user=state().user||{},owner=String(user.id||user.email||'local'),itemId=args[0]||'',type=String(args[1]||form.querySelector('#cType')?.value||'content');
+      const key=`lx40:admin-draft:${encodeURIComponent(owner)}:${itemId?'item-'+itemId:'new-'+type}`;
+      let draft=null;try{draft=JSON.parse(localStorage.getItem(key)||'null')}catch{}
+      if(draft&&Date.now()-Number(draft.savedAt||0)>14*864e5){try{localStorage.removeItem(key)}catch{}draft=null}
+      if(draft?.fields){
+        const savedType=draft.fields.cType?.value,selector=form.querySelector('#cType');
+        if(savedType&&selector){selector.value=savedType;selector.dispatchEvent(new Event('change',{bubbles:true}))}
+        for(const [id,value] of Object.entries(draft.fields)){
+          const el=document.getElementById(id);if(!el||!form.contains(el)||['file','password'].includes(String(el.type||'').toLowerCase()))continue;
+          if(el.type==='checkbox')el.checked=!!value.checked;
+          else if(el.tagName!=='SELECT'||[...el.options].some(option=>option.value===value.value))el.value=value.value??'';
+        }
+        if(draft.source){const button=[...form.querySelectorAll('[data-media-source]')].find(el=>el.dataset.mediaSource===draft.source);button?.click()}
+        form.querySelector('#cSeason')?.dispatchEvent(new Event('change',{bubbles:true}));
+        try{localStorage.removeItem(key)}catch{}
+        window.LX?.toast?.('Rascunho ADM recuperado neste dispositivo.');
+      }
+      if(form.dataset.lx40DraftBound==='1')return result;form.dataset.lx40DraftBound='1';
+      let timer=0;const save=()=>{clearTimeout(timer);timer=setTimeout(()=>{const fields={};form.querySelectorAll('input,textarea,select').forEach(el=>{if(!el.id||['file','password'].includes(String(el.type||'').toLowerCase()))return;fields[el.id]={value:el.value,checked:el.type==='checkbox'?!!el.checked:undefined}});const source=form.querySelector('[data-media-source].active')?.dataset.mediaSource||'';try{localStorage.setItem(key,JSON.stringify({savedAt:Date.now(),fields,source}))}catch{}},300)};
+      form.addEventListener('input',save);form.addEventListener('change',save);form.addEventListener('submit',save,true);addEventListener('pagehide',save,{once:true});
+      return result;
+    };
+    wrapped.__lx40Drafts=true;admin.edit=wrapped;return true;
+  }
+  let draftInitAttempts=0;(function retryAdminDrafts(){if(installAdminDraftRecovery()||draftInitAttempts++>20)return;setTimeout(retryAdminDrafts,500)})();
+
 })();
