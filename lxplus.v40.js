@@ -166,6 +166,7 @@
     window.__lx40AlertToast=true;
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindPlayerDragging,{once:true});else bindPlayerDragging();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watchRanking,{once:true});else watchRanking();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watchAdminDashboard,{once:true});else watchAdminDashboard();
   document.addEventListener('lx:music-closed',()=>setExpanded(false));
@@ -203,4 +204,38 @@
     new MutationObserver(records=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;for(const record of records)for(const node of record.addedNodes){if(node.nodeType!==1)continue;if(node.matches?.('img'))prepareImage(node);node.querySelectorAll?.('img').forEach(prepareImage)}})}).observe(document.body,{childList:true,subtree:true});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watchImages,{once:true});else watchImages();
+
+  /* LX Floating Player drag v40.2: desktop position with local persistence. */
+  function bindPlayerDragging(){
+    const el=dock(),info=el?.querySelector('.music-info');if(!el||!info||info.dataset.lx40DragBound)return;
+    info.dataset.lx40DragBound='1';info.classList.add('lx40-player-drag-handle');
+    const key='lx40:player-position';
+    const place=(x,y,persist=false)=>{
+      const rect=el.getBoundingClientRect(),left=Math.max(8,Math.min(innerWidth-rect.width-8,x)),top=Math.max(8,Math.min(innerHeight-rect.height-8,y));
+      el.style.setProperty('left',left+'px','important');el.style.setProperty('top',top+'px','important');
+      el.style.setProperty('right','auto','important');el.style.setProperty('bottom','auto','important');
+      if(persist)try{localStorage.setItem(key,JSON.stringify({x:left,y:top}))}catch{}
+    };
+    try{const saved=JSON.parse(localStorage.getItem(key)||'null');if(Number.isFinite(saved?.x)&&Number.isFinite(saved?.y))place(saved.x,saved.y)}catch{}
+    let drag=null,suppressClick=false;
+    info.title='Arraste para reposicionar · clique para expandir';
+    info.addEventListener('pointerdown',event=>{
+      if(event.pointerType!=='mouse'||event.button!==0||el.classList.contains('lx40-expanded')||event.target.closest('button'))return;
+      const rect=el.getBoundingClientRect();drag={id:event.pointerId,startX:event.clientX,startY:event.clientY,left:rect.left,top:rect.top,moved:false};
+    });
+    document.addEventListener('pointermove',event=>{
+      if(!drag||event.pointerId!==drag.id)return;
+      const dx=event.clientX-drag.startX,dy=event.clientY-drag.startY;
+      if(!drag.moved&&Math.hypot(dx,dy)<6)return;
+      drag.moved=true;place(drag.left+dx,drag.top+dy);event.preventDefault();
+    },{passive:false});
+    const finish=event=>{
+      if(!drag||event.pointerId!==drag.id)return;
+      if(drag.moved){const rect=el.getBoundingClientRect();place(rect.left,rect.top,true);suppressClick=true;setTimeout(()=>{suppressClick=false},350)}
+      drag=null;
+    };
+    document.addEventListener('pointerup',finish);document.addEventListener('pointercancel',finish);
+    info.addEventListener('click',event=>{if(!suppressClick)return;event.preventDefault();event.stopImmediatePropagation();suppressClick=false},true);
+    addEventListener('resize',()=>{const rect=el.getBoundingClientRect();place(rect.left,rect.top,true)});
+  }
 })();
