@@ -17,6 +17,25 @@
       .lx40-command-results{max-height:min(54vh,440px);overflow:auto;padding:0 8px 8px}.lx40-command-item{display:grid;width:100%;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:11px;padding:10px;border:0;border-radius:12px;background:transparent;color:inherit;text-align:left;cursor:pointer;transition:background 160ms ease,transform 160ms ease}.lx40-command-item:hover,.lx40-command-item:focus-visible{outline:none;background:rgba(255,255,255,.075)}.lx40-command-item:active{transform:scale(.99)}
       .lx40-command-item>span:nth-child(2){display:grid;gap:3px;min-width:0}.lx40-command-item strong{font-size:13px}.lx40-command-item small{overflow:hidden;color:#a4a4b1;font-size:11px;text-overflow:ellipsis;white-space:nowrap}.lx40-command-icon{display:grid;width:34px;height:34px;place-items:center;border:1px solid rgba(167,131,255,.18);border-radius:10px;background:rgba(167,131,255,.08);color:#c1a9ff;font-size:17px}
       .lx40-command-empty{margin:0;padding:22px;color:#a4a4b1;text-align:center;font-size:13px}.lx40-command-box>small{display:block;padding:10px 18px 13px;border-top:1px solid rgba(255,255,255,.07);color:#858590;font-size:10px}@media(max-width:600px){.lx40-command-palette{padding:9vh 10px 20px}.lx40-command-box{border-radius:16px}.lx40-command-item{padding:9px 7px}}@media(prefers-reduced-motion:reduce){.lx40-command-item{transition:none}}
+      #modal .ranking-table{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;align-items:end}
+      #modal .ranking-table>.rank-row{position:relative;display:flex;min-width:0;min-height:158px;flex-direction:column;justify-content:flex-end;align-items:center;gap:9px;padding:18px 12px 16px;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:linear-gradient(155deg,rgba(255,255,255,.075),rgba(255,255,255,.025));text-align:center;box-shadow:0 14px 35px rgba(0,0,0,.22);transition:transform 180ms ease,border-color 180ms ease,box-shadow 180ms ease}
+      #modal .ranking-table>.rank-row:nth-child(1){grid-column:2;grid-row:1;min-height:204px;border-color:rgba(248,205,112,.48);background:radial-gradient(ellipse at 50% 0,rgba(248,205,112,.2),transparent 70%),linear-gradient(155deg,rgba(255,255,255,.085),rgba(255,255,255,.025));box-shadow:0 0 28px rgba(248,205,112,.08),0 18px 40px rgba(0,0,0,.3)}
+      #modal .ranking-table>.rank-row:nth-child(2){grid-column:1;grid-row:1;margin-bottom:0;border-color:rgba(204,216,233,.3)}
+      #modal .ranking-table>.rank-row:nth-child(3){grid-column:3;grid-row:1;margin-bottom:0;border-color:rgba(196,133,93,.32)}
+      #modal .ranking-table>.rank-row:nth-child(n+4){grid-column:1/-1;min-height:62px;flex-direction:row;justify-content:space-between;gap:12px;padding:12px 15px;text-align:left}
+      #modal .ranking-table>.rank-row:nth-child(n+4)>div{flex:1;text-align:left}
+      #modal .ranking-table>.rank-row:nth-child(-n+3) .position{display:grid;min-width:48px;min-height:48px;place-items:center;border:1px solid rgba(255,255,255,.16);border-radius:50%;background:rgba(0,0,0,.22);font-size:20px;font-weight:900}
+      #modal .ranking-table>.rank-row:nth-child(1) .position{min-width:60px;min-height:60px;border-color:rgba(248,205,112,.62);color:#ffe4a2;font-size:24px;box-shadow:0 0 20px rgba(248,205,112,.15)}
+      #modal .ranking-table>.rank-row:nth-child(2) .position{color:#d8e0ef}#modal .ranking-table>.rank-row:nth-child(3) .position{color:#e9b394}
+      #modal .ranking-table>.rank-row:nth-child(-n+3)>div strong{font-size:clamp(13px,2vw,16px);overflow-wrap:anywhere}
+      #modal .lx40-podium-avatar{display:grid;place-items:center;width:56px;height:56px;margin-bottom:1px;border-radius:50%;background:linear-gradient(145deg,rgba(255,255,255,.2),rgba(255,255,255,.035));box-shadow:0 8px 20px rgba(0,0,0,.28)}
+      #modal .lx40-podium-avatar>div{width:52px!important;height:52px!important;min-width:52px!important;border-radius:50%!important;font-size:20px!important}
+      #modal .ranking-table>.rank-row:nth-child(1) .lx40-podium-avatar{width:72px;height:72px;background:linear-gradient(145deg,rgba(248,205,112,.36),rgba(248,205,112,.07));box-shadow:0 0 24px rgba(248,205,112,.15)}
+      #modal .ranking-table>.rank-row:nth-child(1) .lx40-podium-avatar>div{width:66px!important;height:66px!important;min-width:66px!important;font-size:25px!important}
+      #modal .ranking-table>.rank-row:nth-child(1)>b{color:#ffe4a2;font-size:17px}
+      #modal .ranking-table>.rank-row:nth-child(n+4):hover{transform:translateY(-2px);border-color:rgba(167,131,255,.28);box-shadow:0 14px 34px rgba(0,0,0,.3)}
+      @media(max-width:560px){#modal .ranking-table{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}#modal .ranking-table>.rank-row:nth-child(1){grid-column:1/-1;grid-row:1;min-height:156px}#modal .ranking-table>.rank-row:nth-child(2){grid-column:1;grid-row:2;min-height:132px}#modal .ranking-table>.rank-row:nth-child(3){grid-column:2;grid-row:2;min-height:132px}#modal .ranking-table>.rank-row:nth-child(n+4){grid-column:1/-1;min-height:58px}}
+      @media(prefers-reduced-motion:reduce){#modal .ranking-table>.rank-row{transition:none}}
     `;document.head.appendChild(style);
   }
   function setExpanded(value){
@@ -41,10 +60,12 @@
   }
   const commands=[
     {label:'Adicionar filme',hint:'Abrir cadastro de filme',type:'Filme',icon:'＋'},
+    {label:'Adicionar série',hint:'Abrir cadastro de série',type:'Série',icon:'▣'},
     {label:'Adicionar música',hint:'Abrir cadastro de música',type:'Música',icon:'♫'},
-    {label:'Importar catálogo',hint:'Abrir Smart Import',page:'importer',icon:'⇧'},
+    {label:'Adicionar livro',hint:'Abrir cadastro de livro',type:'Livro',icon:'▤'},
+    {label:'Importar Drive e catálogo',hint:'Abrir LX Smart Import',page:'importer',icon:'⇧'},
     {label:'Buscar usuário',hint:'Gerenciar e localizar usuários',page:'admins',icon:'⌕'},
-    {label:'Ver painel e erros',hint:'Abrir dashboard administrativo',page:'dashboard',icon:'▦'},
+    {label:'Ver saúde e erros',hint:'Abrir dashboard e monitor da plataforma',page:'dashboard',icon:'▦'},
     {label:'Criar LX Live',hint:'Abrir gerenciamento de transmissões',page:'live',icon:'●'}
   ];
   let palette=null;
@@ -80,6 +101,25 @@
     if(command.type){lx.openAdmin?.();setTimeout(()=>lx.admin?.edit?.(null,command.type),80);return}
     lx.openAdmin?.();setTimeout(()=>{if(command.page)lx.admin?.render?.(command.page);if(command.page==='dashboard')lx.recovery?.monitor?.()},80);
   }
+  function enhanceRanking(){
+    const rows=Array.from(document.querySelectorAll('#modal .ranking-table>.rank-row')).slice(0,3);
+    if(!rows.length)return;
+    const users=window.LX?.data?.users?.()||[];
+    rows.forEach(row=>{
+      if(row.querySelector('.lx40-podium-avatar'))return;
+      const name=row.querySelector('strong')?.textContent?.trim()||'LX';
+      const user=users.find(item=>String(item.name||'').trim()===name);
+      const holder=document.createElement('span');holder.className='lx40-podium-avatar';holder.setAttribute('aria-hidden','true');
+      if(window.LX?.avatarHTML)holder.innerHTML=window.LX.avatarHTML(user?.name||name,user?.email||'','avatar-inline');
+      else holder.textContent=name.split(/\s+/).slice(0,2).map(part=>part[0]||'').join('').toUpperCase();
+      row.insertBefore(holder,row.firstChild);
+    });
+  }
+  function watchRanking(){
+    const modal=document.getElementById('modal');if(!modal||!window.MutationObserver)return;
+    let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;enhanceRanking()})}).observe(modal,{childList:true,subtree:true});
+    enhanceRanking();
+  }
   document.addEventListener('keydown',event=>{
     if(!(event.ctrlKey||event.metaKey)||event.key.toLowerCase()!=='k'||event.altKey)return;
     if(!isAdmin())return;
@@ -87,11 +127,13 @@
   });
   window.LXFloatingPlayer={expand:()=>setExpanded(true),collapse:()=>setExpanded(false),toggle,bind};
   window.LXCommandPalette={open:openPalette,close:closePalette};
+  installToastStyles();
   if(!window.__lx40AlertToast){
     const nativeAlert=window.alert?.bind(window);
     window.alert=message=>{const notify=window.LX?.toast||window.LXShell?.toast;if(notify)notify(String(message??''));else nativeAlert?.(String(message??''))};
     window.__lx40AlertToast=true;
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watchRanking,{once:true});else watchRanking();
   document.addEventListener('lx:music-closed',()=>setExpanded(false));
 })();
