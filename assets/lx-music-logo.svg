@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="LX Music">
+<rect x="7" y="7" width="114" height="114" rx="30" fill="#0a0a0e" stroke="#ffffff22"/>
+<path d="M34 37v52h29V77H47V37H34Zm34 0h14l9 16 10-16h14L98 63l18 26h-14L91 72 80 89H66l18-26-16-26Z" fill="#fff"/>
+<path d="M30 101c18-8 43-8 70 0" fill="none" stroke="#9d7cff" stroke-width="5" stroke-linecap="round"/>
+</svg>
