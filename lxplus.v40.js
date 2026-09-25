@@ -1,394 +1,335 @@
-/* LX Plus v40 interaction layer: non-destructive UI upgrades. */
+/* LX Plus v40 COMPLETE — additive maintenance layer over R12.4.
+   No destructive writes. New cloud features degrade to local/fallback mode until the migration is applied. */
 (()=>{
-  'use strict';
-  const dock=()=>document.getElementById('musicDock');
-  const state=()=>window.LX?.ui?.state||{};
-  const isAdmin=()=>{
-    const user=state().user||{};
-    return user.admin===true||user.admin==='true'||['admin','administrator','super_admin'].includes(String(user.role||user.permission||'').toLowerCase());
-  };
-  function installToastStyles(){
-    if(document.getElementById('lx40-command-styles'))return;
-    const style=document.createElement('style');style.id='lx40-command-styles';style.textContent=`
-      :where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:2px solid #b99aff!important;outline-offset:3px}
-      @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
-      .lx40-command-palette{position:fixed;inset:0;z-index:2147483600;display:grid;place-items:start center;padding:13vh 16px 24px;background:rgba(0,0,0,.62);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-      .lx40-command-palette.hidden{display:none}.lx40-command-box{width:min(580px,100%);overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:20px;background:rgba(19,19,24,.97);box-shadow:0 28px 90px rgba(0,0,0,.58),0 0 38px rgba(154,112,255,.12);color:#f5f5f8}
-      .lx40-command-head{display:flex;align-items:center;justify-content:space-between;padding:15px 18px 7px;color:#a783ff;font-size:10px;font-weight:900;letter-spacing:.16em}.lx40-command-head kbd,.lx40-command-item kbd{padding:3px 7px;border:1px solid rgba(255,255,255,.12);border-radius:7px;color:#a4a4b1;font:600 10px system-ui}
-      .lx40-command-search{display:block;width:calc(100% - 28px);margin:5px 14px 12px;padding:13px 14px;border:1px solid rgba(255,255,255,.11);border-radius:12px;background:rgba(255,255,255,.045);color:#fff;font:500 15px system-ui;outline:none}.lx40-command-search:focus{border-color:rgba(167,131,255,.72);box-shadow:0 0 0 3px rgba(167,131,255,.12)}
-      .lx40-command-results{max-height:min(54vh,440px);overflow:auto;padding:0 8px 8px}.lx40-command-item{display:grid;width:100%;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:11px;padding:10px;border:0;border-radius:12px;background:transparent;color:inherit;text-align:left;cursor:pointer;transition:background 160ms ease,transform 160ms ease}.lx40-command-item:hover,.lx40-command-item:focus-visible{outline:none;background:rgba(255,255,255,.075)}.lx40-command-item:active{transform:scale(.99)}
-      .lx40-command-item>span:nth-child(2){display:grid;gap:3px;min-width:0}.lx40-command-item strong{font-size:13px}.lx40-command-item small{overflow:hidden;color:#a4a4b1;font-size:11px;text-overflow:ellipsis;white-space:nowrap}.lx40-command-icon{display:grid;width:34px;height:34px;place-items:center;border:1px solid rgba(167,131,255,.18);border-radius:10px;background:rgba(167,131,255,.08);color:#c1a9ff;font-size:17px}
-      .lx40-command-empty{margin:0;padding:22px;color:#a4a4b1;text-align:center;font-size:13px}.lx40-command-box>small{display:block;padding:10px 18px 13px;border-top:1px solid rgba(255,255,255,.07);color:#858590;font-size:10px}@media(max-width:600px){.lx40-command-palette{padding:9vh 10px 20px}.lx40-command-box{border-radius:16px}.lx40-command-item{padding:9px 7px}}@media(prefers-reduced-motion:reduce){.lx40-command-item{transition:none}}
-      #modal .ranking-table{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;align-items:end}
-      #modal .ranking-table>.rank-row{position:relative;display:flex;min-width:0;min-height:158px;flex-direction:column;justify-content:flex-end;align-items:center;gap:9px;padding:18px 12px 16px;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:linear-gradient(155deg,rgba(255,255,255,.075),rgba(255,255,255,.025));text-align:center;box-shadow:0 14px 35px rgba(0,0,0,.22);transition:transform 180ms ease,border-color 180ms ease,box-shadow 180ms ease}
-      #modal .ranking-table>.rank-row:nth-child(1){grid-column:2;grid-row:1;min-height:204px;border-color:rgba(248,205,112,.48);background:radial-gradient(ellipse at 50% 0,rgba(248,205,112,.2),transparent 70%),linear-gradient(155deg,rgba(255,255,255,.085),rgba(255,255,255,.025));box-shadow:0 0 28px rgba(248,205,112,.08),0 18px 40px rgba(0,0,0,.3)}
-      #modal .ranking-table>.rank-row:nth-child(2){grid-column:1;grid-row:1;margin-bottom:0;border-color:rgba(204,216,233,.3)}
-      #modal .ranking-table>.rank-row:nth-child(3){grid-column:3;grid-row:1;margin-bottom:0;border-color:rgba(196,133,93,.32)}
-      #modal .ranking-table>.rank-row:nth-child(n+4){grid-column:1/-1;min-height:62px;flex-direction:row;justify-content:space-between;gap:12px;padding:12px 15px;text-align:left}
-      #modal .ranking-table>.rank-row:nth-child(n+4)>div{flex:1;text-align:left}
-      #modal .ranking-table>.rank-row:nth-child(-n+3) .position{display:grid;min-width:48px;min-height:48px;place-items:center;border:1px solid rgba(255,255,255,.16);border-radius:50%;background:rgba(0,0,0,.22);font-size:20px;font-weight:900}
-      #modal .ranking-table>.rank-row:nth-child(1) .position{min-width:60px;min-height:60px;border-color:rgba(248,205,112,.62);color:#ffe4a2;font-size:24px;box-shadow:0 0 20px rgba(248,205,112,.15)}
-      #modal .ranking-table>.rank-row:nth-child(2) .position{color:#d8e0ef}#modal .ranking-table>.rank-row:nth-child(3) .position{color:#e9b394}
-      #modal .ranking-table>.rank-row:nth-child(-n+3)>div strong{font-size:clamp(13px,2vw,16px);overflow-wrap:anywhere}
-      #modal .lx40-podium-avatar{display:grid;place-items:center;width:56px;height:56px;margin-bottom:1px;border-radius:50%;background:linear-gradient(145deg,rgba(255,255,255,.2),rgba(255,255,255,.035));box-shadow:0 8px 20px rgba(0,0,0,.28)}
-      #modal .lx40-podium-avatar>div{width:52px!important;height:52px!important;min-width:52px!important;border-radius:50%!important;font-size:20px!important}
-      #modal .ranking-table>.rank-row:nth-child(1) .lx40-podium-avatar{width:72px;height:72px;background:linear-gradient(145deg,rgba(248,205,112,.36),rgba(248,205,112,.07));box-shadow:0 0 24px rgba(248,205,112,.15)}
-      #modal .ranking-table>.rank-row:nth-child(1) .lx40-podium-avatar>div{width:66px!important;height:66px!important;min-width:66px!important;font-size:25px!important}
-      #modal .ranking-table>.rank-row:nth-child(1)>b{color:#ffe4a2;font-size:17px}
-      #modal .ranking-table>.rank-row:nth-child(n+4):hover{transform:translateY(-2px);border-color:rgba(167,131,255,.28);box-shadow:0 14px 34px rgba(0,0,0,.3)}
-      .lx40-admin-catalog{margin:14px 0 18px;padding:17px;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:linear-gradient(145deg,rgba(25,25,32,.92),rgba(14,14,19,.88));box-shadow:0 14px 38px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.035)}
-      .lx40-admin-catalog-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}.lx40-admin-catalog-head strong{font-size:14px;letter-spacing:.01em}.lx40-admin-catalog-head small{color:#a4a4b1;font-size:11px}
-      .lx40-admin-catalog-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}.lx40-admin-catalog-item{min-width:0;padding:12px;border:1px solid rgba(255,255,255,.07);border-radius:13px;background:rgba(255,255,255,.035)}.lx40-admin-catalog-item span{display:block;overflow:hidden;color:#a4a4b1;font-size:10px;text-overflow:ellipsis;white-space:nowrap}.lx40-admin-catalog-item b{display:block;margin-top:6px;color:#f5f5f8;font-size:clamp(18px,2vw,24px);font-variant-numeric:tabular-nums;line-height:1}
-      @media(max-width:760px){.lx40-admin-catalog-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:460px){.lx40-admin-catalog{padding:13px}.lx40-admin-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lx40-admin-catalog-head{align-items:flex-start;flex-direction:column;gap:4px}}
-      @media(max-width:560px){#modal .ranking-table{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}#modal .ranking-table>.rank-row:nth-child(1){grid-column:1/-1;grid-row:1;min-height:156px}#modal .ranking-table>.rank-row:nth-child(2){grid-column:1;grid-row:2;min-height:132px}#modal .ranking-table>.rank-row:nth-child(3){grid-column:2;grid-row:2;min-height:132px}#modal .ranking-table>.rank-row:nth-child(n+4){grid-column:1/-1;min-height:58px}}
-      @media(prefers-reduced-motion:reduce){#modal .ranking-table>.rank-row{transition:none}}
+'use strict';
+const BUILD='V40-COMPLETE-20260925';
+window.__LX_V40_BUILD=BUILD;
+const ready=(fn,tries=180)=>{const tick=()=>{if(window.LX?.ui&&window.LX?.data&&window.LX?.admin)return fn();if(--tries>0)setTimeout(tick,100)};tick()};
+ready(()=>{
+const LX=window.LX, U=LX.ui, D=LX.data, $=id=>document.getElementById(id), qs=(s,r=document)=>r.querySelector(s), qsa=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>U?.esc?U.esc(String(s??'')):String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clean=s=>String(s??'').trim();
+const fmt=n=>new Intl.NumberFormat('pt-BR').format(Math.round(Number(n)||0));
+const monthKey=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+const monthLabel=(key=monthKey())=>{const [y,m]=String(key).split('-').map(Number);return new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(new Date(y,m-1,1)).replace(/^./,x=>x.toUpperCase())};
+const initials=n=>clean(n||'LX').split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();
+const safeUrl=v=>{try{const u=new URL(clean(v));return u.protocol==='https:'?u.toString():''}catch{return''}};
+const ls={get(k,f=null){try{const v=localStorage.getItem(k);return v==null?f:JSON.parse(v)}catch{return f}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}return v}};
+const featureDefaults={musicV40:true,smartImport:true,liveV40:true,top10V40:true,presenceV40:true,floatingPlayer:true,rankingV40:true,communityV40:true,diagnosticsV40:true};
+const features={...featureDefaults,...ls.get('lx40:features',{})};
+LX.config.features={...(LX.config.features||{}),...features};
+function feature(name){return LX.config.features?.[name]!==false}
+function applyFeatureValues(values={}){for(const key of Object.keys(featureDefaults)){if(typeof values[key]==='boolean'){features[key]=values[key];LX.config.features[key]=values[key]}}ls.set('lx40:features',features);return features}
+async function loadFeatureFlags(){const db=LX.cloud?.db?.();if(!db)return features;try{const r=await db.from('lx_settings').select('value').eq('key','v40_features').maybeSingle();if(!r.error&&r.data?.value)applyFeatureValues(typeof r.data.value==='string'?JSON.parse(r.data.value):r.data.value)}catch{}return features}
+async function persistFeatureFlags(){const db=LX.cloud?.db?.();if(!db)return false;try{const r=await db.from('lx_settings').upsert({key:'v40_features',value:{...features},updated_at:new Date().toISOString()},{onConflict:'key'});if(r.error)throw r.error;return true}catch(e){if(!/permission|policy|does not exist|schema cache|relation/i.test(e?.message||''))console.warn('LX feature flags',e);return false}}
+function setFeature(name,value){if(!(name in featureDefaults))return false;features[name]=!!value;LX.config.features[name]=!!value;ls.set('lx40:features',features);persistFeatureFlags();return features[name]}
+setTimeout(()=>loadFeatureFlags().then(()=>{if(U.state?.adminPage==='v40features')renderFeatures($('adminMain'))}),0);
 
-      /* LX Design System v40.7: cohesive surfaces, type scale and responsive controls. */
-      :root{--lx40-bg:#09090c;--lx40-surface:rgba(20,20,26,.82);--lx40-surface-raised:rgba(28,28,36,.92);--lx40-border:rgba(255,255,255,.085);--lx40-border-strong:rgba(255,255,255,.14);--lx40-text:#f6f5fa;--lx40-muted:#a8a6b2;--lx40-accent:#b99aff;--lx40-glow:rgba(167,131,255,.13);--lx40-radius:18px;--lx40-shadow:0 16px 44px rgba(0,0,0,.26);--lx40-ease:180ms cubic-bezier(.2,.7,.2,1)}
-      body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
-      #hero h1,.hero h1,.hero-title,.hero-copy h1{font-size:clamp(2.15rem,5.2vw,4.5rem)!important;line-height:1.02!important;letter-spacing:-.045em!important;text-wrap:balance}
-      #hero p,.hero p,.hero-description,.hero-copy p{max-width:54ch;font-size:clamp(.9rem,1.2vw,1rem)!important;line-height:1.55!important}
-      .rail-section h2,.section-title,.content-section h2{font-size:clamp(1.2rem,2vw,1.55rem)!important;line-height:1.2;letter-spacing:-.025em}
-      .rail-section,.content-section{scroll-margin-top:92px}
-      .card-title,.movie-card h3,.content-card h3{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-height:1.3}
-      :where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:2px solid #b99aff!important;outline-offset:3px}
-      :where(.primary-btn,.glass-btn,.rail-arrow,.icon-btn,.nav-link,button){transition:background-color var(--lx40-ease),border-color var(--lx40-ease),box-shadow var(--lx40-ease),transform var(--lx40-ease),color var(--lx40-ease)}
-      :where(input:not([type=checkbox]):not([type=radio]),select,textarea){max-width:100%;border-radius:12px}
-      :where(.card,.movie-card,.content-card,.album-card,.book-card,.live-card){border-color:var(--lx40-border);box-shadow:0 8px 28px rgba(0,0,0,.13);transition:transform var(--lx40-ease),border-color var(--lx40-ease),box-shadow var(--lx40-ease)}
-      :where(.card,.movie-card,.content-card,.album-card,.book-card,.live-card):hover{border-color:rgba(185,154,255,.28);box-shadow:0 14px 34px rgba(0,0,0,.22),0 0 24px var(--lx40-glow)}
-      :where(.primary-btn,.glass-btn){min-height:42px;border-radius:12px}
-      :where(.glass-btn,.rail-arrow,.icon-btn){border:1px solid var(--lx40-border-strong);background:rgba(24,24,31,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-      :where(.primary-btn,.glass-btn):active,:where(.rail-arrow,.icon-btn):active{transform:scale(.97)}
-      :where(.modal,.modal-content,[role=dialog]){border-color:var(--lx40-border-strong);border-radius:var(--lx40-radius);box-shadow:var(--lx40-shadow),0 0 36px var(--lx40-glow)}
-      :where(.topbar,.category-nav){backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-      .rail-arrow{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;font-size:19px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
-      @media(hover:none),(pointer:coarse){.rail-arrow{opacity:1!important;visibility:visible!important;display:grid!important}}
-      @media(max-width:700px){#hero h1,.hero h1,.hero-title,.hero-copy h1{font-size:clamp(2rem,9vw,3rem)!important}.hero p,.hero-description,.hero-copy p{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2}.rail-section h2,.section-title,.content-section h2{font-size:clamp(1.15rem,5vw,1.4rem)!important}.rail-arrow{width:38px;height:38px}}
-      @media(prefers-reduced-motion:reduce){:where(.card,.movie-card,.content-card,.album-card,.book-card,.live-card,.primary-btn,.glass-btn,.rail-arrow,.icon-btn){transition:none}}
-    `;document.head.appendChild(style);
-  }
-  function setExpanded(value){
-    const el=dock();if(!el)return false;
-    const expanded=!!value;el.classList.toggle('lx40-expanded',expanded);
-    el.setAttribute('aria-label',expanded?'LX Floating Player expandido':'LX Floating Player');
-    try{localStorage.setItem('lx40:player-expanded',expanded?'1':'0')}catch{}
-    return expanded;
-  }
-  function toggle(){const el=dock();return setExpanded(!el?.classList.contains('lx40-expanded'))}
-  function bind(){
-    const el=dock();if(!el||el.dataset.lx40Bound)return;el.dataset.lx40Bound='1';
-    let expanded=false;try{expanded=localStorage.getItem('lx40:player-expanded')==='1'}catch{}
-    setExpanded(expanded);
-    const info=el.querySelector('.music-info');
-    if(info){
-      info.tabIndex=0;info.setAttribute('role','button');info.setAttribute('aria-label','Expandir ou recolher o player');
-      info.addEventListener('click',e=>{if(e.target.closest('button'))return;toggle()});
-      info.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle()}});
-    }
-    el.addEventListener('keydown',e=>{if(e.key==='Escape'&&el.classList.contains('lx40-expanded'))setExpanded(false)});
-  }
-  const commands=[
-    {label:'Adicionar filme',hint:'Abrir cadastro de filme',type:'Filme',icon:'＋'},
-    {label:'Adicionar série',hint:'Abrir cadastro de série',type:'Série',icon:'▣'},
-    {label:'Adicionar música',hint:'Abrir cadastro de música',type:'Música',icon:'♫'},
-    {label:'Adicionar livro',hint:'Abrir cadastro de livro',type:'Livro',icon:'▤'},
-    {label:'Importar Drive e catálogo',hint:'Abrir LX Smart Import',page:'importer',icon:'⇧'},
-    {label:'Buscar usuário',hint:'Gerenciar e localizar usuários',page:'admins',icon:'⌕'},
-    {label:'Ver saúde e erros',hint:'Abrir dashboard e monitor da plataforma',page:'dashboard',icon:'▦'},
-    {label:'Criar LX Live',hint:'Abrir gerenciamento de transmissões',page:'live',icon:'●'}
-  ];
-  let palette=null,paletteReturnFocus=null,activeCommandIndex=0;
-  function ensurePalette(){
-    if(palette)return palette;
-    installToastStyles();
-    palette=document.createElement('section');palette.className='lx40-command-palette hidden';palette.setAttribute('role','dialog');palette.setAttribute('aria-modal','true');palette.setAttribute('aria-label','Comandos do LX Admin');
-    palette.innerHTML='<div class="lx40-command-box"><div class="lx40-command-head"><span>LX ADMIN</span><kbd>ESC</kbd></div><input type="search" class="lx40-command-search" placeholder="O que você quer fazer?" aria-label="Buscar comando" aria-controls="lx40-command-results"><div class="lx40-command-results" id="lx40-command-results" role="listbox" aria-label="Ações administrativas"></div><small>Use Ctrl + K para abrir esta paleta.</small></div>';
-    document.body.appendChild(palette);
-    palette.addEventListener('click',event=>{if(event.target===palette)closePalette()});
-    palette.addEventListener('keydown',event=>{
-      if(event.key==='Escape'){event.preventDefault();closePalette();return}
-      if(event.key!=='Tab')return;
-      const search=palette.querySelector('.lx40-command-search');
-      const items=Array.from(palette.querySelectorAll('[data-command]'));
-      const focusable=[search,...items].filter(el=>el&&!el.disabled&&el.getClientRects().length);
-      if(!focusable.length){event.preventDefault();search?.focus();return}
-      const first=focusable[0],last=focusable[focusable.length-1];
-      if(event.shiftKey&&(document.activeElement===first||!palette.contains(document.activeElement))){event.preventDefault();last.focus()}
-      else if(!event.shiftKey&&(document.activeElement===last||!palette.contains(document.activeElement))){event.preventDefault();first.focus()}
-    });
-    palette.querySelector('.lx40-command-search').addEventListener('input',()=>{activeCommandIndex=0;renderCommands()});
-    palette.querySelector('.lx40-command-search').addEventListener('keydown',event=>{
-      const items=Array.from(palette.querySelectorAll('[data-command]'));
-      if(event.key==='ArrowDown'||event.key==='ArrowUp'){
-        if(!items.length)return;
-        event.preventDefault();activeCommandIndex=(activeCommandIndex+(event.key==='ArrowDown'?1:-1)+items.length)%items.length;
-        items.forEach((item,index)=>item.setAttribute('aria-selected',index===activeCommandIndex?'true':'false'));
-        palette.querySelector('.lx40-command-search').setAttribute('aria-activedescendant',items[activeCommandIndex].id);
-      }else if(event.key==='Enter'&&items.length){event.preventDefault();items[activeCommandIndex]?.click()}
-    });
-    palette.querySelector('.lx40-command-results').addEventListener('click',event=>{
-      const button=event.target.closest('[data-command]');if(!button)return;
-      const command=commands[Number(button.dataset.command)];closePalette();runCommand(command);
-    });
-    renderCommands();return palette;
-  }
-  function renderCommands(){
-    if(!palette)return;
-    const q=palette.querySelector('.lx40-command-search').value.trim().toLocaleLowerCase('pt-BR');
-    const results=palette.querySelector('.lx40-command-results');
-    const matches=commands.map((item,index)=>({item,index})).filter(({item})=>!q||`${item.label} ${item.hint}`.toLocaleLowerCase('pt-BR').includes(q));
-    activeCommandIndex=Math.max(0,Math.min(activeCommandIndex,matches.length-1));
-    results.innerHTML=matches.map(({item,index},position)=>`<button type="button" id="lx40-command-${index}" role="option" aria-selected="${position===activeCommandIndex?'true':'false'}" tabindex="-1" class="lx40-command-item" data-command="${index}"><span class="lx40-command-icon" aria-hidden="true">${item.icon}</span><span><strong>${item.label}</strong><small>${item.hint}</small></span><kbd>↵</kbd></button>`).join('')||'<p class="lx40-command-empty">Nenhum comando encontrado.</p>';
-    const search=palette.querySelector('.lx40-command-search');
-    if(matches.length)search.setAttribute('aria-activedescendant',`lx40-command-${matches[activeCommandIndex].index}`);else search.removeAttribute('aria-activedescendant');
-  }
-  function openPalette(){
-    if(!isAdmin())return false;
-    const el=ensurePalette();paletteReturnFocus=document.activeElement;activeCommandIndex=0;el.classList.remove('hidden');el.querySelector('.lx40-command-search').value='';renderCommands();requestAnimationFrame(()=>el.querySelector('.lx40-command-search').focus());return true;
-  }
-  function closePalette(){if(!palette)return;palette.classList.add('hidden');palette.querySelector('.lx40-command-search').removeAttribute('aria-activedescendant');if(paletteReturnFocus?.isConnected&&typeof paletteReturnFocus.focus==='function')paletteReturnFocus.focus();paletteReturnFocus=null}
-  function runCommand(command){
-    if(!command||!isAdmin())return;
-    const lx=window.LX;
-    if(command.type){lx.openAdmin?.();setTimeout(()=>lx.admin?.edit?.(null,command.type),80);return}
-    lx.openAdmin?.();setTimeout(()=>{if(command.page)lx.admin?.render?.(command.page);if(command.page==='dashboard')lx.recovery?.monitor?.()},80);
-  }
-  function enhanceRanking(){
-    const rows=Array.from(document.querySelectorAll('#modal .ranking-table>.rank-row')).slice(0,3);
-    if(!rows.length)return;
-    const users=window.LX?.data?.users?.()||[];
-    rows.forEach(row=>{
-      if(row.querySelector('.lx40-podium-avatar'))return;
-      const name=row.querySelector('strong')?.textContent?.trim()||'LX';
-      const user=users.find(item=>String(item.name||'').trim()===name);
-      const holder=document.createElement('span');holder.className='lx40-podium-avatar';holder.setAttribute('aria-hidden','true');
-      if(window.LX?.avatarHTML)holder.innerHTML=window.LX.avatarHTML(user?.name||name,user?.email||'','avatar-inline');
-      else holder.textContent=name.split(/\s+/).slice(0,2).map(part=>part[0]||'').join('').toUpperCase();
-      row.insertBefore(holder,row.firstChild);
-    });
-  }
-  function watchRanking(){
-    const modal=document.getElementById('modal');if(!modal||!window.MutationObserver)return;
-    let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;enhanceRanking()})}).observe(modal,{childList:true,subtree:true});
-    enhanceRanking();
-  }
-  function enhanceAdminDashboard(){
-    const main=document.getElementById('adminMain');if(!main||state().adminPage!=='dashboard'||main.querySelector('.lx40-admin-catalog'))return;
-    const stats=main.querySelector('.stats'),catalog=window.LX?.data?.catalog?.();if(!stats||!Array.isArray(catalog))return;
-    const count=types=>catalog.filter(item=>types.includes(String(item.type||'').trim())).length;
-    const albums=new Set(catalog.filter(item=>item.type==='Música').map(item=>String(item.album||item.albumName||item.releaseTitle||'').trim().toLocaleLowerCase('pt-BR')).filter(Boolean));
-    const tiles=[['Filmes',count(['Filme'])],['Séries',count(['Série','Anime','Dorama'])],['Faixas',count(['Música'])],['Álbuns identificados',albums.size],['Livros',count(['Livro'])]];
-    const section=document.createElement('section');section.className='lx40-admin-catalog';section.setAttribute('aria-label','Resumo do catálogo LX');
-    section.innerHTML='<div class="lx40-admin-catalog-head"><strong>Catálogo por tipo</strong><small>Inclui publicados e rascunhos</small></div><div class="lx40-admin-catalog-grid">'+tiles.map(([label,value])=>`<div class="lx40-admin-catalog-item"><span>${label}</span><b>${value}</b></div>`).join('')+'</div>';
-    stats.insertAdjacentElement('afterend',section);
-  }
-  function watchAdminDashboard(){
-    const main=document.getElementById('adminMain');if(!main||!window.MutationObserver)return;
-    let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;enhanceAdminDashboard()})}).observe(main,{childList:true});
-    enhanceAdminDashboard();
-  }
-  document.addEventListener('keydown',event=>{
-    if(!(event.ctrlKey||event.metaKey)||event.key.toLowerCase()!=='k'||event.altKey)return;
-    if(!isAdmin())return;
-    event.preventDefault();openPalette();
-  });
-  window.LXFloatingPlayer={expand:()=>setExpanded(true),collapse:()=>setExpanded(false),toggle,bind};
-  window.LXCommandPalette={open:openPalette,close:closePalette};
-  installToastStyles();
-  if(!window.__lx40AlertToast){
-    const nativeAlert=window.alert?.bind(window);
-    window.alert=message=>{const notify=window.LX?.toast||window.LXShell?.toast;if(notify)notify(String(message??''));else nativeAlert?.(String(message??''))};
-    window.__lx40AlertToast=true;
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindPlayerDragging,{once:true});else bindPlayerDragging();
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watchRanking,{once:true});else watchRanking();
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watchAdminDashboard,{once:true});else watchAdminDashboard();
-  document.addEventListener('lx:music-closed',()=>setExpanded(false));
+/* ------------------------------------------------------------------
+   LX Icon System
+------------------------------------------------------------------ */
+const iconPaths={
+ home:'<path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+ film:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M8 5v14M16 5v14M3 10h5m8 0h5M3 15h5m8 0h5"/>',
+ series:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+ music:'<path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>',
+ book:'<path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H12v18H7.5A3.5 3.5 0 0 0 4 23zM20 5.5A3.5 3.5 0 0 0 16.5 2H12v18h4.5A3.5 3.5 0 0 1 20 23z"/>',
+ users:'<circle cx="9" cy="8" r="4"/><path d="M2 21v-2a6 6 0 0 1 12 0v2M16 4a4 4 0 0 1 0 8m1 3a6 6 0 0 1 5 6"/>',
+ heart:'<path d="M20.8 8.8c0 5-8.8 10.8-8.8 10.8S3.2 13.8 3.2 8.8A4.7 4.7 0 0 1 12 6.5a4.7 4.7 0 0 1 8.8 2.3Z"/>',
+ live:'<circle cx="12" cy="12" r="2.5"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4m8.4 0a6 6 0 0 0 0-8.4M4.8 4.8a10 10 0 0 0 0 14.4m14.4 0a10 10 0 0 0 0-14.4"/>',
+ play:'<path d="m9 6 10 6-10 6z"/>',pause:'<path d="M8 6v12M16 6v12"/>',prev:'<path d="M6 5v14m13-13-10 6 10 6z"/>',next:'<path d="M18 5v14M5 6l10 6-10 6z"/>',
+ search:'<circle cx="11" cy="11" r="7"/><path d="m16.3 16.3 4.7 4.7"/>',bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>',
+ trophy:'<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4M12 13v5m-4 3h8"/>',
+ admin:'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.4 1a7 7 0 0 0-1.7-1L14.5 3h-5L9 6.1a7 7 0 0 0-1.7 1l-2.4-1-2 3.4L5 11a7 7 0 0 0 0 2l-2.1 1.5 2 3.4 2.4-1a7 7 0 0 0 1.7 1l.5 3.1h5l.5-3.1a7 7 0 0 0 1.7-1l2.4 1 2-3.4L19 13a7 7 0 0 0 .1-1Z"/>',
+ chevron:'<path d="m9 5 7 7-7 7"/>',plus:'<path d="M12 5v14M5 12h14"/>',close:'<path d="m5 5 14 14M19 5 5 19"/>',shield:'<path d="M12 3 5 6v6c0 4.5 3 7.7 7 9 4-1.3 7-4.5 7-9V6z"/>',bolt:'<path d="m13 2-8 12h7l-1 8 8-12h-7z"/>'
+};
+function icon(name,cls=''){return `<span class="lx40-icon ${cls}"><svg viewBox="0 0 24 24" aria-hidden="true">${iconPaths[name]||iconPaths.chevron}</svg></span>`}
+LX.iconsV40={icon,paths:iconPaths};
+function applyIcons(){
+ const shell=[['[data-shell-category="Início"]','home'],['[data-shell-category="Filmes"]','film'],['[data-shell-category="Séries"]','series'],['[data-shell-mode="Ouvir"]','music'],['[data-shell-mode="Ler"]','book'],['[data-shell-community]','users'],['[data-shell-category="Minha Lista"]','heart']];
+ shell.forEach(([sel,name])=>qsa(sel).forEach(b=>{const s=b.querySelector('span');if(s&&!s.querySelector('svg'))s.innerHTML=iconPaths[name]?`<svg viewBox="0 0 24 24">${iconPaths[name]}</svg>`:s.innerHTML}));
+ const mobile=[['[data-mobile="Início"]','home'],['[data-mobile="Filmes"]','film'],['[data-mobile="Séries"]','series'],['[data-mobile="Música"]','music'],['[data-mobile="Livros"]','book']];
+ mobile.forEach(([sel,name])=>qsa(sel).forEach(b=>{const s=b.querySelector('span');if(s)s.innerHTML=`<svg viewBox="0 0 24 24">${iconPaths[name]}</svg>`}));
+}
 
-  /* LX Image Pipeline v40.1: responsive lazy loading, loading state and resilient fallback. */
-  function installImagePipeline(){
-    if(document.getElementById('lx40-image-styles'))return;
-    const style=document.createElement('style');style.id='lx40-image-styles';style.textContent=`
-      img.lx40-image-loading{background-color:rgba(255,255,255,.035);background-image:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.085) 45%,transparent 70%);background-size:220% 100%;animation:lx40-image-shimmer 1.35s ease-in-out infinite}
-      img.lx40-image-ready{animation:none;background-image:none}
-      img.lx40-image-fallback{object-fit:contain!important;padding:12%!important;background:radial-gradient(ellipse at 50% 35%,rgba(167,131,255,.13),rgba(13,13,17,.96) 72%)!important}
-      @keyframes lx40-image-shimmer{to{background-position-x:-220%}}
-      @media(prefers-reduced-motion:reduce){img.lx40-image-loading{animation:none;background-image:none}}
-    `;document.head.appendChild(style);
-  }
-  const imageFallback='data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 220"><rect width="160" height="220" rx="14" fill="#111116"/><path d="M80 82a27 27 0 1 0 0-54 27 27 0 0 0 0 54Zm-47 91c2-31 22-48 47-48s45 17 47 48" fill="none" stroke="#8f73c5" stroke-width="8" stroke-linecap="round"/><path d="M48 196h64" stroke="#494052" stroke-width="6" stroke-linecap="round"/></svg>');
-  function prepareImage(img){
-    if(!(img instanceof HTMLImageElement)||img.dataset.lx40ImageReady)return;
-    img.dataset.lx40ImageReady='1';img.decoding='async';
-    if(!img.loading&&!img.closest('#hero,.lx-visual-intro335,.music-dock,#playerOverlay'))img.loading='lazy';
-    if(img.closest('#hero,.lx-visual-intro335,.music-dock,#playerOverlay'))img.fetchPriority='high';
-    img.classList.add('lx40-image-loading');
-    const ready=()=>{img.classList.remove('lx40-image-loading');img.classList.add('lx40-image-ready')};
-    if(img.complete&&img.naturalWidth>0)ready();else img.addEventListener('load',ready,{once:true});
-  }
-  function handleImageError(event){
-    const img=event.target;if(!(img instanceof HTMLImageElement)||img.dataset.lx40Fallback)return;
-    img.dataset.lx40Fallback='1';img.classList.remove('lx40-image-loading','lx40-image-ready');
-    img.classList.add('lx40-image-fallback');img.alt=img.alt||'Imagem indisponível';img.src=imageFallback;
-  }
-  function watchImages(){
-    installImagePipeline();document.querySelectorAll('img').forEach(prepareImage);
-    document.addEventListener('error',handleImageError,true);
-    if(!window.MutationObserver)return;let queued=false;
-    new MutationObserver(records=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;for(const record of records)for(const node of record.addedNodes){if(node.nodeType!==1)continue;if(node.matches?.('img'))prepareImage(node);node.querySelectorAll?.('img').forEach(prepareImage)}})}).observe(document.body,{childList:true,subtree:true});
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watchImages,{once:true});else watchImages();
+function applyLXArrows(){
+ const candidates=qsa('button, [role="button"]');
+ for(const b of candidates){
+   if(b.dataset.lx40Arrow)return;
+   const t=clean(b.textContent);
+   const aria=clean(b.getAttribute('aria-label')||'').toLowerCase();
+   let dir='';
+   if(['‹','←','◀','❮'].includes(t)||/voltar|anterior|previous/.test(aria))dir='left';
+   else if(['›','→','▶','❯'].includes(t)||/avançar|próximo|next/.test(aria))dir='right';
+   if(!dir||b.querySelector('input,textarea,select'))continue;
+   // Replace only arrow-only controls; labelled action buttons keep their text.
+   if(t.length<=2){b.dataset.lx40Arrow=dir;b.classList.add('lx40-arrow-btn',`lx40-arrow-${dir}`);b.innerHTML=icon('chevron')}
+ }
+}
 
-  /* LX Floating Player drag v40.2: desktop position with local persistence. */
-  function bindPlayerDragging(){
-    const el=dock(),info=el?.querySelector('.music-info');if(!el||!info||info.dataset.lx40DragBound)return;
-    info.dataset.lx40DragBound='1';info.classList.add('lx40-player-drag-handle');
-    const key='lx40:player-position';
-    const place=(x,y,persist=false)=>{
-      const rect=el.getBoundingClientRect(),left=Math.max(8,Math.min(innerWidth-rect.width-8,x)),top=Math.max(8,Math.min(innerHeight-rect.height-8,y));
-      el.style.setProperty('left',left+'px','important');el.style.setProperty('top',top+'px','important');
-      el.style.setProperty('right','auto','important');el.style.setProperty('bottom','auto','important');
-      if(persist)try{localStorage.setItem(key,JSON.stringify({x:left,y:top}))}catch{}
-    };
-    try{const saved=JSON.parse(localStorage.getItem(key)||'null');if(Number.isFinite(saved?.x)&&Number.isFinite(saved?.y))place(saved.x,saved.y)}catch{}
-    let drag=null,suppressClick=false;
-    info.title='Arraste para reposicionar · clique para expandir';
-    info.addEventListener('pointerdown',event=>{
-      if(event.pointerType!=='mouse'||event.button!==0||el.classList.contains('lx40-expanded')||event.target.closest('button'))return;
-      const rect=el.getBoundingClientRect();drag={id:event.pointerId,startX:event.clientX,startY:event.clientY,left:rect.left,top:rect.top,moved:false};
-    });
-    document.addEventListener('pointermove',event=>{
-      if(!drag||event.pointerId!==drag.id)return;
-      const dx=event.clientX-drag.startX,dy=event.clientY-drag.startY;
-      if(!drag.moved&&Math.hypot(dx,dy)<6)return;
-      drag.moved=true;place(drag.left+dx,drag.top+dy);event.preventDefault();
-    },{passive:false});
-    const finish=event=>{
-      if(!drag||event.pointerId!==drag.id)return;
-      if(drag.moved){const rect=el.getBoundingClientRect();place(rect.left,rect.top,true);suppressClick=true;setTimeout(()=>{suppressClick=false},350)}
-      drag=null;
-    };
-    document.addEventListener('pointerup',finish);document.addEventListener('pointercancel',finish);
-    info.addEventListener('click',event=>{if(!suppressClick)return;event.preventDefault();event.stopImmediatePropagation();suppressClick=false},true);
-    addEventListener('resize',()=>{const rect=el.getBoundingClientRect();place(rect.left,rect.top,true)});
-  }
+/* ------------------------------------------------------------------
+   Cinematic Top 10
+------------------------------------------------------------------ */
+const top10State={filter:ls.get('lx40:top10-filter','week')||'week',mode:ls.get('lx40:top10-mode','mixed')||'mixed'};
+function topScore(x,filter='week'){
+ const views=Number(x.views??x.viewCount??x.plays??0),unique=Number(x.uniqueViews??x.unique_viewers??0),watch=Number(x.watchedMinutes??x.watchMinutes??x.watch_time??0),completion=Number(x.completionRate??x.completion??0),favorites=Number(x.favoriteCount??x.favorites??0),growth=Number(x.growth??x.trendGrowth??x.trendScore??0),priority=Number(x.priority||0),trending=x.trending?42:0;
+ const recency=Math.max(0,60-Math.floor((Date.now()-new Date(x.publishedAt||x.createdAt||0).getTime())/86400000));
+ const factor=filter==='today'?1.5:filter==='week'?1.15:1;
+ return (views*.6+unique*1.6+watch*.055+completion*1.4+favorites*2.2+growth*4+priority*8+trending+recency*.25)*factor;
+}
+function topItems(filter='week'){
+ const now=Date.now(),types=filter==='movies'?['Filme']:filter==='series'?['Série','Anime','Dorama']:['Filme','Série','Anime','Dorama'];
+ let rows=(D.catalog?.()||[]).filter(x=>x.published!==false&&types.includes(x.type)&&(!x.scheduledAt||+new Date(x.scheduledAt)<=now));
+ if(filter==='today')rows=rows.filter(x=>Date.now()-new Date(x.publishedAt||x.createdAt||0).getTime()<45*86400000||x.trending);
+ const mode=top10State.mode;
+ if(mode==='manual')rows.sort((a,b)=>(Number(b.priority)||0)-(Number(a.priority)||0)||String(a.title||'').localeCompare(String(b.title||''),'pt-BR'));
+ else if(mode==='auto')rows.sort((a,b)=>(topScore(b,filter)-Number(b.priority||0)*8)-(topScore(a,filter)-Number(a.priority||0)*8));
+ else rows.sort((a,b)=>topScore(b,filter)-topScore(a,filter));
+ return rows.slice(0,10);
+}
+function topCard(x,i){const art=clean(x.cover||x.banner||x.carouselImage||'').replace(/'/g,'%27');return `<button class="lx40-top10-card" type="button" onclick="LX.detail(${Number(x.id)})" aria-label="${i+1}º ${esc(x.title)}"><span class="rank">${i+1}</span><span class="poster" style="background-image:url('${art}')"></span><span class="label"><strong>${esc(x.title)}</strong><small>${esc(x.year||'')} · ${esc(x.type||'')}</small></span></button>`}
+function renderTop10(){
+ if(!feature('top10V40')||U?.state?.mode!=='Assistir'||U?.state?.category!=='Início')return;
+ const home=$('homeContent');if(!home)return;
+ qsa('.rail-section',home).filter(s=>/Top 10 LX/i.test(s.querySelector('.rail-head h2')?.textContent||'')).forEach(s=>s.remove());
+ let section=qs('#lx40Top10',home);if(!section){section=document.createElement('section');section.id='lx40Top10';section.className='lx40-top10';home.prepend(section)}
+ const filters=[['today','Hoje'],['week','Semana'],['movies','Filmes'],['series','Séries']],rows=topItems(top10State.filter);
+ section.innerHTML=`<div class="rail-head"><div><span class="eyebrow">LX CHARTS</span><h2>Top 10 na LX Plus</h2><p>Ranking dinâmico com atividade recente, conclusão, favoritos e tendência do catálogo.</p></div><div class="lx40-top10-tabs">${filters.map(([k,n])=>`<button class="${k===top10State.filter?'active':''}" data-lx40-top="${k}">${n}</button>`).join('')}</div></div><div class="lx40-top10-list">${rows.map(topCard).join('')||'<div class="official-empty"><b>Top 10 em formação</b><p>Os conteúdos aparecerão aqui conforme o catálogo ganhar atividade.</p></div>'}</div>`;
+ qsa('[data-lx40-top]',section).forEach(b=>b.onclick=()=>{top10State.filter=b.dataset.lx40Top;ls.set('lx40:top10-filter',top10State.filter);renderTop10()});
+}
 
-  /* LX Universal Media Resolver v40.3: one URL/MIME/protocol/provider inspection layer. */
-  function vimeoDescriptor(value){
-    let url;try{url=new URL(String(value||''))}catch{return null}
-    const host=url.hostname.toLowerCase().replace(/^www\./,'');
-    if(host!=='vimeo.com'&&host!=='player.vimeo.com'&&!host.endsWith('.vimeo.com'))return null;
-    const parts=url.pathname.split('/').filter(Boolean),id=(parts.find(part=>/^\d{6,}$/.test(part))||'');
-    if(!id)return null;
-    const privateHash=url.searchParams.get('h')||(parts[parts.indexOf(id)+1]||'');
-    const params=new URLSearchParams({dnt:'1',playsinline:'1'});
-    if(privateHash&&/^[a-z0-9]+$/i.test(privateHash))params.set('h',privateHash);
-    const openUrl=url.toString();
-    return {kind:'embed',provider:'Vimeo',label:'Vimeo',src:`https://player.vimeo.com/video/${id}?${params.toString()}`,openUrl,embedHeight:360,vimeoId:id};
-  }
-  function installUniversalMediaResolver(){
-    const media=window.LX?.mediaSources;if(!media||media.__lx40Resolver)return;
-    const originalDescribe=media.describe.bind(media),originalNormalize=media.normalize.bind(media);
-    const mimeByExtension={mp4:'video/mp4',m4v:'video/mp4',webm:'video/webm',ogv:'video/ogg',mov:'video/quicktime',m3u8:'application/vnd.apple.mpegurl',m3u:'application/vnd.apple.mpegurl',mpd:'application/dash+xml',mp3:'audio/mpeg',m4a:'audio/mp4',aac:'audio/aac',ogg:'audio/ogg',opus:'audio/ogg',wav:'audio/wav',flac:'audio/flac',vtt:'text/vtt',srt:'application/x-subrip'};
-    const extensionOf=value=>{try{return new URL(String(value||''),location.href).pathname.split('.').pop().toLowerCase()}catch{return''}};
-    function describe(ref){
-      const raw=String(ref||'').trim(),vimeo=vimeoDescriptor(raw);
-      if(vimeo)return vimeo;
-      const base=originalDescribe(ref)||{},url=base.src||raw,ext=extensionOf(url);
-      return {...base,format:ext==='m3u8'||ext==='m3u'?'hls':ext==='mpd'?'dash':ext||'unknown',mimeType:mimeByExtension[ext]||'',sourceUrl:raw,openUrl:base.openUrl||raw};
-    }
-    function resolve(ref,hints={}){
-      const info=describe(ref),url=info.src||String(ref||''),ext=extensionOf(url),mime=String(hints.mimeType||info.mimeType||mimeByExtension[ext]||'').toLowerCase();
-      let protocol='';try{protocol=new URL(url,location.href).protocol.replace(':','')}catch{}
-      let codec=String(hints.codec||'').trim()||null;const codecMatch=mime.match(/codecs\s*=\s*["']?([^;"']+)/i);if(!codec&&codecMatch)codec=codecMatch[1].trim();
-      let native=false;try{const video=document.createElement('video');native=!!mime&&!!video.canPlayType(mime)}catch{}
-      return {url,sourceUrl:String(ref||''),mimeType:mime,codec,protocol,provider:info.provider||'Desconhecido',kind:info.kind||'missing',format:info.format||ext||'unknown',origin:(()=>{try{return new URL(url,location.href).origin}catch{return''}})(),canPlayNative:native,openUrl:info.openUrl||url,embedUrl:info.kind==='embed'?info.src:null};
-    }
-    media.describe=describe;
-    media.normalize=(provider,value)=>originalNormalize(provider==='vimeo'?'direct':provider,value);
-    media.providers=[...new Set([...(media.providers||[]),'vimeo'])];
-    media.__lx40Resolver=true;
-    window.LXMediaResolver={resolve,describe,providers:media.providers};
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installUniversalMediaResolver,{once:true});else installUniversalMediaResolver();
-  /* LX Premiere countdown v40.4: scheduled catalog premieres on the watch home. */
-  function installPremiereShelf(){
-    const host=document.getElementById('homeContent');if(!host)return;
-    let timer=0,signature='';
-    const esc=window.LX?.ui?.esc||((value)=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])));
-    const styles=()=>{
-      if(document.getElementById('lx40-premiere-style'))return;
-      const style=document.createElement('style');style.id='lx40-premiere-style';style.textContent=`
-        .lx40-premiere-shelf{margin:22px 0 30px;padding:clamp(14px,2vw,22px);border:1px solid rgba(167,131,255,.18);border-radius:20px;background:radial-gradient(ellipse at 85% 0,rgba(167,131,255,.12),transparent 55%),linear-gradient(145deg,rgba(24,23,31,.92),rgba(12,12,16,.9));box-shadow:0 18px 48px rgba(0,0,0,.24)}
-        .lx40-premiere-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:0 0 14px}.lx40-premiere-head span{color:#b99cff;font-size:10px;font-weight:900;letter-spacing:.16em}.lx40-premiere-head h2{margin:5px 0 0;font-size:clamp(20px,2.2vw,26px)}.lx40-premiere-head p{margin:4px 0 0;color:rgba(255,255,255,.62);font-size:12px}
-        .lx40-premiere-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:12px}.lx40-premiere-card{display:grid;grid-template-columns:92px minmax(0,1fr);gap:13px;align-items:center;min-width:0;padding:10px;border:1px solid rgba(255,255,255,.075);border-radius:15px;background:rgba(255,255,255,.035)}
-        .lx40-premiere-card img{display:block;width:92px;height:118px;object-fit:cover;border-radius:10px;background:#131319}.lx40-premiere-copy{min-width:0}.lx40-premiere-copy>span{display:inline-flex;padding:4px 8px;border:1px solid rgba(167,131,255,.25);border-radius:99px;color:#d2c0ff;background:rgba(167,131,255,.08);font-size:9px;font-weight:900;letter-spacing:.08em}.lx40-premiere-copy h3{display:-webkit-box;overflow:hidden;margin:9px 0 5px;font-size:clamp(15px,1.5vw,18px);line-height:1.2;-webkit-box-orient:vertical;-webkit-line-clamp:2}.lx40-premiere-copy small{display:block;color:rgba(255,255,255,.62);font-size:11px}.lx40-premiere-countdown{margin-top:7px;color:#eadfff;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}.lx40-premiere-copy button{margin-top:10px;padding:7px 10px;border:1px solid rgba(255,255,255,.13);border-radius:10px;background:rgba(255,255,255,.07);color:#fff;font-size:11px;font-weight:750;cursor:pointer}.lx40-premiere-copy button:hover{background:rgba(167,131,255,.16)}
-        @media(max-width:480px){.lx40-premiere-shelf{margin:16px 0 22px;padding:13px}.lx40-premiere-card{grid-template-columns:72px minmax(0,1fr);gap:10px}.lx40-premiere-card img{width:72px;height:98px}.lx40-premiere-head{align-items:flex-start;flex-direction:column}}
-        @media(prefers-reduced-motion:reduce){.lx40-premiere-copy button{transition:none}}
-      `;document.head.appendChild(style);
-    };
-    const countdown=target=>{
-      const remain=Math.max(0,target-Date.now()),days=Math.floor(remain/86400000),hours=Math.floor(remain%86400000/3600000),minutes=Math.floor(remain%3600000/60000);
-      return days?`Estreia em ${days}d ${hours}h`:hours?`Estreia em ${hours}h ${minutes}min`:`Estreia em ${minutes} min`;
-    };
-    const render=()=>{
-      const state=window.LX?.ui?.state||{},mode=state.mode||'Assistir',category=state.category||'Início';
-      let shelf=host.querySelector('.lx40-premiere-shelf');
-      if(mode!=='Assistir'||category!=='Início'){shelf?.remove();signature='';return}
-      const catalog=window.LX?.data?.catalog?.()||[],now=Date.now();
-      const rows=catalog.filter(item=>item&&item.published!==false&&item.scheduledAt&&Number.isFinite(+new Date(item.scheduledAt))&&+new Date(item.scheduledAt)>now).sort((a,b)=>+new Date(a.scheduledAt)-+new Date(b.scheduledAt)).slice(0,6);
-      if(!rows.length){const hadShelf=!!shelf;shelf?.remove();signature='';if(hadShelf)requestAnimationFrame(()=>window.LX?.ui?.renderApp?.());return}
-      const nextSignature=rows.map(item=>[item.id,item.title,item.cover,item.banner,item.scheduledAt,item.type].join('|')).join('~');
-      if(nextSignature!==signature||!shelf){
-        signature=nextSignature;styles();
-        const cards=rows.map(item=>{const target=+new Date(item.scheduledAt),cover=item.cover||item.banner||'assets/lx-music-fallback.svg',year=item.year?` · ${esc(item.year)}`:'';
-          return `<article class="lx40-premiere-card"><img loading="lazy" decoding="async" src="${esc(cover)}" alt="${esc(item.title||'Capa')}"><div class="lx40-premiere-copy"><span>LX PREMIERE</span><h3>${esc(item.title||'Próximo lançamento')}</h3><small>${esc(item.type||'Conteúdo')}${year} · ${new Date(target).toLocaleDateString('pt-BR',{day:'2-digit',month:'long'})}</small><div class="lx40-premiere-countdown" data-premiere-time="${target}">${countdown(target)}</div><button type="button" data-premiere-detail="${Number(item.id)}">Mais informações</button></div></article>`;
-        }).join('');
-        shelf=document.createElement('section');shelf.className='lx40-premiere-shelf';shelf.setAttribute('aria-label','Próximas estreias LX');shelf.innerHTML=`<div class="lx40-premiere-head"><div><span>PRÓXIMAS ESTREIAS</span><h2>LX Premiere</h2><p>Novos conteúdos programados para chegar à LX Plus.</p></div></div><div class="lx40-premiere-grid">${cards}</div>`;
-        host.querySelector('.lx40-premiere-shelf')?.remove();host.insertBefore(shelf,host.firstChild);
-        shelf.addEventListener('click',event=>{const button=event.target.closest('[data-premiere-detail]');if(button){const id=Number(button.dataset.premiereDetail);if(Number.isFinite(id))window.LX?.detail?.(id)}});
-      }
-      host.querySelectorAll('[data-premiere-time]').forEach(el=>{const target=Number(el.dataset.premiereTime);el.textContent=target>Date.now()?countdown(target):'Disponível agora'});
-    };
-    const start=()=>{if(timer)clearInterval(timer);render();timer=setInterval(render,30000)};
-    start();
-    if(window.MutationObserver){let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;render()})}).observe(host,{childList:true})}
-    document.addEventListener('lx:catalog-updated',render);
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installPremiereShelf,{once:true});else installPremiereShelf();
+function premiereRows(){
+ const now=Date.now();return (D.catalog?.()||[]).filter(x=>x.published!==false&&x.scheduledAt&&+new Date(x.scheduledAt)>now).sort((a,b)=>+new Date(a.scheduledAt)-+new Date(b.scheduledAt)).slice(0,8)
+}
+function pulseRows(){return [...(D.catalog?.()||[])].filter(x=>x.published!==false).sort((a,b)=>topScore(b,'week')-topScore(a,'week')).slice(0,6)}
+function renderHomeEnhancements(){
+ if(U?.state?.mode!=='Assistir'||U?.state?.category!=='Início')return;const home=$('homeContent');if(!home)return;
+ let pulse=$('lx40Pulse');if(!pulse){pulse=document.createElement('section');pulse.id='lx40Pulse';pulse.className='lx40-pulse';home.appendChild(pulse)}
+ const rows=pulseRows();pulse.innerHTML=`<div class="rail-head"><div><span class="eyebrow">LX PULSE</span><h2>O que está bombando na LX</h2><p>Sinais recentes do catálogo em uma faixa compacta.</p></div></div><div class="lx40-pulse-grid">${rows.map((x,i)=>`<button type="button" onclick="LX.detail(${Number(x.id)})"><span>#${i+1}</span><div><b>${esc(x.title)}</b><small>${esc(x.type||'Conteúdo')} · ${x.trending?'Em alta':'Crescendo'}</small></div>${icon('chevron')}</button>`).join('')||'<div class="official-empty"><p>Atividade em formação.</p></div>'}</div>`;
+ const upcoming=premiereRows();let prem=$('lx40Premiere');
+ if(!upcoming.length){prem?.remove();return}
+ if(!prem){prem=document.createElement('section');prem.id='lx40Premiere';prem.className='lx40-premiere';home.appendChild(prem)}
+ prem.innerHTML=`<div class="rail-head"><div><span class="eyebrow">LX PREMIERE</span><h2>Próximas estreias</h2><p>Conteúdos agendados e contagem até a estreia.</p></div></div><div class="lx40-premiere-grid">${upcoming.map(x=>{const when=+new Date(x.scheduledAt),diff=Math.max(0,when-Date.now()),days=Math.floor(diff/86400000),hours=Math.floor(diff%86400000/3600000);return `<button type="button" onclick="LX.detail(${Number(x.id)})"><span class="lx40-premiere-art" style="background-image:url('${clean(x.cover||x.banner||'').replace(/'/g,'%27')}')"></span><div><b>${esc(x.title)}</b><small>${new Date(when).toLocaleDateString('pt-BR')} · ${days?`${days}d `:''}${hours}h</small></div></button>`}).join('')}</div>`
+}
 
-  /* Admin catalog drafts stay on this device and recover after reload or network loss. */
-  function installAdminDraftRecovery(){
-    const admin=window.LX?.admin;if(!admin||typeof admin.edit!=='function'||admin.edit.__lx40Drafts)return false;
-    const original=admin.edit.bind(admin);
-    const wrapped=async(...args)=>{
-      const result=await original(...args),form=document.getElementById('contentForm');if(!form)return result;
-      const user=state().user||{},owner=String(user.id||user.email||'local'),itemId=args[0]||'',type=String(args[1]||form.querySelector('#cType')?.value||'content');
-      const key=`lx40:admin-draft:${encodeURIComponent(owner)}:${itemId?'item-'+itemId:'new-'+type}`;
-      let draft=null;try{draft=JSON.parse(localStorage.getItem(key)||'null')}catch{}
-      if(draft&&Date.now()-Number(draft.savedAt||0)>14*864e5){try{localStorage.removeItem(key)}catch{}draft=null}
-      if(draft?.fields){
-        const savedType=draft.fields.cType?.value,selector=form.querySelector('#cType');
-        if(savedType&&selector){selector.value=savedType;selector.dispatchEvent(new Event('change',{bubbles:true}))}
-        for(const [id,value] of Object.entries(draft.fields)){
-          const el=document.getElementById(id);if(!el||!form.contains(el)||['file','password'].includes(String(el.type||'').toLowerCase()))continue;
-          if(el.type==='checkbox')el.checked=!!value.checked;
-          else if(el.tagName!=='SELECT'||[...el.options].some(option=>option.value===value.value))el.value=value.value??'';
-        }
-        if(draft.source){const button=[...form.querySelectorAll('[data-media-source]')].find(el=>el.dataset.mediaSource===draft.source);button?.click()}
-        form.querySelector('#cSeason')?.dispatchEvent(new Event('change',{bubbles:true}));
-        window.LX?.toast?.('Rascunho ADM recuperado neste dispositivo.');
-      }
-      if(form.dataset.lx40DraftBound==='1')return result;form.dataset.lx40DraftBound='1';
-      let timer=0;const save=()=>{clearTimeout(timer);timer=setTimeout(()=>{const fields={};form.querySelectorAll('input,textarea,select').forEach(el=>{if(!el.id||['file','password'].includes(String(el.type||'').toLowerCase()))return;fields[el.id]={value:el.value,checked:el.type==='checkbox'?!!el.checked:undefined}});const source=form.querySelector('[data-media-source].active')?.dataset.mediaSource||'';try{localStorage.setItem(key,JSON.stringify({savedAt:Date.now(),fields,source}))}catch{}},300)};
-      form.addEventListener('input',save);form.addEventListener('change',save);
-      form.addEventListener('submit',()=>{save();const started=Date.now();const clearAfterSave=()=>{if(document.getElementById('overlay')?.classList.contains('hidden')){try{localStorage.removeItem(key)}catch{}return}if(Date.now()-started<30000)setTimeout(clearAfterSave,500)};setTimeout(clearAfterSave,500)},true);
-      addEventListener('pagehide',save,{once:true});
-      return result;
-    };
-    wrapped.__lx40Drafts=true;admin.edit=wrapped;return true;
-  }
-  let draftInitAttempts=0;(function retryAdminDrafts(){if(installAdminDraftRecovery()||draftInitAttempts++>20)return;setTimeout(retryAdminDrafts,500)})();
+/* ------------------------------------------------------------------
+   LX Music identity + Floating Player + Presence
+------------------------------------------------------------------ */
+function addMusicBrand(){if(!feature('musicV40'))return;const shell=qs('.lx-music-app-shell');if(!shell||qs('.lx40-music-brand',shell))return;const target=qs('.lx-music-sidebar',shell)||qs('.lx-music-main',shell);if(!target)return;const brand=document.createElement('div');brand.className='lx40-music-brand';brand.innerHTML=`<img src="assets/lx-music-v40.svg" alt=""><span>LX Music<small>by LX Plus</small></span>`;target.prepend(brand)}
+function setPlayerExpanded(value){const el=$('musicDock');if(!el)return;el.classList.toggle('lx40-expanded',!!value);ls.set('lx40:player-expanded',!!value)}
+function bindFloatingPlayer(){
+ const el=$('musicDock');if(!el||el.dataset.lx40PlayerBound)return;el.dataset.lx40PlayerBound='1';setPlayerExpanded(!!ls.get('lx40:player-expanded',false));
+ qs('.music-info',el)?.addEventListener('click',e=>{if(e.target.closest('button'))return;setPlayerExpanded(!el.classList.contains('lx40-expanded'))});
+ let drag=null;el.addEventListener('pointerdown',e=>{if(innerWidth<901||e.button!==0||e.target.closest('button,input,a')||!feature('floatingPlayer'))return;drag={x:e.clientX,y:e.clientY,left:el.getBoundingClientRect().left,top:el.getBoundingClientRect().top};el.setPointerCapture?.(e.pointerId);el.classList.add('lx40-dragging')});
+ el.addEventListener('pointermove',e=>{if(!drag)return;const left=Math.max(8,Math.min(innerWidth-el.offsetWidth-8,drag.left+e.clientX-drag.x)),top=Math.max(62,Math.min(innerHeight-el.offsetHeight-8,drag.top+e.clientY-drag.y));el.style.left=left+'px';el.style.top=top+'px';el.style.right='auto';el.style.bottom='auto'});
+ const end=()=>{if(!drag)return;drag=null;el.classList.remove('lx40-dragging');const r=el.getBoundingClientRect();ls.set('lx40:player-pos',{left:r.left,top:r.top})};el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
+ const p=ls.get('lx40:player-pos');if(p&&innerWidth>=901){el.style.left=Math.max(8,Math.min(innerWidth-el.offsetWidth-8,Number(p.left)||0))+'px';el.style.top=Math.max(62,Number(p.top)||84)+'px';el.style.right='auto';el.style.bottom='auto'}
+}
+const privacyKey='lx40:presence-privacy';
+function presencePrivacy(){return ls.get(privacyKey,'friends')||'friends'}
+async function publishPresence(force=false){
+ if(!feature('presenceV40'))return;const user=LX.cloud?.user?.(),db=LX.cloud?.db?.();if(!user||!db)return;
+ const audio=$('musicAudio'),track=LX.currentMusic?.(),privacy=presencePrivacy(),playing=!!audio&&!audio.paused&&!audio.ended&&track;
+ const payload={user_id:user.id,status:document.hidden?'away':'online',activity_type:playing?'music':null,activity_title:playing?clean(track.title):null,activity_subtitle:playing?clean(track.artist||'LX Music'):null,activity_cover:playing?clean(track.cover):null,privacy,updated_at:new Date().toISOString()};
+ try{const {error}=await db.from('lx_presence').upsert(payload,{onConflict:'user_id'});if(error&&!/does not exist|schema cache|relation/i.test(error.message||''))console.warn('LX v40 presence',error)}catch(e){if(force)console.warn('LX v40 presence',e)}
+}
+function bindPresence(){
+ if(document.documentElement.dataset.lx40PresenceBound)return;document.documentElement.dataset.lx40PresenceBound='1';
+ ['lx:music-changed','lx:music-closed'].forEach(ev=>document.addEventListener(ev,()=>publishPresence()));$('musicAudio')?.addEventListener('play',()=>publishPresence());$('musicAudio')?.addEventListener('pause',()=>publishPresence());document.addEventListener('visibilitychange',()=>publishPresence());window.addEventListener('beforeunload',()=>publishPresence());setInterval(()=>publishPresence(),30000);
+}
+function injectPresenceSettings(){
+ const page=qs('.profile-page-v25');if(!page||qs('.lx40-presence-settings',page))return;const anchor=qs('.profile-personalization',page)||page;const box=document.createElement('section');box.className='lx40-presence-settings';box.innerHTML=`<h4>Atividade na LX</h4><p>Escolha quem pode ver o que você está ouvindo. A atividade some quando a música é pausada ou encerrada.</p><label class="field">Mostrar o que estou ouvindo<select id="lx40PresencePrivacy"><option value="everyone">Todos</option><option value="friends">Amigos</option><option value="nobody">Ninguém</option></select></label><div class="lx40-now-listening" id="lx40NowListening">Nenhuma música tocando agora</div>`;anchor.before(box);const select=$('lx40PresencePrivacy');select.value=presencePrivacy();select.onchange=()=>{ls.set(privacyKey,select.value);publishPresence(true);LX.toast?.('Privacidade da atividade atualizada.')};const t=LX.currentMusic?.();const a=$('musicAudio');$('lx40NowListening').textContent=t&&a&&!a.paused?`Ouvindo ${t.title} — ${t.artist||'LX Music'}`:'Nenhuma música tocando agora';
+}
 
+/* ------------------------------------------------------------------
+   Ranking v40 — cloud when migration exists, stable fallback otherwise
+------------------------------------------------------------------ */
+const rankState={season:monthKey(),history:false};
+const rankCache=new Map();
+function fallbackRanks(){const users=(D.users?.()||[]).filter(x=>x.visible!==false),score=x=>Number(x.monthly_score??x.monthlyScore??(Number(x.watched||0)+Number(x.listened||0)+Number(x.read||0)*6));return users.sort((a,b)=>score(b)-score(a)).map((x,i)=>({position:i+1,user_id:x.id||x.user_id,name:x.name||'Usuário',verified:!!x.verified,score:Math.round(score(x)),lifetime_score:Math.round(Number(x.lifetime_score??x.lifetimeScore??score(x))),move:0,champion_count:Number(x.champion_count||0)}))}
+async function cloudRanks(season=monthKey()){
+ const db=LX.cloud?.db?.();if(!db)return null;
+ try{const {data,error}=await db.rpc('lx_rank_get',{p_season:season});if(error)throw error;const rows=Array.isArray(data)?data:null;if(rows)rankCache.set(season,rows);return rows}catch(e){if(!/does not exist|schema cache|function/i.test(e?.message||''))console.warn('LX v40 ranking',e);return null}
+}
+function countdown(){const n=new Date(),end=new Date(n.getFullYear(),n.getMonth()+1,1),d=end-n;return {days:Math.floor(d/86400000),hours:Math.floor(d%86400000/3600000),mins:Math.floor(d%3600000/60000)}}
+function rankRow(r){const mv=Number(r.move||0),m=mv>0?`<span class="move up">↑ ${mv}</span>`:mv<0?`<span class="move down">↓ ${Math.abs(mv)}</span>`:'<span class="move">—</span>';return `<div class="lx40-rank-row"><strong>#${Number(r.position)||'-'}</strong><div><b>${esc(r.name||'Usuário')}</b><small>${r.champion_count?`Campeão LX ×${r.champion_count}`:'Temporada mensal'}</small></div><b>${fmt(r.score)} pts</b>${m}</div>`}
+function podiumCard(r,place){if(!r)return'<article class="lx40-podium-card"><span class="medal">—</span><div class="avatar">LX</div><strong>Em aberto</strong><small>Aguardando pontuação</small></article>';const medals={1:'Ⅰ',2:'Ⅱ',3:'Ⅲ'};return `<article class="lx40-podium-card ${place===1?'first':''}"><span class="medal">${medals[place]}</span><div class="avatar">${esc(initials(r.name))}</div><strong>${esc(r.name||'Usuário')}</strong><small>${place===1?'Líder da temporada':`${place}º lugar`}</small><b>${fmt(r.score)} pts</b></article>`}
+async function openRanking(season=rankState.season){
+ rankState.season=season||monthKey();const modal=$('modal'),overlay=$('overlay');if(!modal||!overlay)return;overlay.classList.remove('hidden');modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="lx40-ranking-shell"><div class="lx40-rank-head"><div><span class="eyebrow">LX RANKING · ${esc(monthLabel(rankState.season))}</span><h2>Ranking LX</h2><p>Temporada mensal com histórico permanente e validação de atividade.</p></div><div class="lx40-prize"><span>PRÊMIO DO MÊS</span><strong>R$ 100</strong><small>1º colocado confirmado</small></div></div><div class="lx-search-skeleton"><i class="lx-skeleton"></i><i class="lx-skeleton"></i></div></div>`;
+ let rows=await cloudRanks(rankState.season);if(!rows?.length)rows=fallbackRanks();const selfId=String(LX.cloud?.user?.()?.id||U.state?.user?.id||''),selfName=clean(U.state?.user?.name||U.state?.profile?.name),self=rows.find(x=>String(x.user_id)===selfId)||rows.find(x=>clean(x.name)===selfName);const c=countdown(),next=self&&rows[self.position-2],gap=next?Math.max(0,Number(next.score)-Number(self.score)):0,progress=next&&Number(next.score)>0?Math.max(4,Math.min(100,Number(self.score)/Number(next.score)*100)):100;
+ const current=monthKey(),prev=[];for(let i=1;i<=5;i++){const d=new Date();d.setMonth(d.getMonth()-i);prev.push([monthKey(d),monthLabel(monthKey(d))])}
+ const shell=qs('.lx40-ranking-shell',modal);shell.innerHTML=`<div class="lx40-rank-head"><div><span class="eyebrow">LX RANKING · ${esc(monthLabel(rankState.season))}</span><h2>Ranking LX</h2><p>${rankState.season===current?'A temporada reinicia todo mês; suas conquistas e histórico continuam salvos.':'Classificação arquivada da temporada.'}</p></div><div class="lx40-prize"><span>PRÊMIO DO MÊS</span><strong>R$ 100</strong><small>1º colocado confirmado</small></div></div><div class="lx40-rank-tabs"><button class="${rankState.season===current?'active':''}" data-season="${current}">Temporada atual</button>${prev.map(([k,n])=>`<button class="${rankState.season===k?'active':''}" data-season="${k}">${esc(n.replace(/\s+de\s+/g,' '))}</button>`).join('')}<button type="button" onclick="LX.v40.showRankRules()">Como ganhar pontos</button></div>${rankState.season===current?`<div class="lx40-rank-countdown"><b>A temporada termina em</b><span>${c.days} dias</span><span>${c.hours} h</span><span>${c.mins} min</span></div>`:''}<div class="lx40-podium">${podiumCard(rows[1],2)}${podiumCard(rows[0],1)}${podiumCard(rows[2],3)}</div>${self?`<div class="lx40-my-rank"><strong>#${self.position}</strong><div><b>Sua posição · ${fmt(self.score)} pontos</b><small>${gap?`Faltam ${fmt(gap)} pontos para alcançar #${Math.max(1,self.position-1)}.`:'Você está no topo ou empatado com a posição acima.'}</small><div class="lx40-rank-progress"><i style="width:${progress}%"></i></div></div><button class="glass-btn" onclick="LX.v40.shareRankCard()">Compartilhar</button></div>`:''}<div class="lx40-rank-list">${rows.slice(3,50).map(rankRow).join('')||'<div class="official-empty"><p>Ainda não há classificação suficiente.</p></div>'}</div>`;
+ qsa('[data-season]',shell).forEach(b=>b.onclick=()=>openRanking(b.dataset.season));injectHallOfChampions(shell);
+}
+
+async function rankChampions(){
+ const db=LX.cloud?.db?.();if(!db)return[];try{const r=await db.from('lx_rank_seasons').select('season_key,winner_user_id,winner_score,prize_cents,status,winner_confirmed,payment_status').eq('winner_confirmed',true).order('season_key',{ascending:false}).limit(12);if(r.error)throw r.error;const users=new Map((D.users?.()||[]).map(x=>[String(x.id||x.user_id),x]));return (r.data||[]).map(x=>({...x,name:users.get(String(x.winner_user_id))?.name||'Campeão LX'}))}catch(e){if(!/does not exist|schema cache|relation/i.test(e?.message||''))console.warn('LX champions',e);return[]}
+}
+async function injectHallOfChampions(shell){const champs=await rankChampions();if(!champs.length||!shell||qs('.lx40-hall',shell))return;const sec=document.createElement('section');sec.className='lx40-hall';sec.innerHTML=`<div class="rail-head"><div><span class="eyebrow">HALL DOS CAMPEÕES</span><h3>Campeões LX</h3></div></div><div class="lx40-hall-grid">${champs.map(c=>`<article><div class="avatar">${esc(initials(c.name))}</div><div><b>${esc(c.name)}</b><small>${esc(monthLabel(c.season_key))} · ${fmt(c.winner_score)} pts</small><span>Prêmio R$ ${((Number(c.prize_cents)||10000)/100).toLocaleString('pt-BR',{minimumFractionDigits:0})}${c.payment_status==='paid'?' · Pago':''}</span></div></article>`).join('')}</div>`;shell.appendChild(sec)}
+function showRankRules(){const modal=$('modal');modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page"><span class="eyebrow">LX RANKING</span><h2>Como ganhar pontos</h2><p>Os valores abaixo devem ser definidos no painel administrativo da temporada e permanecem congelados depois do início do mês.</p><div class="lx40-admin-grid"><article class="lx40-admin-card"><span>ATIVIDADE VÁLIDA</span><strong>Assistir</strong><p>Conta apenas consumo elegível, com proteção contra refresh e loops.</p></article><article class="lx40-admin-card"><span>ATIVIDADE VÁLIDA</span><strong>Ouvir</strong><p>Reprodução real e progressiva; play/pause repetitivo não deve gerar pontos.</p></article><article class="lx40-admin-card"><span>ATIVIDADE VÁLIDA</span><strong>Ler</strong><p>Progresso confirmado de leitura, conforme regras da temporada.</p></article></div><p><b>Prêmio:</b> R$ 100 para o 1º colocado elegível após auditoria. Empates seguem os critérios configurados para a temporada.</p></div>`}
+function shareRankCard(){
+ const rows=rankCache.get(rankState.season)||fallbackRanks(),userId=String(LX.cloud?.user?.()?.id||U.state?.user?.id||''),name=clean(U.state?.user?.name||U.state?.profile?.name||'Usuário'),me=rows.find(x=>String(x.user_id)===userId)||rows.find(x=>clean(x.name)===name),position=me?.position||'—',score=fmt(me?.score||0),season=monthLabel(rankState.season),text=`Estou em #${position} no Ranking LX de ${season} com ${score} pontos.`;
+ const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1350;const c=canvas.getContext('2d'),g=c.createLinearGradient(0,0,1080,1350);g.addColorStop(0,'#08090d');g.addColorStop(.58,'#11131c');g.addColorStop(1,'#171027');c.fillStyle=g;c.fillRect(0,0,1080,1350);c.strokeStyle='rgba(139,92,246,.5)';c.lineWidth=4;c.strokeRect(42,42,996,1266);c.fillStyle='rgba(139,92,246,.12)';c.beginPath();c.arc(900,190,240,0,Math.PI*2);c.fill();c.fillStyle='#fff';c.font='900 62px system-ui';c.fillText('LX PLUS',82,135);c.font='800 34px system-ui';c.fillStyle='#a78bfa';c.fillText('LX RANKING',82,205);c.font='900 250px system-ui';c.fillStyle='#fff';c.fillText(`#${position}`,78,525);c.font='800 58px system-ui';c.fillText(name.slice(0,26),82,670);c.font='700 38px system-ui';c.fillStyle='#cbd5e1';c.fillText(`${score} pontos`,82,735);c.font='700 32px system-ui';c.fillStyle='#a78bfa';c.fillText(season,82,805);c.fillStyle='rgba(255,255,255,.08)';c.fillRect(82,915,916,2);c.font='700 30px system-ui';c.fillStyle='#fff';c.fillText('Competição mensal · 1º lugar: R$ 100',82,1000);c.font='500 25px system-ui';c.fillStyle='#94a3b8';c.fillText('Resultado sujeito às regras e auditoria da temporada.',82,1050);
+ canvas.toBlob(async blob=>{try{if(blob&&navigator.share&&window.File){const file=new File([blob],`lx-ranking-${monthKey()}.png`,{type:'image/png'});if(!navigator.canShare||navigator.canShare({files:[file]})){await navigator.share({title:'LX Ranking',text,files:[file]});return}}if(navigator.share){await navigator.share({title:'LX Ranking',text});return}await navigator.clipboard?.writeText(text);LX.toast?.('Card preparado e texto do ranking copiado.')}catch(e){if(e?.name!=='AbortError')LX.toast?.(text)}},'image/png',.94)
+}
+
+/* ------------------------------------------------------------------
+   Ranking activity bridge — validates a minimum amount of consumption
+   before asking the protected RPC to award fixed server-side points.
+------------------------------------------------------------------ */
+const rankAwarded=new Set();let rankVideoId=null;
+const rankDay=()=>new Date().toISOString().slice(0,10);
+async function recordRankEvent(type,ref,metadata={}){if(!feature('rankingV40')||!LX.cloud?.user?.()||!LX.cloud?.db?.())return false;const key=`${type}|${ref}`;if(rankAwarded.has(key))return false;rankAwarded.add(key);try{const r=await LX.cloud.db().rpc('lx_rank_record_event',{p_event_type:type,p_ref_key:String(ref||''),p_metadata:metadata});if(r.error)throw r.error;return true}catch(e){rankAwarded.delete(key);if(!/does not exist|schema cache|function/i.test(e?.message||''))console.warn('LX ranking event',e);return false}}
+function bindRankMediaValidation(){
+ const audio=$('musicAudio');if(audio&&!audio.dataset.lx40RankBound){audio.dataset.lx40RankBound='1';audio.addEventListener('timeupdate',()=>{const t=LX.currentMusic?.(),dur=Number(audio.duration)||Number(t?.duration)||0;if(!t||!dur||audio.paused)return;const threshold=Math.min(75,Math.max(30,dur*.32));if(audio.currentTime>=threshold){const ref=`music:${t.contentId}:${t.index??0}:${rankDay()}`;recordRankEvent('music_valid',ref,{content_id:t.contentId,track_index:t.index??0,position:Math.round(audio.currentTime),duration:Math.round(dur)})}})}
+ const video=qs('#playerModal video#video');if(video&&!video.dataset.lx40RankBound){video.dataset.lx40RankBound='1';video.addEventListener('timeupdate',()=>{const dur=Number(video.duration)||0;if(!rankVideoId||!dur||video.paused)return;const threshold=Math.min(180,Math.max(45,dur*.2));if(video.currentTime>=threshold){const ref=`watch:${rankVideoId}:${rankDay()}`;recordRankEvent('watch_valid',ref,{content_id:rankVideoId,position:Math.round(video.currentTime),duration:Math.round(dur)})}})}
+}
+function patchRankActivity(){if(LX.__lx40RankActivity)return;LX.__lx40RankActivity=true;const oldPlay=LX.play?.bind(LX);if(oldPlay)LX.play=async function(id,...args){rankVideoId=id;const r=await oldPlay(id,...args);setTimeout(bindRankMediaValidation,50);return r};const oldRead=LX.read?.bind(LX);if(oldRead)LX.read=function(id,...args){const r=oldRead(id,...args);recordRankEvent('read_valid',`read:${id}:${rankDay()}`,{content_id:id});return r};recordRankEvent('streak_daily',`streak:${rankDay()}`,{day:rankDay()});bindRankMediaValidation()}
+
+/* ------------------------------------------------------------------
+   Universal Live Resolver
+------------------------------------------------------------------ */
+function resolveStream(value){
+ const raw=safeUrl(value);if(!raw)throw new Error('Use um link HTTPS válido.');const u=new URL(raw),host=u.hostname.toLowerCase();let id='';
+ if(host==='youtu.be'||host.endsWith('youtube.com')||host.endsWith('youtube-nocookie.com')){id=host==='youtu.be'?u.pathname.split('/').filter(Boolean)[0]:u.searchParams.get('v')||u.pathname.match(/\/(?:embed|live|shorts)\/([\w-]{11})/)?.[1]||'';if(id)return{kind:'embed',provider:'YouTube',source:raw,embed:`https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1`,mediaKey:`youtube:${id}`}}
+ if(host==='vimeo.com'||host.endsWith('.vimeo.com')){id=u.pathname.split('/').filter(Boolean).find(x=>/^\d+$/.test(x))||'';if(id)return{kind:'embed',provider:'Vimeo',source:raw,embed:`https://player.vimeo.com/video/${id}?autoplay=1`,mediaKey:raw}}
+ if(/drive\.google\.com$/.test(host)){try{return{kind:'media',provider:'Google Drive',source:raw,mediaKey:LX.mediaSources?.normalize?.('gdrive',raw)||raw}}catch{return{kind:'fallback',provider:'Google Drive',source:raw}}}
+ if(/\.(m3u8)(?:$|[?#])/i.test(u.pathname+u.search))return{kind:'adaptive',provider:'HLS',source:raw,mediaKey:raw};
+ if(/\.(mpd)(?:$|[?#])/i.test(u.pathname+u.search))return{kind:'adaptive',provider:'DASH',source:raw,mediaKey:raw};
+ if(/\.(mp4|webm|m4v|mov)(?:$|[?#])/i.test(u.pathname+u.search))return{kind:'media',provider:'Vídeo direto',source:raw,mediaKey:raw};
+ return{kind:'embed-page',provider:host.replace(/^www\./,''),source:raw,embed:raw,mediaKey:raw};
+}
+async function openUniversalLive(id){const x=(D.catalog?.()||[]).find(z=>String(z.id)===String(id));if(!x)return LX.toast?.('Transmissão indisponível.');let r;try{r=resolveStream(x.sourceUrl||LX.mediaSources?.toInput?.(x.mediaKey)||x.mediaKey)}catch(e){return LX.toast?.(e.message)};const modal=$('playerModal'),overlay=$('playerOverlay');if(!modal||!overlay)return;if(['media','adaptive'].includes(r.kind)&&typeof LX.play==='function'&&x.mediaKey){return LX.play(Number(x.id))}overlay.classList.remove('hidden');modal.innerHTML=`<div class="lx40-live-player"><header><div><span class="eyebrow">LX LIVE · ${esc(r.provider)}</span><h2>${esc(x.title)}</h2></div><button class="close-btn" onclick="LX.ui.closePlayer()">×</button></header>${r.kind==='embed'?`<iframe src="${esc(r.embed)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" title="${esc(x.title)}"></iframe>`:`<div class="lx-reader-error"><strong>Este conteúdo pode bloquear incorporação.</strong><p>Se o provedor impedir o player interno, abra a fonte original.</p><a class="primary-btn" href="${esc(r.source)}" target="_blank" rel="noopener">Abrir conteúdo</a></div>`}</div>`}
+function renderLivePublic(){const host=$('homeContent');if(!host)return;['hero','welcome'].forEach(id=>{$(id)?.classList.add('hidden');if($(id))$(id).innerHTML=''});const rows=(D.catalog?.()||[]).filter(x=>x.type==='Ao Vivo'&&x.published!==false&&x.liveStatus!=='Encerrado');host.innerHTML=`<section class="lx-nova-live"><div class="lx-nova-heading"><span>LX LIVE</span><h1>Ao vivo</h1><p>Transmissões e fontes compatíveis em uma grade única.</p></div><div class="lx-nova-live-grid">${rows.map(x=>{let p='Link';try{p=resolveStream(x.sourceUrl||LX.mediaSources?.toInput?.(x.mediaKey)||x.mediaKey).provider}catch{}return`<article>${x.banner||x.cover?`<img loading="lazy" src="${esc(x.banner||x.cover)}" alt="">`:''}<div style="padding:14px"><span class="lx40-live-provider">● AO VIVO · ${esc(p)}</span><h2>${esc(x.title)}</h2><button class="primary-btn" type="button" onclick="LX.v40.openLive(${Number(x.id)})">Assistir na LX Plus</button></div></article>`}).join('')||'<p class="lx-nova-empty">Nenhuma transmissão disponível.</p>'}</div></section>`}
+function renderLiveAdmin(m){
+ const rows=(D.catalog?.()||[]).filter(x=>x.type==='Ao Vivo'),selected=Number(ls.get('lx40:live-edit',0))||0,item=rows.find(x=>Number(x.id)===selected);m.innerHTML=`<div class="lx-nova-heading"><span>LX LIVE · UNIVERSAL STREAM RESOLVER</span><h1>Ao Vivo</h1><p>Cole YouTube, Vimeo, Google Drive, MP4, WebM, HLS/M3U8, DASH/MPD ou outro HTTPS. Fontes que bloqueiam embed recebem fallback seguro.</p></div><label class="lx-nova-live-select">Editar transmissão<select id="lx40LiveSelect"><option value="0">Nova transmissão</option>${rows.map(x=>`<option value="${Number(x.id)}" ${Number(x.id)===selected?'selected':''}>${esc(x.title)}</option>`).join('')}</select></label><form id="lx40LiveForm" class="lx-nova-form"><div class="lx-nova-row"><label>Título<input name="title" required maxlength="180" value="${esc(item?.title||'')}"></label><label>Capa/banner<input name="banner" type="url" value="${esc(item?.banner||item?.cover||'')}"></label><label class="wide">Link da transmissão<input name="source" required type="url" value="${esc(item?.sourceUrl||LX.mediaSources?.toInput?.(item?.mediaKey)||'')}" placeholder="https://..."></label></div><div id="lx40LiveDetect" class="lx40-status">Cole um link para detectar a fonte.</div><button class="primary-btn" type="submit">Salvar transmissão</button></form><div class="lx-nova-live-list">${rows.map(x=>`<article><strong>${esc(x.title)}</strong><span>${esc(x.sourceProvider||'Universal')}</span><button type="button" data-live-edit="${Number(x.id)}">Editar</button></article>`).join('')||'<p>Nenhuma transmissão cadastrada.</p>'}</div>`;
+ const form=$('lx40LiveForm'),input=form.elements.source,detect=$('lx40LiveDetect');const probe=()=>{try{const r=resolveStream(input.value);detect.className='lx40-status ok';detect.textContent=`${r.provider} reconhecido · ${r.kind==='embed-page'?'fallback preparado':'player interno disponível quando o navegador permitir'}`}catch(e){detect.className='lx40-status warn';detect.textContent=e.message}};input.addEventListener('input',probe);if(input.value)probe();$('lx40LiveSelect').onchange=e=>{ls.set('lx40:live-edit',Number(e.target.value)||0);renderLiveAdmin(m)};qsa('[data-live-edit]',m).forEach(b=>b.onclick=()=>{ls.set('lx40:live-edit',Number(b.dataset.liveEdit)||0);renderLiveAdmin(m)});
+ form.onsubmit=async e=>{e.preventDefault();const btn=form.querySelector('[type=submit]');btn.disabled=true;try{const r=resolveStream(input.value),row={...(item||{}),id:item?.id||Date.now(),type:'Ao Vivo',title:clean(form.elements.title.value),cover:clean(form.elements.banner.value),banner:clean(form.elements.banner.value),sourceUrl:r.source,sourceProvider:r.provider,mediaKey:r.mediaKey||r.source,liveResolverKind:r.kind,liveStatus:'Ao vivo',published:true,desc:item?.desc||'Transmissão na LX Plus'};await D.saveCatalogItem(row);ls.set('lx40:live-edit',row.id);LX.toast?.('Transmissão salva.');renderLiveAdmin(m);U.renderApp?.()}catch(err){LX.toast?.('Erro: '+clean(err.message||err))}finally{btn.disabled=false}}
+}
+
+/* ------------------------------------------------------------------
+   Admin draft recovery — additive, local-only
+------------------------------------------------------------------ */
+function formDraftKey(form){return `lx40:admin-draft:${U.state?.adminPage||'page'}:${form.id||form.dataset.form||'form'}`}
+function serializeFormDraft(form){const data={at:Date.now(),fields:{}};for(const el of form.elements||[]){if(!el.name||['file','password','submit','button'].includes(el.type))continue;if(el.type==='checkbox'||el.type==='radio'){data.fields[el.name]={type:el.type,value:el.checked}}else data.fields[el.name]={type:el.type,value:el.value}}return data}
+function restoreFormDraft(form){const d=ls.get(formDraftKey(form));if(!d?.fields||Date.now()-(d.at||0)>7*86400000)return;let restored=0;for(const el of form.elements||[]){const v=d.fields[el.name];if(!v||!el.name||['file','password'].includes(el.type))continue;if(el.type==='checkbox'||el.type==='radio'){if(!el.checked&&v.value){el.checked=true;restored++}}else if(!clean(el.value)&&clean(v.value)){el.value=v.value;el.dispatchEvent(new Event('change',{bubbles:true}));restored++}}if(restored){const n=document.createElement('div');n.className='lx40-draft-note';n.textContent=`Rascunho recuperado automaticamente · ${new Date(d.at).toLocaleString('pt-BR')}`;form.prepend(n)}}
+function bindAdminAutosave(){
+ if(U.state?.screen!=='admin')return;const root=$('adminMain')||document;for(const form of qsa('form',root)){if(form.dataset.lx40Autosave)return;form.dataset.lx40Autosave='1';restoreFormDraft(form);let timer=0;form.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>ls.set(formDraftKey(form),serializeFormDraft(form)),350)});form.addEventListener('change',()=>{clearTimeout(timer);timer=setTimeout(()=>ls.set(formDraftKey(form),serializeFormDraft(form)),150)});form.addEventListener('submit',()=>setTimeout(()=>{localStorage.removeItem(formDraftKey(form));form.querySelector('.lx40-draft-note')?.remove()},1200))}
+}
+
+/* ------------------------------------------------------------------
+   Admin: diagnostics, errors, ranking, feature flags, Smart Import label
+------------------------------------------------------------------ */
+const runtimeErrors=[];
+function recordRuntimeError(row){const item={at:new Date().toISOString(),type:clean(row.type||'error'),message:clean(row.message||'Erro').slice(0,1200),source:clean(row.source||'').slice(0,700),line:Number(row.line||0)};runtimeErrors.unshift(item);runtimeErrors.splice(100);const db=LX.cloud?.db?.(),user=LX.cloud?.user?.();if(db&&user&&item.message){const ua=navigator.userAgent||'';db.from('lx_client_errors').insert({user_id:user.id,page:location.pathname+location.hash,error_type:item.type,message:item.message,source:item.source,line:item.line,device:/Mobi|Android|iPhone|iPad/i.test(ua)?'mobile/tablet':'desktop',browser:ua.slice(0,500),metadata:{build:BUILD}}).then(({error})=>{if(error&&!/does not exist|schema cache|relation/i.test(error.message||''))console.warn('LX error telemetry',error)}).catch(()=>{})}}
+window.addEventListener('error',e=>recordRuntimeError({type:'error',message:e.message||'Erro',source:e.filename||'',line:e.lineno||0}));
+window.addEventListener('unhandledrejection',e=>recordRuntimeError({type:'promise',message:e.reason?.message||e.reason||'Promise rejeitada',source:'Promise',line:0}));
+async function diagnosticRows(){const out=[];const add=(name,status,detail)=>out.push({name,status,detail});add('Build','ok',BUILD);add('Catálogo',(D.catalog?.()||[]).length?'ok':'warn',`${(D.catalog?.()||[]).length} itens carregados`);add('Supabase',LX.cloud?.enabled?.()?'ok':'bad',LX.cloud?.enabled?.()?'Configurado':'Indisponível');add('Sessão',LX.cloud?.user?.()?'ok':'warn',LX.cloud?.user?.()?.email||'Sem login');add('Service Worker','serviceWorker'in navigator?'ok':'warn','serviceWorker'in navigator?'Suportado':'Não suportado');add('Player musical',$('musicAudio')?'ok':'bad',$('musicAudio')?`readyState ${$('musicAudio').readyState}`:'Elemento ausente');add('LX Storage',window.LX_DRIVE_STORAGE_ENDPOINT?'ok':'warn',window.LX_DRIVE_STORAGE_ENDPOINT||'Endpoint ausente');if(LX.cloud?.db?.()){const start=performance.now();try{const {error}=await LX.cloud.db().from('lx_catalog').select('id',{head:true,count:'exact'}).limit(1);add('Banco',error?'bad':'ok',error?error.message:`${Math.round(performance.now()-start)} ms`)}catch(e){add('Banco','bad',e.message)}}return out}
+async function renderDiagnostics(m){m.innerHTML='<div class="lx-nova-heading"><span>V40 · MANUTENÇÃO</span><h1>Diagnóstico LX</h1><p>Verificação não destrutiva de serviços e módulos principais.</p></div><div id="lx40Diag" class="lx40-admin-grid"><div class="lx-search-skeleton"><i class="lx-skeleton"></i></div></div>';const rows=await diagnosticRows(),host=$('lx40Diag');host.innerHTML=rows.map(r=>`<article class="lx40-admin-card"><span>${esc(r.name.toUpperCase())}</span><strong class="lx40-status ${r.status}">${r.status==='ok'?'Funcionando':r.status==='warn'?'Atenção':'Erro'}</strong><p>${esc(r.detail)}</p></article>`).join('')}
+async function renderErrors(m){m.innerHTML=`<div class="lx-nova-heading"><span>V40 · OBSERVABILIDADE</span><h1>Central de erros</h1><p>Falhas da sessão e, quando a migration v40 estiver ativa, registros recentes sincronizados.</p></div><div class="admin-card"><div id="lx40ErrorStatus" class="lx40-status warn">Carregando registros…</div><table class="lx40-table"><thead><tr><th>Data</th><th>Tipo</th><th>Erro</th><th>Origem</th></tr></thead><tbody id="lx40ErrorRows"></tbody></table></div>`;let rows=[...runtimeErrors];const db=LX.cloud?.db?.();if(db)try{const r=await db.from('lx_client_errors').select('created_at,error_type,message,source,line,page,device').order('created_at',{ascending:false}).limit(150);if(!r.error&&r.data)rows=[...r.data.map(x=>({at:x.created_at,type:x.error_type,message:x.message,source:x.source||x.page||'',line:x.line||0})),...rows].slice(0,200)}catch{}const host=$('lx40ErrorRows'),st=$('lx40ErrorStatus');host.innerHTML=rows.map(e=>`<tr><td>${esc(new Date(e.at).toLocaleString('pt-BR'))}</td><td>${esc(e.type)}</td><td>${esc(e.message)}</td><td>${esc(e.source)}${e.line?`:${e.line}`:''}</td></tr>`).join('')||'<tr><td colspan="4">Nenhum erro registrado.</td></tr>';st.className='lx40-status '+(rows.length?'warn':'ok');st.textContent=rows.length?`${rows.length} registro(s) para revisão`:'Nenhum erro conhecido nesta consulta'}
+function catalogSource(x){return clean(x?.sourceUrl||LX.mediaSources?.toInput?.(x?.mediaKey)||x?.mediaKey||x?.externalReadUrl||'')}
+async function healthOne(x){
+ const source=catalogSource(x);
+ if(!source)return {item:x,status:'bad',label:'Offline',detail:'Sem fonte cadastrada'};
+ try{
+   if(x.type==='Ao Vivo'){
+     const r=resolveStream(source);
+     return {item:x,status:r.kind==='embed-page'?'warn':'ok',label:r.kind==='embed-page'?'Bloqueio possível':'Compatível',detail:r.provider};
+   }
+   if(/^https:\/\/drive\.google\.com/i.test(source)&&LX.driveStorage?.probe){
+     try{
+       const probe=await Promise.race([
+         LX.driveStorage.probe(source),
+         new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),8000))
+       ]);
+       return {item:x,status:probe?.rangeOk?'ok':'warn',label:probe?.rangeOk?'Online':'Instável',detail:probe?.file?.name||'Google Drive'};
+     }catch(error){
+       return {item:x,status:'bad',label:'Offline',detail:LX.driveStorage?.explain?.(error.message)||error.message};
+     }
+   }
+   const mode=LX.mediaSources?.modeFor?.(x.mediaKey||source)||'direct';
+   const desc=LX.mediaSources?.preview?.(mode,source);
+   if(desc)return {item:x,status:'ok',label:'Compatível',detail:desc.provider||'Fonte reconhecida'};
+   return {item:x,status:'warn',label:'Revisar',detail:'Fonte não reconhecida'};
+ }catch(error){
+   return {item:x,status:'bad',label:'Incompatível',detail:clean(error.message||error)};
+ }
+}
+async function renderLinkHealth(m){const rows=(D.catalog?.()||[]).filter(x=>x.published!==false);m.innerHTML=`<div class="lx-nova-heading"><span>V40 · LX LINK HEALTH</span><h1>Saúde das fontes</h1><p>Auditoria leve das fontes cadastradas. Testes de Drive verificam o LX Storage; outras fontes são validadas pelo resolver sem baixar arquivos grandes.</p></div><div class="admin-card"><div id="lx40HealthProgress" class="lx40-status warn">Analisando 0/${rows.length}…</div><table class="lx40-table"><thead><tr><th>Conteúdo</th><th>Tipo</th><th>Status</th><th>Detalhe</th></tr></thead><tbody id="lx40HealthRows"></tbody></table></div>`;const out=[],host=$('lx40HealthRows'),progress=$('lx40HealthProgress');for(let i=0;i<rows.length;i++){out.push(await healthOne(rows[i]));progress.textContent=`Analisando ${i+1}/${rows.length}…`;if(i%10===9)await new Promise(r=>setTimeout(r,0))}host.innerHTML=out.map(r=>`<tr><td>${esc(r.item.title||'Sem título')}</td><td>${esc(r.item.type||'')}</td><td><span class="lx40-status ${r.status}">${esc(r.label)}</span></td><td>${esc(r.detail)}</td></tr>`).join('')||'<tr><td colspan="4">Nenhum conteúdo publicado.</td></tr>';const bad=out.filter(x=>x.status==='bad').length,warn=out.filter(x=>x.status==='warn').length;progress.className='lx40-status '+(bad?'bad':warn?'warn':'ok');progress.textContent=bad?`${bad} fonte(s) com erro · ${warn} para revisão`:warn?`${warn} fonte(s) para revisão`:'Fontes verificadas sem erro estrutural conhecido'}
+async function rankSeasons(){const db=LX.cloud?.db?.();if(!db)return[];try{await db.rpc('lx_rank_rollover_if_needed');const r=await db.from('lx_rank_seasons').select('season_key,starts_at,ends_at,prize_cents,status,winner_user_id,winner_score,winner_confirmed,payment_status,paid_at,closed_at').order('season_key',{ascending:false}).limit(18);return r.error?[]:(r.data||[])}catch{return[]}}
+async function rankAuditRows(){const db=LX.cloud?.db?.();if(!db)return{scores:[],events:[]};try{const [scores,events]=await Promise.all([db.from('lx_rank_scores').select('season_key,user_id,monthly_score,lifetime_score,suspicious,updated_at').eq('suspicious',true).order('updated_at',{ascending:false}).limit(100),db.from('lx_rank_events').select('id,season_key,user_id,event_type,points,ref_key,status,created_at').eq('status','review').order('created_at',{ascending:false}).limit(100)]);return{scores:scores.error?[]:(scores.data||[]),events:events.error?[]:(events.data||[])}}catch{return{scores:[],events:[]}}}
+async function rankAdminAction(action,season){const db=LX.cloud?.db?.();if(!db)return LX.toast?.('Supabase indisponível.');try{let r;if(action==='confirm')r=await db.rpc('lx_rank_confirm_season',{p_season:season});else if(action==='approve')r=await db.rpc('lx_rank_set_payment',{p_season:season,p_status:'approved'});else if(action==='paid')r=await db.rpc('lx_rank_set_payment',{p_season:season,p_status:'paid'});else if(action==='close')r=await db.rpc('lx_rank_close_current',{p_confirm:false});if(r?.error)throw r.error;LX.toast?.('Ranking atualizado.');renderRankAdmin($('adminMain'))}catch(e){LX.toast?.('Não foi possível atualizar: '+clean(e.message||e))}}
+async function renderRankAdmin(m){
+ const rows=await cloudRanks(monthKey())||fallbackRanks(),seasons=await rankSeasons();
+ m.innerHTML=`<div class="lx-nova-heading"><span>V40 · LX RANKING</span><h1>Temporada ${esc(monthLabel())}</h1><p>R$ 100 para o 1º colocado elegível. A virada mensal cria snapshot e abre uma temporada nova sem apagar o histórico.</p></div><div class="lx40-admin-grid"><article class="lx40-admin-card"><span>LÍDER</span><strong>${esc(rows[0]?.name||'—')}</strong><p>${fmt(rows[0]?.score||0)} pontos</p></article><article class="lx40-admin-card"><span>PARTICIPANTES</span><strong>${fmt(rows.length)}</strong><p>com ranking visível</p></article><article class="lx40-admin-card"><span>PRÊMIO</span><strong>R$ 100</strong><p>auditoria antes do pagamento</p></article><article class="lx40-admin-card"><span>HISTÓRICO</span><strong>${fmt(seasons.length)}</strong><p>temporadas registradas</p></article></div><div class="admin-card"><h3>Classificação atual</h3><table class="lx40-table"><thead><tr><th>#</th><th>Usuário</th><th>Pontos</th><th>Total histórico</th></tr></thead><tbody>${rows.slice(0,100).map(r=>`<tr><td>${r.position}</td><td>${esc(r.name)}</td><td>${fmt(r.score)}</td><td>${fmt(r.lifetime_score||r.score)}</td></tr>`).join('')||'<tr><td colspan="4">Sem pontuação ainda.</td></tr>'}</tbody></table></div><div class="admin-card"><h3>Temporadas e premiação</h3><p style="color:var(--lx40-muted)">Temporadas vencidas entram em revisão automática. Confirme o campeão somente depois de verificar atividade suspeita.</p><div class="lx40-season-admin">${seasons.map(x=>`<article><div><b>${esc(monthLabel(x.season_key))}</b><small>${esc(String(x.status||'').toUpperCase())} · ${x.winner_score!=null?fmt(x.winner_score)+' pts':'sem vencedor'} · prêmio R$ ${((Number(x.prize_cents)||10000)/100).toFixed(2).replace('.',',')}</small></div><span class="lx40-status ${x.status==='closed'?'ok':x.status==='review'?'warn':''}">${x.winner_confirmed?'Vencedor confirmado':x.status==='active'?'Em andamento':'Auditoria'}</span><div class="lx40-season-actions">${x.status==='review'?`<button data-rank-action="confirm" data-season="${esc(x.season_key)}">Confirmar campeão</button>`:''}${x.winner_confirmed&&x.payment_status!=='paid'?`<button data-rank-action="approve" data-season="${esc(x.season_key)}">Aprovar pagamento</button><button class="primary-btn" data-rank-action="paid" data-season="${esc(x.season_key)}">Marcar R$ 100 pago</button>`:''}${x.payment_status==='paid'?'<b class="lx40-paid">✓ Prêmio pago</b>':''}</div></article>`).join('')||'<p>A migration v40 ainda não foi aplicada; o ranking continua usando o modo compatível da base atual.</p>'}</div>${seasons.some(x=>x.season_key===monthKey()&&x.status==='active')?'<button class="glass-btn" id="lx40ReviewSeason">Encerrar atual para auditoria manual</button>':''}</div>`;
+ const audit=await rankAuditRows();const auditCard=document.createElement('section');auditCard.className='admin-card';auditCard.innerHTML=`<h3>Auditoria antifraude</h3><p style="color:var(--lx40-muted)">Eventos fora dos limites ficam em revisão e não pontuam até análise.</p><div class="lx40-admin-grid"><article class="lx40-admin-card"><span>CONTAS SINALIZADAS</span><strong>${fmt(audit.scores.length)}</strong><p>comportamento para revisão</p></article><article class="lx40-admin-card"><span>EVENTOS RETIDOS</span><strong>${fmt(audit.events.length)}</strong><p>sem pontos automáticos</p></article></div><table class="lx40-table"><thead><tr><th>Data</th><th>Usuário</th><th>Evento</th><th>Referência</th></tr></thead><tbody>${audit.events.slice(0,50).map(e=>`<tr><td>${esc(new Date(e.created_at).toLocaleString('pt-BR'))}</td><td>${esc(String(e.user_id).slice(0,8))}…</td><td>${esc(e.event_type)}</td><td>${esc(e.ref_key||'—')}</td></tr>`).join('')||'<tr><td colspan="4">Nenhum evento suspeito pendente.</td></tr>'}</tbody></table>`;m.appendChild(auditCard);
+ qsa('[data-rank-action]',m).forEach(b=>b.onclick=()=>{const label=b.dataset.rankAction==='paid'?'marcar o prêmio como pago':b.dataset.rankAction==='confirm'?'confirmar este campeão':'aprovar o pagamento';if(confirm(`Deseja ${label}?`))rankAdminAction(b.dataset.rankAction,b.dataset.season)});const close=$('lx40ReviewSeason');if(close)close.onclick=()=>{if(confirm('Encerrar a temporada atual e mandar o resultado para auditoria? Use apenas no fechamento do mês.'))rankAdminAction('close',monthKey())}
+}
+function renderFeatures(m){m.innerHTML=`<div class="lx-nova-heading"><span>V40 · FEATURE FLAGS</span><h1>Módulos da atualização</h1><p>Desative isoladamente um recurso novo sem derrubar a plataforma inteira.</p></div><div class="admin-card lx40-top10-mode"><div><span class="eyebrow">TOP 10</span><h2>Modo de classificação</h2><p>Automático ignora prioridade manual; Manual usa a prioridade definida no catálogo; Misto combina ambos.</p></div><label class="field">Modo<select id="lx40Top10Mode"><option value="auto" ${top10State.mode==='auto'?'selected':''}>Automático</option><option value="manual" ${top10State.mode==='manual'?'selected':''}>Manual</option><option value="mixed" ${top10State.mode==='mixed'?'selected':''}>Misto</option></select></label></div><div class="lx40-admin-grid">${Object.entries(featureDefaults).map(([k])=>`<article class="lx40-admin-card"><span>${esc(k)}</span><strong>${feature(k)?'ATIVO':'DESATIVADO'}</strong><label class="check"><input type="checkbox" data-feature="${esc(k)}" ${feature(k)?'checked':''}><span>Ativar módulo</span></label></article>`).join('')}</div>`;qsa('[data-feature]',m).forEach(x=>x.onchange=()=>{setFeature(x.dataset.feature,x.checked);LX.toast?.('Feature flag atualizada. Recarregue para aplicar totalmente.')});$('lx40Top10Mode').onchange=e=>{top10State.mode=e.target.value;ls.set('lx40:top10-mode',top10State.mode);LX.toast?.('Modo do Top 10 atualizado.')}}
+function addAdminNav(){const nav=$('adminNav');if(!nav||qs('[data-admin="v40diagnostics"]',nav))return;const label=document.createElement('span');label.className='lx-admin-nav-label';label.textContent='V40 · OPERAÇÃO';const html=`<button data-admin="v40diagnostics"><i>${icon('shield')}</i><span>Diagnóstico</span></button><button data-admin="v40ranking"><i>${icon('trophy')}</i><span>Ranking mensal</span></button><button data-admin="v40errors"><i>!</i><span>Central de erros</span></button><button data-admin="v40linkhealth"><i>${icon('shield')}</i><span>Link Health</span></button><button data-admin="v40features"><i>${icon('bolt')}</i><span>Feature flags</span></button>`;nav.appendChild(label);nav.insertAdjacentHTML('beforeend',html);qsa('#adminNav [data-admin]').forEach(b=>{if(b.dataset.lx40Bound)return;b.dataset.lx40Bound='1';b.addEventListener('click',()=>{const p=b.dataset.admin;if(/^v40/.test(p))LX.admin.render(p)})})}
+const oldAdminRender=LX.admin.render.bind(LX.admin);
+LX.admin.render=function(page='dashboard'){U.state.adminPage=page;if(page==='v40diagnostics'){renderDiagnostics($('adminMain'));markAdmin(page);return}if(page==='v40ranking'){renderRankAdmin($('adminMain'));markAdmin(page);return}if(page==='v40errors'){renderErrors($('adminMain'));markAdmin(page);return}if(page==='v40linkhealth'){renderLinkHealth($('adminMain'));markAdmin(page);return}if(page==='v40features'){renderFeatures($('adminMain'));markAdmin(page);return}if(page==='live'&&feature('liveV40')){renderLiveAdmin($('adminMain'));markAdmin(page);return}const r=oldAdminRender(page);setTimeout(()=>{addAdminNav();if(page==='importer'){const h=qs('#adminMain .lx-nova-heading h1,#adminMain h1');if(h)h.textContent='LX Smart Import';const p=qs('#adminMain .lx-nova-heading p');if(p)p.textContent='Importação em massa com preview, detecção de duplicados, arquivos, URLs, listas e metadados.'}if(page==='dashboard')injectDashboard()},0);return r};
+function markAdmin(page){qsa('#adminNav [data-admin]').forEach(b=>b.classList.toggle('active',b.dataset.admin===page));addAdminNav()}
+function injectDashboard(){const main=$('adminMain');if(!main||qs('#lx40Dashboard',main))return;const box=document.createElement('section');box.id='lx40Dashboard';box.className='admin-card';box.innerHTML=`<div class="lx-nova-heading"><span>LX PLUS V40</span><h2>Central da atualização</h2><p>Diagnóstico, Ranking mensal, erros e Feature Flags em um só lugar.</p></div><div class="lx40-admin-grid"><button class="lx40-admin-card" onclick="LX.admin.render('v40diagnostics')"><span>SAÚDE DO SISTEMA</span><strong>Diagnóstico</strong><p>Banco, player, Storage e runtime.</p></button><button class="lx40-admin-card" onclick="LX.admin.render('v40ranking')"><span>R$ 100 / MÊS</span><strong>Ranking</strong><p>Temporada, auditoria e histórico.</p></button><button class="lx40-admin-card" onclick="LX.admin.render('importer')"><span>CATÁLOGO</span><strong>Smart Import</strong><p>Cadastre vários conteúdos de uma vez.</p></button><button class="lx40-admin-card" onclick="LX.admin.render('v40linkhealth')"><span>FONTES</span><strong>Link Health</strong><p>Detecte links offline, bloqueados e incompatíveis.</p></button><button class="lx40-admin-card" onclick="LX.admin.render('v40errors')"><span>OBSERVABILIDADE</span><strong>Erros</strong><p>Falhas capturadas e sincronizadas.</p></button></div>`;main.prepend(box)}
+
+/* ------------------------------------------------------------------
+   Command palette (Ctrl/Cmd + K)
+------------------------------------------------------------------ */
+function openCommandPalette(){let el=$('lx40Command');if(el)el.remove();el=document.createElement('div');el.id='lx40Command';el.className='overlay';el.innerHTML=`<div class="modal" style="max-width:620px"><button class="close-btn" data-close>×</button><div class="panel-page"><span class="eyebrow">LX COMMAND</span><h2>Ação rápida</h2><input id="lx40CommandSearch" class="field" style="width:100%;padding:14px;border-radius:14px;background:#0d0f14;color:#fff;border:1px solid rgba(255,255,255,.1)" placeholder="Buscar ação…"><div id="lx40CommandList" class="lx40-admin-grid"></div></div></div>`;document.body.appendChild(el);const isAdmin=!!U.state?.user?.admin,actions=[['Início',()=>{U.state.mode='Assistir';U.state.category='Início';U.renderApp()}],['Buscar',$('searchInput')?()=>{$('searchWrap')?.classList.add('open');$('searchInput').focus()}:()=>{}],['LX Music',()=>{U.state.mode='Ouvir';U.state.category='Início';U.renderApp()}],['LX Ranking',()=>openRanking()],['Comunidade',()=>LX.social?.open?.('friends')],...(isAdmin?[['Adicionar filme',()=>{LX.openAdmin?.();setTimeout(()=>LX.admin.render('movies'),20)}],['Adicionar música',()=>{LX.openAdmin?.();setTimeout(()=>LX.admin.render('music'),20)}],['LX Smart Import',()=>{LX.openAdmin?.();setTimeout(()=>LX.admin.render('importer'),20)}],['Diagnóstico',()=>{LX.openAdmin?.();setTimeout(()=>LX.admin.render('v40diagnostics'),20)}]]:[])];const render=q=>{$('lx40CommandList').innerHTML=actions.filter(([n])=>n.toLowerCase().includes(q.toLowerCase())).map(([n],i)=>`<button class="lx40-admin-card" data-cmd="${i}"><strong>${esc(n)}</strong></button>`).join('');qsa('[data-cmd]',$('lx40CommandList')).forEach((b,idx)=>{const filtered=actions.filter(([n])=>n.toLowerCase().includes(q.toLowerCase()));b.onclick=()=>{el.remove();filtered[idx]?.[1]?.()}})};render('');$('lx40CommandSearch').oninput=e=>render(e.target.value);$('lx40CommandSearch').focus();qs('[data-close]',el).onclick=()=>el.remove();el.onclick=e=>{if(e.target===el)el.remove()}}
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openCommandPalette()}});
+
+/* ------------------------------------------------------------------
+   App decorators / wrappers
+------------------------------------------------------------------ */
+const oldRenderApp=U.renderApp.bind(U);
+U.renderApp=function(){const r=oldRenderApp();queueMicrotask(enhanceApp);setTimeout(enhanceApp,60);return r};LX.ui.renderApp=U.renderApp;
+function enhanceApp(){applyIcons();applyLXArrows();bindFloatingPlayer();bindRankMediaValidation();addMusicBrand();renderTop10();renderHomeEnhancements();if(U.state?.mode==='Ao vivo'&&feature('liveV40'))renderLivePublic();decorateImages();decorateCommunity();}
+function decorateImages(){qsa('img').forEach(img=>{if(!img.loading)img.loading='lazy';img.addEventListener('error',()=>{if(!img.dataset.lx40Fallback){img.dataset.lx40Fallback='1';img.src='assets/lx-music-fallback.svg'}},{once:true})})}
+function decorateCommunity(){if(!feature('communityV40'))return;const drawer=$('lxCommunityDrawer');if(!drawer||qs('.lx40-community-tools',drawer))return;const head=qs('.lx-community-head',drawer);if(!head)return;const tools=document.createElement('div');tools.className='lx40-community-tools';tools.innerHTML=`<button type="button" onclick="LX.v40.communitySearch()">${icon('search')} Pesquisar</button><button type="button" onclick="LX.v40.savedMessages()">Mensagens salvas</button><button type="button" onclick="LX.v40.communityMedia()">Mídia & arquivos</button><button type="button" onclick="LX.v40.createPoll()">📊 Enquete</button>`;head.after(tools)}
+function chatUserId(){return String(LX.cloud?.user?.()?.id||U.state?.user?.id||'')}
+function chatThreadKey(peer=LX.chat?.peer?.()){return [chatUserId(),String(peer||'')].filter(Boolean).sort().join('__')}
+function chatThreads(){try{return LX.store?.read?.(LX.store.keys.chatThreads,{})||{}}catch{return{}}}
+function chatMessages(peer=LX.chat?.peer?.()){return chatThreads()[chatThreadKey(peer)]||[]}
+function chatMessageById(id){for(const [thread,rows] of Object.entries(chatThreads())){const m=(rows||[]).find(x=>String(x?.client_id||x?.id||'')===String(id));if(m)return {thread,message:m}}return null}
+function messageText(m){if(!m)return'Mensagem';if(m.deleted_at)return'Mensagem apagada';if(m.kind==='audio')return'Áudio';if(m.kind==='image')return'Foto';if(m.kind==='sticker')return'Figurinha';if(m.kind==='file'){try{return JSON.parse(m.body||'{}').name||'Arquivo'}catch{return'Arquivo'}}return clean(m.body||'Mensagem').slice(0,180)}
+function communityModal(title,subtitle,html){const modal=$('modal'),overlay=$('overlay');if(!modal||!overlay)return;overlay.classList.remove('hidden');modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page lx40-community-modal"><span class="eyebrow">LX COMMUNITY</span><h2>${esc(title)}</h2><p>${esc(subtitle||'')}</p>${html}</div>`}
+function localSaved(){return ls.get(`lx40:saved:${chatUserId()}`,[])||[]}
+function saveLocalSaved(rows){ls.set(`lx40:saved:${chatUserId()}`,rows.slice(-300))}
+async function toggleSavedMessage(messageId){const hit=chatMessageById(messageId),thread=hit?.thread||chatThreadKey();if(!thread)return;let rows=localSaved(),exists=rows.some(x=>x.message_client_id===String(messageId));if(exists)rows=rows.filter(x=>x.message_client_id!==String(messageId));else rows.push({message_client_id:String(messageId),thread_key:thread,created_at:new Date().toISOString()});saveLocalSaved(rows);const db=LX.cloud?.db?.(),user=LX.cloud?.user?.();if(db&&user)try{if(exists)await db.from('lx_saved_messages').delete().eq('user_id',user.id).eq('message_client_id',String(messageId));else await db.from('lx_saved_messages').upsert({user_id:user.id,message_client_id:String(messageId),thread_key:thread},{onConflict:'user_id,message_client_id'})}catch(e){if(!/does not exist|schema cache|relation/i.test(e?.message||''))console.warn('LX saved message',e)}LX.toast?.(exists?'Mensagem removida dos salvos.':'Mensagem salva.');document.getElementById('lxMessageActions')?.remove()}
+async function savedMessages(){let rows=localSaved(),db=LX.cloud?.db?.(),user=LX.cloud?.user?.();if(db&&user)try{const r=await db.from('lx_saved_messages').select('message_client_id,thread_key,created_at').eq('user_id',user.id).order('created_at',{ascending:false}).limit(300);if(!r.error&&r.data){rows=r.data;saveLocalSaved(rows)}}catch{}const cards=rows.map(x=>{const hit=chatMessageById(x.message_client_id),m=hit?.message;return `<button class="lx40-saved-card" type="button" data-saved-jump="${esc(x.message_client_id)}" data-saved-thread="${esc(x.thread_key)}"><span>${m?.kind==='audio'?'🎙️':m?.kind==='image'?'🖼️':m?.kind==='file'?'📎':'💬'}</span><div><b>${esc(messageText(m))}</b><small>${m?.created_at?new Date(m.created_at).toLocaleString('pt-BR'):'Mensagem salva'}</small></div></button>`}).join('')||'<div class="official-empty"><b>Nenhuma mensagem salva</b><p>Abra as ações de uma mensagem e toque em Salvar.</p></div>';communityModal('Mensagens salvas','Seus atalhos ficam sincronizados quando a migration v40 estiver aplicada.',`<div class="lx40-saved-list">${cards}</div>`);qsa('[data-saved-jump]',$('modal')).forEach(b=>b.onclick=()=>{const thread=b.dataset.savedThread,peer=String(thread).split('__').find(x=>x!==chatUserId());U.close?.();window.LXOpenCommunity?.('friends');setTimeout(async()=>{if(peer)await LX.chat?.open?.(peer);setTimeout(()=>LX.chat?.jumpToMessage?.(b.dataset.savedJump),80)},80)})}
+function localPins(){return ls.get(`lx40:pins:${chatUserId()}`,[])||[]}
+function saveLocalPins(rows){ls.set(`lx40:pins:${chatUserId()}`,rows.slice(-100))}
+async function togglePinnedMessage(messageId){const thread=chatThreadKey();if(!thread)return;let rows=localPins(),exists=rows.some(x=>x.thread_key===thread&&x.message_client_id===String(messageId));if(exists)rows=rows.filter(x=>!(x.thread_key===thread&&x.message_client_id===String(messageId)));else rows.push({thread_key:thread,message_client_id:String(messageId),created_at:new Date().toISOString()});saveLocalPins(rows);const db=LX.cloud?.db?.(),user=LX.cloud?.user?.();if(db&&user)try{if(exists)await db.from('lx_message_pins').delete().eq('thread_key',thread).eq('message_client_id',String(messageId));else await db.from('lx_message_pins').upsert({thread_key:thread,message_client_id:String(messageId),pinned_by:user.id},{onConflict:'thread_key,message_client_id'})}catch(e){if(!/does not exist|schema cache|relation/i.test(e?.message||''))console.warn('LX pinned message',e)}document.getElementById('lxMessageActions')?.remove();LX.toast?.(exists?'Mensagem desafixada.':'Mensagem fixada.');refreshCommunityExtras()}
+async function currentPins(){const thread=chatThreadKey();let rows=localPins().filter(x=>x.thread_key===thread),db=LX.cloud?.db?.();if(db&&thread)try{const r=await db.from('lx_message_pins').select('message_client_id,thread_key,created_at').eq('thread_key',thread).order('created_at',{ascending:false}).limit(10);if(!r.error&&r.data)rows=r.data}catch{}return rows}
+async function communitySearch(){const peer=LX.chat?.peer?.(),messages=peer?chatMessages(peer):[];communityModal('Pesquisar conversa','Busque texto, arquivos e mensagens desta conversa.',`<input id="lx40ChatSearch" class="field" style="width:100%;padding:13px;border-radius:14px" placeholder="Digite para pesquisar"><div id="lx40ChatSearchResults" class="lx40-saved-list"></div>`);const input=$('lx40ChatSearch'),out=$('lx40ChatSearchResults');const draw=()=>{const q=clean(input.value).toLowerCase();const hits=q?messages.filter(m=>messageText(m).toLowerCase().includes(q)).slice(-100).reverse():[];out.innerHTML=hits.map(m=>`<button class="lx40-saved-card" data-chat-jump="${esc(m.client_id||m.id)}"><span>⌕</span><div><b>${esc(messageText(m))}</b><small>${m.created_at?new Date(m.created_at).toLocaleString('pt-BR'):''}</small></div></button>`).join('')||(q?'<div class="official-empty"><b>Nenhum resultado</b></div>':'<div class="official-empty"><p>Comece a digitar.</p></div>');qsa('[data-chat-jump]',out).forEach(b=>b.onclick=()=>{U.close?.();setTimeout(()=>LX.chat?.jumpToMessage?.(b.dataset.chatJump),60)})};input.oninput=draw;input.focus();draw()}
+function mediaKind(m){if(['image','file','audio','sticker'].includes(m?.kind))return m.kind;if(m?.kind==='text'&&/https?:\/\//i.test(m.body||''))return'link';return''}
+async function communityMedia(){const peer=LX.chat?.peer?.(),items=peer?chatMessages(peer).filter(m=>mediaKind(m)):[];const tabs=['all','image','link','file','audio'];communityModal('Mídia & arquivos','Fotos, links, documentos e áudios desta conversa.',`<div class="lx40-media-tabs">${tabs.map((t,i)=>`<button data-media-tab="${t}" class="${i===0?'active':''}">${({all:'Tudo',image:'Mídia',link:'Links',file:'Arquivos',audio:'Áudios'})[t]}</button>`).join('')}</div><div id="lx40MediaGrid" class="lx40-media-grid"></div>`);const draw=type=>{const rows=items.filter(m=>type==='all'||mediaKind(m)===type);$('lx40MediaGrid').innerHTML=rows.slice().reverse().map(m=>`<button type="button" class="lx40-media-item" data-media-jump="${esc(m.client_id||m.id)}"><span>${mediaKind(m)==='image'?'🖼️':mediaKind(m)==='audio'?'🎙️':mediaKind(m)==='file'?'📎':mediaKind(m)==='sticker'?'✨':'🔗'}</span><b>${esc(messageText(m))}</b><small>${m.created_at?new Date(m.created_at).toLocaleDateString('pt-BR'):''}</small></button>`).join('')||'<div class="official-empty"><b>Nada aqui ainda</b></div>';qsa('[data-media-jump]',$('lx40MediaGrid')).forEach(b=>b.onclick=()=>{U.close?.();setTimeout(()=>LX.chat?.jumpToMessage?.(b.dataset.mediaJump),60)})};qsa('[data-media-tab]',$('modal')).forEach(b=>b.onclick=()=>{qsa('[data-media-tab]',$('modal')).forEach(x=>x.classList.toggle('active',x===b));draw(b.dataset.mediaTab)});draw('all')}
+function localPolls(){return ls.get(`lx40:polls:${chatUserId()}`,[])||[]}
+function saveLocalPolls(rows){ls.set(`lx40:polls:${chatUserId()}`,rows.slice(-100))}
+async function createPoll(){const peer=LX.chat?.peer?.();if(!peer)return LX.toast?.('Abra uma conversa para criar uma enquete.');const question=clean(prompt('Pergunta da enquete:'));if(!question)return;const raw=clean(prompt('Opções separadas por ponto e vírgula. Ex.: Sim; Não; Talvez'));const options=raw.split(';').map(clean).filter(Boolean).slice(0,8);if(options.length<2)return LX.toast?.('Informe pelo menos duas opções.');const thread=chatThreadKey(peer),user=LX.cloud?.user?.(),db=LX.cloud?.db?.();let poll={id:crypto?.randomUUID?.()||`${Date.now()}`,thread_key:thread,creator_id:user?.id||chatUserId(),question,options,closed:false,created_at:new Date().toISOString(),votes:{}};if(db&&user)try{const r=await db.from('lx_polls').insert({thread_key:thread,creator_id:user.id,question,options}).select('*').single();if(!r.error&&r.data)poll={...poll,...r.data}}catch(e){if(!/does not exist|schema cache|relation/i.test(e?.message||''))console.warn('LX poll',e)}const local=localPolls().filter(x=>x.id!==poll.id);local.push(poll);saveLocalPolls(local);try{await LX.chat?.send?.(peer,'text',`📊 Enquete: ${question}`)}catch{}LX.toast?.('Enquete criada.');refreshCommunityExtras()}
+async function loadPolls(){const thread=chatThreadKey();let rows=localPolls().filter(x=>x.thread_key===thread),db=LX.cloud?.db?.();if(db&&thread)try{const r=await db.from('lx_polls').select('*').eq('thread_key',thread).eq('closed',false).order('created_at',{ascending:false}).limit(5);if(!r.error&&r.data){rows=r.data;saveLocalPolls([...localPolls().filter(x=>x.thread_key!==thread),...rows])}}catch{}return rows}
+async function votePoll(pollId,index){const db=LX.cloud?.db?.(),user=LX.cloud?.user?.();if(db&&user)try{const r=await db.from('lx_poll_votes').upsert({poll_id:pollId,user_id:user.id,option_index:Number(index)},{onConflict:'poll_id,user_id'});if(r.error)throw r.error;LX.toast?.('Voto registrado.');return refreshCommunityExtras()}catch(e){if(!/does not exist|schema cache|relation/i.test(e?.message||''))console.warn('LX poll vote',e)}let rows=localPolls();rows=rows.map(p=>p.id===pollId?{...p,votes:{...(p.votes||{}),[chatUserId()]:Number(index)}}:p);saveLocalPolls(rows);LX.toast?.('Voto salvo neste aparelho.');refreshCommunityExtras()}
+async function refreshCommunityExtras(){const peer=LX.chat?.peer?.(),head=qs('.lx-chat-head');if(!peer||!head)return;document.getElementById('lx40PinnedBar')?.remove();document.getElementById('lx40PollBar')?.remove();const pins=await currentPins();if(pins.length){const hit=chatMessageById(pins[0].message_client_id),bar=document.createElement('button');bar.id='lx40PinnedBar';bar.type='button';bar.className='lx40-pinned-bar';bar.innerHTML=`<span>📌</span><div><b>Mensagem fixada</b><small>${esc(messageText(hit?.message))}</small></div>${icon('chevron')}`;bar.onclick=()=>LX.chat?.jumpToMessage?.(pins[0].message_client_id);head.after(bar)}const polls=await loadPolls();if(polls.length){const p=polls[0],box=document.createElement('section');box.id='lx40PollBar';box.className='lx40-poll-bar';box.innerHTML=`<b>📊 ${esc(p.question)}</b><div>${(p.options||[]).map((o,i)=>`<button type="button" data-poll="${esc(p.id)}" data-option="${i}">${esc(o)}</button>`).join('')}</div>`;(document.getElementById('lx40PinnedBar')||head).after(box);qsa('[data-poll]',box).forEach(b=>b.onclick=()=>votePoll(b.dataset.poll,Number(b.dataset.option)))}}
+function enhanceMessageActions(messageId){const menu=$('lxMessageActions');if(!menu||qs('[data-lx40-save]',menu))return;const list=qs('.lx-action-list',menu)||menu;const save=document.createElement('button');save.type='button';save.dataset.lx40Save='1';save.innerHTML=`${icon('heart')}<span>Salvar mensagem</span>`;save.onclick=()=>toggleSavedMessage(messageId);const pin=document.createElement('button');pin.type='button';pin.innerHTML=`${icon('plus')}<span>Fixar / desafixar</span>`;pin.onclick=()=>togglePinnedMessage(messageId);list.prepend(pin);list.prepend(save)}
+function patchCommunityCore(){if(!LX.chat||LX.chat.__lx40Patched)return;LX.chat.__lx40Patched=true;const oldOpen=LX.chat.open?.bind(LX.chat);if(oldOpen)LX.chat.open=async function(...a){const r=await oldOpen(...a);setTimeout(()=>{decorateCommunity();refreshCommunityExtras()},30);return r};const oldActions=LX.chat.openActions?.bind(LX.chat);if(oldActions)LX.chat.openActions=function(id,e){const r=oldActions(id,e);setTimeout(()=>enhanceMessageActions(id),0);return r}}
+async function loadVisiblePresence(){if(!feature('presenceV40'))return;const db=LX.cloud?.db?.();if(!db)return;try{const r=await db.rpc('lx_presence_for_viewer');if(r.error)throw r.error;const map=new Map((r.data||[]).map(x=>[String(x.user_id),x]));qsa('[data-lx-presence-user]').forEach(el=>{const p=map.get(String(el.dataset.lxPresenceUser));if(!p)return;const host=el.parentElement;if(!host||host.querySelector('.lx40-activity-line'))return;if(p.activity_type&&p.activity_title){const line=document.createElement('small');line.className='lx40-activity-line';line.textContent=p.activity_type==='music'?`🎵 Ouvindo ${p.activity_title}`:`▶ ${p.activity_title}`;host.appendChild(line)}})}catch(e){if(!/does not exist|schema cache|function/i.test(e?.message||''))console.warn('LX presence directory',e)}}
+
+/* profile wrapper */
+const oldOpenProfile=LX.openProfile?.bind(LX);if(oldOpenProfile)LX.openProfile=function(){const r=oldOpenProfile();setTimeout(injectPresenceSettings,0);return r};
+
+/* Replace ranking and live entry points */
+LX.openRanking=()=>openRanking(monthKey());LX.rankPeriod=()=>openRanking(rankState.season);LX.rankKind=()=>openRanking(rankState.season);
+if(LX.contentHub&&feature('liveV40'))LX.contentHub.renderLive=renderLivePublic;
+
+/* public API */
+LX.v40={BUILD,feature,setFeature,icons:LX.iconsV40,renderTop10,renderHomeEnhancements,openRanking,showRankRules,shareRankCard,resolveStream,openLive:openUniversalLive,renderLivePublic,renderLiveAdmin,presencePrivacy,setPresencePrivacy:v=>{ls.set(privacyKey,v);return publishPresence(true)},publishPresence,openCommandPalette,communitySearch,savedMessages,communityMedia,createPoll,votePoll,toggleSavedMessage,togglePinnedMessage,refreshCommunityExtras,recordRankEvent,runtimeErrors};
+
+/* Build/version markers */
+try{const meta=qs('meta[name="lxplus-build"]');if(meta)meta.content=BUILD;document.documentElement.dataset.lxBuild=BUILD;LX.config.version=BUILD;window.__LX_JS_BUILD=BUILD}catch{}
+
+/* initial bind */
+addAdminNav();bindFloatingPlayer();bindPresence();applyIcons();applyLXArrows();patchCommunityCore();patchRankActivity();loadVisiblePresence();setTimeout(()=>{if(U.state?.screen==='app')enhanceApp();if(U.state?.screen==='admin'){addAdminNav();bindAdminAutosave();if(U.state?.adminPage==='dashboard')injectDashboard()}},250);
+const mo=new MutationObserver(()=>{applyLXArrows();if(U.state?.screen==='app'){addMusicBrand();decorateCommunity();patchCommunityCore()}if(U.state?.screen==='admin'){addAdminNav();bindAdminAutosave()}});mo.observe(document.body,{childList:true,subtree:true});
+setInterval(()=>{loadVisiblePresence();if(LX.chat?.peer?.())refreshCommunityExtras()},30000);console.info('[LX Plus]',BUILD,'ready');
+});
 })();
