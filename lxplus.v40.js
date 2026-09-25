@@ -355,12 +355,13 @@
         }
         if(draft.source){const button=[...form.querySelectorAll('[data-media-source]')].find(el=>el.dataset.mediaSource===draft.source);button?.click()}
         form.querySelector('#cSeason')?.dispatchEvent(new Event('change',{bubbles:true}));
-        try{localStorage.removeItem(key)}catch{}
         window.LX?.toast?.('Rascunho ADM recuperado neste dispositivo.');
       }
       if(form.dataset.lx40DraftBound==='1')return result;form.dataset.lx40DraftBound='1';
       let timer=0;const save=()=>{clearTimeout(timer);timer=setTimeout(()=>{const fields={};form.querySelectorAll('input,textarea,select').forEach(el=>{if(!el.id||['file','password'].includes(String(el.type||'').toLowerCase()))return;fields[el.id]={value:el.value,checked:el.type==='checkbox'?!!el.checked:undefined}});const source=form.querySelector('[data-media-source].active')?.dataset.mediaSource||'';try{localStorage.setItem(key,JSON.stringify({savedAt:Date.now(),fields,source}))}catch{}},300)};
-      form.addEventListener('input',save);form.addEventListener('change',save);form.addEventListener('submit',save,true);addEventListener('pagehide',save,{once:true});
+      form.addEventListener('input',save);form.addEventListener('change',save);
+      form.addEventListener('submit',()=>{save();const started=Date.now();const clearAfterSave=()=>{if(document.getElementById('overlay')?.classList.contains('hidden')){try{localStorage.removeItem(key)}catch{}return}if(Date.now()-started<30000)setTimeout(clearAfterSave,500)};setTimeout(clearAfterSave,500)},true);
+      addEventListener('pagehide',save,{once:true});
       return result;
     };
     wrapped.__lx40Drafts=true;admin.edit=wrapped;return true;
