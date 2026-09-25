@@ -34,6 +34,10 @@
       #modal .ranking-table>.rank-row:nth-child(1) .lx40-podium-avatar>div{width:66px!important;height:66px!important;min-width:66px!important;font-size:25px!important}
       #modal .ranking-table>.rank-row:nth-child(1)>b{color:#ffe4a2;font-size:17px}
       #modal .ranking-table>.rank-row:nth-child(n+4):hover{transform:translateY(-2px);border-color:rgba(167,131,255,.28);box-shadow:0 14px 34px rgba(0,0,0,.3)}
+      .lx40-admin-catalog{margin:14px 0 18px;padding:17px;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:linear-gradient(145deg,rgba(25,25,32,.92),rgba(14,14,19,.88));box-shadow:0 14px 38px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.035)}
+      .lx40-admin-catalog-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}.lx40-admin-catalog-head strong{font-size:14px;letter-spacing:.01em}.lx40-admin-catalog-head small{color:#a4a4b1;font-size:11px}
+      .lx40-admin-catalog-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}.lx40-admin-catalog-item{min-width:0;padding:12px;border:1px solid rgba(255,255,255,.07);border-radius:13px;background:rgba(255,255,255,.035)}.lx40-admin-catalog-item span{display:block;overflow:hidden;color:#a4a4b1;font-size:10px;text-overflow:ellipsis;white-space:nowrap}.lx40-admin-catalog-item b{display:block;margin-top:6px;color:#f5f5f8;font-size:clamp(18px,2vw,24px);font-variant-numeric:tabular-nums;line-height:1}
+      @media(max-width:760px){.lx40-admin-catalog-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:460px){.lx40-admin-catalog{padding:13px}.lx40-admin-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lx40-admin-catalog-head{align-items:flex-start;flex-direction:column;gap:4px}}
       @media(max-width:560px){#modal .ranking-table{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}#modal .ranking-table>.rank-row:nth-child(1){grid-column:1/-1;grid-row:1;min-height:156px}#modal .ranking-table>.rank-row:nth-child(2){grid-column:1;grid-row:2;min-height:132px}#modal .ranking-table>.rank-row:nth-child(3){grid-column:2;grid-row:2;min-height:132px}#modal .ranking-table>.rank-row:nth-child(n+4){grid-column:1/-1;min-height:58px}}
       @media(prefers-reduced-motion:reduce){#modal .ranking-table>.rank-row{transition:none}}
     `;document.head.appendChild(style);
@@ -133,6 +137,21 @@
     let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;enhanceRanking()})}).observe(modal,{childList:true,subtree:true});
     enhanceRanking();
   }
+  function enhanceAdminDashboard(){
+    const main=document.getElementById('adminMain');if(!main||state().adminPage!=='dashboard'||main.querySelector('.lx40-admin-catalog'))return;
+    const stats=main.querySelector('.stats'),catalog=window.LX?.data?.catalog?.();if(!stats||!Array.isArray(catalog))return;
+    const count=types=>catalog.filter(item=>types.includes(String(item.type||'').trim())).length;
+    const albums=new Set(catalog.filter(item=>item.type==='Música').map(item=>String(item.album||item.albumName||item.releaseTitle||'').trim().toLocaleLowerCase('pt-BR')).filter(Boolean));
+    const tiles=[['Filmes',count(['Filme'])],['Séries',count(['Série','Anime','Dorama'])],['Faixas',count(['Música'])],['Álbuns identificados',albums.size],['Livros',count(['Livro'])]];
+    const section=document.createElement('section');section.className='lx40-admin-catalog';section.setAttribute('aria-label','Resumo do catálogo LX');
+    section.innerHTML='<div class="lx40-admin-catalog-head"><strong>Catálogo por tipo</strong><small>Inclui publicados e rascunhos</small></div><div class="lx40-admin-catalog-grid">'+tiles.map(([label,value])=>`<div class="lx40-admin-catalog-item"><span>${label}</span><b>${value}</b></div>`).join('')+'</div>';
+    stats.insertAdjacentElement('afterend',section);
+  }
+  function watchAdminDashboard(){
+    const main=document.getElementById('adminMain');if(!main||!window.MutationObserver)return;
+    let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;enhanceAdminDashboard()})}).observe(main,{childList:true});
+    enhanceAdminDashboard();
+  }
   document.addEventListener('keydown',event=>{
     if(!(event.ctrlKey||event.metaKey)||event.key.toLowerCase()!=='k'||event.altKey)return;
     if(!isAdmin())return;
@@ -148,5 +167,6 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watchRanking,{once:true});else watchRanking();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watchAdminDashboard,{once:true});else watchAdminDashboard();
   document.addEventListener('lx:music-closed',()=>setExpanded(false));
 })();
