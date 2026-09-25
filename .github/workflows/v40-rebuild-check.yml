@@ -30,8 +30,8 @@ jobs:
           python3 - <<'PY'
           import json
           p=json.load(open('manifest.webmanifest',encoding='utf-8'))
-          assert p['version']=='V40-REBUILD-20260925'
-          assert p['start_url'].endswith('V40-REBUILD-20260925')
+          assert p['version']=='V40-REBUILD-FINAL-20260925'
+          assert p['start_url'].endswith('V40-REBUILD-FINAL-20260925')
           print('manifest ok')
           PY
 

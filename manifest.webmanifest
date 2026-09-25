@@ -3,7 +3,7 @@
   "short_name": "LX Plus",
   "description": "Filmes, séries, música, livros e comunidade em uma experiência premium.",
   "id": "./",
-  "start_url": "./?v=V40-COMPLETE-20260925",
+  "start_url": "./?v=V40-REBUILD-FINAL-20260925",
   "scope": "./",
   "display": "standalone",
   "background_color": "#020306",
@@ -17,5 +17,5 @@
       "purpose": "any maskable"
     }
   ],
-  "version": "V40-COMPLETE-20260925"
+  "version": "V40-REBUILD-FINAL-20260925"
 }
