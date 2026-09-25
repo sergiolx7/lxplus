@@ -1,0 +1,8 @@
+name = "lxplus"
+main = "cloudflare-worker/lx-drive-storage-worker.js"
+compatibility_date = "2026-09-24"
+
+[previews]
+
+[vars]
+ALLOWED_ORIGIN = "https://xn--rifamilionria-deb.api.br"
