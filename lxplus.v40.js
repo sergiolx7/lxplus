@@ -277,4 +277,50 @@
     window.LXMediaResolver={resolve,describe,providers:media.providers};
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installUniversalMediaResolver,{once:true});else installUniversalMediaResolver();
+  /* LX Premiere countdown v40.4: scheduled catalog premieres on the watch home. */
+  function installPremiereShelf(){
+    const host=document.getElementById('homeContent');if(!host)return;
+    let timer=0,signature='';
+    const esc=window.LX?.ui?.esc||((value)=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])));
+    const styles=()=>{
+      if(document.getElementById('lx40-premiere-style'))return;
+      const style=document.createElement('style');style.id='lx40-premiere-style';style.textContent=`
+        .lx40-premiere-shelf{margin:22px 0 30px;padding:clamp(14px,2vw,22px);border:1px solid rgba(167,131,255,.18);border-radius:20px;background:radial-gradient(ellipse at 85% 0,rgba(167,131,255,.12),transparent 55%),linear-gradient(145deg,rgba(24,23,31,.92),rgba(12,12,16,.9));box-shadow:0 18px 48px rgba(0,0,0,.24)}
+        .lx40-premiere-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:0 0 14px}.lx40-premiere-head span{color:#b99cff;font-size:10px;font-weight:900;letter-spacing:.16em}.lx40-premiere-head h2{margin:5px 0 0;font-size:clamp(20px,2.2vw,26px)}.lx40-premiere-head p{margin:4px 0 0;color:rgba(255,255,255,.62);font-size:12px}
+        .lx40-premiere-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:12px}.lx40-premiere-card{display:grid;grid-template-columns:92px minmax(0,1fr);gap:13px;align-items:center;min-width:0;padding:10px;border:1px solid rgba(255,255,255,.075);border-radius:15px;background:rgba(255,255,255,.035)}
+        .lx40-premiere-card img{display:block;width:92px;height:118px;object-fit:cover;border-radius:10px;background:#131319}.lx40-premiere-copy{min-width:0}.lx40-premiere-copy>span{display:inline-flex;padding:4px 8px;border:1px solid rgba(167,131,255,.25);border-radius:99px;color:#d2c0ff;background:rgba(167,131,255,.08);font-size:9px;font-weight:900;letter-spacing:.08em}.lx40-premiere-copy h3{display:-webkit-box;overflow:hidden;margin:9px 0 5px;font-size:clamp(15px,1.5vw,18px);line-height:1.2;-webkit-box-orient:vertical;-webkit-line-clamp:2}.lx40-premiere-copy small{display:block;color:rgba(255,255,255,.62);font-size:11px}.lx40-premiere-countdown{margin-top:7px;color:#eadfff;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}.lx40-premiere-copy button{margin-top:10px;padding:7px 10px;border:1px solid rgba(255,255,255,.13);border-radius:10px;background:rgba(255,255,255,.07);color:#fff;font-size:11px;font-weight:750;cursor:pointer}.lx40-premiere-copy button:hover{background:rgba(167,131,255,.16)}
+        @media(max-width:480px){.lx40-premiere-shelf{margin:16px 0 22px;padding:13px}.lx40-premiere-card{grid-template-columns:72px minmax(0,1fr);gap:10px}.lx40-premiere-card img{width:72px;height:98px}.lx40-premiere-head{align-items:flex-start;flex-direction:column}}
+        @media(prefers-reduced-motion:reduce){.lx40-premiere-copy button{transition:none}}
+      `;document.head.appendChild(style);
+    };
+    const countdown=target=>{
+      const remain=Math.max(0,target-Date.now()),days=Math.floor(remain/86400000),hours=Math.floor(remain%86400000/3600000),minutes=Math.floor(remain%3600000/60000);
+      return days?`Estreia em ${days}d ${hours}h`:hours?`Estreia em ${hours}h ${minutes}min`:`Estreia em ${minutes} min`;
+    };
+    const render=()=>{
+      const state=window.LX?.ui?.state||{},mode=state.mode||'Assistir',category=state.category||'Início';
+      let shelf=host.querySelector('.lx40-premiere-shelf');
+      if(mode!=='Assistir'||category!=='Início'){shelf?.remove();signature='';return}
+      const catalog=window.LX?.data?.catalog?.()||[],now=Date.now();
+      const rows=catalog.filter(item=>item&&item.published!==false&&item.scheduledAt&&Number.isFinite(+new Date(item.scheduledAt))&&+new Date(item.scheduledAt)>now).sort((a,b)=>+new Date(a.scheduledAt)-+new Date(b.scheduledAt)).slice(0,6);
+      if(!rows.length){shelf?.remove();signature='';return}
+      const nextSignature=rows.map(item=>[item.id,item.title,item.cover,item.banner,item.scheduledAt,item.type].join('|')).join('~');
+      if(nextSignature!==signature||!shelf){
+        signature=nextSignature;styles();
+        const cards=rows.map(item=>{const target=+new Date(item.scheduledAt),cover=item.cover||item.banner||'',year=item.year?` · ${esc(item.year)}`:'';
+          return `<article class="lx40-premiere-card"><img loading="lazy" decoding="async" src="${esc(cover)}" alt="${esc(item.title||'Capa')}"><div class="lx40-premiere-copy"><span>LX PREMIERE</span><h3>${esc(item.title||'Próximo lançamento')}</h3><small>${esc(item.type||'Conteúdo')}${year} · ${new Date(target).toLocaleDateString('pt-BR',{day:'2-digit',month:'long'})}</small><div class="lx40-premiere-countdown" data-premiere-time="${target}">${countdown(target)}</div><button type="button" data-premiere-detail="${Number(item.id)}">Mais informações</button></div></article>`;
+        }).join('');
+        shelf=document.createElement('section');shelf.className='lx40-premiere-shelf';shelf.setAttribute('aria-label','Próximas estreias LX');shelf.innerHTML=`<div class="lx40-premiere-head"><div><span>PRÓXIMAS ESTREIAS</span><h2>LX Premiere</h2><p>Novos conteúdos programados para chegar à LX Plus.</p></div></div><div class="lx40-premiere-grid">${cards}</div>`;
+        host.querySelector('.lx40-premiere-shelf')?.remove();host.insertBefore(shelf,host.firstChild);
+        shelf.addEventListener('click',event=>{const button=event.target.closest('[data-premiere-detail]');if(button){const id=Number(button.dataset.premiereDetail);if(Number.isFinite(id))window.LX?.detail?.(id)}});
+      }
+      host.querySelectorAll('[data-premiere-time]').forEach(el=>{const target=Number(el.dataset.premiereTime);el.textContent=target>Date.now()?countdown(target):'Disponível agora'});
+    };
+    const start=()=>{if(timer)clearInterval(timer);render();timer=setInterval(render,30000)};
+    start();
+    if(window.MutationObserver){let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;render()})}).observe(host,{childList:true})}
+    document.addEventListener('lx:catalog-updated',render);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installPremiereShelf,{once:true});else installPremiereShelf();
+
 })();
