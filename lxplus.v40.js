@@ -68,16 +68,25 @@
     {label:'Ver saúde e erros',hint:'Abrir dashboard e monitor da plataforma',page:'dashboard',icon:'▦'},
     {label:'Criar LX Live',hint:'Abrir gerenciamento de transmissões',page:'live',icon:'●'}
   ];
-  let palette=null;
+  let palette=null,paletteReturnFocus=null,activeCommandIndex=0;
   function ensurePalette(){
     if(palette)return palette;
     installToastStyles();
     palette=document.createElement('section');palette.className='lx40-command-palette hidden';palette.setAttribute('role','dialog');palette.setAttribute('aria-modal','true');palette.setAttribute('aria-label','Comandos do LX Admin');
-    palette.innerHTML='<div class="lx40-command-box"><div class="lx40-command-head"><span>LX ADMIN</span><kbd>ESC</kbd></div><input type="search" class="lx40-command-search" placeholder="O que você quer fazer?" aria-label="Buscar comando"><div class="lx40-command-results" role="listbox"></div><small>Use Ctrl + K para abrir esta paleta.</small></div>';
+    palette.innerHTML='<div class="lx40-command-box"><div class="lx40-command-head"><span>LX ADMIN</span><kbd>ESC</kbd></div><input type="search" class="lx40-command-search" placeholder="O que você quer fazer?" aria-label="Buscar comando" aria-controls="lx40-command-results"><div class="lx40-command-results" id="lx40-command-results" role="listbox" aria-label="Ações administrativas"></div><small>Use Ctrl + K para abrir esta paleta.</small></div>';
     document.body.appendChild(palette);
     palette.addEventListener('click',event=>{if(event.target===palette)closePalette()});
     palette.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();closePalette()} });
-    palette.querySelector('.lx40-command-search').addEventListener('input',renderCommands);
+    palette.querySelector('.lx40-command-search').addEventListener('input',()=>{activeCommandIndex=0;renderCommands()});
+    palette.querySelector('.lx40-command-search').addEventListener('keydown',event=>{
+      const items=Array.from(palette.querySelectorAll('[data-command]'));
+      if(event.key==='ArrowDown'||event.key==='ArrowUp'){
+        if(!items.length)return;
+        event.preventDefault();activeCommandIndex=(activeCommandIndex+(event.key==='ArrowDown'?1:-1)+items.length)%items.length;
+        items.forEach((item,index)=>item.setAttribute('aria-selected',index===activeCommandIndex?'true':'false'));
+        palette.querySelector('.lx40-command-search').setAttribute('aria-activedescendant',items[activeCommandIndex].id);
+      }else if(event.key==='Enter'&&items.length){event.preventDefault();items[activeCommandIndex]?.click()}
+    });
     palette.querySelector('.lx40-command-results').addEventListener('click',event=>{
       const button=event.target.closest('[data-command]');if(!button)return;
       const command=commands[Number(button.dataset.command)];closePalette();runCommand(command);
@@ -88,13 +97,17 @@
     if(!palette)return;
     const q=palette.querySelector('.lx40-command-search').value.trim().toLocaleLowerCase('pt-BR');
     const results=palette.querySelector('.lx40-command-results');
-    results.innerHTML=commands.map((item,index)=>({item,index})).filter(({item})=>!q||`${item.label} ${item.hint}`.toLocaleLowerCase('pt-BR').includes(q)).map(({item,index})=>`<button type="button" role="option" class="lx40-command-item" data-command="${index}"><span class="lx40-command-icon" aria-hidden="true">${item.icon}</span><span><strong>${item.label}</strong><small>${item.hint}</small></span><kbd>↵</kbd></button>`).join('')||'<p class="lx40-command-empty">Nenhum comando encontrado.</p>';
+    const matches=commands.map((item,index)=>({item,index})).filter(({item})=>!q||`${item.label} ${item.hint}`.toLocaleLowerCase('pt-BR').includes(q));
+    activeCommandIndex=Math.max(0,Math.min(activeCommandIndex,matches.length-1));
+    results.innerHTML=matches.map(({item,index},position)=>`<button type="button" id="lx40-command-${index}" role="option" aria-selected="${position===activeCommandIndex?'true':'false'}" tabindex="-1" class="lx40-command-item" data-command="${index}"><span class="lx40-command-icon" aria-hidden="true">${item.icon}</span><span><strong>${item.label}</strong><small>${item.hint}</small></span><kbd>↵</kbd></button>`).join('')||'<p class="lx40-command-empty">Nenhum comando encontrado.</p>';
+    const search=palette.querySelector('.lx40-command-search');
+    if(matches.length)search.setAttribute('aria-activedescendant',`lx40-command-${matches[activeCommandIndex].index}`);else search.removeAttribute('aria-activedescendant');
   }
   function openPalette(){
     if(!isAdmin())return false;
-    const el=ensurePalette();el.classList.remove('hidden');el.querySelector('.lx40-command-search').value='';renderCommands();requestAnimationFrame(()=>el.querySelector('.lx40-command-search').focus());return true;
+    const el=ensurePalette();paletteReturnFocus=document.activeElement;activeCommandIndex=0;el.classList.remove('hidden');el.querySelector('.lx40-command-search').value='';renderCommands();requestAnimationFrame(()=>el.querySelector('.lx40-command-search').focus());return true;
   }
-  function closePalette(){if(!palette)return;palette.classList.add('hidden')}
+  function closePalette(){if(!palette)return;palette.classList.add('hidden');palette.querySelector('.lx40-command-search').removeAttribute('aria-activedescendant');if(paletteReturnFocus?.isConnected&&typeof paletteReturnFocus.focus==='function')paletteReturnFocus.focus();paletteReturnFocus=null}
   function runCommand(command){
     if(!command||!isAdmin())return;
     const lx=window.LX;
