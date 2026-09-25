@@ -1,0 +1,2006 @@
+LX PLUS v40 — ATUALIZAÇÃO GERAL COMPLETA
+
+Esta será uma atualização de grande porte da LX Plus.
+
+O objetivo é modernizar completamente o design, corrigir bugs atuais, melhorar performance, facilitar o trabalho do ADM e deixar toda a plataforma com aparência de produto premium.
+
+IMPORTANTE:
+
+Não remover funcionalidades existentes.
+
+Não apagar usuários, conteúdos, histórico, mensagens, playlists, filmes, séries, músicas, livros ou configurações.
+
+Antes de alterar estruturas importantes, verificar dependências e banco de dados.
+
+Criar backup e versão de segurança antes do deploy.
+
+⸻
+
+1. NOVA IDENTIDADE VISUAL LX PLUS
+
+Modernizar completamente a plataforma.
+
+Direção visual:
+
+* fundo preto/cinza escuro;
+* superfícies em diferentes tons;
+* blur;
+* transparências;
+* sombras suaves;
+* melhor espaçamento;
+* melhor tipografia;
+* cards modernos;
+* animações discretas;
+* menos textos gigantes;
+* interface premium.
+
+A LX Plus precisa deixar de parecer um site com várias funções adicionadas e passar a parecer uma plataforma completa.
+
+⸻
+
+2. LX AMBIENT GLOW
+
+Criar um sistema de iluminação próprio chamado:
+
+LX Ambient Glow
+
+Usar LEDs/glows discretos em alguns pontos.
+
+Exemplos:
+
+* bordas de algumas seções;
+* parte inferior do hero;
+* player de música;
+* botões selecionados;
+* painel ADM;
+* elementos Premium;
+* modais;
+* menus.
+
+Não colocar RGB em tudo.
+
+Precisa parecer iluminação ambiente premium, não visual gamer.
+
+⸻
+
+3. DESIGN SYSTEM LX
+
+Criar um padrão único para toda a plataforma.
+
+Definir:
+
+* tipografia;
+* tamanhos;
+* botões;
+* cards;
+* campos;
+* modais;
+* ícones;
+* menus;
+* blur;
+* sombras;
+* glow;
+* border-radius;
+* animações;
+* espaçamentos.
+
+Nenhuma página deve parecer pertencer a outro site.
+
+⸻
+
+4. FONTES E TEXTOS
+
+Diminuir textos gigantes.
+
+Usar melhor proporção.
+
+Texto comum:
+
+14–16px.
+
+Títulos de seção:
+
+aproximadamente 20–26px.
+
+Grandes títulos devem ser responsivos.
+
+Usar clamp().
+
+Usar line-clamp quando nomes ou descrições forem longos.
+
+⸻
+
+5. NOVA HOME
+
+Deixar a Home muito mais cinematográfica.
+
+Priorizar:
+
+* imagem;
+* capa;
+* título;
+* ações.
+
+Diminuir descrições enormes.
+
+⸻
+
+6. HERO PRINCIPAL
+
+O banner principal deve mostrar:
+
+nome/logo do conteúdo;
+ano;
+classificação;
+gênero;
+Assistir;
+Minha Lista;
+Mais Informações.
+
+Descrição pequena.
+
+Em celular, pode mostrar praticamente só:
+
+imagem;
+título;
+Assistir;
+Mais Informações.
+
+⸻
+
+7. TOP 10 LX PLUS
+
+Criar seção:
+
+Top 10 na LX Plus
+
+Visual parecido com grandes plataformas de streaming.
+
+Números de 1 a 10 muito grandes.
+
+Poster sobreposto ao número.
+
+Os números precisam ter design próprio da LX.
+
+Criar:
+
+Top 10 Hoje;
+Top 10 da Semana;
+Top 10 Filmes;
+Top 10 Séries.
+
+⸻
+
+8. TOP 10 INTELIGENTE
+
+Criar três modos:
+
+Automático;
+Manual;
+Misto.
+
+No modo automático considerar:
+
+* visualizações recentes;
+* usuários únicos;
+* tempo assistido;
+* percentual assistido;
+* favoritos;
+* crescimento recente.
+
+Não usar somente o número histórico de cliques.
+
+ADM pode alterar manualmente as posições.
+
+⸻
+
+9. CARROSSÉIS
+
+Melhorar todos os carrosséis.
+
+Cards mais limpos.
+
+Menos textos.
+
+Priorizar imagem.
+
+Ao passar o mouse no PC:
+
+* Assistir;
+* Adicionar;
+* Curtir;
+* Informações.
+
+Evitar títulos gigantes.
+
+⸻
+
+10. FILMES E SÉRIES
+
+Criar seções:
+
+Continuar Assistindo;
+Minha Lista;
+Lançamentos;
+Em Alta;
+Recomendados;
+Porque você assistiu X;
+Recentemente adicionados;
+Gêneros.
+
+Melhorar organização de séries.
+
+Estrutura:
+
+Série → Temporada → Episódio.
+
+Mostrar:
+
+número;
+nome;
+duração;
+progresso;
+próximo episódio.
+
+⸻
+
+11. MAIS INFORMAÇÕES
+
+Criar modal cinematográfico.
+
+Mostrar:
+
+banner;
+poster;
+trailer;
+sinopse;
+elenco;
+ano;
+gênero;
+temporadas;
+episódios;
+conteúdos semelhantes.
+
+⸻
+
+12. PLAYER DE VÍDEO
+
+Revisar completamente.
+
+Corrigir:
+
+* áudio;
+* vídeos 4K;
+* fullscreen;
+* legendas;
+* autoplay;
+* próximo episódio;
+* mini player;
+* progresso;
+* continuar assistindo;
+* Google Drive;
+* dispositivos móveis.
+
+⸻
+
+13. QUALIDADE
+
+Quando existirem versões diferentes:
+
+Automático;
+4K;
+1080p;
+720p;
+480p.
+
+Selecionar automaticamente a melhor compatível com o dispositivo e conexão.
+
+⸻
+
+14. DETECÇÃO DE MÍDIA
+
+Criar uma camada única para reconhecer:
+
+URL;
+MIME type;
+codec;
+protocolo;
+origem;
+provedor.
+
+Evitar ter uma solução diferente e improvisada para cada player.
+
+⸻
+
+15. LX MUSIC
+
+Refazer profundamente a área musical.
+
+Nome:
+
+LX Music
+
+A experiência deve lembrar plataformas musicais modernas, mas mantendo identidade própria LX.
+
+⸻
+
+16. LOGO LX MUSIC
+
+Criar uma logo própria.
+
+Conceito:
+
+LX + som/play/onda sonora.
+
+Versão branca e minimalista.
+
+Criar também um ícone pequeno para usar no player.
+
+⸻
+
+17. HOME LX MUSIC
+
+Criar:
+
+Início;
+Buscar;
+Sua Biblioteca;
+Playlists;
+Álbuns;
+Artistas;
+Curtidas;
+Recentes.
+
+Home:
+
+Ouvidos recentemente;
+Feito para você;
+Álbuns;
+Artistas;
+Mais tocadas;
+Novidades;
+Playlists.
+
+⸻
+
+18. ÁLBUNS
+
+Corrigir completamente o módulo atual.
+
+Não usar carrossel dentro da página do álbum.
+
+Mostrar:
+
+capa;
+nome;
+artista;
+ano;
+quantidade de faixas;
+duração;
+Play;
+Curtir;
+Adicionar.
+
+Lista:
+
+01 — Música
+02 — Música
+03 — Música
+
+Separar corretamente no banco:
+
+música;
+álbum;
+artista;
+playlist.
+
+⸻
+
+19. LX FLOATING PLAYER
+
+Remover aquele player enorme estampado na parte inferior do desktop.
+
+Criar:
+
+LX Floating Player
+
+No PC ele deve ficar no canto superior direito.
+
+Pequeno.
+
+Flutuante.
+
+Elegante.
+
+Com cantos arredondados.
+
+Mostrar:
+
+capa;
+nome da música;
+artista;
+Play/Pause;
+Anterior;
+Próxima.
+
+Pode mostrar progresso discretamente.
+
+⸻
+
+20. PLAYER EXPANSÍVEL
+
+Ao clicar no Floating Player:
+
+expandir suavemente.
+
+Mostrar:
+
+capa maior;
+timeline;
+anterior;
+Play;
+próxima;
+aleatório;
+repetir;
+volume;
+fila;
+letra.
+
+Depois permitir recolher novamente.
+
+⸻
+
+21. PLAYER ARRASTÁVEL
+
+Opcionalmente permitir arrastar o player.
+
+Salvar a posição escolhida.
+
+Posição padrão:
+
+canto superior direito.
+
+⸻
+
+22. MÚSICA EM SEGUNDO PLANO
+
+A música não pode reiniciar toda vez que o usuário muda de página.
+
+Ela deve continuar durante a navegação pela LX Plus.
+
+Usar estado global do player.
+
+Integrar Media Session quando disponível.
+
+⸻
+
+23. PLAYER MOBILE
+
+No celular não usar o Floating Player no canto.
+
+Criar mini player inferior compacto.
+
+Ao tocar:
+
+abrir player completo.
+
+⸻
+
+24. OUVINDO AGORA
+
+Criar recurso parecido com presença musical.
+
+O usuário pode permitir que outras pessoas vejam o que ele está ouvindo.
+
+Exemplo:
+
+🎵 Ouvindo agora
+
+Blinding Lights
+The Weeknd
+
+⸻
+
+25. PRIVACIDADE DA MÚSICA
+
+Nas configurações criar:
+
+Mostrar o que estou ouvindo
+
+Opções:
+
+Todos;
+Amigos;
+Ninguém.
+
+Sempre respeitar a escolha do usuário.
+
+⸻
+
+26. LX PRESENCE
+
+Criar sistema de presença.
+
+Estados:
+
+Online;
+Ausente;
+Ocupado;
+Offline.
+
+Atividade opcional:
+
+Ouvindo música;
+Assistindo filme;
+Assistindo série.
+
+Sempre obedecer privacidade.
+
+⸻
+
+27. PLAYLISTS
+
+Corrigir completamente.
+
+Permitir:
+
+criar;
+editar;
+excluir;
+adicionar músicas;
+remover músicas;
+reordenar;
+alterar capa;
+gerar capa automática;
+pública;
+privada;
+compartilhar;
+favoritar.
+
+⸻
+
+28. FILA MUSICAL
+
+Criar:
+
+Tocando Agora;
+Próximas;
+Adicionar à fila;
+Tocar depois;
+Remover;
+Limpar fila.
+
+⸻
+
+29. LETRAS
+
+Criar área moderna.
+
+Quando houver timestamps:
+
+letra sincronizada.
+
+Quando não houver:
+
+letra comum.
+
+⸻
+
+30. LX BOOKS
+
+Remover o carrossel atual dos livros.
+
+Criar biblioteca em grid.
+
+Filtros:
+
+Todos;
+Continuar lendo;
+Favoritos;
+Categorias;
+Autores;
+Recentes.
+
+⸻
+
+31. PÁGINA DO LIVRO
+
+Mostrar:
+
+capa;
+título;
+autor;
+descrição;
+categoria;
+progresso;
+Continuar leitura;
+Salvar;
+Livros semelhantes.
+
+⸻
+
+32. LX LIVE
+
+Refazer o Ao Vivo.
+
+Remover carrossel desnecessário.
+
+Criar grid moderno.
+
+Cards:
+
+thumbnail;
+nome;
+AO VIVO;
+categoria;
+espectadores quando disponível.
+
+⸻
+
+33. LX UNIVERSAL STREAM RESOLVER
+
+ADM cola um link.
+
+O sistema identifica automaticamente o tipo.
+
+Suportar quando tecnicamente possível:
+
+YouTube;
+Vimeo;
+Google Drive;
+MP4;
+WebM;
+HLS/M3U8;
+DASH/MPD;
+streams diretos;
+players externos;
+links incorporáveis.
+
+⸻
+
+34. LINKS BLOQUEADOS
+
+Nem todo site permite ser aberto dentro de iframe.
+
+Quando isso acontecer:
+
+não deixar player quebrado.
+
+Mostrar:
+
+“Este conteúdo precisa ser aberto na fonte original.”
+
+Botão:
+
+Abrir conteúdo.
+
+⸻
+
+35. LX COMMUNITY 2.0
+
+Melhorar muito a Comunidade.
+
+Porém preservar a estrutura atual.
+
+O usuário precisa reconhecer que é a mesma Comunidade, apenas muito melhor.
+
+Melhorar:
+
+design;
+velocidade;
+estabilidade;
+mensagens;
+chamadas;
+áudios;
+status;
+notificações.
+
+⸻
+
+36. CHAT
+
+Melhorar:
+
+balões;
+avatar;
+hora;
+status de leitura;
+espaçamento;
+respostas;
+arquivos;
+imagens;
+vídeos.
+
+⸻
+
+37. REAÇÕES
+
+Criar reações rápidas:
+
+❤️ 😂 🔥 😮 👏 👀
+
+Permitir outros emojis.
+
+Criar também:
+
+LX Reactions
+
+com identidade própria.
+
+⸻
+
+38. STICKERS LX
+
+Criar stickers oficiais.
+
+Exemplos:
+
+LX ON;
+Bora;
+Cinema;
+Tá pegando fogo;
+Premium;
+Boa noite LX;
+Partiu assistir.
+
+⸻
+
+39. RESPOSTA RÁPIDA
+
+No celular:
+
+arrastar mensagem para responder.
+
+No PC:
+
+botão no hover.
+
+⸻
+
+40. MENSAGENS FIXADAS
+
+Permitir fixar mensagens.
+
+Mostrar barra discreta no topo.
+
+⸻
+
+41. PESQUISA NO CHAT
+
+Pesquisar:
+
+texto;
+usuário;
+data;
+links;
+arquivos.
+
+⸻
+
+42. MÍDIA DA CONVERSA
+
+Criar:
+
+Mídia;
+Links;
+Arquivos;
+Áudios.
+
+⸻
+
+43. ÁUDIOS DA COMUNIDADE
+
+Criar player moderno.
+
+Mostrar:
+
+waveform;
+tempo;
+progresso;
+1x;
+1.5x;
+2x.
+
+⸻
+
+44. DIGITANDO E PRESENÇA
+
+Mostrar:
+
+Sérgio está digitando…
+
+Em grupo:
+
+Sérgio e Lucas estão digitando…
+
+Melhorar:
+
+Online;
+Visto recentemente;
+Visto às…
+
+⸻
+
+45. NÃO LIDAS
+
+Contador real.
+
+Permitir:
+
+Marcar como lida;
+Marcar como não lida.
+
+⸻
+
+46. MENÇÕES
+
+Criar:
+
+@usuario
+
+E:
+
+@todos
+
+somente para pessoas autorizadas.
+
+⸻
+
+47. ENQUETES
+
+Criar enquetes nos grupos.
+
+Mostrar resultados em tempo real.
+
+⸻
+
+48. MENSAGENS SALVAS
+
+Permitir salvar mensagens.
+
+Criar:
+
+Perfil → Mensagens salvas.
+
+⸻
+
+49. EDITAR E APAGAR
+
+Editar mensagem.
+
+Mostrar:
+
+editada.
+
+Permitir:
+
+Apagar para mim;
+Apagar para todos.
+
+Evitar mensagens fantasmas.
+
+⸻
+
+50. CHAMADAS
+
+Melhorar completamente.
+
+Estados:
+
+Chamando;
+Conectando;
+Reconectando;
+Conectado;
+Encerrada.
+
+Mostrar duração.
+
+⸻
+
+51. RECONEXÃO AUTOMÁTICA
+
+Quando internet oscilar:
+
+não derrubar chamada imediatamente.
+
+Tentar reconectar automaticamente.
+
+⸻
+
+52. CALL EM GRUPO
+
+Criar layout inteligente dependendo do número de participantes.
+
+⸻
+
+53. MINI CALL
+
+Ao sair da Comunidade durante uma ligação:
+
+manter janela flutuante.
+
+⸻
+
+54. COMPARTILHAMENTO DE TELA
+
+Melhorar estabilidade.
+
+Permitir fullscreen.
+
+Reduzir problemas de tela preta.
+
+⸻
+
+55. LX ICON SYSTEM
+
+Criar pacote de ícones próprio.
+
+Não misturar vários estilos aleatórios.
+
+Padronizar:
+
+voltar;
+avançar;
+play;
+pause;
+próximo;
+anterior;
+favorito;
+compartilhar;
+download;
+volume;
+fullscreen;
+configurações;
+pesquisa;
+notificação;
+perfil;
+comunidade;
+filmes;
+música;
+livros;
+Live.
+
+⸻
+
+56. SETAS LX
+
+Refazer especialmente as setas.
+
+Nada de setinhas minúsculas.
+
+Criar botões elegantes.
+
+Com:
+
+blur;
+transparência;
+glow;
+animação.
+
+⸻
+
+57. MICROANIMAÇÕES
+
+Adicionar pequenas animações para:
+
+Curtir;
+Favoritar;
+Play/Pause;
+Notificações;
+Cards;
+Menus;
+Botões.
+
+Aproximadamente:
+
+150–300ms.
+
+⸻
+
+58. NOVO PAINEL ADM
+
+Transformar o painel em:
+
+LX Admin
+
+Dashboard:
+
+usuários;
+filmes;
+séries;
+músicas;
+álbuns;
+livros;
+lives;
+reproduções;
+erros;
+links quebrados;
+importações.
+
+⸻
+
+59. CADASTRO RÁPIDO E AVANÇADO
+
+Criar dois modos.
+
+Cadastro rápido:
+
+somente informações essenciais.
+
+Cadastro avançado:
+
+todas as configurações.
+
+⸻
+
+60. LX SMART IMPORT
+
+Criar um dos recursos mais importantes da atualização:
+
+LX Smart Import
+
+Permitir adicionar dezenas ou centenas de conteúdos de uma vez.
+
+⸻
+
+61. FORMAS DE IMPORTAÇÃO
+
+Aceitar:
+
+Google Drive;
+múltiplos arquivos;
+lista de URLs;
+CSV;
+JSON;
+pastas organizadas.
+
+⸻
+
+62. GOOGLE DRIVE
+
+Ao informar uma pasta autorizada:
+
+1. listar arquivos;
+2. percorrer subpastas;
+3. identificar formatos;
+4. interpretar nomes;
+5. organizar;
+6. buscar metadados;
+7. gerar preview;
+8. permitir revisão;
+9. importar.
+
+⸻
+
+63. FILMES
+
+Exemplo:
+
+Avatar (2009).mp4
+
+Detectar automaticamente:
+
+Avatar;
+2009.
+
+Depois preencher outros metadados quando possível.
+
+⸻
+
+64. SÉRIES
+
+Reconhecer:
+
+S01E01;
+1x01;
+T01E01.
+
+Criar automaticamente:
+
+Série;
+Temporada;
+Episódio.
+
+⸻
+
+65. MÚSICAS
+
+Primeiro ler ID3.
+
+Detectar:
+
+título;
+artista;
+álbum;
+faixa;
+ano;
+capa.
+
+Buscar externamente apenas o que estiver faltando.
+
+⸻
+
+66. PREVIEW DE IMPORTAÇÃO
+
+Mostrar antes de publicar:
+
+✓ Reconhecido
+⚠ Revisar
+✕ Erro
+
+ADM pode corrigir.
+
+⸻
+
+67. DUPLICADOS
+
+Detectar utilizando:
+
+Drive ID;
+URL;
+ID externo;
+título;
+ano;
+temporada;
+episódio;
+hash quando disponível.
+
+⸻
+
+68. FILA DE IMPORTAÇÃO
+
+Não tentar cadastrar centenas de conteúdos simultaneamente.
+
+Mostrar:
+
+Importando 34/250.
+
+Sucesso.
+
+Revisão.
+
+Erro.
+
+⸻
+
+69. ROLLBACK
+
+Criar:
+
+Desfazer importação
+
+Permitir apagar somente o conteúdo criado naquela operação.
+
+⸻
+
+70. EDIÇÃO EM MASSA
+
+Selecionar vários conteúdos.
+
+Alterar:
+
+categoria;
+status;
+tags;
+visibilidade;
+destaque;
+publicação.
+
+⸻
+
+71. AUTO SAVE ADM
+
+Salvar rascunhos automaticamente.
+
+Se internet cair ou página fechar:
+
+recuperar edição.
+
+⸻
+
+72. ATALHOS DO ADM
+
+Criar:
+
+Salvar;
+Salvar e visualizar;
+Salvar e adicionar outro;
+Salvar como rascunho;
+Publicar.
+
+⸻
+
+73. COMMAND PALETTE
+
+No PC:
+
+Ctrl + K
+
+Permitir:
+
+Adicionar Filme;
+Adicionar Música;
+Importar Drive;
+Buscar Usuário;
+Ver Erros;
+Criar Live.
+
+⸻
+
+74. LX LINK HEALTH
+
+Criar scanner de links.
+
+Estados:
+
+Online;
+Instável;
+Offline;
+Bloqueado;
+Incompatível.
+
+⸻
+
+75. CENTRAL DE ERROS
+
+Criar página administrativa.
+
+Mostrar:
+
+data;
+usuário;
+página;
+conteúdo;
+dispositivo;
+navegador;
+erro.
+
+⸻
+
+76. LOG ADMINISTRATIVO
+
+Registrar:
+
+quem criou;
+quem editou;
+quem excluiu;
+quem aprovou;
+data;
+horário.
+
+⸻
+
+77. BUSCA GLOBAL
+
+Uma busca LX.
+
+Pesquisar:
+
+filmes;
+séries;
+músicas;
+artistas;
+álbuns;
+livros.
+
+Mostrar resultados enquanto digita.
+
+⸻
+
+78. NOTIFICAÇÕES
+
+Modernizar.
+
+Cards menores.
+
+Avatar/capa.
+
+Ícone.
+
+Texto curto.
+
+Horário.
+
+Sem caixas gigantes.
+
+⸻
+
+79. TOASTS LX
+
+Remover alert() do navegador.
+
+Criar mensagens internas.
+
+Exemplos:
+
+✓ Filme salvo.
+
+✓ Playlist criada.
+
+✕ Erro ao reproduzir.
+
+⸻
+
+80. PERFIL
+
+Modernizar.
+
+Mostrar:
+
+avatar;
+nome;
+bio;
+badge;
+moldura;
+histórico;
+listas;
+atividades;
+configurações.
+
+⸻
+
+81. AVATARES LX
+
+Criar pacote oficial de avatares.
+
+Também permitir foto personalizada.
+
+⸻
+
+82. PERFIS
+
+Preparar sistema para múltiplos perfis.
+
+Exemplo futuro:
+
+Quem está assistindo?
+
+⸻
+
+83. PREMIUM
+
+Criar visual próprio para Premium.
+
+Usar:
+
+badge;
+glow discreto;
+moldura;
+benefícios;
+personalização.
+
+⸻
+
+84. LX SPOTLIGHT
+
+Criar seção especial para grandes lançamentos.
+
+Banner.
+
+Logo.
+
+Teaser.
+
+Assistir Agora.
+
+⸻
+
+85. LX PREMIERE
+
+Para próximos lançamentos.
+
+Mostrar:
+
+Estreia sexta-feira.
+
+Estreia amanhã.
+
+Disponível agora.
+
+⸻
+
+86. CONTAGEM REGRESSIVA
+
+Opcional para estreias importantes.
+
+⸻
+
+87. LX PULSE
+
+Criar seção:
+
+O que está bombando na LX
+
+Mostrar:
+
+filme em alta;
+música crescendo;
+série popular;
+livro popular.
+
+Sem revelar dados pessoais.
+
+⸻
+
+88. RECOMENDAÇÕES
+
+Criar sistema baseado em:
+
+histórico;
+gêneros;
+favoritos;
+tempo assistido;
+artistas;
+álbuns.
+
+Não precisa começar com IA complexa.
+
+⸻
+
+89. CONTINUAR NA LX
+
+Criar seção unificada.
+
+Pode mostrar:
+
+Filme;
+Série;
+Música/Playlist;
+Livro.
+
+⸻
+
+90. HISTÓRICO
+
+Separar:
+
+Assistidos;
+Ouvidos;
+Lidos.
+
+Permitir excluir itens.
+
+⸻
+
+91. MOBILE
+
+Criar interface própria para celular.
+
+Não apenas diminuir desktop.
+
+Testar:
+
+360px;
+390px;
+430px.
+
+⸻
+
+92. TABLET
+
+Revisar principalmente ADM e navegação.
+
+Não permitir botões escondidos no topo.
+
+⸻
+
+93. TV
+
+Preparar navegação por controle remoto.
+
+Foco visível.
+
+Botões maiores.
+
+Não depender de hover.
+
+⸻
+
+94. MENU MOBILE
+
+Criar bottom navigation.
+
+Início;
+Buscar;
+Biblioteca;
+Comunidade;
+Perfil.
+
+⸻
+
+95. SKELETON LOADING
+
+Criar skeleton para:
+
+filmes;
+músicas;
+álbuns;
+livros;
+perfil;
+comunidade.
+
+Nada de buracos enquanto carrega.
+
+⸻
+
+96. IMAGENS
+
+Usar:
+
+lazy loading;
+imagens responsivas;
+fallback;
+otimização.
+
+Nunca deixar imagem quebrada aparecendo.
+
+⸻
+
+97. PERFORMANCE
+
+Melhorar:
+
+code splitting;
+lazy loading;
+cache;
+prefetch;
+compressão;
+virtualização;
+paginação.
+
+Não carregar catálogo inteiro de uma vez.
+
+⸻
+
+98. SEGURANÇA
+
+Nenhuma chave secreta no frontend.
+
+Utilizar backend/serverless/variáveis protegidas.
+
+⸻
+
+99. PERMISSÕES
+
+Criar níveis:
+
+Usuário;
+Moderador;
+Administrador;
+Super Admin.
+
+⸻
+
+100. FEATURE FLAGS
+
+Permitir ligar/desligar:
+
+Novo LX Music;
+Smart Import;
+Novo LX Live;
+Top 10;
+Presence;
+Novo Player.
+
+Se um recurso tiver problema:
+
+desativar apenas ele.
+
+⸻
+
+101. LX RANKING
+
+Refazer completamente a aparência do Ranking.
+
+Precisa parecer premium.
+
+Visual:
+
+escuro;
+glow;
+animações;
+cards;
+pódio.
+
+⸻
+
+102. PÓDIO TOP 3
+
+Destacar:
+
+1º lugar;
+2º lugar;
+3º lugar.
+
+Primeiro colocado maior no centro.
+
+Mostrar:
+
+avatar;
+nome;
+posição;
+pontuação;
+badge.
+
+Criar medalhas próprias LX.
+
+⸻
+
+103. PRÊMIO MENSAL
+
+Mostrar claramente:
+
+PRÊMIO DO MÊS — R$ 100
+
+O primeiro colocado de cada temporada mensal ganha R$ 100.
+
+⸻
+
+104. TEMPORADAS MENSAIS
+
+Criar:
+
+Setembro 2026;
+Outubro 2026;
+Novembro 2026;
+etc.
+
+Cada mês será uma nova temporada.
+
+⸻
+
+105. RESET DO RANKING
+
+Ao virar o mês:
+
+encerrar temporada;
+salvar classificação;
+registrar vencedor;
+arquivar ranking;
+começar nova temporada;
+zerar pontuação mensal.
+
+NÃO apagar histórico.
+
+⸻
+
+106. RANKINGS ANTIGOS
+
+Criar botão:
+
+Temporadas anteriores
+
+Usuário pode visualizar rankings dos meses anteriores.
+
+⸻
+
+107. HALL DOS CAMPEÕES
+
+Criar uma área especial.
+
+Mostrar:
+
+campeão;
+avatar;
+mês;
+pontuação;
+prêmio.
+
+⸻
+
+108. BADGE DE CAMPEÃO
+
+Quem ganhar recebe:
+
+Campeão LX — Setembro 2026
+
+Se vencer várias vezes:
+
+Campeão LX ×3
+
+⸻
+
+109. SUA POSIÇÃO
+
+Sempre mostrar:
+
+Sua posição.
+
+Exemplo:
+
+#147
+3.240 pontos.
+
+Também mostrar:
+
+Faltam 180 pontos para subir uma posição.
+
+⸻
+
+110. PROGRESSO
+
+Criar barra mostrando quanto falta para alcançar o próximo colocado.
+
+⸻
+
+111. CONTAGEM REGRESSIVA DO RANKING
+
+Mostrar:
+
+A temporada termina em:
+
+06 dias
+14 horas
+32 minutos
+
+⸻
+
+112. MOVIMENTAÇÃO NO RANKING
+
+Mostrar:
+
+↑ 3 posições
+
+↓ 1 posição
+
+— mesma posição
+
+⸻
+
+113. COMO GANHAR PONTOS
+
+Criar página clara.
+
+Mostrar quais ações dão pontos e quanto valem.
+
+ADM pode definir os valores.
+
+⸻
+
+114. ANTI-FRAUDE
+
+Como existe prêmio em dinheiro:
+
+bloquear farm artificial.
+
+Detectar:
+
+refresh;
+play/pause repetitivo;
+requisições duplicadas;
+spam;
+automação;
+contas suspeitas;
+comportamentos anormais.
+
+⸻
+
+115. AUDITORIA DO CAMPEÃO
+
+Antes de confirmar vencedor:
+
+verificar pontuação.
+
+Depois marcar:
+
+Vencedor confirmado.
+
+⸻
+
+116. PAGAMENTO
+
+No ADM:
+
+Pagamento pendente.
+
+Prêmio pago.
+
+Registrar data do pagamento.
+
+⸻
+
+117. ADMIN DO RANKING
+
+Criar área própria.
+
+Permitir:
+
+ver classificação;
+buscar usuário;
+ver origem dos pontos;
+analisar suspeitas;
+encerrar temporada;
+confirmar vencedor;
+marcar prêmio pago;
+ver histórico.
+
+⸻
+
+118. PONTUAÇÃO MENSAL E HISTÓRICA
+
+Separar:
+
+monthly_score
+
+e
+
+lifetime_score.
+
+Monthly score:
+
+zera mensalmente.
+
+Lifetime score:
+
+nunca zera.
+
+⸻
+
+119. NÍVEIS LX
+
+Utilizar pontuação histórica futuramente para:
+
+LX Bronze;
+LX Silver;
+LX Gold;
+LX Diamond.
+
+⸻
+
+120. NOTIFICAÇÕES DO RANKING
+
+Exemplos:
+
+Você entrou no Top 10.
+
+Você subiu para #3.
+
+Faltam 3 dias para o fim da temporada.
+
+Você terminou o mês em primeiro lugar.
+
+⸻
+
+121. CARTÃO COMPARTILHÁVEL
+
+Criar card:
+
+Estou no Top 3 da LX Plus
+
+Mostrar:
+
+avatar;
+posição;
+mês;
+logo LX.
+
+⸻
+
+122. STAGING E DEPLOY
+
+Nunca jogar essa atualização direto na produção.
+
+Primeiro:
+
+backup;
+branch;
+staging;
+testes;
+correções;
+deploy.
+
+⸻
+
+123. TESTES OBRIGATÓRIOS
+
+Antes de publicar testar:
+
+Login;
+Cadastro;
+Supabase;
+Google Drive;
+ADM;
+Filmes;
+Séries;
+Episódios;
+Player;
+Áudio;
+4K;
+Qualidade;
+Legendas;
+LX Music;
+Floating Player;
+Segundo plano;
+Ouvindo Agora;
+Álbuns;
+Playlists;
+Livros;
+LX Live;
+Comunidade;
+Mensagens;
+Áudios;
+Chamadas;
+Compartilhamento;
+Perfil;
+Notificações;
+Ranking;
+Smart Import;
+Busca;
+Mobile;
+Tablet;
+Desktop.
+
+⸻
+
+124. TESTAR NAVEGADORES
+
+Testar:
+
+Chrome;
+Edge;
+Safari;
+navegadores mobile.
+
+⸻
+
+125. META DE QUALIDADE
+
+Antes do deploy:
+
+zero bugs críticos conhecidos
+
+e
+
+zero regressões conhecidas.
+
+Não corrigir problemas criando outros.
+
+⸻
+
+126. RESULTADO FINAL
+
+A LX Plus deve parecer um ecossistema único.
+
+LX Plus
+
+Filmes e séries.
+
+LX Music
+
+Música.
+
+LX Books
+
+Leitura.
+
+LX Live
+
+Transmissões.
+
+LX Community
+
+Comunidade.
+
+LX Ranking
+
+Competição e premiação mensal.
+
+LX Smart Import
+
+Automação do catálogo.
+
+LX Admin
+
+Gerenciamento.
+
+Tudo precisa possuir a mesma identidade LX.
+
+A sensação final deve ser:
+
+moderna, premium, cinematográfica, rápida, limpa, integrada, organizada e profissional.
+
+
+
+
+
+Você tem total autorização minha pra mexer em qualquer app que vai usar!!

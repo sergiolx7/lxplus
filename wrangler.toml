@@ -1,5 +1,5 @@
-name = "lx-storage-drive"
-main = "lx-drive-storage-worker.js"
+name = "lxplus"
+main = "cloudflare-worker/lx-drive-storage-worker.js"
 compatibility_date = "2026-09-24"
 
 [previews]
