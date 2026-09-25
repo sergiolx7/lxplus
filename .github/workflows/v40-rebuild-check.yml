@@ -67,7 +67,7 @@ jobs:
           test -s assets/lx-music-logo.svg
           test -s supabase/migrations/20260925154634_lxplus_v40_complete.sql
           test -s supabase/migrations/20260925165208_lxplus_v40_hardening.sql
-          test -s supabase/migrations/20260925214000_lxplus_v40_reference_security.sql
+          test -s supabase/migrations/20260925213738_lxplus_v40_reference_security.sql
 
       - name: Static server smoke test
         run: |
