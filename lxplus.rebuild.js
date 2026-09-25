@@ -2,7 +2,7 @@
    Keeps the stable R12.4 engines, v40 features and rebuilt UI in one predictable shell. */
 (()=>{
 'use strict';
-const BUILD='V40-REBUILD-20260925';
+const BUILD='V40-REBUILD-FINAL-20260925';
 window.__LX_REBUILD_BUILD=BUILD;
 document.documentElement.dataset.lxRebuild=BUILD;
 document.documentElement.classList.add('lx-rebuild-v40');
