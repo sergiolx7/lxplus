@@ -169,4 +169,38 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watchRanking,{once:true});else watchRanking();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watchAdminDashboard,{once:true});else watchAdminDashboard();
   document.addEventListener('lx:music-closed',()=>setExpanded(false));
+
+  /* LX Image Pipeline v40.1: responsive lazy loading, loading state and resilient fallback. */
+  function installImagePipeline(){
+    if(document.getElementById('lx40-image-styles'))return;
+    const style=document.createElement('style');style.id='lx40-image-styles';style.textContent=`
+      img.lx40-image-loading{background-color:rgba(255,255,255,.035);background-image:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.085) 45%,transparent 70%);background-size:220% 100%;animation:lx40-image-shimmer 1.35s ease-in-out infinite}
+      img.lx40-image-ready{animation:none;background-image:none}
+      img.lx40-image-fallback{object-fit:contain!important;padding:12%!important;background:radial-gradient(ellipse at 50% 35%,rgba(167,131,255,.13),rgba(13,13,17,.96) 72%)!important}
+      @keyframes lx40-image-shimmer{to{background-position-x:-220%}}
+      @media(prefers-reduced-motion:reduce){img.lx40-image-loading{animation:none;background-image:none}}
+    `;document.head.appendChild(style);
+  }
+  const imageFallback='data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 220"><rect width="160" height="220" rx="14" fill="#111116"/><path d="M80 82a27 27 0 1 0 0-54 27 27 0 0 0 0 54Zm-47 91c2-31 22-48 47-48s45 17 47 48" fill="none" stroke="#8f73c5" stroke-width="8" stroke-linecap="round"/><path d="M48 196h64" stroke="#494052" stroke-width="6" stroke-linecap="round"/></svg>');
+  function prepareImage(img){
+    if(!(img instanceof HTMLImageElement)||img.dataset.lx40ImageReady)return;
+    img.dataset.lx40ImageReady='1';img.decoding='async';
+    if(!img.loading&&!img.closest('#hero,.lx-visual-intro335,.music-dock,#playerOverlay'))img.loading='lazy';
+    if(img.closest('#hero,.lx-visual-intro335,.music-dock,#playerOverlay'))img.fetchPriority='high';
+    img.classList.add('lx40-image-loading');
+    const ready=()=>{img.classList.remove('lx40-image-loading');img.classList.add('lx40-image-ready')};
+    if(img.complete&&img.naturalWidth>0)ready();else img.addEventListener('load',ready,{once:true});
+  }
+  function handleImageError(event){
+    const img=event.target;if(!(img instanceof HTMLImageElement)||img.dataset.lx40Fallback)return;
+    img.dataset.lx40Fallback='1';img.classList.remove('lx40-image-loading','lx40-image-ready');
+    img.classList.add('lx40-image-fallback');img.alt=img.alt||'Imagem indisponível';img.src=imageFallback;
+  }
+  function watchImages(){
+    installImagePipeline();document.querySelectorAll('img').forEach(prepareImage);
+    document.addEventListener('error',handleImageError,true);
+    if(!window.MutationObserver)return;let queued=false;
+    new MutationObserver(records=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;for(const record of records)for(const node of record.addedNodes){if(node.nodeType!==1)continue;if(node.matches?.('img'))prepareImage(node);node.querySelectorAll?.('img').forEach(prepareImage)}})}).observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watchImages,{once:true});else watchImages();
 })();
