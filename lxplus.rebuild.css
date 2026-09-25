@@ -724,3 +724,60 @@ img[data-lx40-fallback]{object-fit:cover!important}
   .lx40-hall-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   .lx40-season-actions button{flex:1 1 120px!important}
 }
+
+
+/* Floating Player expanded states */
+@media(min-width:901px){
+  #musicDock.music-dock.lx40-expanded:not(.hidden){
+    width:min(430px,calc(100vw - 36px))!important;
+    min-height:170px!important;
+    grid-template-columns:72px minmax(0,1fr) auto!important;
+    grid-template-areas:"cover info info" "cover timeline timeline" "transport transport transport" "extras extras extras"!important;
+    gap:5px 10px!important;
+    padding:12px!important;
+  }
+  #musicDock.lx40-expanded .music-cover-btn{width:72px!important;height:72px!important}
+  #musicDock.lx40-expanded .music-info{grid-area:info!important}
+  #musicDock.lx40-expanded .music-center-controls{display:contents!important}
+  #musicDock.lx40-expanded .music-transport{
+    grid-area:transport!important;
+    display:flex!important;
+    justify-content:center!important;
+    gap:7px!important;
+    margin-top:4px!important;
+  }
+  #musicDock.lx40-expanded .music-transport #musicShuffle,
+  #musicDock.lx40-expanded .music-transport #musicRepeat{display:grid!important}
+  #musicDock.lx40-expanded .music-transport button{display:grid!important;width:30px!important;height:30px!important;place-items:center!important}
+  #musicDock.lx40-expanded .music-transport #musicPlay{width:38px!important;height:38px!important}
+  #musicDock.lx40-expanded .music-timeline{grid-area:timeline!important}
+  #musicDock.lx40-expanded .music-right-controls{
+    grid-area:extras!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    gap:4px!important;
+    min-width:0!important;
+  }
+  #musicDock.lx40-expanded .music-right-controls button{display:grid!important;place-items:center!important;width:28px!important;height:28px!important;border-radius:9px!important}
+  #musicDock.lx40-expanded .music-right-controls>span{display:none!important}
+  #musicDock.lx40-expanded #musicVolume{display:block!important;width:72px!important}
+  #musicDock.lx40-dragging{cursor:grabbing!important;user-select:none!important;transition:none!important}
+}
+@media(max-width:900px){
+  #musicDock.music-dock.lx40-expanded:not(.hidden){
+    height:132px!important;min-height:132px!important;
+    grid-template-columns:46px minmax(0,1fr) 40px!important;
+    grid-template-rows:48px 36px 28px!important;
+    padding:8px!important;
+  }
+  #musicDock.lx40-expanded .music-cover-btn{grid-column:1!important;grid-row:1!important}
+  #musicDock.lx40-expanded .music-info{grid-column:2!important;grid-row:1!important}
+  #musicDock.lx40-expanded .music-center-controls{display:grid!important;grid-column:1/4!important;grid-row:2/4!important;grid-template-rows:36px 25px!important}
+  #musicDock.lx40-expanded .music-transport{display:flex!important;justify-content:center!important;gap:6px!important}
+  #musicDock.lx40-expanded .music-transport>*{display:grid!important;width:28px!important;height:28px!important;place-items:center!important}
+  #musicDock.lx40-expanded .music-transport #musicPlay{width:34px!important;height:34px!important}
+  #musicDock.lx40-expanded .music-timeline{display:grid!important;grid-template-columns:30px 1fr 30px!important;gap:5px!important;align-items:center!important;margin:0!important}
+  #musicDock.lx40-expanded .music-timeline span{font-size:7px!important}
+  #musicDock.lx40-expanded .music-right-controls{display:none!important}
+}
