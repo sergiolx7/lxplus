@@ -10,6 +10,8 @@
   function installToastStyles(){
     if(document.getElementById('lx40-command-styles'))return;
     const style=document.createElement('style');style.id='lx40-command-styles';style.textContent=`
+      :where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:2px solid #b99aff!important;outline-offset:3px}
+      @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
       .lx40-command-palette{position:fixed;inset:0;z-index:2147483600;display:grid;place-items:start center;padding:13vh 16px 24px;background:rgba(0,0,0,.62);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
       .lx40-command-palette.hidden{display:none}.lx40-command-box{width:min(580px,100%);overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:20px;background:rgba(19,19,24,.97);box-shadow:0 28px 90px rgba(0,0,0,.58),0 0 38px rgba(154,112,255,.12);color:#f5f5f8}
       .lx40-command-head{display:flex;align-items:center;justify-content:space-between;padding:15px 18px 7px;color:#a783ff;font-size:10px;font-weight:900;letter-spacing:.16em}.lx40-command-head kbd,.lx40-command-item kbd{padding:3px 7px;border:1px solid rgba(255,255,255,.12);border-radius:7px;color:#a4a4b1;font:600 10px system-ui}
