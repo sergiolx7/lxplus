@@ -303,11 +303,11 @@
       if(mode!=='Assistir'||category!=='Início'){shelf?.remove();signature='';return}
       const catalog=window.LX?.data?.catalog?.()||[],now=Date.now();
       const rows=catalog.filter(item=>item&&item.published!==false&&item.scheduledAt&&Number.isFinite(+new Date(item.scheduledAt))&&+new Date(item.scheduledAt)>now).sort((a,b)=>+new Date(a.scheduledAt)-+new Date(b.scheduledAt)).slice(0,6);
-      if(!rows.length){shelf?.remove();signature='';return}
+      if(!rows.length){const hadShelf=!!shelf;shelf?.remove();signature='';if(hadShelf)requestAnimationFrame(()=>window.LX?.ui?.renderApp?.());return}
       const nextSignature=rows.map(item=>[item.id,item.title,item.cover,item.banner,item.scheduledAt,item.type].join('|')).join('~');
       if(nextSignature!==signature||!shelf){
         signature=nextSignature;styles();
-        const cards=rows.map(item=>{const target=+new Date(item.scheduledAt),cover=item.cover||item.banner||'',year=item.year?` · ${esc(item.year)}`:'';
+        const cards=rows.map(item=>{const target=+new Date(item.scheduledAt),cover=item.cover||item.banner||'assets/lx-music-fallback.svg',year=item.year?` · ${esc(item.year)}`:'';
           return `<article class="lx40-premiere-card"><img loading="lazy" decoding="async" src="${esc(cover)}" alt="${esc(item.title||'Capa')}"><div class="lx40-premiere-copy"><span>LX PREMIERE</span><h3>${esc(item.title||'Próximo lançamento')}</h3><small>${esc(item.type||'Conteúdo')}${year} · ${new Date(target).toLocaleDateString('pt-BR',{day:'2-digit',month:'long'})}</small><div class="lx40-premiere-countdown" data-premiere-time="${target}">${countdown(target)}</div><button type="button" data-premiere-detail="${Number(item.id)}">Mais informações</button></div></article>`;
         }).join('');
         shelf=document.createElement('section');shelf.className='lx40-premiere-shelf';shelf.setAttribute('aria-label','Próximas estreias LX');shelf.innerHTML=`<div class="lx40-premiere-head"><div><span>PRÓXIMAS ESTREIAS</span><h2>LX Premiere</h2><p>Novos conteúdos programados para chegar à LX Plus.</p></div></div><div class="lx40-premiere-grid">${cards}</div>`;
