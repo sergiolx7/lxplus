@@ -42,6 +42,29 @@
       @media(max-width:760px){.lx40-admin-catalog-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:460px){.lx40-admin-catalog{padding:13px}.lx40-admin-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lx40-admin-catalog-head{align-items:flex-start;flex-direction:column;gap:4px}}
       @media(max-width:560px){#modal .ranking-table{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}#modal .ranking-table>.rank-row:nth-child(1){grid-column:1/-1;grid-row:1;min-height:156px}#modal .ranking-table>.rank-row:nth-child(2){grid-column:1;grid-row:2;min-height:132px}#modal .ranking-table>.rank-row:nth-child(3){grid-column:2;grid-row:2;min-height:132px}#modal .ranking-table>.rank-row:nth-child(n+4){grid-column:1/-1;min-height:58px}}
       @media(prefers-reduced-motion:reduce){#modal .ranking-table>.rank-row{transition:none}}
+
+      /* LX Design System v40.7: cohesive surfaces, type scale and responsive controls. */
+      :root{--lx40-bg:#09090c;--lx40-surface:rgba(20,20,26,.82);--lx40-surface-raised:rgba(28,28,36,.92);--lx40-border:rgba(255,255,255,.085);--lx40-border-strong:rgba(255,255,255,.14);--lx40-text:#f6f5fa;--lx40-muted:#a8a6b2;--lx40-accent:#b99aff;--lx40-glow:rgba(167,131,255,.13);--lx40-radius:18px;--lx40-shadow:0 16px 44px rgba(0,0,0,.26);--lx40-ease:180ms cubic-bezier(.2,.7,.2,1)}
+      body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+      #hero h1,.hero h1,.hero-title{font-size:clamp(2.15rem,5.2vw,4.5rem)!important;line-height:1.02!important;letter-spacing:-.045em!important;text-wrap:balance}
+      #hero p,.hero p,.hero-description{max-width:54ch;font-size:clamp(.9rem,1.2vw,1rem)!important;line-height:1.55!important}
+      .rail-section h2,.section-title,.content-section h2{font-size:clamp(1.2rem,2vw,1.55rem)!important;line-height:1.2;letter-spacing:-.025em}
+      .rail-section,.content-section{scroll-margin-top:92px}
+      .card-title,.movie-card h3,.content-card h3{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-height:1.3}
+      :where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:2px solid #b99aff!important;outline-offset:3px}
+      :where(.primary-btn,.glass-btn,.rail-arrow,.icon-btn,.nav-link,button){transition:background-color var(--lx40-ease),border-color var(--lx40-ease),box-shadow var(--lx40-ease),transform var(--lx40-ease),color var(--lx40-ease)}
+      :where(input:not([type=checkbox]):not([type=radio]),select,textarea){max-width:100%;border-radius:12px}
+      :where(.card,.movie-card,.content-card,.album-card,.book-card,.live-card){border-color:var(--lx40-border);box-shadow:0 8px 28px rgba(0,0,0,.13);transition:transform var(--lx40-ease),border-color var(--lx40-ease),box-shadow var(--lx40-ease)}
+      :where(.card,.movie-card,.content-card,.album-card,.book-card,.live-card):hover{border-color:rgba(185,154,255,.28);box-shadow:0 14px 34px rgba(0,0,0,.22),0 0 24px var(--lx40-glow)}
+      :where(.primary-btn,.glass-btn){min-height:42px;border-radius:12px}
+      :where(.glass-btn,.rail-arrow,.icon-btn){border:1px solid var(--lx40-border-strong);background:rgba(24,24,31,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+      :where(.primary-btn,.glass-btn):active,:where(.rail-arrow,.icon-btn):active{transform:scale(.97)}
+      :where(.modal,.modal-content,[role=dialog]){border-color:var(--lx40-border-strong);border-radius:var(--lx40-radius);box-shadow:var(--lx40-shadow),0 0 36px var(--lx40-glow)}
+      :where(.topbar,.category-nav){backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+      :where(.rail-arrow){display:grid;place-items:center;width:42px;height:42px;border-radius:50%;font-size:19px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+      @media(hover:none),(pointer:coarse){.rail-arrow{opacity:1!important;visibility:visible!important}}
+      @media(max-width:700px){#hero h1,.hero h1,.hero-title{font-size:clamp(2rem,9vw,3rem)!important}.hero p,.hero-description{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2}.rail-section h2,.section-title,.content-section h2{font-size:clamp(1.15rem,5vw,1.4rem)!important}.rail-arrow{width:38px;height:38px}}
+      @media(prefers-reduced-motion:reduce){:where(.card,.movie-card,.content-card,.album-card,.book-card,.live-card,.primary-btn,.glass-btn,.rail-arrow,.icon-btn){transition:none}}
     `;document.head.appendChild(style);
   }
   function setExpanded(value){
