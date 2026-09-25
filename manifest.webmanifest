@@ -3,11 +3,11 @@
   "short_name": "LX Plus",
   "description": "Filmes, séries, música, livros e comunidade em uma experiência premium.",
   "id": "./",
-  "start_url": "./?v=R12.4-NEXUS-20260924",
+  "start_url": "./?v=V40-REBUILD-20260925",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#020306",
-  "theme_color": "#050506",
+  "background_color": "#050507",
+  "theme_color": "#050507",
   "orientation": "any",
   "icons": [
     {
@@ -17,5 +17,5 @@
       "purpose": "any maskable"
     }
   ],
-  "version": "R12.4-NEXUS-20260924"
+  "version": "V40-REBUILD-20260925"
 }
