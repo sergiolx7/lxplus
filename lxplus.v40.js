@@ -80,7 +80,17 @@
     palette.innerHTML='<div class="lx40-command-box"><div class="lx40-command-head"><span>LX ADMIN</span><kbd>ESC</kbd></div><input type="search" class="lx40-command-search" placeholder="O que você quer fazer?" aria-label="Buscar comando" aria-controls="lx40-command-results"><div class="lx40-command-results" id="lx40-command-results" role="listbox" aria-label="Ações administrativas"></div><small>Use Ctrl + K para abrir esta paleta.</small></div>';
     document.body.appendChild(palette);
     palette.addEventListener('click',event=>{if(event.target===palette)closePalette()});
-    palette.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();closePalette()} });
+    palette.addEventListener('keydown',event=>{
+      if(event.key==='Escape'){event.preventDefault();closePalette();return}
+      if(event.key!=='Tab')return;
+      const search=palette.querySelector('.lx40-command-search');
+      const items=Array.from(palette.querySelectorAll('[data-command]'));
+      const focusable=[search,...items].filter(el=>el&&!el.disabled&&el.getClientRects().length);
+      if(!focusable.length){event.preventDefault();search?.focus();return}
+      const first=focusable[0],last=focusable[focusable.length-1];
+      if(event.shiftKey&&(document.activeElement===first||!palette.contains(document.activeElement))){event.preventDefault();last.focus()}
+      else if(!event.shiftKey&&(document.activeElement===last||!palette.contains(document.activeElement))){event.preventDefault();first.focus()}
+    });
     palette.querySelector('.lx40-command-search').addEventListener('input',()=>{activeCommandIndex=0;renderCommands()});
     palette.querySelector('.lx40-command-search').addEventListener('keydown',event=>{
       const items=Array.from(palette.querySelectorAll('[data-command]'));
