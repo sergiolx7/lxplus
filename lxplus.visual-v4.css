@@ -1,4 +1,4 @@
-/* LX Plus — Visual V4: side LED dots + responsive fill helpers.
+/* LX Plus — Visual V6: side LED dots + draggable/resizable LX Music + responsive fill helpers.
    Visual-only layer. Does not change catalog, auth, data or Supabase. */
 
 /* Small luminous dots along both sides of the app. */
@@ -25,82 +25,81 @@
     center 12px/7px 25px repeat-y;
 }
 
-/* Music player: clear drag grip. Drag with mouse or touch; double-click returns to top-right. */
+/* LX Music player movement controls. */
 #musicDock .lx-music-drag-handle{
-  width:104px!important;
-  height:18px!important;
-  top:-7px!important;
-  padding:0 10px!important;
+  width:138px!important;
+  height:22px!important;
+  top:-10px!important;
+  padding:0 7px 0 10px!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
   gap:6px!important;
-  border:1px solid rgba(154,79,255,.24)!important;
+  border:1px solid rgba(154,79,255,.30)!important;
   border-radius:999px!important;
-  background:rgba(8,10,19,.94)!important;
-  box-shadow:0 5px 18px rgba(0,0,0,.38),0 0 16px rgba(132,45,255,.13)!important;
+  background:rgba(8,10,19,.97)!important;
+  box-shadow:0 5px 18px rgba(0,0,0,.42),0 0 18px rgba(132,45,255,.16)!important;
   color:#9da5b9!important;
   cursor:grab!important;
   touch-action:none!important;
+  user-select:none!important;
 }
 #musicDock .lx-music-drag-handle:active,
-#musicDock.lx-is-dragging .lx-music-drag-handle{cursor:grabbing!important;color:#fff!important;border-color:rgba(181,91,255,.48)!important;box-shadow:0 7px 22px rgba(0,0,0,.45),0 0 23px rgba(132,45,255,.24)!important}
+#musicDock.lx-is-dragging .lx-music-drag-handle{cursor:grabbing!important;color:#fff!important;border-color:rgba(181,91,255,.50)!important;box-shadow:0 7px 22px rgba(0,0,0,.45),0 0 23px rgba(132,45,255,.25)!important}
 #musicDock .lx-drag-dots{font:900 10px/1 system-ui;letter-spacing:3px;color:#a857ff;text-shadow:0 0 8px rgba(168,87,255,.75)}
 #musicDock .lx-drag-label{font:800 7px/1 system-ui;letter-spacing:1.4px;color:#8992a7}
+#musicDock .lx-float-tool{
+  width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;padding:0!important;
+  display:grid!important;place-items:center!important;border:0!important;border-radius:50%!important;
+  background:rgba(255,255,255,.07)!important;color:#b8bfd0!important;font:900 10px/1 system-ui!important;cursor:pointer!important;
+}
+#musicDock .lx-float-tool:hover{background:rgba(145,66,255,.20)!important;color:#fff!important;box-shadow:0 0 12px rgba(141,51,255,.20)!important}
 #musicDock .music-info{cursor:grab}
 #musicDock.lx-is-dragging .music-info{cursor:grabbing}
+
+/* Eight resize hit-areas: all four sides and all four corners. */
+#musicDock .lx-resize-handle{position:absolute!important;z-index:80!important;display:block!important;background:transparent!important;touch-action:none!important;user-select:none!important}
+#musicDock .lx-r-n{top:-4px;left:18px;right:18px;height:8px;cursor:ns-resize}
+#musicDock .lx-r-s{bottom:-5px;left:18px;right:18px;height:10px;cursor:ns-resize}
+#musicDock .lx-r-e{right:-5px;top:18px;bottom:18px;width:10px;cursor:ew-resize}
+#musicDock .lx-r-w{left:-5px;top:18px;bottom:18px;width:10px;cursor:ew-resize}
+#musicDock .lx-r-ne{right:-6px;top:-6px;width:16px;height:16px;cursor:nesw-resize}
+#musicDock .lx-r-nw{left:-6px;top:-6px;width:16px;height:16px;cursor:nwse-resize}
+#musicDock .lx-r-se{right:-6px;bottom:-6px;width:17px;height:17px;cursor:nwse-resize}
+#musicDock .lx-r-sw{left:-6px;bottom:-6px;width:17px;height:17px;cursor:nesw-resize}
+#musicDock .lx-r-se::after,#musicDock .lx-r-sw::after{
+  content:"";position:absolute;bottom:4px;width:8px;height:8px;opacity:.72;border-bottom:2px solid #9c55ff;
+}
+#musicDock .lx-r-se::after{right:4px;border-right:2px solid #5d9cff;border-radius:0 0 3px 0}
+#musicDock .lx-r-sw::after{left:4px;border-left:2px solid #b050ff;border-radius:0 0 0 3px}
+#musicDock.lx-is-resizing{transition:none!important;box-shadow:0 28px 86px rgba(0,0,0,.60),0 0 46px rgba(132,48,255,.25)!important}
+
+/* Minimized state keeps only artwork, title and essential controls. */
+#musicDock.music-dock.lx-music-minimized{
+  min-width:220px!important;min-height:70px!important;max-height:88px!important;padding:13px 10px 8px!important;
+  grid-template-columns:46px minmax(0,1fr) auto!important;grid-template-areas:"cover info right"!important;gap:7px!important;overflow:visible!important;
+}
+#musicDock.lx-music-minimized .music-cover-btn{width:46px!important;height:46px!important;min-width:46px!important;min-height:46px!important}
+#musicDock.lx-music-minimized .music-center-controls,
+#musicDock.lx-music-minimized .music-provider-panel,
+#musicDock.lx-music-minimized .lx-resize-handle{display:none!important}
+#musicDock.lx-music-minimized .music-right-controls button:not(#musicClose):not(.lx-float-tool){display:none!important}
 
 /* Matching little dots on the floating LX Music player. */
 #musicDock .lx-music-drag-handle::before,
 #musicDock .lx-music-drag-handle::after{
-  content:"";
-  position:absolute;
-  top:50%;
-  width:5px;
-  height:5px;
-  margin-top:-2.5px;
-  border-radius:50%;
-  pointer-events:none;
+  content:"";position:absolute;top:50%;width:5px;height:5px;margin-top:-2.5px;border-radius:50%;pointer-events:none;
 }
-#musicDock .lx-music-drag-handle::before{
-  left:-8px;
-  background:#b44cff;
-  box-shadow:0 0 7px rgba(180,76,255,.82),0 0 15px rgba(112,66,255,.38);
-}
-#musicDock .lx-music-drag-handle::after{
-  right:-8px;
-  background:#5799ff;
-  box-shadow:0 0 7px rgba(87,153,255,.82),0 0 15px rgba(89,92,255,.34);
-}
+#musicDock .lx-music-drag-handle::before{left:-8px;background:#b44cff;box-shadow:0 0 7px rgba(180,76,255,.82),0 0 15px rgba(112,66,255,.38)}
+#musicDock .lx-music-drag-handle::after{right:-8px;background:#5799ff;box-shadow:0 0 7px rgba(87,153,255,.82),0 0 15px rgba(89,92,255,.34)}
 #musicDock .music-timeline{position:relative}
-#musicDock .music-timeline::before,
-#musicDock .music-timeline::after{
-  content:"";
-  position:absolute;
-  top:50%;
-  width:4px;
-  height:4px;
-  border-radius:50%;
-  transform:translateY(-50%);
-  pointer-events:none;
-  opacity:.72;
-}
+#musicDock .music-timeline::before,#musicDock .music-timeline::after{content:"";position:absolute;top:50%;width:4px;height:4px;border-radius:50%;transform:translateY(-50%);pointer-events:none;opacity:.72}
 #musicDock .music-timeline::before{left:-2px;background:#b64dff;box-shadow:0 0 7px rgba(182,77,255,.62)}
 #musicDock .music-timeline::after{right:-2px;background:#5b9cff;box-shadow:0 0 7px rgba(91,156,255,.58)}
 
 /* Legacy/secondary video surfaces also fill their stage responsively. */
-#playerModal video,
-.player-modal video,
-.live-player video,
-.stream-player video,
-.lx-stream-player video{
-  width:100%!important;
-  height:100%!important;
-  max-width:none!important;
-  max-height:none!important;
-  object-fit:cover!important;
-  object-position:center!important;
-  background:#000;
+#playerModal video,.player-modal video,.live-player video,.stream-player video,.lx-stream-player video{
+  width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:center!important;background:#000;
 }
 
 @media(max-width:900px){
@@ -108,10 +107,9 @@
 }
 @media(max-width:520px){
   #lxAmbientV1::before,#lxAmbientV1::after{opacity:.34;top:18vh;bottom:18vh;background-size:5px 32px;width:5px}
-  #lxAmbientV1::before{left:3px}
-  #lxAmbientV1::after{right:3px}
-  #musicDock .lx-music-drag-handle{width:92px!important;height:20px!important;top:-8px!important}
+  #lxAmbientV1::before{left:3px}#lxAmbientV1::after{right:3px}
+  #musicDock .lx-music-drag-handle{width:124px!important;height:21px!important;top:-9px!important}
+  #musicDock .lx-drag-label{display:none!important}
+  #musicDock .lx-float-tool{width:20px!important;height:20px!important;min-width:20px!important;min-height:20px!important}
 }
-@media(prefers-reduced-motion:reduce){
-  #lxAmbientV1::before,#lxAmbientV1::after{filter:none}
-}
+@media(prefers-reduced-motion:reduce){#lxAmbientV1::before,#lxAmbientV1::after{filter:none}}
