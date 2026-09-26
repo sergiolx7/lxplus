@@ -18,7 +18,7 @@
       return existing;
     }
     const link=document.createElement('link');
-    link.id=STYLE_ID;link.rel='stylesheet';link.href='lxplus.modal-safety-v13.css?v=20260926-1';
+    link.id=STYLE_ID;link.rel='stylesheet';link.href='lxplus.modal-safety-v13.css?v=20260926-2';
     document.head.appendChild(link);
     return link;
   }
@@ -89,7 +89,7 @@
     window.addEventListener('orientationchange',()=>setTimeout(sync,120),{passive:true});
     setInterval(sync,1000);
     sync();
-    window.LXModalSafetyV13={version:'13.1',sync,forceScroll};
+    window.LXModalSafetyV13={version:'13.2',sync,forceScroll};
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
