@@ -18,9 +18,8 @@
 #lxAmbientV1 .lx-ambient-arc-b{width:61vw;height:29vw;right:-5vw;top:18vh;border-radius:50%;border-top:1px solid rgba(192,91,255,.30);transform:rotate(9deg);filter:drop-shadow(0 0 9px rgba(168,61,255,.42));opacity:.30}
 #lxAmbientV1 .lx-ambient-line{left:14%;right:7%;bottom:9vh;height:1px;background:linear-gradient(90deg,transparent,rgba(67,117,255,.28),rgba(190,73,255,.34),transparent);filter:blur(.2px);box-shadow:0 0 14px rgba(111,71,255,.30)}
 
-/* Keep real UI above ambient layer */
-#auth,#profiles,#app,#admin,#overlay,#playerOverlay,#readerOverlay,#miniPlayer,#musicDock,#lxNovaAIPanel,#lxCommunityScrim,#lxCommunityDrawer{position:relative;z-index:1}
-#overlay,#playerOverlay,#readerOverlay,#miniPlayer,#musicDock,#lxNovaAIPanel,#lxCommunityScrim,#lxCommunityDrawer{z-index:auto}
+/* Keep only main screens above the decorative background. Floating UI keeps its original fixed/absolute positioning. */
+#auth,#profiles,#app,#admin{position:relative;z-index:1}
 
 /* Topbar and side rails */
 .topbar,.lx-desktop-rail,.lx-right-rail,.admin-side{
@@ -31,8 +30,8 @@
 .lx-desktop-rail,.admin-side{border-right-color:rgba(165,78,255,.10)!important}
 .lx-right-rail{border-left-color:rgba(101,114,255,.09)!important}
 
-/* LED panel treatment */
-.hero,.auth-box,.universe-cards>div,.rail-section,.panel-page,.admin-card,.admin-panel,.modal,.player-modal,.reader-modal,.music-dock,.lx-community-drawer,.lx-nova-ai-panel,.lx-support-panel,.mini-player{
+/* LED panel treatment — never change the positioning mode of floating components. */
+.hero,.auth-box,.universe-cards>div,.rail-section,.panel-page,.admin-card,.admin-panel,.modal,.player-modal,.reader-modal{
   position:relative;
 }
 .hero:after,.auth-box:after,.panel-page:after,.admin-card:after,.admin-panel:after,.modal:after,.player-modal:after,.reader-modal:after,.music-dock:after,.lx-community-drawer:after,.lx-nova-ai-panel:after,.mini-player:after{
