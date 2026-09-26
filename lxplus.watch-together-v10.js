@@ -1,4 +1,4 @@
-/* LX Plus — Watch Together V10.5
+/* LX Plus — Watch Together V10.6
    Echo-aware screen-share audio for community calls.
    - always requests screen/tab audio when sharing
    - prefers audio captured directly from the LX Player, keeping remote voice out of the shared movie audio
@@ -7,7 +7,7 @@
    - local microphone remains handled by the existing call mixer
 */
 (()=>{'use strict';
-  const PATCH='__lxWatchTogetherV10',AUDIO_SCRIPT_ID='lxPlayerAudioV10Script',DETAIL_SCRIPT_ID='lxDetailWatchV12Script',MODAL_SCRIPT_ID='lxModalSafetyV13Script',PARTY_SCRIPT_ID='lxWatchPartyV14Script',SYNC_SCRIPT_ID='lxWatchSyncV143Script';
+  const PATCH='__lxWatchTogetherV10',AUDIO_SCRIPT_ID='lxPlayerAudioV10Script',DETAIL_SCRIPT_ID='lxDetailWatchV12Script',MODAL_SCRIPT_ID='lxModalSafetyV13Script',PARTY_SCRIPT_ID='lxWatchPartyV14Script',SYNC_SCRIPT_ID='lxWatchSyncV144Script';
   let lastMode='idle',patchTimer=0;
   const audioBridges=new WeakMap();
   const toast=msg=>{try{window.LX?.toast?.(msg)}catch{}};
@@ -21,7 +21,7 @@
   function loadDetailWatch(){loadScriptOnce(DETAIL_SCRIPT_ID,'lxplus.detail-watch-v12.js?v=20260926-3',()=>window.LXDetailWatchV12,'Detail Watch V12')}
   function loadModalSafety(){loadScriptOnce(MODAL_SCRIPT_ID,'lxplus.modal-safety-v13.js?v=20260926-2',()=>window.LXModalSafetyV13,'Modal Safety V13')}
   function loadWatchParty(){loadScriptOnce(PARTY_SCRIPT_ID,'lxplus.watch-party-v14.js?v=20260926-2',()=>window.LXWatchPartyV14,'Watch Party V14')}
-  function loadSync(){if(!window.LXWatchPartyV14)return;loadScriptOnce(SYNC_SCRIPT_ID,'lxplus.watch-sync-v14-3.js?v=20260926-1',()=>window.LXWatchPartySyncV143,'Watch Sync V14.3')}
+  function loadSync(){if(!window.LXWatchPartyV14)return;loadScriptOnce(SYNC_SCRIPT_ID,'lxplus.watch-sync-v14-4.js?v=20260926-1',()=>window.LXWatchPartySyncV144,'Watch Sync V14.4')}
 
   function activeMovieVideo(){
     const host=document.getElementById('lxGlobalCinema'),root=host?.shadowRoot;
@@ -113,7 +113,7 @@
   function boot(){
     loadPlayerAudio();loadDetailWatch();loadModalSafety();loadWatchParty();loadSync();wrapShareScreen();decorateCall();
     patchTimer=setInterval(()=>{loadPlayerAudio();loadDetailWatch();loadModalSafety();loadWatchParty();loadSync();wrapShareScreen();decorateCall()},800);
-    window.LXWatchTogetherV10={version:'10.5',get mode(){return lastMode},activeMovieVideo,movieAudioTrack,repatch:wrapShareScreen,loadPlayerAudio,loadDetailWatch,loadModalSafety,loadWatchParty,loadSync};
+    window.LXWatchTogetherV10={version:'10.6',get mode(){return lastMode},activeMovieVideo,movieAudioTrack,repatch:wrapShareScreen,loadPlayerAudio,loadDetailWatch,loadModalSafety,loadWatchParty,loadSync};
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
