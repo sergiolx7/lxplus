@@ -1,88 +1,154 @@
-/* LX Plus — central de ajuda e atendimento humano. Um controlador para usuários e ADM. */
+/* LX Plus — Canonical Controller UI25
+   Loaded directly by index.html through lxplus.support.js.
+   One owner for build/update state, profile update menu and cache rotation.
+*/
 (()=>{'use strict';
- const LX=window.LX,topics={
-  'Música':'Confira a conexão e abra novamente a faixa. Para MP3 do catálogo, use Tentar novamente no player. Se o erro continuar, envie o nome da música ao ADM.',
-  'Vídeos e TV':'Para assistir na TV, use Transmitir no player em um dispositivo compatível, na mesma rede. Em outras TVs, use o navegador da TV para abrir a LX Plus.',
-  'Conta e perfil':'Abra Meu perfil para atualizar seus dados. Se não conseguir entrar, use Esqueci a senha na tela de acesso.',
-  'Comunidade':'Confira sua conexão. A conversa fica disponível ao reabrir a Comunidade; se estiver saindo sozinha, informe o aparelho e o navegador.',
-  'Outro assunto':'Descreva o que aconteceu e um ADM poderá continuar esta conversa.'
- };
- const state={owner:'',tickets:[],messages:[],active:null,topic:'',busy:false,error:'',loading:false,channel:null,timer:null,names:{}};
- const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;',"'":'&#39;'}[c]));
- const uid=()=>String(LX.cloud?.user?.()?.id||LX.ui?.state?.user?.id||'');
- const client=()=>LX.cloud?.db?.();
- const wait=(promise,ms=9000)=>Promise.race([promise,new Promise((_,reject)=>setTimeout(()=>reject(new Error('Tempo esgotado. Confira a conexão.')),ms))]);
- function resetOwner(){
-  const user=uid();if(state.owner===user)return;
-  if(state.channel)client()?.removeChannel(state.channel).catch(()=>{});
-  state.owner=user;state.tickets=[];state.messages=[];state.active=null;state.topic='';state.error='';state.names={};state.channel=null;
- }
- function error(err){state.error=String(err?.message||err||'Atendimento indisponível.').slice(0,240);console.warn('LX suporte',err);draw()}
- function ticket(){return state.tickets.find(x=>String(x.id)===String(state.active))}
- function status(text=''){for(const e of document.querySelectorAll('[data-support-status]'))e.textContent=state.error||text||''}
- function panelHTML(){return '<header><div><small>LX PLUS</small><h2>Central de ajuda</h2></div><button type="button" data-help="close" aria-label="Fechar">×</button></header><div class="lx-support-content"><div data-help-topics></div><div data-help-tickets></div><div class="lx-nova-ai-log" data-help-log role="log" aria-live="polite"></div><form data-help-form><textarea maxlength="4000" rows="2" placeholder="Descreva o que precisa…" aria-label="Mensagem para o ADM" required></textarea><button type="submit">Enviar</button></form><output data-support-status role="status"></output></div>'}
- function draw(){
-  const t=ticket();for(const root of document.querySelectorAll('[data-help-root]')){
-   const admin=root.dataset.helpRoot==='admin',topicsNode=root.querySelector('[data-help-topics]'),ticketsNode=root.querySelector('[data-help-tickets]'),log=root.querySelector('[data-help-log]'),form=root.querySelector('[data-help-form]');
-   if(!admin&&topicsNode)topicsNode.innerHTML='<h3>Em que podemos ajudar?</h3><div class="lx-support-topics">'+Object.keys(topics).map(x=>`<button type="button" data-help="topic" data-topic="${esc(x)}" class="${state.topic===x?'active':''}">${esc(x)}</button>`).join('')+'</div>'+(state.topic?`<p class="lx-support-answer">${esc(topics[state.topic])}</p><button class="primary-btn" type="button" data-help="start">Conversar com o ADM sobre ${esc(state.topic)}</button>`:'<p>Escolha um assunto para ver uma resposta imediata ou conversar com o ADM.</p>');
-   if(ticketsNode){const rows=admin?state.tickets:state.tickets.filter(x=>String(x.user_id)===uid());ticketsNode.innerHTML='<h3>'+(admin?'Conversas com usuários':'Minhas conversas')+'</h3>'+(rows.length?'<div class="lx-support-tickets">'+rows.map(x=>`<button type="button" data-help="ticket" data-id="${x.id}" class="${String(state.active)===String(x.id)?'active':''}"><b>${esc(x.topic)}</b><small>${admin?esc(state.names[x.user_id]||String(x.user_id).slice(0,8))+' · ':''}${x.status==='open'?'Aguardando atendimento':'Encerrado'}</small></button>`).join('')+'</div>':`<p>${state.loading?'Carregando…':admin?'Nenhum chamado ainda.':'Nenhuma conversa iniciada.'}</p>`)+(admin&&t?`<button type="button" data-help="status">${t.status==='open'?'Encerrar':'Reabrir'} chamado</button>`:'')}
-   if(log){log.replaceChildren();if(t){const title=document.createElement('p');title.className='lx-support-conversation-title';title.textContent=`${t.topic} · ${t.status==='open'?'Conversa aberta':'Encerrada'}`;log.append(title);for(const msg of state.messages){const node=document.createElement('div');node.className=`lx-nova-ai-message ${msg.author_id===uid()?'me':''}`;node.textContent=msg.body;log.append(node)}}else{const placeholder=document.createElement('p');placeholder.textContent=admin?'Selecione um chamado para responder.':'Escolha um assunto ou reabra uma conversa acima.';log.append(placeholder)}log.scrollTop=log.scrollHeight}
-   if(form){form.hidden=admin?!t||t.status!=='open':!!t&&t.status!=='open';form.querySelector('button').disabled=state.busy;form.querySelector('button').textContent=state.busy?'Enviando…':'Enviar';form.querySelector('textarea').placeholder=t?'Digite sua mensagem…':'Descreva o problema para iniciar a conversa…'}
+  if(window.LXCanonicalUI25)return;
+  const BUILD='R12.4-UI25-CANONICAL-20260926';
+  const VERSION='UI25';
+  const RELEASE_KEY='app_release';
+  const APPLIED='lx_canonical_release_ui25';
+  const BUILD_KEY='lx_canonical_build';
+  let remote=null,dbClient=null,channel=null,refreshing=false,adminPatched=false,lastRead=0;
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const toast=m=>{try{window.LX?.toast?.(m)}catch{}};
+  const isAdmin=()=>!!window.LX?.ui?.state?.user?.admin;
+  const uiNo=x=>Number(String(x||'').match(/UI\s*([0-9]+)/i)?.[1]||0);
+  const official=()=>String(remote?.version||VERSION);
+  const needsUpdate=()=>uiNo(remote?.version||remote?.build)>uiNo(VERSION);
+  const status=()=>needsUpdate()?'Nova versão disponível':'Você está na versão mais recente';
+  const releaseToken=()=>String(remote?.nonce||remote?.published_at||remote?.build||'');
+
+  window.LX_CANONICAL_BUILD=BUILD;
+  window.LX_CANONICAL_VERSION=VERSION;
+  const meta=document.querySelector('meta[name="lxplus-build"]');if(meta)meta.content=BUILD;
+  document.documentElement.dataset.lxCanonical='25';
+
+  function ensureStyle(){
+    if(document.getElementById('lxCanonical25Css'))return;
+    const s=document.createElement('style');s.id='lxCanonical25Css';s.textContent=`
+      #lxProfileMenu .lx25-update-action{display:flex!important;align-items:center!important;gap:10px!important;width:100%!important;position:relative!important}
+      #lxProfileMenu .lx25-update-action .lx25-copy{display:grid;gap:1px;min-width:0;text-align:left;flex:1}
+      #lxProfileMenu .lx25-update-action .lx25-copy b{font:inherit;font-weight:700}.lx25-update-action .lx25-copy small{font-size:8px;line-height:1.25;color:#35d07f;white-space:nowrap}
+      #lxProfileMenu .lx25-update-action.is-old .lx25-copy small{color:#ffb44a}.lx25-dot{width:7px;height:7px;border-radius:50%;background:#35d07f;box-shadow:0 0 10px #35d07f70;flex:none}.is-old>.lx25-dot{background:#ffb44a;box-shadow:0 0 10px #ffb44a70}
+      .lx25-update-page{max-width:680px;margin:auto;padding:28px}.lx25-version-card{margin:18px 0;padding:20px;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:rgba(255,255,255,.035);display:grid;gap:8px}.lx25-version-card h3{margin:0;font-size:20px}.lx25-version-card p{margin:0;color:var(--muted,#9aa4b4);line-height:1.65}.lx25-actions{display:flex;gap:10px;flex-wrap:wrap}.lx25-actions button{min-height:40px}
+      [data-lx25-admin-tab]{position:relative}[data-lx25-admin-tab] .lx25-dot{display:inline-block;margin-left:7px}.lx25-admin{display:grid;gap:15px}.lx25-admin-hero{padding:20px;border-radius:20px;border:1px solid color-mix(in srgb,var(--accent,#42a5ff) 30%,rgba(255,255,255,.09));background:linear-gradient(145deg,color-mix(in srgb,var(--accent,#42a5ff) 9%,rgba(8,11,18,.96)),rgba(5,7,12,.97));display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center}.lx25-admin-hero h2{margin:5px 0}.lx25-admin-hero p{margin:0;color:var(--muted,#9aa4b4);font-size:11px;line-height:1.55}.lx25-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.lx25-admin-card{padding:18px;border-radius:17px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035)}.lx25-admin-card small{color:var(--muted,#9aa4b4)}.lx25-admin-card strong{display:block;font-size:19px;margin:5px 0}
+      @media(max-width:720px){.lx25-admin-grid,.lx25-admin-hero{grid-template-columns:1fr}.lx25-admin-hero button{width:100%}.lx25-update-page{padding:20px}}
+    `;document.head.appendChild(s);
   }
-  status()
- }
- async function loadTickets({quiet=false}={}){
-  resetOwner();if(!uid())throw new Error('Entre na sua conta para conversar com o suporte.');
-  const db=client();if(!db)throw new Error('A nuvem está indisponível.');if(!quiet){state.loading=true;draw()}
-  try{const {data,error:dbError}=await wait(db.from('lx_support_tickets').select('id,user_id,topic,status,created_at,updated_at').order('updated_at',{ascending:false}).limit(100));if(dbError)throw dbError;
-   if(!uid()||state.owner!==uid())return;state.tickets=data||[];
-   if(state.active&&!state.tickets.some(x=>String(x.id)===String(state.active))){state.active=null;state.messages=[]}
-   const ids=[...new Set(state.tickets.map(x=>x.user_id))];if(LX.ui?.state?.user?.admin&&ids.length){try{const profiles=await wait(db.from('lx_profiles').select('user_id,name').in('user_id',ids),6000);if(!profiles.error)state.names=Object.fromEntries((profiles.data||[]).map(x=>[x.user_id,x.name]))}catch{}}
-   if(state.active)await loadMessages(state.active,true);state.error='';draw()
-  }finally{state.loading=false;draw()}
- }
- async function loadMessages(id,quiet=false){
-  const db=client();if(!db)throw new Error('Nuvem indisponível.');state.active=Number(id);if(!quiet){state.loading=true;draw()}
-  try{const {data,error:dbError}=await wait(db.from('lx_support_messages').select('id,ticket_id,author_id,body,created_at').eq('ticket_id',state.active).order('created_at',{ascending:true}).limit(200));if(dbError)throw dbError;
-   if(String(id)===String(state.active)){state.messages=data||[];state.error='';draw()}
-  }finally{state.loading=false;draw()}
- }
- async function start(){
-  if(state.busy)return;resetOwner();if(!state.topic)return error(new Error('Escolha um assunto primeiro.'));
-  const db=client();if(!db)return error(new Error('Nuvem indisponível. Tente novamente mais tarde.'));
-  state.busy=true;state.error='';draw();status('Abrindo conversa com o ADM…');
-  try{const {data, error:dbError}=await wait(db.from('lx_support_tickets').insert({user_id:uid(),topic:state.topic}).select('id,user_id,topic,status,created_at,updated_at').single());if(dbError)throw dbError;
-   state.tickets.unshift(data);state.active=data.id;state.messages=[];state.topic='';draw();document.querySelector('#lxNovaAIPanel [data-help-form] textarea')?.focus()
-  }catch(err){error(err)}finally{state.busy=false;draw()}
- }
- async function send(value){
-  if(state.busy)return;const body=String(value||'').trim();if(!body)return;resetOwner();const db=client();if(!db)return error(new Error('Nuvem indisponível. Mensagem não enviada.'));
-  try{if(!ticket()){if(!state.topic)throw new Error('Escolha um assunto antes de enviar.');await start();if(!ticket())throw new Error(state.error||'Não foi possível abrir o chamado.')}
-   state.busy=true;state.error='';draw();status('Enviando mensagem…');
-   const {error:dbError}=await wait(db.from('lx_support_messages').insert({ticket_id:state.active,author_id:uid(),body}));if(dbError)throw dbError;
-   const {error:updateError}=await wait(db.from('lx_support_tickets').select('id').eq('id',state.active).single(),6000);if(updateError)throw updateError;
-   await loadMessages(state.active,true);status('Mensagem enviada ao suporte.')
-  }catch(err){error(err);throw err}finally{state.busy=false;draw()}
- }
- async function toggleStatus(){const t=ticket();if(!t||!LX.ui?.state?.user?.admin)return;try{const next=t.status==='open'?'closed':'open',db=client(),{error:dbError}=await wait(db.from('lx_support_tickets').update({status:next,updated_at:new Date().toISOString()}).eq('id',t.id));if(dbError)throw dbError;t.status=next;draw()}catch(err){error(err)}}
- function bind(root){
-  root.onclick=e=>{const node=e.target.closest('[data-help]');if(!node||!root.contains(node))return;const action=node.dataset.help;if(action==='close')root.remove();else if(action==='topic'){state.topic=node.dataset.topic;draw()}else if(action==='start')start();else if(action==='ticket')loadMessages(node.dataset.id).catch(error);else if(action==='status')toggleStatus()};
-  root.querySelector('[data-help-form]').onsubmit=async e=>{e.preventDefault();const input=e.currentTarget.querySelector('textarea'),body=input.value;try{await send(body);input.value=''}catch{}};
-  root.querySelector('[data-help-form] textarea').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();e.currentTarget.form.requestSubmit()}};
-  draw();loadTickets().catch(error);ensureUpdates()
- }
- function ensureUpdates(){
-  if(state.timer)return;state.timer=setInterval(()=>{if(!document.querySelector('[data-help-root]'))return;loadTickets({quiet:true}).catch(error)},7000);
-  const db=client();if(!db||!uid()||state.channel)return;
-  state.channel=db.channel('lx-support-'+uid()).on('postgres_changes',{event:'*',schema:'public',table:'lx_support_tickets'},()=>loadTickets({quiet:true}).catch(error)).on('postgres_changes',{event:'INSERT',schema:'public',table:'lx_support_messages'},e=>{if(String(e.new?.ticket_id)===String(state.active))loadMessages(state.active,true).catch(error);else loadTickets({quiet:true}).catch(error)}).subscribe()
- }
- function open(){
-  resetOwner();let panel=document.getElementById('lxNovaAIPanel');if(panel){panel.remove();return}
-  panel=document.createElement('aside');panel.id='lxNovaAIPanel';panel.className='lx-nova-ai-panel lx-support-panel';panel.dataset.helpRoot='user';panel.setAttribute('aria-label','Central de ajuda LX Plus');panel.innerHTML=panelHTML();document.body.append(panel);bind(panel)
- }
- function renderAdmin(root){
-  resetOwner();root.innerHTML='<div class="lx-nova-heading"><span>ATENDIMENTO</span><h1>Suporte LX Plus</h1><p>Respostas rápidas para usuários e conversa humana quando solicitada.</p></div><section class="lx-nova-ai-page lx-support-admin" data-help-root="admin"><div data-help-topics hidden></div><div data-help-tickets></div><div class="lx-nova-ai-log" data-help-log role="log" aria-live="polite"></div><form data-help-form><textarea rows="2" maxlength="4000" placeholder="Responder ao usuário…" required></textarea><button type="submit">Enviar resposta</button></form><output data-support-status role="status"></output></section>';
-  bind(root.querySelector('[data-help-root]'))
- }
- LX.support={open,renderAdmin,refresh:()=>loadTickets().catch(error)};
+
+  async function db(timeout=16000){
+    if(dbClient)return dbClient;
+    const end=Date.now()+timeout;
+    while(Date.now()<end){try{const c=window.LX?.cloud?.db?.();if(c){dbClient=c;return c}}catch{}await sleep(160)}
+    return null;
+  }
+
+  function loadSupportCore(){
+    if(window.LX?.support||document.getElementById('lxSupportCoreUI25'))return;
+    const s=document.createElement('script');s.id='lxSupportCoreUI25';s.src='lxplus.support-core.js?v='+encodeURIComponent(BUILD);s.async=false;s.onerror=()=>console.warn('LX: suporte base não carregou');document.head.appendChild(s);
+  }
+
+  async function clearTechnicalCache({legacyWorkers=true}={}){
+    try{if('caches'in window){for(const key of await caches.keys())await caches.delete(key)}}catch{}
+    try{
+      const regs=await navigator.serviceWorker?.getRegistrations?.()||[];
+      for(const reg of regs){
+        const url=String(reg.active?.scriptURL||reg.waiting?.scriptURL||reg.installing?.scriptURL||'');
+        if(legacyWorkers&&/\/sw\.js(?:\?|$)/i.test(url)){await reg.unregister().catch(()=>{});continue}
+        if(/\/service-worker\.js(?:\?|$)/i.test(url)){
+          reg.active?.postMessage?.({type:'LX_CLEAR_CACHE',build:BUILD});
+          await reg.update?.().catch(()=>{});
+          reg.waiting?.postMessage?.({type:'LX_SKIP_WAITING'});
+        }
+      }
+    }catch{}
+  }
+
+  async function hardRefresh(token='manual'){
+    if(refreshing)return;refreshing=true;
+    const t=String(token||Date.now());try{localStorage.setItem(APPLIED,t)}catch{}
+    toast('LX Plus atualizando para a versão mais recente…');
+    await clearTechnicalCache();
+    setTimeout(()=>{try{const u=new URL(location.href);u.searchParams.set('lxui',VERSION);u.searchParams.set('_',Date.now());location.replace(u.toString())}catch{location.reload()}},220);
+  }
+
+  function updateMenu(){
+    ensureStyle();
+    const menu=document.getElementById('lxProfileMenu'),actions=menu?.querySelector('.lx-profile-menu-actions');if(!actions)return false;
+    actions.querySelectorAll('[data-lx-update-menu],.lx-release-cert,[data-lx25-update]').forEach(el=>el.remove());
+    const btn=document.createElement('button');btn.type='button';btn.dataset.lx25Update='1';btn.className='lx25-update-action'+(needsUpdate()?' is-old':'');
+    btn.innerHTML=`<span>↻</span><span class="lx25-copy"><b>Atualização do site</b><small>${esc(official())} · ${esc(status())}</small></span><i class="lx25-dot"></i>`;
+    const appearance=actions.querySelector('[data-act="appearance"]');appearance?.after(btn)||actions.prepend(btn);
+    btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();menu.classList.add('hidden');openCenter()});
+    return true;
+  }
+
+  async function openCenter(){
+    await readRelease().catch(()=>null);ensureStyle();
+    const modal=document.getElementById('modal'),overlay=document.getElementById('overlay');if(!modal||!overlay)return toast('Central de atualização indisponível.');
+    const when=remote?.published_at?new Date(remote.published_at).toLocaleString('pt-BR'):'—';
+    modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page lx25-update-page"><span class="eyebrow">LX PLUS · ATUALIZAÇÕES</span><h2>Atualização do site</h2><div class="lx25-version-card"><h3>${needsUpdate()?'↻ Existe uma versão mais recente':'✓ Você está na versão mais recente'}</h3><p>Versão deste aparelho: <b>${VERSION}</b><br>Versão oficial: <b>${esc(official())}</b><br>Última publicação: <b>${esc(when)}</b></p></div><div class="lx25-actions"><button class="primary-btn" data-lx25-refresh>${needsUpdate()?'Atualizar agora':'Verificar e atualizar agora'}</button><button class="glass-btn" data-lx25-clean>Limpar cache técnico</button></div><p style="margin-top:14px;color:var(--muted);font-size:10px;line-height:1.55">A limpeza remove apenas arquivos temporários da LX Plus. Conta, perfil, histórico, listas e preferências permanecem.</p></div>`;
+    overlay.classList.remove('hidden');modal.querySelector('[data-lx25-refresh]').onclick=async()=>{await readRelease();hardRefresh(releaseToken()||'manual')};modal.querySelector('[data-lx25-clean]').onclick=()=>hardRefresh('clean_'+Date.now());
+  }
+
+  function adminNav(){
+    if(!isAdmin())return false;
+    const nav=[...document.querySelectorAll('[data-admin]')];if(!nav.length)return false;
+    document.querySelectorAll('[data-lx-release-admin-tab],[data-lx25-admin-tab]').forEach(el=>el.remove());
+    const anchor=nav.find(b=>b.dataset.admin==='appearance')||nav[nav.length-1];if(!anchor)return false;
+    const btn=document.createElement('button');btn.type='button';btn.dataset.lx25AdminTab='1';btn.className=anchor.className;btn.innerHTML=`↻ Atualização <i class="lx25-dot"></i>`;anchor.after(btn);
+    btn.onclick=()=>{document.querySelectorAll('[data-admin]').forEach(x=>x.classList.remove('active'));btn.classList.add('active');renderAdmin()};
+    return true;
+  }
+
+  function renderAdmin(){
+    if(!isAdmin())return toast('Acesso ADM indisponível.');ensureStyle();
+    const m=document.getElementById('adminMain');if(!m)return;
+    const when=remote?.published_at?new Date(remote.published_at).toLocaleString('pt-BR'):'—';
+    m.innerHTML=`<div class="lx25-admin"><section class="lx25-admin-hero"><div><span class="eyebrow">CENTRAL DE ATUALIZAÇÃO</span><h2>Uma versão oficial para toda a LX Plus</h2><p>Publica esta build para todos os usuários. Aparelhos conectados recebem o release pelo Supabase e limpam somente o cache técnico.</p></div><button class="primary-btn" data-lx25-publish>Atualizar site para todos</button></section><div class="lx25-admin-grid"><section class="lx25-admin-card"><small>VERSÃO DESTE SITE</small><strong>${VERSION}</strong><small>${BUILD}</small></section><section class="lx25-admin-card"><small>VERSÃO OFICIAL</small><strong>${esc(official())}</strong><small>${esc(status())}</small></section><section class="lx25-admin-card"><small>ÚLTIMA PUBLICAÇÃO</small><strong>${esc(when)}</strong><small>Registro persistente no Supabase</small></section><section class="lx25-admin-card"><small>RUNTIME</small><strong>Canônico UI25</strong><small>Um controlador de atualização e um service worker.</small></section></div><div class="lx25-actions"><button class="glass-btn" data-lx25-self>Atualizar este aparelho</button><button class="glass-btn" data-lx25-clean>Limpar cache técnico</button></div></div>`;
+    m.querySelector('[data-lx25-publish]').onclick=publishAll;m.querySelector('[data-lx25-self]').onclick=()=>hardRefresh(releaseToken()||'manual');m.querySelector('[data-lx25-clean]').onclick=()=>hardRefresh('clean_'+Date.now());
+  }
+
+  function patchAdmin(){
+    const admin=window.LX?.admin;if(!admin||typeof admin.render!=='function'||adminPatched)return;
+    const original=admin.render;if(original.__lxCanonical25){adminPatched=true;return}
+    const wrapped=function(page,...args){if(page==='canonical-update'){renderAdmin();adminNav();return}const out=original.call(this,page,...args);setTimeout(adminNav,0);setTimeout(adminNav,80);return out};
+    wrapped.__lxCanonical25=true;wrapped.__original=original;admin.render=wrapped;adminPatched=true;
+  }
+
+  async function readRelease(){
+    const c=await db();if(!c)return null;
+    try{const {data,error}=await c.from('lx_settings').select('key,value,updated_at').eq('key',RELEASE_KEY).maybeSingle();if(error)throw error;remote=data?.value||null;lastRead=Date.now();updateMenu();adminNav();return data}catch(err){console.warn('LX canonical release read',err);return null}
+  }
+
+  async function publishAll(e){
+    if(!isAdmin())return toast('Somente o ADM pode publicar para todos.');const btn=e?.currentTarget;if(btn){btn.disabled=true;btn.textContent='Publicando…'}
+    try{const c=await db();if(!c)throw new Error('Nuvem indisponível');const nonce=`ui25_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`,now=new Date().toISOString(),value={build:BUILD,version:VERSION,nonce,published_at:now,force:true};try{localStorage.setItem(APPLIED,nonce)}catch{}const {error}=await c.from('lx_settings').upsert({key:RELEASE_KEY,value,updated_at:now},{onConflict:'key'});if(error)throw error;remote=value;toast('Atualização publicada para todos.');renderAdmin();updateMenu()}catch(err){console.error(err);toast('Não foi possível publicar a atualização.');if(btn){btn.disabled=false;btn.textContent='Atualizar site para todos'}}
+  }
+
+  async function subscribe(){
+    const c=await db();if(!c||channel)return;
+    channel=c.channel('lx-canonical-ui25-'+Math.random().toString(36).slice(2,7)).on('postgres_changes',{event:'*',schema:'public',table:'lx_settings',filter:`key=eq.${RELEASE_KEY}`},async p=>{
+      remote=p.new?.value||null;updateMenu();adminNav();const token=releaseToken();let applied='';try{applied=localStorage.getItem(APPLIED)||''}catch{}if(token&&token!==applied&&(needsUpdate()||remote?.force===true))await hardRefresh(token);
+    }).subscribe();
+  }
+
+  async function canonicalizeBoot(){
+    ensureStyle();loadSupportCore();
+    try{
+      const prev=localStorage.getItem(BUILD_KEY)||'';localStorage.setItem(BUILD_KEY,BUILD);
+      if(prev&&prev!==BUILD){await clearTechnicalCache();}
+    }catch{}
+    // Kill obsolete update UI/scripts from older injected generations.
+    document.querySelectorAll('script[src*="release-manager-v17"],script[src*="release-manager-v18"]').forEach(s=>s.remove());
+    const observer=new MutationObserver(()=>{updateMenu();adminNav();patchAdmin()});observer.observe(document.documentElement,{subtree:true,childList:true});
+    document.addEventListener('click',e=>{if(e.target.closest?.('#profileBtn')){setTimeout(updateMenu,0);setTimeout(updateMenu,40);setTimeout(updateMenu,140)}},true);
+    patchAdmin();await readRelease();await subscribe();updateMenu();adminNav();
+    setInterval(()=>{patchAdmin();updateMenu();adminNav();if(Date.now()-lastRead>60000)readRelease()},2200);
+  }
+
+  window.LXCanonicalUI25={version:'25.0',build:BUILD,displayVersion:VERSION,openCenter,readRelease,publishAll,clearTechnicalCache,hardRefresh,get remote(){return remote},get latest(){return !needsUpdate()}};
+  canonicalizeBoot();
 })();
