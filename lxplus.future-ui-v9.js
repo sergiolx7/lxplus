@@ -2,11 +2,12 @@
    Safe post-login UI layer. Never mutates auth/bootstrap.
    - Lazy-loads Books V8 only after user enters Books
    - Lazy-loads Watch Together V10 only after app is visible
+   - Loads Mini Floating Player V11 only after app is visible
    - Tracks current surface for scoped CSS
    - Adds full-screen control to LX Music Now Playing
    - Modernizes navigation/detail chrome without touching core logic */
 (()=>{'use strict';
-  const STYLE_ID='lxFutureUiV9Css',BOOKS_SCRIPT_ID='lxBooksV8LazyScript',BOOKS_STYLE_ID='lxBooksV8LazyStyle',WATCH_SCRIPT_ID='lxWatchTogetherV10Script';
+  const STYLE_ID='lxFutureUiV9Css',MINI_STYLE_ID='lxMiniFloatingPlayerV11Css',BOOKS_SCRIPT_ID='lxBooksV8LazyScript',BOOKS_STYLE_ID='lxBooksV8LazyStyle',WATCH_SCRIPT_ID='lxWatchTogetherV10Script';
   let booksLoading=false,lastSurface='',timer=0;
   const byId=id=>document.getElementById(id);
   const state=()=>window.LX?.ui?.state||{};
@@ -29,6 +30,9 @@
     let link=byId(STYLE_ID);
     if(!link){link=document.createElement('link');link.id=STYLE_ID;link.rel='stylesheet';document.head.appendChild(link)}
     link.href='lxplus.future-ui-v9.css?v=20260926-1';
+    let mini=byId(MINI_STYLE_ID);
+    if(!mini){mini=document.createElement('link');mini.id=MINI_STYLE_ID;mini.rel='stylesheet';document.head.appendChild(mini)}
+    mini.href='lxplus.mini-floating-player-v11.css?v=20260926-1';
   }
 
   function surface(){
