@@ -53,3 +53,28 @@
  document.addEventListener('lx:music-closed',()=>document.getElementById('lxMusicEffectsPanel')?.remove());
  LX.audioEffects={open,state:()=>({...state}),resume:()=>state.enabled?context?.resume?.():Promise.resolve()};
 })();
+
+/* LX Plus — Ambient Glow V1 loader.
+   This is deliberately isolated from app logic: it only loads one stylesheet
+   and one pointer-events:none decorative layer. */
+(()=>{'use strict';
+  const CSS_ID='lxAmbientV1Css';
+  const LAYER_ID='lxAmbientV1';
+  function mount(){
+    if(!document.getElementById(CSS_ID)){
+      const link=document.createElement('link');
+      link.id=CSS_ID;
+      link.rel='stylesheet';
+      link.href='lxplus.ambient-v1.css?v=20260926-1';
+      document.head.appendChild(link);
+    }
+    if(!document.getElementById(LAYER_ID)){
+      const layer=document.createElement('div');
+      layer.id=LAYER_ID;
+      layer.setAttribute('aria-hidden','true');
+      layer.innerHTML='<i class="lx-ambient-blob-a"></i><i class="lx-ambient-blob-b"></i><i class="lx-ambient-arc-a"></i><i class="lx-ambient-arc-b"></i><i class="lx-ambient-line"></i>';
+      document.body.prepend(layer);
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+})();
