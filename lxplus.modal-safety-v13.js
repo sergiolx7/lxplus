@@ -12,10 +12,15 @@
   }
 
   function ensureStyle(){
-    if($(STYLE_ID))return;
+    const existing=$(STYLE_ID);
+    if(existing){
+      if(existing.parentNode===document.head)document.head.appendChild(existing);
+      return existing;
+    }
     const link=document.createElement('link');
     link.id=STYLE_ID;link.rel='stylesheet';link.href='lxplus.modal-safety-v13.css?v=20260926-1';
     document.head.appendChild(link);
+    return link;
   }
 
   function overlayOpen(overlay){
@@ -55,11 +60,11 @@
   }
 
   function sync(){
+    ensureStyle();
     const overlay=$('overlay'),modal=$('modal');
     if(!appVisible()||!overlayOpen(overlay)||!modal||specialLayout(modal)){
       clear();return;
     }
-    ensureStyle();
     overlay.classList.add('lx-modal-safety-v13');
     overlay.classList.toggle('lx-admin-editor-v13',!!modal.querySelector('.quick-editor-page'));
     document.documentElement.classList.add('lx-modal-open-v13');
@@ -84,7 +89,7 @@
     window.addEventListener('orientationchange',()=>setTimeout(sync,120),{passive:true});
     setInterval(sync,1000);
     sync();
-    window.LXModalSafetyV13={version:'13.0',sync,forceScroll};
+    window.LXModalSafetyV13={version:'13.1',sync,forceScroll};
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
