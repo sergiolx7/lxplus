@@ -1,13 +1,14 @@
-/* LX Plus — Watch Together V10.6
+/* LX Plus — Watch Together V10.7
    Echo-aware screen-share audio for community calls.
    - always requests screen/tab audio when sharing
    - prefers audio captured directly from the LX Player, keeping remote voice out of the shared movie audio
    - falls back to the browser-provided tab/system audio instead of silently stripping it
    - builds a Web Audio bridge when captureStream() does not expose an audio track
    - local microphone remains handled by the existing call mixer
+   - Watch Party Drive playback is converted to native LX Player before sync starts
 */
 (()=>{'use strict';
-  const PATCH='__lxWatchTogetherV10',AUDIO_SCRIPT_ID='lxPlayerAudioV10Script',DETAIL_SCRIPT_ID='lxDetailWatchV12Script',MODAL_SCRIPT_ID='lxModalSafetyV13Script',PARTY_SCRIPT_ID='lxWatchPartyV14Script',SYNC_SCRIPT_ID='lxWatchSyncV144Script';
+  const PATCH='__lxWatchTogetherV10',AUDIO_SCRIPT_ID='lxPlayerAudioV10Script',DETAIL_SCRIPT_ID='lxDetailWatchV12Script',MODAL_SCRIPT_ID='lxModalSafetyV13Script',PARTY_SCRIPT_ID='lxWatchPartyV14Script',NATIVE_SCRIPT_ID='lxWatchPartyNativeV15Script',SYNC_SCRIPT_ID='lxWatchSyncV144Script';
   let lastMode='idle',patchTimer=0;
   const audioBridges=new WeakMap();
   const toast=msg=>{try{window.LX?.toast?.(msg)}catch{}};
@@ -21,7 +22,8 @@
   function loadDetailWatch(){loadScriptOnce(DETAIL_SCRIPT_ID,'lxplus.detail-watch-v12.js?v=20260926-3',()=>window.LXDetailWatchV12,'Detail Watch V12')}
   function loadModalSafety(){loadScriptOnce(MODAL_SCRIPT_ID,'lxplus.modal-safety-v13.js?v=20260926-2',()=>window.LXModalSafetyV13,'Modal Safety V13')}
   function loadWatchParty(){loadScriptOnce(PARTY_SCRIPT_ID,'lxplus.watch-party-v14.js?v=20260926-2',()=>window.LXWatchPartyV14,'Watch Party V14')}
-  function loadSync(){if(!window.LXWatchPartyV14)return;loadScriptOnce(SYNC_SCRIPT_ID,'lxplus.watch-sync-v14-4.js?v=20260926-1',()=>window.LXWatchPartySyncV144,'Watch Sync V14.4')}
+  function loadNative(){if(!window.LXWatchPartyV14)return;loadScriptOnce(NATIVE_SCRIPT_ID,'lxplus.watch-party-native-v15.js?v=20260926-1',()=>window.LXWatchPartyNativeV15,'Watch Party Native V15')}
+  function loadSync(){if(!window.LXWatchPartyV14||!window.LXWatchPartyNativeV15)return;loadScriptOnce(SYNC_SCRIPT_ID,'lxplus.watch-sync-v14-4.js?v=20260926-2',()=>window.LXWatchPartySyncV144,'Watch Sync V14.4')}
 
   function activeMovieVideo(){
     const host=document.getElementById('lxGlobalCinema'),root=host?.shadowRoot;
@@ -77,7 +79,7 @@
       return display;
     }
     lastMode='video-only';
-    queueMicrotask(()=>toast('A tela foi compartilhada sem áudio. Ao escolher a aba, ative “Compartilhar áudio”.'));
+    queueMicrotask(()=>toast('A tela foi compartilhada sem áudio. Na Watch Party, o filme continua tocando localmente sincronizado.'));
     return display;
   }
 
@@ -107,13 +109,14 @@
       const stage=overlay.querySelector('.lx-call-stage')||overlay;chip=document.createElement('div');chip.className='lx-watch-audio-safe';
       chip.style.cssText='position:absolute;z-index:40;left:50%;top:max(10px,env(safe-area-inset-top));transform:translateX(-50%);padding:7px 11px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent,#8a2be2) 30%,rgba(255,255,255,.10));background:rgba(6,8,14,.76);backdrop-filter:blur(14px);color:#d9ddea;font:750 9px/1 system-ui;letter-spacing:.02em;pointer-events:none;opacity:.86';stage.appendChild(chip);
     }
-    chip.textContent=lastMode==='movie'?'Filme + áudio compartilhados':lastMode==='screen'||lastMode==='screen-audio-fallback'?'Tela + áudio compartilhados':'Áudio da transmissão protegido';
+    const inParty=!!window.LXWatchPartyV14?.state?.room;
+    chip.textContent=inParty?'Filme sincronizado · vozes separadas':lastMode==='movie'?'Filme + áudio compartilhados':lastMode==='screen'||lastMode==='screen-audio-fallback'?'Tela + áudio compartilhados':'Áudio da transmissão protegido';
   }
 
   function boot(){
-    loadPlayerAudio();loadDetailWatch();loadModalSafety();loadWatchParty();loadSync();wrapShareScreen();decorateCall();
-    patchTimer=setInterval(()=>{loadPlayerAudio();loadDetailWatch();loadModalSafety();loadWatchParty();loadSync();wrapShareScreen();decorateCall()},800);
-    window.LXWatchTogetherV10={version:'10.6',get mode(){return lastMode},activeMovieVideo,movieAudioTrack,repatch:wrapShareScreen,loadPlayerAudio,loadDetailWatch,loadModalSafety,loadWatchParty,loadSync};
+    loadPlayerAudio();loadDetailWatch();loadModalSafety();loadWatchParty();loadNative();loadSync();wrapShareScreen();decorateCall();
+    patchTimer=setInterval(()=>{loadPlayerAudio();loadDetailWatch();loadModalSafety();loadWatchParty();loadNative();loadSync();wrapShareScreen();decorateCall()},800);
+    window.LXWatchTogetherV10={version:'10.7',get mode(){return lastMode},activeMovieVideo,movieAudioTrack,repatch:wrapShareScreen,loadPlayerAudio,loadDetailWatch,loadModalSafety,loadWatchParty,loadNative,loadSync};
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
