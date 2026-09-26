@@ -146,9 +146,7 @@ html.lx-modal-open-v13 body{
   resize:vertical!important;
 }
 
-#overlay.lx-modal-safety-v13.lx-admin-editor-v13 button{
-  max-width:100%;
-}
+#overlay.lx-modal-safety-v13.lx-admin-editor-v13 button{max-width:100%}
 
 /* Other long standard pages: keep the body readable without exceeding the screen. */
 #overlay.lx-modal-safety-v13 .appearance-page,
@@ -159,23 +157,82 @@ html.lx-modal-open-v13 body{
   min-height:0!important;
 }
 
+/* Detail V12 refinement: smaller card and stable horizontal title flow. */
+#overlay.lx-detail-v12-open #modal{
+  width:min(850px,calc(100vw - 32px))!important;
+  max-width:850px!important;
+}
+#overlay.lx-detail-v12-open .detail-hero{
+  min-height:260px!important;
+}
+#overlay.lx-detail-v12-open .detail-hero-inner{
+  grid-template-columns:116px minmax(0,1fr)!important;
+  gap:20px!important;
+  min-height:260px!important;
+  padding:22px 25px 20px!important;
+}
+#overlay.lx-detail-v12-open .detail-poster{
+  width:116px!important;
+  max-width:116px!important;
+  border-radius:14px!important;
+}
+#overlay.lx-detail-v12-open .detail-copy{
+  min-width:0!important;
+  width:100%!important;
+  padding:2px 0!important;
+}
+#overlay.lx-detail-v12-open .detail-copy h2{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin:6px 0 8px!important;
+  font-size:clamp(26px,3.2vw,42px)!important;
+  line-height:1.02!important;
+  letter-spacing:-.045em!important;
+  white-space:normal!important;
+  word-break:normal!important;
+  overflow-wrap:normal!important;
+  hyphens:none!important;
+  writing-mode:horizontal-tb!important;
+}
+#overlay.lx-detail-v12-open .detail-copy h2 *{
+  display:inline!important;
+  white-space:normal!important;
+  word-break:normal!important;
+  writing-mode:horizontal-tb!important;
+}
+#overlay.lx-detail-v12-open .detail-tagline{
+  margin-top:7px!important;
+  font-size:10.5px!important;
+  -webkit-line-clamp:2!important;
+}
+#overlay.lx-detail-v12-open .detail-copy .hero-actions{
+  margin-top:11px!important;
+  gap:7px!important;
+}
+#overlay.lx-detail-v12-open .detail-copy .hero-actions>button{
+  min-height:35px!important;
+  height:35px!important;
+  padding:0 13px!important;
+  font-size:9.5px!important;
+}
+#overlay.lx-detail-v12-open .detail-body{
+  padding:13px 22px 22px!important;
+}
+#overlay.lx-detail-v12-open .detail-description-card{padding:13px 15px!important}
+#overlay.lx-detail-v12-open .detail-description-card p{font-size:10px!important;line-height:1.55!important}
+#overlay.lx-detail-v12-open .detail-side-info>div{padding:9px 10px!important}
+
 @media(max-height:760px) and (min-width:701px){
   #overlay.lx-modal-safety-v13{padding:8px!important}
-  #overlay.lx-modal-safety-v13 #modal{
-    max-height:calc(100dvh - 16px)!important;
-  }
-  #overlay.lx-modal-safety-v13.lx-admin-editor-v13 #modal{
-    max-height:calc(100dvh - 16px)!important;
-  }
-  #overlay.lx-modal-safety-v13.lx-admin-editor-v13 .quick-editor-page{
-    padding:16px 18px 22px!important;
-  }
-  #overlay.lx-modal-safety-v13.lx-admin-editor-v13 .quick-editor-page>h2{
-    font-size:22px!important;
-  }
-  #overlay.lx-modal-safety-v13.lx-admin-editor-v13 .quick-core{
-    padding:11px!important;
-  }
+  #overlay.lx-modal-safety-v13 #modal{max-height:calc(100dvh - 16px)!important}
+  #overlay.lx-modal-safety-v13.lx-admin-editor-v13 #modal{max-height:calc(100dvh - 16px)!important}
+  #overlay.lx-modal-safety-v13.lx-admin-editor-v13 .quick-editor-page{padding:16px 18px 22px!important}
+  #overlay.lx-modal-safety-v13.lx-admin-editor-v13 .quick-editor-page>h2{font-size:22px!important}
+  #overlay.lx-modal-safety-v13.lx-admin-editor-v13 .quick-core{padding:11px!important}
+  #overlay.lx-detail-v12-open #modal{max-height:calc(100dvh - 18px)!important}
+  #overlay.lx-detail-v12-open .detail-hero,
+  #overlay.lx-detail-v12-open .detail-hero-inner{min-height:235px!important}
 }
 
 @media(max-width:700px){
@@ -205,12 +262,36 @@ html.lx-modal-open-v13 body{
     gap:9px!important;
   }
   #overlay.lx-modal-safety-v13.lx-admin-editor-v13 .quick-core .span2,
-  #overlay.lx-modal-safety-v13.lx-admin-editor-v13 .quick-content-form .span2{
-    grid-column:auto!important;
-  }
+  #overlay.lx-modal-safety-v13.lx-admin-editor-v13 .quick-content-form .span2{grid-column:auto!important}
   #overlay.lx-modal-safety-v13 #modal>.close-btn{
     top:8px!important;
     right:8px!important;
     margin:8px 8px -44px 0!important;
   }
+
+  #overlay.lx-detail-v12-open .detail-hero{min-height:238px!important}
+  #overlay.lx-detail-v12-open .detail-hero-inner{
+    grid-template-columns:76px minmax(0,1fr)!important;
+    gap:12px!important;
+    min-height:238px!important;
+    padding:42px 14px 16px!important;
+  }
+  #overlay.lx-detail-v12-open .detail-poster{
+    width:76px!important;
+    max-width:76px!important;
+    border-radius:10px!important;
+  }
+  #overlay.lx-detail-v12-open .detail-copy h2{
+    font-size:clamp(23px,7.8vw,34px)!important;
+    line-height:1.04!important;
+    letter-spacing:-.035em!important;
+  }
+  #overlay.lx-detail-v12-open .detail-tagline{font-size:9.5px!important}
+  #overlay.lx-detail-v12-open .detail-copy .hero-actions>button{
+    height:33px!important;
+    min-height:33px!important;
+    padding:0 10px!important;
+    font-size:8.5px!important;
+  }
+  #overlay.lx-detail-v12-open .detail-body{padding:10px 12px 20px!important}
 }
