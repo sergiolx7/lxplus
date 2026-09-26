@@ -1,14 +1,15 @@
 /* LX Plus — Modal Safety V13
-   Post-login guard for generic LX dialogs that exceed the viewport.
+   Guard for generic LX dialogs that exceed the viewport.
+   Works in the main app and ADM, but never changes auth/bootstrap layouts.
    Forces reliable vertical scrolling even if another stylesheet later changes overflow. */
 (()=>{'use strict';
   const STYLE_ID='lxModalSafetyV13Css';
   let timer=0,observer=null;
   const $=id=>document.getElementById(id);
+  const visible=el=>!!el&&!el.classList.contains('hidden')&&getComputedStyle(el).display!=='none';
 
-  function appVisible(){
-    const app=$('app');
-    return !!app&&!app.classList.contains('hidden')&&getComputedStyle(app).display!=='none';
+  function protectedSurfaceVisible(){
+    return visible($('app'))||visible($('admin'));
   }
 
   function ensureStyle(){
@@ -24,7 +25,7 @@
   }
 
   function overlayOpen(overlay){
-    return !!overlay&&!overlay.classList.contains('hidden')&&getComputedStyle(overlay).display!=='none';
+    return visible(overlay);
   }
 
   function specialLayout(modal){
@@ -62,7 +63,7 @@
   function sync(){
     ensureStyle();
     const overlay=$('overlay'),modal=$('modal');
-    if(!appVisible()||!overlayOpen(overlay)||!modal||specialLayout(modal)){
+    if(!protectedSurfaceVisible()||!overlayOpen(overlay)||!modal||specialLayout(modal)){
       clear();return;
     }
     overlay.classList.add('lx-modal-safety-v13');
@@ -79,17 +80,21 @@
 
   function boot(){
     ensureStyle();
-    const overlay=$('overlay');
+    const overlay=$('overlay'),app=$('app'),admin=$('admin');
     if(overlay&&'MutationObserver'in window){
       observer=new MutationObserver(queue);
       observer.observe(overlay,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
+    }
+    if('MutationObserver'in window){
+      if(app)new MutationObserver(queue).observe(app,{attributes:true,attributeFilter:['class']});
+      if(admin)new MutationObserver(queue).observe(admin,{attributes:true,attributeFilter:['class']});
     }
     document.addEventListener('click',()=>setTimeout(sync,0),true);
     window.addEventListener('resize',queue,{passive:true});
     window.addEventListener('orientationchange',()=>setTimeout(sync,120),{passive:true});
     setInterval(sync,1000);
     sync();
-    window.LXModalSafetyV13={version:'13.2',sync,forceScroll};
+    window.LXModalSafetyV13={version:'13.3',sync,forceScroll};
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
