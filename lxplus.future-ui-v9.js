@@ -76,7 +76,7 @@
   function lazyWatchTogether(){
     if(!appVisible()||window.LXWatchTogetherV10||byId(WATCH_SCRIPT_ID))return;
     const script=document.createElement('script');
-    script.id=WATCH_SCRIPT_ID;script.src='lxplus.watch-together-v10.js?v=20260926-1';script.async=true;
+    script.id=WATCH_SCRIPT_ID;script.src='lxplus.watch-together-v10.js?v=20260926-2';script.async=true;
     script.onerror=()=>console.warn('LX Future UI: Watch Together V10 load failed');
     document.body.appendChild(script);
   }
