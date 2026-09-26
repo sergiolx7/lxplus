@@ -147,7 +147,7 @@ function renderMusicHomeV41(){
     var x=rows.all.find(function(y){return clean(y.genre||'Mix LX')===g})||rows.all[i%rows.all.length];
     return '<button class="lx41-mix" type="button" onclick="LX.music('+Number(x.id)+',0)" style="background-image:url(\''+esc(coverOf(x).replace(/'/g,'%27'))+'\')"><span></span><b>Mix de '+esc(g)+'</b><small>'+esc(x.artist||'Seleção LX')+'</small></button>';
   }).join('');
-  host.innerHTML='<div class="lx41-music-shell">'+
+  host.innerHTML='<i class="lx-music-app-shell lx41-music-sentinel" hidden></i><div class="lx41-music-shell">'+
     '<aside class="lx41-music-side"><div class="lx41-music-side-title"><span class="lx41-wordmark"><b>LX</b><em>Music</em></span></div>'+
       '<nav><button class="active" type="button" onclick="LX.musicSetView&&LX.musicSetView(\'home\')">⌂ <span>Início</span></button><button type="button" onclick="document.getElementById(\'searchInput\')&&document.getElementById(\'searchInput\').focus()">⌕ <span>Buscar</span></button><button type="button" onclick="LX.musicSetView&&LX.musicSetView(\'library\')">▥ <span>Sua Biblioteca</span></button></nav>'+
       '<div class="cap">COLEÇÃO</div><nav><button type="button" onclick="LX.musicSetView&&LX.musicSetView(\'collections\')">♫ <span>Playlists</span></button><button type="button" onclick="LX.musicSetView&&LX.musicSetView(\'collections\')">◉ <span>Álbuns</span></button><button type="button" onclick="LX.musicSetView&&LX.musicSetView(\'explore\')">♙ <span>Artistas</span></button><button type="button" onclick="LX.musicSetView&&LX.musicSetView(\'liked\')">♡ <span>Curtidas</span></button></nav>'+
