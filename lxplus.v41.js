@@ -110,9 +110,22 @@ function rebuildLeftNav(){
 function findSection(re){var hit=qa('#homeContent section').find(function(s){return re.test(clean(s.textContent))});if(hit)hit.scrollIntoView({behavior:'smooth',block:'start'})}
 function syncLeftNav(){var music=state().mode==='Ouvir';qa('[data-v41-left]').forEach(function(b){b.classList.toggle('active',music?b.dataset.v41Left==='Música':b.dataset.v41Left==='Início')})}
 function decorateMusic(){
-  var app=$('app');if(!app)return;app.classList.toggle('lx-music-mode',state().mode==='Ouvir');
-  if(state().mode!=='Ouvir')return;var input=$('searchInput');if(input)input.placeholder='Buscar músicas, artistas, álbuns ou playlists...';
-  var side=q('.lx-music-side-brand');if(side){var b=q('b',side),s=q('small',side);if(b)b.textContent='LX Music';if(s)s.textContent='Música para cada momento da sua vida.'}
+  var app=$('app');if(!app)return;
+  var musicMode=state().mode==='Ouvir';
+  app.classList.toggle('lx-music-mode',musicMode);
+  var existing=q('.lx41-music-arrows',app);
+  if(!musicMode){if(existing)existing.remove();return}
+  var input=$('searchInput');if(input)input.placeholder='Buscar músicas, artistas, álbuns ou playlists...';
+  var row=q('#app .topbar-row');
+  if(row&&!existing){
+    var tools=document.createElement('div');tools.className='lx41-music-arrows';
+    tools.innerHTML='<button type="button" aria-label="Voltar">‹</button><button type="button" aria-label="Início da música">›</button>';
+    var brand=$('brandHome');if(brand)brand.after(tools);else row.prepend(tools);
+    var buttons=qa('button',tools);
+    buttons[0].onclick=function(){if(state().musicView&&state().musicView!=='home'){state().musicView='home';state().category='Início';state().query='';LX.ui.renderApp()}else if(history.length>1)history.back()};
+    buttons[1].onclick=function(){state().musicView='home';state().category='Início';state().query='';LX.ui.renderApp()};
+  }
+  var side=q('.lx-music-side-brand');if(side){var b=q('b',side),sub=q('small',side);if(b)b.textContent='LX Music';if(sub)sub.textContent='Música para cada momento da sua vida.'}
 }
 function decorateCommunity(){
   var drawer=$('lxCommunityDrawer')||q('.lx-community-drawer');if(!drawer)return;
