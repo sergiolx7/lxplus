@@ -88,8 +88,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const tus=require('tus-js-client');
-          const bytes=fs.readFileSync('toy-story-5-aac.m4a');
-          const body=new Blob([bytes],{type:'audio/mp4'});
+          const body=fs.readFileSync('toy-story-5-aac.m4a');
           const endpoint=process.env.SUPABASE_STORAGE_URL+'/storage/v1/upload/resumable';
           new Promise((resolve,reject)=>{
             const upload=new tus.Upload(body,{
