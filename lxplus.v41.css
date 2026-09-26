@@ -458,3 +458,5 @@ body[data-nav-placement] #app.lx-music-mode>main,#app.lx-music-mode>main{
   #app #brandHome,#app .topbar #brandHome{width:76px!important;min-width:76px!important}
   #app #brandHome .lx41-wordmark{font-size:17px!important}
 }
+
+.lx41-music-sentinel{display:none!important;width:0!important;height:0!important;min-height:0!important;padding:0!important;margin:0!important;overflow:hidden!important}
