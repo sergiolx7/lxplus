@@ -35,11 +35,13 @@
     lastSurface=next;
     if(next)document.body.dataset.lxSurface=next;else delete document.body.dataset.lxSurface;
     if(next)loadStyle();
+    const hero=byId('hero');
     if(next==='books'){
-      const hero=byId('hero');if(hero){hero.classList.add('hidden');hero.style.setProperty('display','none','important')}
+      if(hero){hero.classList.add('hidden');hero.style.setProperty('display','none','important')}
       lazyBooks();
-    }else{
-      const hero=byId('hero');if(hero&&hero.style.display==='none')hero.style.removeProperty('display');
+    }else if(hero){
+      hero.style.removeProperty('display');
+      if(hero.children.length)hero.classList.remove('hidden');
     }
   }
 
@@ -65,7 +67,10 @@
     if(copy&&!copy.querySelector('.lx9-detail-kicker')){
       const type=shell.className.match(/detail-kind-([^\s]+)/)?.[1]||'';
       const label=type==='livro'?'LX BOOKS':type==='música'||type==='musica'?'LX MUSIC':'LX CINEMA';
-      const badge=document.createElement('span');badge.className='lx9-detail-kicker';badge.textContent=label;copy.prepend(badge);
+      const badge=document.createElement('span');
+      badge.className='lx9-detail-kicker';badge.textContent=label;
+      badge.style.cssText='display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent,#8a2be2) 34%,rgba(255,255,255,.08));background:color-mix(in srgb,var(--accent,#8a2be2) 10%,rgba(255,255,255,.025));color:color-mix(in srgb,var(--accent,#8a2be2) 54%,white 46%);font-size:9px;font-weight:850;letter-spacing:.12em';
+      copy.prepend(badge);
     }
     if(poster)poster.setAttribute('role','img');
   }
