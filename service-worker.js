@@ -1,11 +1,11 @@
-const LX_BUILD = 'R12.4-UI22-WATCH-RUNTIME-SINGLE-20260926';
+const LX_BUILD = 'R12.4-UI23-GLOBAL-RELEASE-20260926';
 const CACHE = 'lxplus-shell-' + LX_BUILD;
 const CORE = ['./', './index.html', './lxplus.bundle.js', './lxplus.album-grouping.js', './lxplus.bundle.css',
   './lxplus.recovery.js', './lxplus.support.js', './lxplus.audiofx.js', './lxplus.ambient-v1.css', './lxplus.ambient-v2.css', './lxplus.visual-v4.css',
   './lxplus.player-context-v6.js', './lxplus.player-context-v6.css', './lxplus.music-polish-v7.css', './lxplus.boot-recovery.js',
   './lxplus.future-ui-v9.js', './lxplus.future-ui-v9.css', './lxplus.mini-floating-player-v11.css',
   './lxplus.watch-together-v10.js', './lxplus.detail-watch-v12.js', './lxplus.detail-watch-v12.css', './lxplus.player-audio-v10.js',
-  './lxplus.modal-safety-v13.js', './lxplus.modal-safety-v13.css',
+  './lxplus.modal-safety-v13.js', './lxplus.modal-safety-v13.css', './lxplus.release-manager-v17.js',
   './manifest.webmanifest', './assets/lxplus-logo-v27.png', './assets/lx-music-fallback.svg'];
 
 const PLAYER_SCRIPT = '<script src="./lxplus.player-context-v6.js?v=20260926-4"></script>';
@@ -13,6 +13,7 @@ const RECOVERY_SCRIPT = '<script src="./lxplus.boot-recovery.js?v=20260926-2"></
 const FUTURE_SCRIPT = '<script src="./lxplus.future-ui-v9.js?v=20260926-2"></script>';
 const MODAL_SCRIPT = '<script src="./lxplus.modal-safety-v13.js?v=20260926-2"></script>';
 const DETAIL_SCRIPT = '<script src="./lxplus.detail-watch-v12.js?v=20260926-3"></script>';
+const RELEASE_SCRIPT = '<script id="lxReleaseManagerV17Script" src="./lxplus.release-manager-v17.js?v=20260926-1"></script>';
 const WATCH_SCRIPT = '<script id="lxWatchTogetherV10Script" src="./lxplus.watch-together-v10.js?v=20260926-4"></script>';
 const EARLY_STYLES = [
   '<link id="lxFutureUiV9Css" rel="stylesheet" href="./lxplus.future-ui-v9.css?v=20260926-1">',
@@ -42,6 +43,7 @@ async function decorateHtml(response) {
   if (!text.includes('lxplus.future-ui-v9.js')) scripts.push(FUTURE_SCRIPT);
   if (!text.includes('lxplus.modal-safety-v13.js')) scripts.push(MODAL_SCRIPT);
   if (!text.includes('lxplus.detail-watch-v12.js')) scripts.push(DETAIL_SCRIPT);
+  if (!text.includes('lxplus.release-manager-v17.js')) scripts.push(RELEASE_SCRIPT);
   if (!text.includes('lxplus.watch-together-v10.js')) scripts.push(WATCH_SCRIPT);
   if (scripts.length) text = text.includes('</body>') ? text.replace('</body>', scripts.join('\n') + '\n</body>') : text + scripts.join('\n');
 
