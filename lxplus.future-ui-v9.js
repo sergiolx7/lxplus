@@ -3,7 +3,7 @@
    - Lazy-loads Books V8 only after user enters Books
    - Tracks current surface for scoped CSS
    - Adds full-screen control to LX Music Now Playing
-   - Keeps all changes isolated from Supabase/data/player engine */
+   - Modernizes navigation/detail chrome without touching core logic */
 (()=>{'use strict';
   const STYLE_ID='lxFutureUiV9Css',BOOKS_SCRIPT_ID='lxBooksV8LazyScript',BOOKS_STYLE_ID='lxBooksV8LazyStyle';
   let booksLoading=false,lastSurface='',timer=0;
@@ -12,6 +12,16 @@
   const visible=el=>!!el&&!el.classList.contains('hidden')&&getComputedStyle(el).display!=='none';
   const appVisible=()=>visible(byId('app'));
   const icon=(path)=>`<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
+  const icons={
+    home:icon('<path d="m3 11 9-7 9 7v9H5v-9"/><path d="M9 20v-6h6v6"/>'),
+    movie:icon('<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m10 9 5 3-5 3z"/>'),
+    series:icon('<rect x="5" y="4" width="14" height="16" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'),
+    music:icon('<path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="3"/><circle cx="16" cy="16" r="3"/>'),
+    book:icon('<path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H12v18H7.5A3.5 3.5 0 0 0 4 23z"/><path d="M20 5.5A3.5 3.5 0 0 0 16.5 2H12v18h4.5A3.5 3.5 0 0 1 20 23z"/>'),
+    community:icon('<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3 20c.6-4 2.8-6 6-6s5.4 2 6 6M15 14c3 0 5 1.8 5.8 5"/>'),
+    heart:icon('<path d="M20.8 8.7c0 5-8.8 10.9-8.8 10.9S3.2 13.7 3.2 8.7a4.7 4.7 0 0 1 8.8-2.3 4.7 4.7 0 0 1 8.8 2.3z"/>'),
+    live:icon('<circle cx="12" cy="12" r="2"/><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.5 5.5a9 9 0 0 0 0 13M18.5 5.5a9 9 0 0 1 0 13"/>')
+  };
 
   function loadStyle(){
     if(!appVisible())return;
@@ -64,13 +74,17 @@
     if(!shell||shell.dataset.lx9Enhanced==='1')return;
     shell.dataset.lx9Enhanced='1';
     const copy=shell.querySelector('.detail-copy'),poster=shell.querySelector('.detail-poster');
+    const type=shell.className.match(/detail-kind-([^\s]+)/)?.[1]||'';
     if(copy&&!copy.querySelector('.lx9-detail-kicker')){
-      const type=shell.className.match(/detail-kind-([^\s]+)/)?.[1]||'';
       const label=type==='livro'?'LX BOOKS':type==='música'||type==='musica'?'LX MUSIC':'LX CINEMA';
       const badge=document.createElement('span');
       badge.className='lx9-detail-kicker';badge.textContent=label;
       badge.style.cssText='display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent,#8a2be2) 34%,rgba(255,255,255,.08));background:color-mix(in srgb,var(--accent,#8a2be2) 10%,rgba(255,255,255,.025));color:color-mix(in srgb,var(--accent,#8a2be2) 54%,white 46%);font-size:9px;font-weight:850;letter-spacing:.12em';
       copy.prepend(badge);
+    }
+    if(type==='livro'){
+      const eyebrow=shell.querySelector('.detail-description-card .eyebrow');if(eyebrow)eyebrow.textContent='SOBRE ESTE LIVRO';
+      shell.querySelectorAll('.detail-side-info>div').forEach(row=>{const key=row.querySelector('small');if(key?.textContent?.trim()==='Criador')key.textContent='Autor'});
     }
     if(poster)poster.setAttribute('role','img');
   }
@@ -95,10 +109,20 @@
     panel.appendChild(btn);
   }
 
+  function modernizeShellIcons(){
+    const map=[
+      ['[data-shell-category="Início"] > span',icons.home],['[data-shell-category="Filmes"] > span',icons.movie],['[data-shell-category="Séries"] > span',icons.series],
+      ['[data-shell-mode="Ouvir"] > span',icons.music],['[data-shell-mode="Ler"] > span',icons.book],['[data-shell-community="1"] > span',icons.community],
+      ['[data-shell-category="Minha Lista"] > span',icons.heart]
+    ];
+    map.forEach(([sel,svg])=>document.querySelectorAll(sel).forEach(el=>{if(el.dataset.lx9Icon==='1')return;el.dataset.lx9Icon='1';el.innerHTML=svg}));
+    document.querySelectorAll('#modeSwitch [data-mode]').forEach(btn=>{const span=btn.querySelector('span');if(!span||span.dataset.lx9Icon==='1')return;span.dataset.lx9Icon='1';span.innerHTML=btn.dataset.mode==='Ouvir'?icons.music:btn.dataset.mode==='Ler'?icons.book:btn.dataset.mode==='Ao vivo'?icons.live:icons.movie});
+  }
+
   function polishIcons(){
-    const art=window.LX?.artwork;if(!art?.icon)return;
     document.querySelectorAll('#overlay:not(.hidden) .detail-tabs button').forEach(btn=>btn.classList.add('lx9-tab-btn'));
     const effects=byId('musicEffectsBtn');if(effects&&!effects.dataset.lx9Icon){effects.dataset.lx9Icon='1';effects.title='Equalizador e qualidade'}
+    modernizeShellIcons();
   }
 
   function sync(){
