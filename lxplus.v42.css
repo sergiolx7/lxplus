@@ -171,3 +171,8 @@
   .lx-podium{height:190px}
   .lx-admin-bottom>.lx-box{height:auto}
 }
+
+.lx-topnav button.active{height:36px;margin-top:0;border-radius:11px;background:linear-gradient(100deg,rgba(126,42,255,.28),rgba(79,35,177,.12));box-shadow:inset 0 0 0 1px rgba(162,75,255,.10)}
+.lx-topnav button.active:after{bottom:0;left:27%;right:27%}
+.lx-home-arrow{position:absolute;z-index:4;top:50%;transform:translateY(-50%);width:43px;height:43px;border-radius:50%;border:1px solid rgba(255,255,255,.10);background:rgba(10,13,22,.66);color:#d8dae4;font-size:24px;backdrop-filter:blur(9px)}
+.lx-home-arrow.left{left:22px}.lx-home-arrow.right{right:18px}
