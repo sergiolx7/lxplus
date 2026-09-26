@@ -1,4 +1,4 @@
-const LX_BUILD = 'R12.4-UI16-WATCH-PARTY-V14-20260926';
+const LX_BUILD = 'R12.4-UI17-WATCH-PARTY-V14.1-20260926';
 const CACHE = 'lxplus-shell-' + LX_BUILD;
 const CORE = ['./', './index.html', './lxplus.bundle.js', './lxplus.album-grouping.js', './lxplus.bundle.css',
   './lxplus.recovery.js', './lxplus.support.js', './lxplus.audiofx.js', './lxplus.ambient-v1.css', './lxplus.ambient-v2.css', './lxplus.visual-v4.css',
@@ -11,6 +11,7 @@ const PLAYER_SCRIPT = '<script src="./lxplus.player-context-v6.js?v=20260926-4">
 const RECOVERY_SCRIPT = '<script src="./lxplus.boot-recovery.js?v=20260926-2"></script>';
 const FUTURE_SCRIPT = '<script src="./lxplus.future-ui-v9.js?v=20260926-2"></script>';
 const MODAL_SCRIPT = '<script src="./lxplus.modal-safety-v13.js?v=20260926-2"></script>';
+const PARTY_SCRIPT = '<script src="./lxplus.watch-party-v14.js?v=20260926-2"></script>';
 const offline = () => new Response('<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;background:#050506;color:white;font:16px system-ui;display:grid;place-items:center;min-height:100vh;text-align:center;padding:24px}button{padding:12px 18px;border:0;border-radius:12px;font-weight:800}</style><main><h1>LX Plus</h1><p>Sem conexão. Verifique sua internet e tente novamente.</p><button onclick="location.reload()">Recarregar</button></main></html>',
   { status: 503, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 
@@ -24,6 +25,7 @@ async function decorateHtml(response) {
   if (!text.includes('lxplus.boot-recovery.js')) scripts.push(RECOVERY_SCRIPT);
   if (!text.includes('lxplus.future-ui-v9.js')) scripts.push(FUTURE_SCRIPT);
   if (!text.includes('lxplus.modal-safety-v13.js')) scripts.push(MODAL_SCRIPT);
+  if (!text.includes('lxplus.watch-party-v14.js')) scripts.push(PARTY_SCRIPT);
   if (scripts.length) text = text.includes('</body>') ? text.replace('</body>', scripts.join('\n') + '\n</body>') : text + scripts.join('\n');
   const headers = new Headers(response.headers);
   headers.delete('content-length');
