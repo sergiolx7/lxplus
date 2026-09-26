@@ -1,4 +1,4 @@
-name: LX Plus V42 Visual Preview
+name: LX Plus V42 Visual + Responsive QA
 
 on:
   pull_request:
@@ -15,27 +15,35 @@ jobs:
       matrix:
         browser: [chromium, firefox, webkit]
     runs-on: ubuntu-latest
-    timeout-minutes: 22
+    timeout-minutes: 28
     steps:
       - uses: actions/checkout@v4
-      - name: Validate clean shell
+
+      - name: Validate clean V42 shell
         run: |
           node --check lxplus.v42.js
+          node --check lxplus.v42.final.js
           test -s lxplus.v42.css
+          test -s lxplus.v42.final.css
+          test -s lxplus.v42.review.css
           python3 - <<'PY'
           from pathlib import Path
-          h=Path('index.html').read_text()
-          assert 'lxplus.v42.css' in h and 'lxplus.v42.js' in h
+          h=Path('index.html').read_text(encoding='utf-8')
+          for new in ('lxplus.v42.css','lxplus.v42.final.css','lxplus.v42.review.css','lxplus.v42.js','lxplus.v42.final.js'):
+              assert new in h, new
           for old in ('lxplus.bundle.css','lxplus.rebuild.css','lxplus.reference.css','lxplus.v41.css','lxplus.bundle.js','lxplus.v41.js'):
               assert old not in h, old
-          print('clean V42 shell ok')
+          assert 'V42-CLEAN-PREVIEW-20260926-REVIEW-2' in h
+          print('clean V42 review shell ok')
           PY
+
       - name: Install Playwright
         run: |
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps ${{ matrix.browser }}
-      - name: Screenshot approved-reference surfaces
+
+      - name: Run visual, navigation and viewport QA
         env:
           BROWSER: ${{ matrix.browser }}
         run: |
@@ -44,51 +52,121 @@ jobs:
           PID=$!
           trap 'kill $PID' EXIT
           sleep 1
-          cat >/tmp/v42.cjs <<'JS'
+          cat >/tmp/v42-qa.cjs <<'JS'
           const {chromium,firefox,webkit}=require(process.cwd()+'/node_modules/playwright');
           const assert=require('node:assert');
           const engines={chromium,firefox,webkit};
+          const sizes=[
+            {name:'desktop',width:1672,height:941},
+            {name:'laptop',width:1366,height:768},
+            {name:'tablet',width:820,height:1180},
+            {name:'mobile',width:390,height:844}
+          ];
+          const base='http://127.0.0.1:4173/';
+          const inside=async(page,sel,label)=>{
+            const box=await page.locator(sel).first().boundingBox();
+            assert(box,label+' missing box');
+            const vp=page.viewportSize();
+            assert(box.x>=-2,label+' clipped left '+JSON.stringify(box));
+            assert(box.x+box.width<=vp.width+2,label+' clipped right '+JSON.stringify(box)+' viewport '+JSON.stringify(vp));
+            return box;
+          };
+          const noPageOverflow=async(page,label)=>{
+            const m=await page.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth}));
+            assert(m.sw-m.cw<=12,label+' horizontal overflow '+JSON.stringify(m));
+          };
           (async()=>{
             const browser=await engines[process.env.BROWSER].launch({headless:true});
-            const views=['home','music','community','admin'];
-            for(const view of views){
-              const ctx=await browser.newContext({viewport:{width:1672,height:941},deviceScaleFactor:1});
+            for(const vp of sizes){
+              const ctx=await browser.newContext({viewport:{width:vp.width,height:vp.height},deviceScaleFactor:1});
               const page=await ctx.newPage();
-              const errs=[]; page.on('pageerror',e=>errs.push(String(e)));
-              const r=await page.goto('http://127.0.0.1:4173/?preview=1&view='+view,{waitUntil:'networkidle',timeout:40000});
-              assert(r&&r.ok(),view+' failed HTTP');
-              await page.waitForTimeout(1200);
-              assert((await page.locator('body').innerText()).length>100,view+' blank');
-              assert(errs.length===0,view+' errors: '+errs.join(' | '));
-              if(view==='home'){
-                assert(await page.locator('.lx-hero').count()===1,'home hero missing');
-                assert(await page.locator('.lx-rank').count()>=5,'top10 missing');
-                assert(await page.locator('.lx-rail').count()===1,'rail missing');
-              }
-              if(view==='music'){
-                assert(await page.locator('.lx-music-hero').count()===1,'music hero missing');
-                assert(await page.locator('.lx-floating').count()===1,'floating player missing');
-              }
-              if(view==='community'){
-                assert(await page.locator('.lx-community').count()===1,'community drawer missing');
-              }
-              if(view==='admin'){
-                assert(await page.locator('.lx-kpi').count()===6,'admin kpis missing');
-                assert(await page.locator('.lx-admin-side').count()===1,'admin side missing');
-              }
-              const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
-              assert(overflow<=12,view+' horizontal overflow '+overflow);
-              await page.screenshot({path:'/tmp/v42shots/'+process.env.BROWSER+'-'+view+'.png',fullPage:false});
+              const errs=[];
+              page.on('pageerror',e=>errs.push(String(e)));
+
+              // HOME
+              let r=await page.goto(base+'?preview=1&view=home',{waitUntil:'networkidle',timeout:40000});
+              assert(r&&r.ok(),vp.name+' home HTTP failed');
+              await page.waitForTimeout(450);
+              assert(await page.locator('.lx-hero').isVisible(),vp.name+' home hero hidden');
+              assert(await page.locator('.lx-rank').count()>=5,vp.name+' top10 missing');
+              assert(await page.locator('.lx-community').count()===0,vp.name+' community leaked on home');
+              await inside(page,'.lx-hero',vp.name+' home hero');
+              await noPageOverflow(page,vp.name+' home');
+              if(vp.width<=820) assert(await page.locator('.lx-mobile-dock').isVisible(),vp.name+' mobile dock hidden');
+              else assert(!(await page.locator('.lx-mobile-dock').isVisible()),vp.name+' mobile dock leaked on desktop');
+              await page.screenshot({path:'/tmp/v42shots/'+process.env.BROWSER+'-'+vp.name+'-home.png',fullPage:false});
+
+              // HOME -> MUSIC through real UI
+              if(vp.width<=820) await page.locator('.lx-mobile-dock [data-v42-route="music"]').click();
+              else await page.locator('.lx-topnav [data-view="music"]').click();
+              await page.waitForLoadState('domcontentloaded').catch(()=>{});
+              await page.waitForTimeout(500);
+              assert(await page.locator('.lx-music-hero').isVisible(),vp.name+' music hero hidden after navigation');
+              assert(await page.locator('.lx-floating').count()===1,vp.name+' floating player missing/duplicated');
+              assert(await page.locator('.lx-cross-nav').count()===0,vp.name+' unwanted cross-nav leaked');
+              await inside(page,'.lx-music-hero',vp.name+' music hero');
+              await inside(page,'.lx-floating',vp.name+' floating player');
+              await noPageOverflow(page,vp.name+' music');
+              const filmButton=page.locator('.lx-music-top .lx-circle[data-v42-route="films"]');
+              assert(await filmButton.count()===1,vp.name+' Films return button missing in Music');
+              await page.screenshot({path:'/tmp/v42shots/'+process.env.BROWSER+'-'+vp.name+'-music.png',fullPage:false});
+
+              // MUSIC -> HOME -> FILMS -> HOME navigation regression
+              await page.locator('.lx-music-top .lx-circle[data-view="home"]').click();
+              await page.waitForTimeout(250);
+              assert(await page.locator('.lx-hero').isVisible(),vp.name+' could not return Music -> Home');
+              if(vp.width<=820) await page.locator('.lx-mobile-dock [data-v42-route="films"]').click();
+              else await page.locator('.lx-topnav [data-view="films"]').click();
+              await page.waitForLoadState('domcontentloaded').catch(()=>{});
+              await page.waitForTimeout(250);
+              assert(await page.locator('.lx-catalog').isVisible(),vp.name+' Films did not open');
+              await noPageOverflow(page,vp.name+' films');
+              await page.locator('[data-view="home"]').first().click();
+              await page.waitForTimeout(250);
+              assert(await page.locator('.lx-hero').isVisible(),vp.name+' could not return Films -> Home');
+
+              // COMMUNITY direct state + close state
+              r=await page.goto(base+'?preview=1&view=community',{waitUntil:'networkidle',timeout:40000});
+              assert(r&&r.ok(),vp.name+' community HTTP failed');
+              await page.waitForTimeout(450);
+              const drawer=page.locator('.lx-community');
+              assert(await drawer.count()===1,vp.name+' community drawer missing/duplicated');
+              assert(await drawer.isVisible(),vp.name+' community drawer not visible');
+              await inside(page,'.lx-community',vp.name+' community drawer');
+              assert(await page.locator('.lx-conv').count()>=8,vp.name+' community conversations incomplete');
+              assert(await page.locator('.lx-community-foot').isVisible(),vp.name+' community bottom dock hidden');
+              await noPageOverflow(page,vp.name+' community');
+              await page.screenshot({path:'/tmp/v42shots/'+process.env.BROWSER+'-'+vp.name+'-community.png',fullPage:false});
+              await page.locator('.lx-close').click();
+              await page.waitForTimeout(250);
+              assert(await page.locator('.lx-community').count()===0,vp.name+' community failed to close');
+              assert(await page.locator('.lx-hero').isVisible(),vp.name+' home missing after community close');
+
+              // ADMIN
+              r=await page.goto(base+'?preview=1&view=admin',{waitUntil:'networkidle',timeout:40000});
+              assert(r&&r.ok(),vp.name+' admin HTTP failed');
+              await page.waitForTimeout(450);
+              assert(await page.locator('.lx-admin').isVisible(),vp.name+' admin hidden');
+              assert(await page.locator('.lx-kpi').count()===6,vp.name+' admin KPI count wrong');
+              assert(await page.locator('.lx-import-box').isVisible(),vp.name+' Smart Import hidden');
+              assert(await page.locator('.lx-ranking-box').isVisible(),vp.name+' ranking hidden');
+              await inside(page,'.lx-admin',vp.name+' admin');
+              await noPageOverflow(page,vp.name+' admin');
+              await page.screenshot({path:'/tmp/v42shots/'+process.env.BROWSER+'-'+vp.name+'-admin.png',fullPage:false});
+
+              assert(errs.length===0,vp.name+' page errors: '+errs.join(' | '));
               await ctx.close();
             }
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
-          node /tmp/v42.cjs
+          node /tmp/v42-qa.cjs
+
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: v42-${{ matrix.browser }}-screens
+          name: v42-${{ matrix.browser }}-responsive-screens
           path: /tmp/v42shots
+          if-no-files-found: ignore
           retention-days: 5
