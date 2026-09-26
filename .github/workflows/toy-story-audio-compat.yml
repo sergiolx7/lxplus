@@ -17,7 +17,7 @@ jobs:
     env:
       SOURCE_URL: https://lxplus.sergio-sousa.workers.dev/v/1wUgilp33ORePNkS_nsGMbu_t96qzSCd_
       SUPABASE_URL: https://ubidogquzpdvrbzbhxda.supabase.co
-      SUPABASE_PUBLISHABLE_KEY: sb_publishable_8NKHuVKiyGMHtKs9FYJJsQ_Wz3MEjTZ
+      SUPABASE_STORAGE_URL: https://ubidogquzpdvrbzbhxda.storage.supabase.co
       BROKER_URL: https://ubidogquzpdvrbzbhxda.supabase.co/functions/v1/lx-github-media-broker
     steps:
       - name: Install FFmpeg tools
@@ -55,6 +55,7 @@ jobs:
           ffmpeg -hide_banner -loglevel warning -y -i "$SOURCE_URL" -map "0:${AUDIO_INDEX}" -vn -c:a aac -profile:a aac_low -ac 2 -ar 48000 -b:a 160k -movflags +faststart toy-story-5-aac.m4a
           test -s toy-story-5-aac.m4a
           ffprobe -v error -show_streams -show_format -of json toy-story-5-aac.m4a > output-probe.json
+          ls -lh toy-story-5-aac.m4a
 
       - name: Get GitHub OIDC token
         shell: bash
@@ -79,21 +80,40 @@ jobs:
               f.write('UPLOAD_TOKEN='+d['token']+'\n')
           PY
 
-      - name: Upload AAC to private Supabase storage
+      - name: Upload AAC to private Supabase storage with TUS
         shell: bash
         run: |
           set -euo pipefail
-          npm --silent install @supabase/supabase-js@2
+          npm --silent install tus-js-client@4
           node <<'NODE'
           const fs=require('fs');
-          const {createClient}=require('@supabase/supabase-js');
-          (async()=>{
-            const s=createClient(process.env.SUPABASE_URL,process.env.SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});
-            const bytes=fs.readFileSync('toy-story-5-aac.m4a');
-            const body=new Blob([bytes],{type:'audio/mp4'});
-            const {data,error}=await s.storage.from('lx-media').uploadToSignedUrl(process.env.UPLOAD_PATH,process.env.UPLOAD_TOKEN,body,{contentType:'audio/mp4',cacheControl:'3600'});
-            if(error)throw error;console.log('Uploaded',data?.path||process.env.UPLOAD_PATH,bytes.length);
-          })().catch(e=>{console.error(e);process.exit(1)});
+          const tus=require('tus-js-client');
+          const bytes=fs.readFileSync('toy-story-5-aac.m4a');
+          const body=new Blob([bytes],{type:'audio/mp4'});
+          const endpoint=process.env.SUPABASE_STORAGE_URL+'/storage/v1/upload/resumable';
+          new Promise((resolve,reject)=>{
+            const upload=new tus.Upload(body,{
+              endpoint,
+              retryDelays:[0,3000,5000,10000,20000],
+              headers:{'x-signature':process.env.UPLOAD_TOKEN,'x-upsert':'true'},
+              uploadDataDuringCreation:true,
+              removeFingerprintOnSuccess:true,
+              chunkSize:6*1024*1024,
+              metadata:{
+                bucketName:'lx-media',
+                objectName:process.env.UPLOAD_PATH,
+                contentType:'audio/mp4',
+                cacheControl:'3600'
+              },
+              onError:reject,
+              onProgress:(sent,total)=>{if(total)console.log(`Upload ${Math.floor(sent/total*100)}% (${sent}/${total})`)},
+              onSuccess:()=>resolve(upload.url)
+            });
+            upload.findPreviousUploads().then(previous=>{
+              if(previous.length)upload.resumeFromPreviousUpload(previous[0]);
+              upload.start();
+            }).catch(reject);
+          }).then(url=>{console.log('TUS upload completed:',url)}).catch(err=>{console.error(err);process.exit(1)});
           NODE
 
       - name: Activate compatible track in LX catalog
@@ -119,4 +139,5 @@ jobs:
           d=json.load(open('finalize-result.json'))
           if not d.get('ok'): raise SystemExit(d)
           print('Catalog activated:',d['audioMediaKey'])
+          print('Release:',d.get('release'))
           PY
