@@ -54,20 +54,14 @@
  LX.audioEffects={open,state:()=>({...state}),resume:()=>state.enabled?context?.resume?.():Promise.resolve()};
 })();
 
-/* LX Plus — Ambient Glow V1 loader.
-   This is deliberately isolated from app logic: it only loads one stylesheet
-   and one pointer-events:none decorative layer. */
+/* LX Plus — Ambient Glow V2 loader. */
 (()=>{'use strict';
   const CSS_ID='lxAmbientV1Css';
   const LAYER_ID='lxAmbientV1';
   function mount(){
-    if(!document.getElementById(CSS_ID)){
-      const link=document.createElement('link');
-      link.id=CSS_ID;
-      link.rel='stylesheet';
-      link.href='lxplus.ambient-v1.css?v=20260926-1';
-      document.head.appendChild(link);
-    }
+    let link=document.getElementById(CSS_ID);
+    if(!link){link=document.createElement('link');link.id=CSS_ID;link.rel='stylesheet';document.head.appendChild(link)}
+    link.href='lxplus.ambient-v2.css?v=20260926-2';
     if(!document.getElementById(LAYER_ID)){
       const layer=document.createElement('div');
       layer.id=LAYER_ID;
@@ -77,4 +71,63 @@
     }
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+})();
+
+/* LX Music — compact floating player, draggable position and background media controls. */
+(()=>{'use strict';
+  const POS_KEY='lx_music_float_pos_v2';
+  const dock=()=>document.getElementById('musicDock');
+  const audio=()=>document.getElementById('musicAudio');
+  let drag=null,lastPositionUpdate=0;
+  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+  function readPos(){try{return JSON.parse(localStorage.getItem(POS_KEY)||'null')}catch{return null}}
+  function savePos(x,y){try{localStorage.setItem(POS_KEY,JSON.stringify({x:Math.round(x),y:Math.round(y)}))}catch{}}
+  function bounds(el,x,y){const pad=8,r=el.getBoundingClientRect(),mx=Math.max(pad,innerWidth-r.width-pad),my=Math.max(pad,innerHeight-r.height-pad);return{x:clamp(x,pad,mx),y:clamp(y,pad,my)}}
+  function setXY(el,x,y,save=true){const p=bounds(el,x,y);el.style.left=p.x+'px';el.style.top=p.y+'px';el.style.right='auto';el.style.bottom='auto';if(save)savePos(p.x,p.y)}
+  function restorePosition(){const el=dock(),p=readPos();if(!el||!p)return;requestAnimationFrame(()=>setXY(el,Number(p.x)||8,Number(p.y)||8,false))}
+  function ensureHandle(){
+    const el=dock();if(!el||el.querySelector('.lx-music-drag-handle'))return;
+    const h=document.createElement('div');h.className='lx-music-drag-handle';h.textContent='•••';h.title='Arraste o player';h.setAttribute('aria-label','Arraste o player de música');
+    h.addEventListener('pointerdown',e=>{
+      if(e.button!==0&&e.pointerType!=='touch')return;
+      const r=el.getBoundingClientRect();drag={id:e.pointerId,dx:e.clientX-r.left,dy:e.clientY-r.top};
+      el.classList.add('lx-is-dragging');h.setPointerCapture?.(e.pointerId);e.preventDefault();
+    });
+    h.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;setXY(el,e.clientX-drag.dx,e.clientY-drag.dy,false);e.preventDefault()});
+    const end=e=>{if(!drag||drag.id!==e.pointerId)return;const r=el.getBoundingClientRect();savePos(r.left,r.top);drag=null;el.classList.remove('lx-is-dragging');try{h.releasePointerCapture?.(e.pointerId)}catch{}};
+    h.addEventListener('pointerup',end);h.addEventListener('pointercancel',end);
+    el.prepend(h);restorePosition();
+  }
+  function coverURL(){
+    const cover=document.getElementById('musicCover');if(!cover)return'';
+    const img=cover.querySelector?.('img');if(img?.src)return img.src;
+    const bg=getComputedStyle(cover).backgroundImage||'';const m=bg.match(/url\(["']?(.*?)["']?\)/);return m?.[1]||'';
+  }
+  function metadata(){
+    if(!('mediaSession' in navigator))return;
+    const a=audio(),title=document.getElementById('musicTitle')?.textContent?.trim()||'LX Music',artist=document.getElementById('musicArtist')?.textContent?.trim()||'LX Plus',art=coverURL();
+    try{navigator.mediaSession.metadata=new MediaMetadata({title,artist,album:'LX Plus',artwork:art?[{src:art}]:[]})}catch{}
+    if(a)try{navigator.mediaSession.playbackState=a.paused?'paused':'playing'}catch{}
+  }
+  function positionState(force=false){
+    const a=audio();if(!a||!('mediaSession' in navigator)||typeof navigator.mediaSession.setPositionState!=='function'||!Number.isFinite(a.duration)||a.duration<=0)return;
+    const now=Date.now();if(!force&&now-lastPositionUpdate<900)return;lastPositionUpdate=now;
+    try{navigator.mediaSession.setPositionState({duration:a.duration,playbackRate:a.playbackRate||1,position:Math.min(a.duration,Math.max(0,a.currentTime||0))})}catch{}
+  }
+  function click(id){document.getElementById(id)?.click()}
+  function setupMediaSession(){
+    const a=audio();if(!a)return;a.setAttribute('playsinline','');a.setAttribute('preload','metadata');
+    if('mediaSession' in navigator){
+      const set=(name,fn)=>{try{navigator.mediaSession.setActionHandler(name,fn)}catch{}};
+      set('play',()=>a.play().catch(()=>{}));set('pause',()=>a.pause());set('previoustrack',()=>click('musicPrev'));set('nexttrack',()=>click('musicNext'));
+      set('seekbackward',d=>{a.currentTime=Math.max(0,(a.currentTime||0)-(d.seekOffset||10))});
+      set('seekforward',d=>{a.currentTime=Math.min(a.duration||Infinity,(a.currentTime||0)+(d.seekOffset||10))});
+      set('seekto',d=>{if(Number.isFinite(d.seekTime))a.currentTime=Math.max(0,Math.min(a.duration||d.seekTime,d.seekTime))});
+    }
+    for(const ev of ['play','pause','loadedmetadata','durationchange'])a.addEventListener(ev,()=>{metadata();positionState(true)});
+    a.addEventListener('timeupdate',()=>positionState(false));
+    document.addEventListener('lx:music-changed',()=>setTimeout(()=>{metadata();positionState(true)},30));
+  }
+  function boot(){ensureHandle();setupMediaSession();metadata();window.addEventListener('resize',()=>{const el=dock();if(!el)return;const r=el.getBoundingClientRect();if(readPos())setXY(el,r.left,r.top,true)},{passive:true})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
