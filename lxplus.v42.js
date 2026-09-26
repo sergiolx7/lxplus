@@ -15,7 +15,7 @@ short:'https://icemanvideogames.com/cdn/shop/files/MTAtNzE4NC5qcGVn_600x600.jpg?
 brat:'https://cdn.awsli.com.br/800x800/2279/2279925/produto/299447669/brat-cx63294dkz.jpg',
 currents:'https://portofsoundrecords.com/cdn/shop/products/R-15297229-1589365509-4078_575x575.jpg?v=1662266755',
 starboy:'https://www.vinyl.ae/cdn/shop/files/602557275926.jpg?v=1770296193&width=1400',
-eternal:'https://hhv.de/shop/images/item/1191356_1_768.jpg',
+eternal:A.daniel,
 sour:'https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/33/fd/32/33fd32b1-0e43-9b4a-8ed6-19643f23544e/21UMGIM26092.rgb.jpg/1200x1200bb.jpg'
 };
 const root=document.getElementById('lxRoot');let view=new URLSearchParams(location.search).get('view')||'home';let communityOpen=view==='community';
