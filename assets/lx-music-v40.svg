@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="LX Music">
-  <defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#b9bec9"/></linearGradient></defs>
-  <rect x="8" y="8" width="112" height="112" rx="31" fill="#0b0d12" stroke="rgba(255,255,255,.14)"/>
-  <path d="M33 38v50h29v-11H45V38H33Zm34 0h13l10 16 10-16h13L97 63l17 25h-13L90 71 79 88H66l17-25-16-25Z" fill="url(#g)"/>
-  <path d="M31 100c17-7 40-7 67 0" fill="none" stroke="#7c5cff" stroke-width="5" stroke-linecap="round" opacity=".8"/>
-</svg>
