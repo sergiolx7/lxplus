@@ -8,11 +8,20 @@
    - if movie audio cannot be captured while a remote call is active, remove screen
      audio instead of risking the remote participant hearing their own voice back
    - local microphone remains handled by the existing call mixer
+   - loads Player Audio V10 post-login so large-movie audio repair stays inside LX Player
 */
 (()=>{'use strict';
-  const PATCH='__lxWatchTogetherV10';
+  const PATCH='__lxWatchTogetherV10',AUDIO_SCRIPT_ID='lxPlayerAudioV10Script';
   let lastMode='idle',patchTimer=0;
   const toast=msg=>{try{window.LX?.toast?.(msg)}catch{}};
+
+  function loadPlayerAudio(){
+    if(window.LXPlayerAudioV10||document.getElementById(AUDIO_SCRIPT_ID))return;
+    const script=document.createElement('script');
+    script.id=AUDIO_SCRIPT_ID;script.src='lxplus.player-audio-v10.js?v=20260926-1';script.async=true;
+    script.onerror=()=>console.warn('LX Watch Together: Player Audio V10 load failed');
+    document.body.appendChild(script);
+  }
 
   function activeMovieVideo(){
     const host=document.getElementById('lxGlobalCinema');
@@ -121,14 +130,15 @@
   }
 
   function boot(){
-    wrapShareScreen();decorateCall();
-    patchTimer=setInterval(()=>{wrapShareScreen();decorateCall()},800);
+    loadPlayerAudio();wrapShareScreen();decorateCall();
+    patchTimer=setInterval(()=>{loadPlayerAudio();wrapShareScreen();decorateCall()},800);
     window.LXWatchTogetherV10={
-      version:'10.0',
+      version:'10.1',
       get mode(){return lastMode},
       activeMovieVideo,
       movieAudioTrack,
-      repatch:wrapShareScreen
+      repatch:wrapShareScreen,
+      loadPlayerAudio
     };
   }
 
