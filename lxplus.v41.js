@@ -135,7 +135,7 @@ function mCard(x){
 function renderMusicHomeV41(){
   if(state().screen!=='app'||state().mode!=='Ouvir'||state().query)return;
   if((state().musicView||'home')!=='home'&&state().category!=='Início')return;
-  var host=$('homeContent'),rows=musicRows();if(!host||!rows.all.length)return;
+  var host=$('homeContent'),rows=musicRows();if(!host||!rows.all.length)return;if(q('.lx41-music-shell',host))return;
   var featured=rows.all.find(function(x){return x.featured})||rows.recent[0]||rows.top[0]||rows.all[0];
   var banner=imgOf(featured)||coverOf(featured);
   var artists=[],seen={};
@@ -257,14 +257,14 @@ function enhance(){
   try{if(LX.config&&LX.config.features)LX.config.features.top10V40=false}catch(e){}
   v41Brand();v41CleanOldVisuals();
   installTopNav();rebuildLeftNav();syncTopNav();syncLeftNav();decorateMusic();decorateCommunity();installAdminNav();wrapAdmin();
-  if(state().screen==='app'&&state().mode==='Assistir'&&state().category==='Início'&&!state().query){renderHome();v41CleanOldVisuals();setTimeout(v41CleanOldVisuals,120);setTimeout(v41CleanOldVisuals,350);}else if(state().screen==='app'&&state().mode==='Ouvir'&&!state().query){renderMusicHomeV41();}
+  if(state().screen==='app'&&state().mode==='Assistir'&&state().category==='Início'&&!state().query){renderHome();v41CleanOldVisuals();setTimeout(v41CleanOldVisuals,120);setTimeout(v41CleanOldVisuals,350);}else if(state().screen==='app'&&state().mode==='Ouvir'&&!state().query){renderMusicHomeV41();setTimeout(renderMusicHomeV41,120);setTimeout(renderMusicHomeV41,360);}
   if(state().screen==='admin'){if((state().adminPage||'dashboard')==='dashboard')renderAdminDashboard();else insertAdminTop()}
   var meta=q('meta[name="lxplus-build"]');if(meta)meta.content=BUILD;if(LX.config)LX.config.version=BUILD;
 }
 function boot(){
   if(!window.LX||!LX.ui||!LX.data||!LX.admin){setTimeout(boot,80);return}
   wrapRender();wrapAdmin();installAdminNav();enhance();
-  var mo=new MutationObserver(function(){requestAnimationFrame(function(){v41Brand();v41CleanOldVisuals();decorateCommunity();decorateMusic();if(state().screen==='admin')insertAdminTop()})});
+  var mo=new MutationObserver(function(){requestAnimationFrame(function(){v41Brand();v41CleanOldVisuals();decorateCommunity();decorateMusic();if(state().screen==='app'&&state().mode==='Ouvir'&&!state().query&&!q('.lx41-music-shell',$('homeContent')))renderMusicHomeV41();if(state().screen==='admin')insertAdminTop()})});
   mo.observe(document.documentElement,{childList:true,subtree:true});
   window.addEventListener('pageshow',function(){setTimeout(enhance,0)});
   console.info('[LX Plus]',BUILD,'full rebuild active');
