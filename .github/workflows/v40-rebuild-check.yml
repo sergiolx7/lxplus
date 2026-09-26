@@ -189,6 +189,8 @@ jobs:
               await page.waitForTimeout(500);
               assert(await page.locator('.lx41-music-shell').count()===1,vp.name+' rebuilt music shell missing');
               assert(await page.locator('.lx41-music-card').count()>=6,vp.name+' music rows too sparse');
+              const musicLayout=await page.evaluate(()=>{const r=document.querySelector('.lx41-music-shell')?.getBoundingClientRect();return r?{top:r.top,height:r.height}:null});
+              assert(musicLayout&&musicLayout.top<120,vp.name+' music shell starts too low: '+JSON.stringify(musicLayout));
               if(vp.name==='desktop') await page.screenshot({path:'/tmp/lxshots/'+process.env.BROWSER+'-music.png',fullPage:true});
 
               await page.evaluate(()=>{LX.ui.state.screen='admin';LX.ui.show('admin');LX.admin.render('dashboard')});
@@ -199,6 +201,13 @@ jobs:
               const adminLayout=await page.evaluate(()=>{const r=document.querySelector('#adminMain')?.getBoundingClientRect();return r?{x:r.x,width:r.width}:null});
               if(vp.name==='desktop'){assert(adminLayout&&adminLayout.x>150,'admin main overlaps sidebar');assert(adminLayout.width>900,'admin main too narrow: '+(adminLayout&&adminLayout.width));}
               if(vp.name==='desktop') await page.screenshot({path:'/tmp/lxshots/'+process.env.BROWSER+'-admin.png',fullPage:true});
+
+              await page.evaluate(()=>{LX.ui.state.screen='app';LX.ui.show('app');LX.social?.open?.('friends')});
+              await page.waitForTimeout(400);
+              const community=page.locator('#lxCommunityDrawer,.lx-community-drawer').first();
+              assert(await community.count()===1,vp.name+' community drawer missing');
+              assert(await community.isVisible(),vp.name+' community drawer not visible');
+              if(vp.name==='desktop') await page.screenshot({path:'/tmp/lxshots/'+process.env.BROWSER+'-community.png',fullPage:true});
 
               const metrics=await page.evaluate(()=>({width:document.documentElement.scrollWidth,client:document.documentElement.clientWidth,build:document.documentElement.dataset.lxBuild||''}));
               assert(metrics.build==='V41-FULL-REBUILD-20260925',vp.name+' build marker missing');
