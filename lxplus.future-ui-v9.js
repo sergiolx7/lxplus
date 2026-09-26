@@ -92,10 +92,17 @@
   function addFullscreenButton(){
     if(!appVisible())return;
     const panel=document.querySelector('#overlay:not(.hidden) .lx-now-playing-v6');
-    if(!panel||panel.querySelector('.lx9-fullscreen-btn'))return;
+    if(!panel)return;
+    const art=panel.querySelector('.lx-now-playing-art img');
+    if(art?.src&&!panel.dataset.lx9Ambient){
+      panel.dataset.lx9Ambient='1';
+      panel.style.setProperty('background',`linear-gradient(155deg,rgba(10,12,18,.88),rgba(4,5,9,.98)),radial-gradient(circle at 18% 18%,color-mix(in srgb,var(--accent,#8a2be2) 20%,transparent),transparent 58%),url(${JSON.stringify(art.src)}) center/cover no-repeat`,'important');
+    }
+    if(panel.querySelector('.lx9-fullscreen-btn'))return;
     const btn=document.createElement('button');
     btn.type='button';btn.className='lx9-fullscreen-btn';btn.title='Preencher a tela';btn.setAttribute('aria-label','Preencher a tela');
     btn.innerHTML=icon('<path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/>');
+    const svg=btn.querySelector('svg');if(svg)svg.style.cssText='width:18px;height:18px;display:block';
     btn.addEventListener('click',async()=>{
       const target=byId('overlay')||panel;
       try{
@@ -109,14 +116,21 @@
     panel.appendChild(btn);
   }
 
+  function fitIconHost(el,size=20){
+    if(!el)return;
+    el.style.setProperty('width',size+'px');el.style.setProperty('height',size+'px');el.style.setProperty('min-width',size+'px');
+    el.style.setProperty('display','grid');el.style.setProperty('place-items','center');
+    const svg=el.querySelector('svg');if(svg)svg.style.cssText=`width:${size}px;height:${size}px;display:block`;
+  }
+
   function modernizeShellIcons(){
     const map=[
       ['[data-shell-category="Início"] > span',icons.home],['[data-shell-category="Filmes"] > span',icons.movie],['[data-shell-category="Séries"] > span',icons.series],
       ['[data-shell-mode="Ouvir"] > span',icons.music],['[data-shell-mode="Ler"] > span',icons.book],['[data-shell-community="1"] > span',icons.community],
       ['[data-shell-category="Minha Lista"] > span',icons.heart]
     ];
-    map.forEach(([sel,svg])=>document.querySelectorAll(sel).forEach(el=>{if(el.dataset.lx9Icon==='1')return;el.dataset.lx9Icon='1';el.innerHTML=svg}));
-    document.querySelectorAll('#modeSwitch [data-mode]').forEach(btn=>{const span=btn.querySelector('span');if(!span||span.dataset.lx9Icon==='1')return;span.dataset.lx9Icon='1';span.innerHTML=btn.dataset.mode==='Ouvir'?icons.music:btn.dataset.mode==='Ler'?icons.book:btn.dataset.mode==='Ao vivo'?icons.live:icons.movie});
+    map.forEach(([sel,svg])=>document.querySelectorAll(sel).forEach(el=>{if(el.dataset.lx9Icon!=='1'){el.dataset.lx9Icon='1';el.innerHTML=svg}fitIconHost(el,20)}));
+    document.querySelectorAll('#modeSwitch [data-mode]').forEach(btn=>{const span=btn.querySelector('span');if(!span)return;if(span.dataset.lx9Icon!=='1'){span.dataset.lx9Icon='1';span.innerHTML=btn.dataset.mode==='Ouvir'?icons.music:btn.dataset.mode==='Ler'?icons.book:btn.dataset.mode==='Ao vivo'?icons.live:icons.movie}fitIconHost(span,15)});
   }
 
   function polishIcons(){
