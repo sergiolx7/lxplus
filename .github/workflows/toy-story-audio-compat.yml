@@ -16,8 +16,6 @@ jobs:
     timeout-minutes: 120
     env:
       SOURCE_URL: https://lxplus.sergio-sousa.workers.dev/v/1wUgilp33ORePNkS_nsGMbu_t96qzSCd_
-      SUPABASE_URL: https://ubidogquzpdvrbzbhxda.supabase.co
-      SUPABASE_STORAGE_URL: https://ubidogquzpdvrbzbhxda.storage.supabase.co
       BROKER_URL: https://ubidogquzpdvrbzbhxda.supabase.co/functions/v1/lx-github-media-broker
     steps:
       - name: Install FFmpeg tools
@@ -65,55 +63,47 @@ jobs:
           OIDC="$(printf '%s' "$R" | python3 -c 'import sys,json; print(json.load(sys.stdin)["value"])')"
           echo "OIDC_TOKEN=$OIDC" >> "$GITHUB_ENV"
 
-      - name: Request private signed upload
+      - name: Start private resumable upload
         shell: bash
         run: |
           set -euo pipefail
-          R="$(curl -fsSL -X POST "$BROKER_URL" -H "Authorization: Bearer $OIDC_TOKEN" -H 'content-type: application/json' --data '{"action":"ticket"}')"
-          printf '%s' "$R" > ticket.json
+          SIZE="$(stat -c%s toy-story-5-aac.m4a)"
+          R="$(curl -fsSL -X POST "$BROKER_URL" -H "Authorization: Bearer $OIDC_TOKEN" -H 'x-lx-action: tus-start' -H "x-upload-length: $SIZE")"
+          printf '%s' "$R" > tus-start.json
           python3 - <<'PY'
           import json, os
-          d=json.load(open('ticket.json'))
-          if not d.get('ok'): raise SystemExit(d)
+          d=json.load(open('tus-start.json'))
+          if not d.get('ok') or not d.get('location'): raise SystemExit(d)
           with open(os.environ['GITHUB_ENV'],'a') as f:
-              f.write('UPLOAD_PATH='+d['path']+'\n')
-              f.write('UPLOAD_TOKEN='+d['token']+'\n')
+              f.write('TUS_LOCATION='+d['location']+'\n')
+              f.write('TUS_OFFSET='+str(d.get('offset') or 0)+'\n')
           PY
 
-      - name: Upload AAC to private Supabase storage with TUS
+      - name: Upload AAC in 5 MB authenticated chunks
         shell: bash
         run: |
           set -euo pipefail
-          npm --silent install tus-js-client@4
-          node <<'NODE'
-          const fs=require('fs');
-          const tus=require('tus-js-client');
-          const body=fs.readFileSync('toy-story-5-aac.m4a');
-          const endpoint=process.env.SUPABASE_STORAGE_URL+'/storage/v1/upload/resumable';
-          new Promise((resolve,reject)=>{
-            const upload=new tus.Upload(body,{
-              endpoint,
-              retryDelays:[0,3000,5000,10000,20000],
-              headers:{'x-signature':process.env.UPLOAD_TOKEN,'x-upsert':'true'},
-              uploadDataDuringCreation:true,
-              removeFingerprintOnSuccess:true,
-              chunkSize:6*1024*1024,
-              metadata:{
-                bucketName:'lx-media',
-                objectName:process.env.UPLOAD_PATH,
-                contentType:'audio/mp4',
-                cacheControl:'3600'
-              },
-              onError:reject,
-              onProgress:(sent,total)=>{if(total)console.log(`Upload ${Math.floor(sent/total*100)}% (${sent}/${total})`)},
-              onSuccess:()=>resolve(upload.url)
-            });
-            upload.findPreviousUploads().then(previous=>{
-              if(previous.length)upload.resumeFromPreviousUpload(previous[0]);
-              upload.start();
-            }).catch(reject);
-          }).then(url=>{console.log('TUS upload completed:',url)}).catch(err=>{console.error(err);process.exit(1)});
-          NODE
+          rm -f chunk_*
+          split -b 5m -d -a 3 toy-story-5-aac.m4a chunk_
+          OFFSET="${TUS_OFFSET:-0}"
+          TOTAL="$(stat -c%s toy-story-5-aac.m4a)"
+          COUNT=0
+          for PART in chunk_*; do
+            LEN="$(stat -c%s "$PART")"
+            R="$(curl -fsSL -X POST "$BROKER_URL" \
+              -H "Authorization: Bearer $OIDC_TOKEN" \
+              -H 'x-lx-action: tus-chunk' \
+              -H "x-upload-url: $TUS_LOCATION" \
+              -H "x-upload-offset: $OFFSET" \
+              -H 'content-type: application/octet-stream' \
+              --data-binary "@$PART")"
+            OFFSET="$(printf '%s' "$R" | python3 -c 'import sys,json; d=json.load(sys.stdin); assert d.get("ok"), d; print(d["offset"])')"
+            COUNT=$((COUNT+1))
+            PCT=$(( OFFSET * 100 / TOTAL ))
+            echo "AAC upload ${PCT}% · chunk ${COUNT} · offset ${OFFSET}/${TOTAL}"
+            rm -f "$PART"
+          done
+          test "$OFFSET" -eq "$TOTAL"
 
       - name: Activate compatible track in LX catalog
         shell: bash
@@ -130,9 +120,13 @@ jobs:
             'sourceVideo':[{'index':s.get('index'),'codec':s.get('codec_name'),'profile':s.get('profile'),'width':s.get('width'),'height':s.get('height')} for s in video],
             'outputAudio':[{'codec':s.get('codec_name'),'profile':s.get('profile'),'channels':s.get('channels'),'sample_rate':s.get('sample_rate')} for s in output.get('streams',[]) if s.get('codec_type')=='audio']
           }
-          print(json.dumps({'action':'finalize','probe':safe},separators=(',',':')))
+          print(json.dumps({'probe':safe},separators=(',',':')))
           PY
-          curl -fsSL -X POST "$BROKER_URL" -H "Authorization: Bearer $OIDC_TOKEN" -H 'content-type: application/json' --data-binary @finalize.json | tee finalize-result.json
+          curl -fsSL -X POST "$BROKER_URL" \
+            -H "Authorization: Bearer $OIDC_TOKEN" \
+            -H 'x-lx-action: finalize' \
+            -H 'content-type: application/json' \
+            --data-binary @finalize.json | tee finalize-result.json
           python3 - <<'PY'
           import json
           d=json.load(open('finalize-result.json'))
