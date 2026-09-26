@@ -178,6 +178,120 @@ html.lx-community-open,html.lx-community-open body{overflow:hidden!important}
 .lx-desktop-rail::after{top:9%;bottom:9%;right:-1px;width:1px;background:linear-gradient(180deg,transparent,rgba(151,68,255,.42),rgba(67,126,255,.28),transparent);box-shadow:0 0 14px rgba(135,52,255,.20)}
 .lx-right-rail::after{top:10%;bottom:10%;left:-1px;width:1px;background:linear-gradient(180deg,transparent,rgba(70,123,255,.34),rgba(171,67,255,.32),transparent);box-shadow:0 0 14px rgba(84,91,255,.16)}
 
+/* --- LED Ribbon V3: thin neon "fitinhas" on borders, without changing layout --- */
+:root{
+  --lx-ribbon-purple:rgba(183,77,255,.36);
+  --lx-ribbon-blue:rgba(72,129,255,.26);
+  --lx-ribbon-soft:rgba(138,43,226,.10);
+}
+
+/* Main glass panels: a fine continuous ribbon around the edge */
+.hero,.auth-box,.panel-page,.admin-card,.admin-panel,.rail-section,
+.modal,.player-modal,.reader-modal,.lx-support-panel,.lx-nova-ai-panel{
+  border-color:rgba(159,77,255,.13)!important;
+  box-shadow:
+    inset 0 1px 0 var(--lx-ribbon-purple),
+    inset 1px 0 0 rgba(105,116,255,.16),
+    inset 0 -1px 0 rgba(63,124,255,.10),
+    inset -1px 0 0 rgba(181,73,255,.12),
+    0 16px 42px rgba(0,0,0,.18),
+    0 0 22px rgba(120,46,255,.035)!important;
+}
+
+/* Cards: very thin ribbon at rest, brighter only on hover/focus */
+.card,.media-card,.rail-card,.book-card,.music-card,.album-card,.live-card,
+.profile-card,.stat-card,.quick-action,.lx-community-person,.lx-community-conversation,
+.lx-right-community>button,.lx-right-list>button,.universe-cards>div{
+  border-color:rgba(150,76,255,.10)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(184,77,255,.15),
+    inset 1px 0 0 rgba(69,127,255,.08),
+    inset 0 -1px 0 rgba(69,127,255,.055),
+    inset -1px 0 0 rgba(184,77,255,.07)!important;
+}
+.card:hover,.media-card:hover,.rail-card:hover,.book-card:hover,.music-card:hover,.album-card:hover,.live-card:hover,
+.profile-card:hover,.stat-card:hover,.quick-action:hover,.lx-community-person:hover,.lx-community-conversation:hover,
+.lx-right-community>button:hover,.lx-right-list>button:hover,
+.card:focus-within,.media-card:focus-within,.music-card:focus-within,.album-card:focus-within{
+  border-color:rgba(178,83,255,.28)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(201,105,255,.38),
+    inset 1px 0 0 rgba(87,146,255,.20),
+    inset 0 -1px 0 rgba(77,135,255,.15),
+    inset -1px 0 0 rgba(195,87,255,.20),
+    0 12px 34px rgba(0,0,0,.30),
+    0 0 25px rgba(137,48,255,.10)!important;
+}
+
+/* Top bar / rails get a slim luminous seam instead of a thick border */
+.topbar{
+  box-shadow:inset 0 -1px 0 rgba(158,72,255,.16),0 18px 48px rgba(0,0,0,.20),0 0 28px rgba(117,43,255,.035)!important;
+}
+.lx-desktop-rail,.admin-side{
+  box-shadow:inset -1px 0 0 rgba(165,77,255,.16),0 18px 48px rgba(0,0,0,.20),0 0 24px rgba(117,43,255,.03)!important;
+}
+.lx-right-rail{
+  box-shadow:inset 1px 0 0 rgba(75,127,255,.13),0 18px 48px rgba(0,0,0,.20)!important;
+}
+
+/* Floating player and Community receive the clearest LED ribbon */
+#musicDock.music-dock{
+  border-color:rgba(172,88,255,.34)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(206,111,255,.28),
+    inset 1px 0 0 rgba(77,137,255,.18),
+    inset 0 -1px 0 rgba(64,119,255,.12),
+    inset -1px 0 0 rgba(190,83,255,.17),
+    0 24px 72px rgba(0,0,0,.52),
+    0 0 38px rgba(126,45,255,.16)!important;
+}
+#lxCommunityDrawer{
+  border-color:rgba(171,86,255,.31)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(202,106,255,.24),
+    inset 1px 0 0 rgba(76,136,255,.17),
+    inset 0 -1px 0 rgba(76,123,255,.10),
+    inset -1px 0 0 rgba(190,84,255,.15),
+    -26px 28px 86px rgba(0,0,0,.58),
+    0 0 42px rgba(123,43,255,.14)!important;
+}
+
+/* Buttons get a small illuminated edge rather than a full glow block */
+.primary-btn,.secondary-btn,.glass-btn,.community-top-btn,.premium-top-btn,.admin-top-btn,
+.mode-switch button,.category-nav button,.lx-shell-primary button,.admin-nav button,.music-main-play{
+  box-shadow:inset 0 1px 0 rgba(224,184,255,.16),inset 0 -1px 0 rgba(84,131,255,.08),0 0 0 1px rgba(159,74,255,.055)!important;
+}
+.primary-btn:hover,.community-top-btn:hover,.premium-top-btn:hover,.mode-switch button:hover,
+.category-nav button:hover,.lx-shell-primary button:hover,.admin-nav button:hover,.music-main-play:hover{
+  box-shadow:inset 0 1px 0 rgba(238,205,255,.32),inset 0 -1px 0 rgba(95,150,255,.16),0 0 18px rgba(138,43,226,.16)!important;
+}
+
+/* Inputs and search: subtle ribbon when focused */
+input:focus,textarea:focus,select:focus,.search-wrap:focus-within,.password-field:focus-within{
+  border-color:rgba(170,82,255,.30)!important;
+  box-shadow:0 0 0 1px rgba(143,61,255,.12),0 0 18px rgba(111,66,255,.07)!important;
+}
+
+/* Decorative bottom ribbon on hero; no position changes */
+.hero{
+  border-bottom-color:rgba(123,78,255,.14)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(182,86,255,.15),
+    inset 0 -1px 0 rgba(67,125,255,.12),
+    0 22px 65px rgba(0,0,0,.28),
+    0 0 46px rgba(95,53,255,.055)!important;
+}
+
+/* Mobile/tablet: keep ribbons thin and reduce bloom to avoid visual clutter */
+@media(max-width:900px){
+  .hero,.auth-box,.panel-page,.admin-card,.admin-panel,.rail-section,.modal,.player-modal,.reader-modal{
+    box-shadow:inset 0 1px 0 rgba(183,77,255,.18),inset 0 -1px 0 rgba(63,124,255,.075),0 12px 32px rgba(0,0,0,.16)!important;
+  }
+  .card,.media-card,.rail-card,.book-card,.music-card,.album-card,.live-card,.profile-card,.stat-card,.quick-action{
+    box-shadow:inset 0 1px 0 rgba(183,77,255,.10),inset 0 -1px 0 rgba(63,124,255,.045)!important;
+  }
+}
+
 /* responsive safety */
 @media(max-width:700px){
   #lxCommunityDrawer{top:8px!important;right:8px!important;bottom:8px!important;width:calc(100vw - 16px)!important;max-height:calc(100dvh - 16px)!important;border-radius:16px!important}
