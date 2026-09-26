@@ -10,9 +10,10 @@
    - local microphone remains handled by the existing call mixer
    - loads Player Audio V10 post-login so large-movie audio repair stays inside LX Player
    - loads Detail + Watch Invite V12 post-login for compact scrollable media details
+   - loads Modal Safety V13 post-login so long generic dialogs always scroll
 */
 (()=>{'use strict';
-  const PATCH='__lxWatchTogetherV10',AUDIO_SCRIPT_ID='lxPlayerAudioV10Script',DETAIL_SCRIPT_ID='lxDetailWatchV12Script';
+  const PATCH='__lxWatchTogetherV10',AUDIO_SCRIPT_ID='lxPlayerAudioV10Script',DETAIL_SCRIPT_ID='lxDetailWatchV12Script',MODAL_SCRIPT_ID='lxModalSafetyV13Script';
   let lastMode='idle',patchTimer=0;
   const toast=msg=>{try{window.LX?.toast?.(msg)}catch{}};
 
@@ -29,6 +30,14 @@
     const script=document.createElement('script');
     script.id=DETAIL_SCRIPT_ID;script.src='lxplus.detail-watch-v12.js?v=20260926-1';script.async=true;
     script.onerror=()=>console.warn('LX Watch Together: Detail Watch V12 load failed');
+    document.body.appendChild(script);
+  }
+
+  function loadModalSafety(){
+    if(window.LXModalSafetyV13||document.getElementById(MODAL_SCRIPT_ID))return;
+    const script=document.createElement('script');
+    script.id=MODAL_SCRIPT_ID;script.src='lxplus.modal-safety-v13.js?v=20260926-1';script.async=true;
+    script.onerror=()=>console.warn('LX Watch Together: Modal Safety V13 load failed');
     document.body.appendChild(script);
   }
 
@@ -139,16 +148,17 @@
   }
 
   function boot(){
-    loadPlayerAudio();loadDetailWatch();wrapShareScreen();decorateCall();
-    patchTimer=setInterval(()=>{loadPlayerAudio();loadDetailWatch();wrapShareScreen();decorateCall()},800);
+    loadPlayerAudio();loadDetailWatch();loadModalSafety();wrapShareScreen();decorateCall();
+    patchTimer=setInterval(()=>{loadPlayerAudio();loadDetailWatch();loadModalSafety();wrapShareScreen();decorateCall()},800);
     window.LXWatchTogetherV10={
-      version:'10.2',
+      version:'10.3',
       get mode(){return lastMode},
       activeMovieVideo,
       movieAudioTrack,
       repatch:wrapShareScreen,
       loadPlayerAudio,
-      loadDetailWatch
+      loadDetailWatch,
+      loadModalSafety
     };
   }
 
