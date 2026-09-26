@@ -1,0 +1,95 @@
+/* LX Plus — Ambient Glow V1
+   Visual-only layer. No layout, data, player or navigation logic is changed. */
+:root{
+  --lx-glow-purple:#8a2be2;
+  --lx-glow-violet:#b84dff;
+  --lx-glow-blue:#3a7bff;
+  --lx-glow-cyan:#57d7ff;
+  --lx-glow-soft:rgba(138,43,226,.18);
+  --lx-glow-line:rgba(174,90,255,.34);
+}
+
+/* Ambient background */
+#lxAmbientV1{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;opacity:.9}
+#lxAmbientV1 i{position:absolute;display:block;pointer-events:none}
+#lxAmbientV1 .lx-ambient-blob-a{width:48vw;height:48vw;min-width:520px;min-height:520px;right:-12vw;top:-20vw;border-radius:50%;background:radial-gradient(circle,rgba(132,48,255,.18) 0%,rgba(74,55,255,.09) 35%,transparent 72%);filter:blur(24px)}
+#lxAmbientV1 .lx-ambient-blob-b{width:42vw;height:42vw;min-width:480px;min-height:480px;left:-15vw;bottom:-20vw;border-radius:50%;background:radial-gradient(circle,rgba(39,112,255,.12) 0%,rgba(121,48,255,.08) 42%,transparent 74%);filter:blur(28px)}
+#lxAmbientV1 .lx-ambient-arc-a{width:72vw;height:36vw;right:-13vw;top:8vh;border-radius:50%;border-top:1px solid rgba(111,146,255,.42);border-right:1px solid rgba(179,75,255,.34);transform:rotate(-8deg);filter:drop-shadow(0 0 8px rgba(91,130,255,.58)) drop-shadow(0 0 20px rgba(145,55,255,.28));opacity:.46}
+#lxAmbientV1 .lx-ambient-arc-b{width:61vw;height:29vw;right:-5vw;top:18vh;border-radius:50%;border-top:1px solid rgba(192,91,255,.30);transform:rotate(9deg);filter:drop-shadow(0 0 9px rgba(168,61,255,.42));opacity:.30}
+#lxAmbientV1 .lx-ambient-line{left:14%;right:7%;bottom:9vh;height:1px;background:linear-gradient(90deg,transparent,rgba(67,117,255,.28),rgba(190,73,255,.34),transparent);filter:blur(.2px);box-shadow:0 0 14px rgba(111,71,255,.30)}
+
+/* Keep real UI above ambient layer */
+#auth,#profiles,#app,#admin,#overlay,#playerOverlay,#readerOverlay,#miniPlayer,#musicDock,#lxNovaAIPanel,#lxCommunityScrim,#lxCommunityDrawer{position:relative;z-index:1}
+#overlay,#playerOverlay,#readerOverlay,#miniPlayer,#musicDock,#lxNovaAIPanel,#lxCommunityScrim,#lxCommunityDrawer{z-index:auto}
+
+/* Topbar and side rails */
+.topbar,.lx-desktop-rail,.lx-right-rail,.admin-side{
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.018),0 18px 48px rgba(0,0,0,.22),0 0 28px rgba(115,44,255,.035)
+}
+.topbar{border-bottom-color:rgba(160,74,255,.10)!important}
+.topbar:after{content:"";position:absolute;left:7%;right:7%;bottom:-1px;height:1px;background:linear-gradient(90deg,transparent,rgba(127,75,255,.22),rgba(74,139,255,.18),transparent);box-shadow:0 0 12px rgba(126,58,255,.18);pointer-events:none}
+.lx-desktop-rail,.admin-side{border-right-color:rgba(165,78,255,.10)!important}
+.lx-right-rail{border-left-color:rgba(101,114,255,.09)!important}
+
+/* LED panel treatment */
+.hero,.auth-box,.universe-cards>div,.rail-section,.panel-page,.admin-card,.admin-panel,.modal,.player-modal,.reader-modal,.music-dock,.lx-community-drawer,.lx-nova-ai-panel,.lx-support-panel,.mini-player{
+  position:relative;
+}
+.hero:after,.auth-box:after,.panel-page:after,.admin-card:after,.admin-panel:after,.modal:after,.player-modal:after,.reader-modal:after,.music-dock:after,.lx-community-drawer:after,.lx-nova-ai-panel:after,.mini-player:after{
+  content:"";position:absolute;left:8%;right:8%;top:-1px;height:1px;pointer-events:none;border-radius:999px;
+  background:linear-gradient(90deg,transparent,rgba(137,55,255,.48),rgba(82,132,255,.34),rgba(185,68,255,.42),transparent);
+  box-shadow:0 0 8px rgba(135,54,255,.28),0 0 18px rgba(83,115,255,.12)
+}
+
+/* Cards glow only on interaction, so the page stays clean */
+.card,.media-card,.rail-card,.book-card,.music-card,.album-card,.live-card,.profile-card,.lx-community-person,.lx-community-conversation,.lx-right-community>button,.lx-right-list>button,.quick-action,.stat-card{
+  transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease,background-color .18s ease;
+}
+.card:hover,.media-card:hover,.rail-card:hover,.book-card:hover,.music-card:hover,.album-card:hover,.live-card:hover,.profile-card:hover,.lx-community-person:hover,.lx-community-conversation:hover,.lx-right-community>button:hover,.lx-right-list>button:hover,.quick-action:hover,.stat-card:hover{
+  border-color:rgba(165,73,255,.23)!important;
+  box-shadow:0 12px 32px rgba(0,0,0,.28),0 0 22px rgba(135,47,255,.08)!important;
+}
+
+/* Buttons */
+.primary-btn,.music-main-play,.lx-right-controls .main,.community-top-btn.active,.mode-switch button.active,.category-nav button.active,.lx-shell-primary button.active,.admin-nav button.active{
+  box-shadow:0 0 20px rgba(138,43,226,.18)!important;
+}
+.mode-switch button.active,.lx-shell-primary button.active,.category-nav button.active,.admin-nav button.active{
+  border-color:rgba(175,85,255,.18)!important;
+}
+
+/* Music player and community accent */
+.music-dock{border-color:rgba(148,73,255,.20)!important;box-shadow:0 22px 66px rgba(0,0,0,.38),0 0 28px rgba(126,45,255,.09)!important}
+.lx-community-drawer{border-color:rgba(143,72,255,.23)!important;box-shadow:-24px 22px 75px rgba(0,0,0,.48),0 0 34px rgba(124,45,255,.09)!important}
+.lx-right-music,.lx-right-shortcuts,.lx-right-community{border-color:rgba(138,66,255,.09)!important}
+
+/* Login gets the same identity without altering structure */
+.auth{background-image:radial-gradient(650px 390px at 22% 35%,rgba(80,76,255,.08),transparent 72%),radial-gradient(620px 420px at 75% 10%,rgba(134,45,255,.12),transparent 75%)!important}
+.auth-box{border-color:rgba(161,79,255,.12)!important;box-shadow:0 28px 90px rgba(0,0,0,.34),0 0 40px rgba(126,44,255,.07)!important}
+.universe-cards>div{border-color:rgba(255,255,255,.075)!important;box-shadow:inset 0 0 0 1px rgba(140,62,255,.025),0 10px 30px rgba(0,0,0,.12)}
+
+/* Subtle LEDs on hero/carousel edges */
+.hero{box-shadow:0 22px 65px rgba(0,0,0,.28),0 0 42px rgba(95,53,255,.05)}
+.hero:before{filter:saturate(1.04)}
+
+/* Respect users who prefer reduced effects */
+@media(prefers-reduced-motion:reduce){
+  .card,.media-card,.rail-card,.book-card,.music-card,.album-card,.live-card,.profile-card,.lx-community-person,.lx-community-conversation{transition:none!important}
+}
+
+/* Tablet/mobile: softer ambient, no geometry changes */
+@media(max-width:900px){
+  #lxAmbientV1 .lx-ambient-blob-a{right:-55vw;top:-18vw;opacity:.78}
+  #lxAmbientV1 .lx-ambient-blob-b{left:-60vw;bottom:-12vw;opacity:.68}
+  #lxAmbientV1 .lx-ambient-arc-a{width:150vw;height:72vw;right:-75vw;top:11vh;opacity:.28}
+  #lxAmbientV1 .lx-ambient-arc-b{display:none}
+  #lxAmbientV1 .lx-ambient-line{left:3%;right:3%;bottom:12vh;opacity:.55}
+  .hero:after,.auth-box:after,.panel-page:after,.admin-card:after,.admin-panel:after,.modal:after,.player-modal:after,.reader-modal:after,.music-dock:after,.lx-community-drawer:after,.lx-nova-ai-panel:after,.mini-player:after{left:14%;right:14%;opacity:.65}
+}
+
+@media(max-width:520px){
+  #lxAmbientV1{opacity:.68}
+  #lxAmbientV1 .lx-ambient-blob-a{min-width:430px;min-height:430px}
+  #lxAmbientV1 .lx-ambient-blob-b{min-width:400px;min-height:400px}
+  .card:hover,.media-card:hover,.rail-card:hover,.book-card:hover,.music-card:hover,.album-card:hover,.live-card:hover,.profile-card:hover,.lx-community-person:hover,.lx-community-conversation:hover{transform:none}
+}
