@@ -75,17 +75,30 @@
     overlay.appendChild(makeButton(activeContentId,title,true));
   }
 
-  function patchDetailEntry(){
-    const LX=window.LX;if(!LX||typeof LX.detail!=='function'||LX.detail[PATCH])return false;
-    const original=LX.detail;
+  function patchEntryPoint(name){
+    const LX=window.LX,fn=LX?.[name];if(typeof fn!=='function'||fn[PATCH])return false;
     const wrapped=function(id,...args){
-      const n=Number(id);if(Number.isFinite(n)&&n>0)activeContentId=n;
-      const out=original.apply(this,[id,...args]);
+      const n=Number(id);if(Number.isFinite(n)&&n>0&&catalogItem(n))activeContentId=n;
+      const out=fn.apply(this,[id,...args]);
       setTimeout(sync,0);setTimeout(sync,80);setTimeout(sync,260);
       return out;
     };
     Object.defineProperty(wrapped,PATCH,{value:true});
-    wrapped.__original=original;LX.detail=wrapped;return true;
+    wrapped.__original=fn;LX[name]=wrapped;return true;
+  }
+  function patchEntryPoints(){let changed=false;for(const name of ['detail','primary','play'])changed=patchEntryPoint(name)||changed;return changed}
+
+  function markPlayer(){
+    const host=$('lxGlobalCinema'),item=catalogItem(activeContentId);
+    if(!host||!watchableItem(item))return;
+    const root=host.shadowRoot||host;
+    if(root.querySelector?.('#lxWatchFriendPlayerBtn'))return;
+    const btn=document.createElement('button');btn.id='lxWatchFriendPlayerBtn';btn.type='button';
+    btn.innerHTML=`${icon}<span>Assistir junto</span>`;
+    btn.style.cssText='position:fixed;top:max(16px,env(safe-area-inset-top));right:max(16px,env(safe-area-inset-right));z-index:2147483600;display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 13px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent,#8a2be2) 44%,rgba(255,255,255,.13));background:rgba(8,10,16,.80);backdrop-filter:blur(16px);color:#fff;font:800 10px/1 system-ui;box-shadow:0 12px 34px rgba(0,0,0,.42);cursor:pointer';
+    const svg=btn.querySelector('svg');if(svg)svg.style.cssText='width:15px;height:15px;display:block';
+    btn.addEventListener('click',async e=>{e.preventDefault();e.stopPropagation();try{if(document.fullscreenElement)await document.exitFullscreen()}catch{};setTimeout(()=>openInvite(activeContentId,item.title),40)});
+    root.appendChild(btn);
   }
 
   function meId(){return String(window.LX?.cloud?.user?.()?.id||window.LX?.ui?.state?.user?.id||'')}
@@ -141,16 +154,16 @@
     }catch(error){console.warn('LX watch invite fallback',error);button.disabled=false;button.textContent='Tentar de novo';window.LX?.toast?.('Não foi possível iniciar o convite agora.')}
   }
 
-  function sync(){if(!appVisible())return;ensureStyle();patchDetailEntry();markDetail()}
+  function sync(){if(!appVisible())return;ensureStyle();patchEntryPoints();markDetail();markPlayer()}
   function queue(){clearTimeout(timer);timer=setTimeout(sync,0)}
   function boot(){
-    ensureStyle();patchDetailEntry();
+    ensureStyle();patchEntryPoints();
     const overlay=$('overlay');
     if(overlay&&'MutationObserver'in window){observer=new MutationObserver(queue);observer.observe(overlay,{attributes:true,attributeFilter:['class'],childList:true,subtree:true})}
     document.addEventListener('click',()=>setTimeout(sync,0),true);
     window.addEventListener('resize',queue,{passive:true});
     setInterval(sync,500);sync();
-    window.LXDetailWatchV12={version:'12.2',sync,openInvite,acceptedFriends,sendInvite,get activeContentId(){return activeContentId}};
+    window.LXDetailWatchV12={version:'12.3',sync,openInvite,acceptedFriends,sendInvite,get activeContentId(){return activeContentId}};
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
