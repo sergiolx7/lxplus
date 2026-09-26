@@ -1,0 +1,183 @@
+/* LX Plus — Mini Floating Player V11
+   Compact music dock only outside LX Music.
+   Keeps the full integrated Spotify-like player in Music mode.
+   Does not own X/Y position on desktop; existing drag hotfix remains authoritative. */
+
+/* Watch / Books / Live: truly compact floating card */
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock.music-dock:not(.hidden){
+  width:min(232px,calc(100vw - 18px))!important;
+  min-width:0!important;
+  min-height:72px!important;
+  max-height:82px!important;
+  padding:9px 32px 9px 9px!important;
+  display:grid!important;
+  grid-template-columns:44px minmax(0,1fr)!important;
+  grid-template-rows:minmax(0,1fr) 27px!important;
+  grid-template-areas:"cover info" "cover transport"!important;
+  gap:3px 8px!important;
+  overflow:hidden!important;
+  border-radius:16px!important;
+  border:1px solid color-mix(in srgb,var(--accent,#8a2be2) 30%,rgba(255,255,255,.10))!important;
+  background:
+    radial-gradient(190px 100px at 0% 0%,color-mix(in srgb,var(--accent,#8a2be2) 15%,transparent),transparent 72%),
+    linear-gradient(145deg,rgba(18,20,30,.965),rgba(6,8,13,.985))!important;
+  box-shadow:0 14px 38px rgba(0,0,0,.48),0 0 22px color-mix(in srgb,var(--accent,#8a2be2) 10%,transparent)!important;
+  backdrop-filter:blur(18px) saturate(1.08)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(1.08)!important;
+  transition:width .18s ease,min-height .18s ease,border-color .18s ease,box-shadow .18s ease,opacity .18s ease!important;
+}
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock.music-dock:not(.hidden):hover{
+  border-color:color-mix(in srgb,var(--accent,#8a2be2) 46%,rgba(255,255,255,.12))!important;
+  box-shadow:0 18px 44px rgba(0,0,0,.54),0 0 28px color-mix(in srgb,var(--accent,#8a2be2) 15%,transparent)!important;
+}
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock.music-dock:before{
+  left:18%!important;right:18%!important;top:0!important;height:1px!important;
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent,#8a2be2) 74%,#fff 12%),transparent)!important;
+  box-shadow:0 0 9px color-mix(in srgb,var(--accent,#8a2be2) 36%,transparent)!important;
+}
+
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-cover-btn{
+  grid-area:cover!important;
+  width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;
+  align-self:center!important;
+  border-radius:11px!important;
+  overflow:hidden!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.38)!important;
+}
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-info{
+  grid-area:info!important;
+  min-width:0!important;
+  align-self:end!important;
+  padding:0!important;
+  cursor:grab!important;
+}
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-info strong{
+  display:block!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-overflow:ellipsis!important;
+  font-size:10.5px!important;
+  line-height:1.15!important;
+  font-weight:800!important;
+  letter-spacing:-.015em!important;
+}
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-info small{
+  display:block!important;
+  max-width:100%!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-overflow:ellipsis!important;
+  margin-top:2px!important;
+  font-size:7.5px!important;
+  line-height:1.1!important;
+  color:#9da5b5!important;
+}
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-provider-brand,
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-playback-kind,
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-viz,
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-timeline,
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-provider-panel{
+  display:none!important;
+}
+
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-center-controls{
+  grid-area:transport!important;
+  width:auto!important;
+  min-width:0!important;
+  align-self:start!important;
+  justify-self:start!important;
+  display:block!important;
+}
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-transport{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:2px!important;
+}
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-transport #musicShuffle,
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-transport #musicRepeat{
+  display:none!important;
+}
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-transport button{
+  width:23px!important;height:23px!important;min-width:23px!important;min-height:23px!important;
+  border:0!important;border-radius:50%!important;
+  padding:0!important;
+  background:transparent!important;
+  color:#cbd0db!important;
+  font-size:11px!important;
+  box-shadow:none!important;
+}
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-transport button:hover{
+  color:#fff!important;background:rgba(255,255,255,.075)!important;
+}
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-main-play{
+  width:27px!important;height:27px!important;min-width:27px!important;min-height:27px!important;
+  margin:0 1px!important;
+  background:#f4f5f7!important;color:#090a0d!important;
+  box-shadow:0 5px 14px rgba(0,0,0,.32)!important;
+}
+
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-right-controls{
+  position:absolute!important;
+  right:5px!important;top:5px!important;
+  width:25px!important;height:25px!important;
+  min-width:0!important;
+  display:block!important;
+  margin:0!important;padding:0!important;
+  z-index:5!important;
+}
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-right-controls > *{
+  display:none!important;
+}
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-right-controls #musicClose{
+  display:grid!important;
+  place-items:center!important;
+  width:25px!important;height:25px!important;min-width:25px!important;min-height:25px!important;
+  padding:0!important;margin:0!important;
+  border:0!important;border-radius:50%!important;
+  background:rgba(255,255,255,.055)!important;
+  color:#b9bfca!important;
+  font-size:13px!important;
+}
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-right-controls #musicClose:hover{
+  background:rgba(255,255,255,.11)!important;color:#fff!important;
+}
+
+/* Keep drag affordance tiny and unobtrusive */
+body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .lx-music-drag-handle{
+  width:34px!important;height:6px!important;min-height:6px!important;
+  top:2px!important;left:50%!important;transform:translateX(-50%)!important;
+  opacity:.24!important;font-size:0!important;
+  border-radius:999px!important;background:rgba(255,255,255,.28)!important;
+}
+
+/* While a film is open, make the mini-card even less intrusive until hovered */
+body[data-lx-surface="watch"]:has(#lxGlobalCinema) #musicDock.music-dock:not(.hidden){
+  opacity:.82!important;
+}
+body[data-lx-surface="watch"]:has(#lxGlobalCinema) #musicDock.music-dock:not(.hidden):hover,
+body[data-lx-surface="watch"]:has(#lxGlobalCinema) #musicDock.music-dock.lx-is-dragging{
+  opacity:1!important;
+}
+
+/* Mobile/tablet compact mode */
+@media(max-width:700px){
+  body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock.music-dock:not(.hidden){
+    width:min(210px,calc(100vw - 18px))!important;
+    min-height:64px!important;max-height:72px!important;
+    grid-template-columns:39px minmax(0,1fr)!important;
+    grid-template-rows:minmax(0,1fr) 24px!important;
+    padding:7px 29px 7px 7px!important;
+    border-radius:14px!important;
+  }
+  body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-cover-btn{
+    width:39px!important;height:39px!important;min-width:39px!important;min-height:39px!important;border-radius:9px!important;
+  }
+  body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-info strong{font-size:9.5px!important}
+  body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-info small{font-size:7px!important}
+  body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-transport button{width:21px!important;height:21px!important;min-width:21px!important;min-height:21px!important}
+  body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-main-play{width:24px!important;height:24px!important;min-width:24px!important;min-height:24px!important}
+}
+
+/* Music mode is intentionally untouched: V9 keeps the full bottom bar. */
