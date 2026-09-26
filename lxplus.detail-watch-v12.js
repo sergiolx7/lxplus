@@ -1,7 +1,8 @@
 /* LX Plus — Detail + Watch Invite V12
-   - fixes oversized movie/series detail surface with internal scrolling
-   - adds "Assistir com amigo" using accepted friendships and lx_send_message
-   - opens the existing Community chat after a successful invite
+   - keeps movie/series detail compact with internal scrolling
+   - adds “Assistir com amigo” using accepted friendships
+   - hands the invite to Watch Party V14: voice call + synchronized movie playback
+   - keeps the older text invite only as a compatibility fallback
    Loaded only after login. */
 (()=>{'use strict';
   const STYLE_ID='lxDetailWatchV12Css';
@@ -63,7 +64,7 @@
   }
 
   function closeInvite(){document.querySelector('.lx-watch-invite-v12')?.remove()}
-  function shellHtml(title){return `<div class="lx-watch-invite-v12"><section class="lx-watch-invite-panel" role="dialog" aria-modal="true" aria-label="Convidar amigo para assistir"><header class="lx-watch-invite-head"><div><small>ASSISTIR JUNTOS</small><strong>${esc(title)}</strong></div><button class="lx-watch-invite-close" type="button" aria-label="Fechar">×</button></header><p class="lx-watch-invite-sub">Escolha um amigo da Comunidade. O convite será enviado na conversa de vocês.</p><div class="lx-watch-invite-list"><div class="lx-watch-invite-empty"><strong>Carregando amigos…</strong>Buscando suas amizades aceitas.</div></div></section></div>`}
+  function shellHtml(title){return `<div class="lx-watch-invite-v12"><section class="lx-watch-invite-panel" role="dialog" aria-modal="true" aria-label="Convidar amigo para assistir"><header class="lx-watch-invite-head"><div><small>WATCH PARTY · CHAMADA</small><strong>${esc(title)}</strong></div><button class="lx-watch-invite-close" type="button" aria-label="Fechar">×</button></header><p class="lx-watch-invite-sub">Escolha um amigo. Ao atender, vocês entram em uma chamada de voz e este filme abre sincronizado para os dois.</p><div class="lx-watch-invite-list"><div class="lx-watch-invite-empty"><strong>Carregando amigos…</strong>Buscando suas amizades aceitas.</div></div></section></div>`}
 
   async function openInvite(contentId,title){
     closeInvite();
@@ -74,10 +75,10 @@
     try{
       const friends=await acceptedFriends();
       if(!list)return;
-      if(!friends.length){list.innerHTML='<div class="lx-watch-invite-empty"><strong>Nenhum amigo disponível</strong>Adicione alguém na Comunidade e aceite a amizade para convidar essa pessoa.</div>';return}
+      if(!friends.length){list.innerHTML='<div class="lx-watch-invite-empty"><strong>Nenhum amigo disponível</strong>Adicione alguém na Comunidade e aceite a amizade para iniciar uma Watch Party.</div>';return}
       list.innerHTML=friends.map(friend=>{
         const isOn=online(friend.user_id),avatar=friend.avatar_url?`style="background-image:url(${JSON.stringify(friend.avatar_url)})"`:'';
-        return `<article class="lx-watch-invite-row" data-peer="${esc(friend.user_id)}"><span class="lx-watch-invite-avatar" ${avatar}>${friend.avatar_url?'':esc(initials(friend.name))}</span><span class="lx-watch-invite-copy"><strong>${esc(friend.name)}</strong><small>${isOn?'<i class="lx-watch-online-dot"></i> Online':esc(friend.status_text||'Amigo na LX Plus')}</small></span><button class="lx-watch-invite-send" type="button">Convidar</button></article>`
+        return `<article class="lx-watch-invite-row" data-peer="${esc(friend.user_id)}"><span class="lx-watch-invite-avatar" ${avatar}>${friend.avatar_url?'':esc(initials(friend.name))}</span><span class="lx-watch-invite-copy"><strong>${esc(friend.name)}</strong><small>${isOn?'<i class="lx-watch-online-dot"></i> Online':esc(friend.status_text||'Amigo na LX Plus')}</small></span><button class="lx-watch-invite-send" type="button">Ligar e assistir</button></article>`
       }).join('');
       list.querySelectorAll('.lx-watch-invite-send').forEach(btn=>btn.addEventListener('click',()=>{
         const row=btn.closest('.lx-watch-invite-row'),peer=row?.dataset.peer,friend=friends.find(x=>String(x.user_id)===String(peer));
@@ -87,20 +88,19 @@
   }
 
   async function sendInvite(friend,contentId,title,button){
+    if(window.LXWatchPartyV14?.invite){
+      return window.LXWatchPartyV14.invite(friend,contentId,title,button);
+    }
     const client=db();if(!client)return window.LX?.toast?.('A Comunidade ainda não conectou à nuvem.');
-    button.disabled=true;button.textContent='Enviando…';
-    const token=`[LXWATCH:${contentId}]`,body=`🎬 Convite LX · Vamos assistir “${title}” juntos? Abra esse título na LX Plus e entre na chamada comigo. ${token}`;
+    button.disabled=true;button.textContent='Preparando…';
+    const token=`[LXWATCH:${contentId}]`,body=`🎬 Convite LX · Vamos assistir “${title}” juntos? Abra este título e me ligue pela Comunidade. ${token}`;
     const clientId=`watch_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
     try{
       const {error}=await client.rpc('lx_send_message',{p_other:friend.user_id,p_kind:'text',p_body:body,p_media_key:`watch:${contentId}`,p_client_id:clientId,p_reply_to_client_id:null});
       if(error)throw error;
-      window.LX?.toast?.(`Convite enviado para ${friend.name}.`);
+      window.LX?.toast?.('A Watch Party ainda está carregando. O convite foi enviado pela conversa.');
       closeInvite();
-      setTimeout(async()=>{
-        try{await window.LX?.social?.open?.('chats')}catch{}
-        setTimeout(()=>{try{window.LX?.chat?.open?.(friend.user_id)}catch{}},120);
-      },60);
-    }catch(error){console.warn('LX watch invite send',error);button.disabled=false;button.textContent='Tentar de novo';window.LX?.toast?.('Não foi possível enviar o convite agora.');}
+    }catch(error){console.warn('LX watch invite fallback',error);button.disabled=false;button.textContent='Tentar de novo';window.LX?.toast?.('Não foi possível iniciar o convite agora.');}
   }
 
   function sync(){if(!appVisible())return;ensureStyle();markDetail()}
