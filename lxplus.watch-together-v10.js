@@ -9,9 +9,10 @@
      audio instead of risking the remote participant hearing their own voice back
    - local microphone remains handled by the existing call mixer
    - loads Player Audio V10 post-login so large-movie audio repair stays inside LX Player
+   - loads Detail + Watch Invite V12 post-login for compact scrollable media details
 */
 (()=>{'use strict';
-  const PATCH='__lxWatchTogetherV10',AUDIO_SCRIPT_ID='lxPlayerAudioV10Script';
+  const PATCH='__lxWatchTogetherV10',AUDIO_SCRIPT_ID='lxPlayerAudioV10Script',DETAIL_SCRIPT_ID='lxDetailWatchV12Script';
   let lastMode='idle',patchTimer=0;
   const toast=msg=>{try{window.LX?.toast?.(msg)}catch{}};
 
@@ -20,6 +21,14 @@
     const script=document.createElement('script');
     script.id=AUDIO_SCRIPT_ID;script.src='lxplus.player-audio-v10.js?v=20260926-1';script.async=true;
     script.onerror=()=>console.warn('LX Watch Together: Player Audio V10 load failed');
+    document.body.appendChild(script);
+  }
+
+  function loadDetailWatch(){
+    if(window.LXDetailWatchV12||document.getElementById(DETAIL_SCRIPT_ID))return;
+    const script=document.createElement('script');
+    script.id=DETAIL_SCRIPT_ID;script.src='lxplus.detail-watch-v12.js?v=20260926-1';script.async=true;
+    script.onerror=()=>console.warn('LX Watch Together: Detail Watch V12 load failed');
     document.body.appendChild(script);
   }
 
@@ -130,15 +139,16 @@
   }
 
   function boot(){
-    loadPlayerAudio();wrapShareScreen();decorateCall();
-    patchTimer=setInterval(()=>{loadPlayerAudio();wrapShareScreen();decorateCall()},800);
+    loadPlayerAudio();loadDetailWatch();wrapShareScreen();decorateCall();
+    patchTimer=setInterval(()=>{loadPlayerAudio();loadDetailWatch();wrapShareScreen();decorateCall()},800);
     window.LXWatchTogetherV10={
-      version:'10.1',
+      version:'10.2',
       get mode(){return lastMode},
       activeMovieVideo,
       movieAudioTrack,
       repatch:wrapShareScreen,
-      loadPlayerAudio
+      loadPlayerAudio,
+      loadDetailWatch
     };
   }
 
