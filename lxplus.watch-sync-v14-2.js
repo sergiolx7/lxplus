@@ -8,7 +8,7 @@
 */
 (()=>{'use strict';
   const VERSION='14.2';
-  let roomId='',channel=null,heartbeat=null,watcher=null,sequence=0,suppressUntil=0,remoteSeekUntil=0,lastHardSeekAt=0;
+  let roomId='',channel=null,heartbeat=null,watcher=null,sequence=0,suppressUntil=0,remoteSeekUntil=0,lastHardSeekAt=0,patching=false;
   const lastSeq=new Map();
   const uid=()=>String(window.LX?.cloud?.user?.()?.id||window.LX?.ui?.state?.user?.id||'');
   const db=()=>window.LX?.cloud?.db?.()||null;
@@ -102,31 +102,35 @@
     const el=document.getElementById('lxWpSync');if(el)el.textContent=`Transmissão ${label} · sincronizado`;
   }
   async function replaceChannel(){
+    if(patching)return false;
     const a=api(),s=st(),room=s?.room,c=db(),old=s?.channel;
     if(!a||!s||!room||!c||!old)return false;
     if(roomId===String(room.id)&&channel&&s.channel===channel)return true;
-    clearInterval(heartbeat);heartbeat=null;lastSeq.clear();sequence=0;suppressUntil=0;remoteSeekUntil=0;lastHardSeekAt=0;
-    try{await c.removeChannel(old)}catch{}
-    const ch=c.channel('lx-watch-party-'+room.id,{config:{broadcast:{self:false,ack:false}}});
-    ch.on('broadcast',{event:'sync'},({payload})=>stableSync(payload||{}));
-    ch.on('broadcast',{event:'ready'},()=>{if(st()?.room?.role==='host')sendState('peer-ready')});
-    ch.on('broadcast',{event:'quality-request'},({payload})=>qualityRequest(payload||{}));
-    ch.on('broadcast',{event:'quality-state'},({payload})=>qualityState(payload||{}));
-    ch.on('broadcast',{event:'leave'},()=>{toast('A outra pessoa saiu da sessão sincronizada.');api()?.leaveRoom?.({keepMovie:true,silent:true})});
-    channel=ch;roomId=String(room.id);s.channel=ch;
-    ch.subscribe(status=>{
-      if(status!=='SUBSCRIBED')return;
-      const current=st()?.room;
-      if(!current)return;
-      const v=movieVideo();if(v)bindVideo(v);
-      if(current.role==='guest')send('ready',{seq:++sequence});
-      else sendState('peer-ready');
-    });
-    return true;
+    patching=true;
+    try{
+      clearInterval(heartbeat);heartbeat=null;lastSeq.clear();sequence=0;suppressUntil=0;remoteSeekUntil=0;lastHardSeekAt=0;
+      try{await c.removeChannel(old)}catch{}
+      const ch=c.channel('lx-watch-party-'+room.id,{config:{broadcast:{self:false,ack:false}}});
+      ch.on('broadcast',{event:'sync'},({payload})=>stableSync(payload||{}));
+      ch.on('broadcast',{event:'ready'},()=>{if(st()?.room?.role==='host')sendState('peer-ready')});
+      ch.on('broadcast',{event:'quality-request'},({payload})=>qualityRequest(payload||{}));
+      ch.on('broadcast',{event:'quality-state'},({payload})=>qualityState(payload||{}));
+      ch.on('broadcast',{event:'leave'},()=>{toast('A outra pessoa saiu da sessão sincronizada.');api()?.leaveRoom?.({keepMovie:true,silent:true})});
+      channel=ch;roomId=String(room.id);s.channel=ch;
+      ch.subscribe(status=>{
+        if(status!=='SUBSCRIBED')return;
+        const current=st()?.room;
+        if(!current)return;
+        const v=movieVideo();if(v)bindVideo(v);
+        if(current.role==='guest')send('ready',{seq:++sequence});
+        else sendState('peer-ready');
+      });
+      return true;
+    }finally{patching=false}
   }
   function resetIfIdle(){
     const s=st();if(s?.room)return;
-    roomId='';channel=null;lastSeq.clear();clearInterval(heartbeat);heartbeat=null;suppressUntil=0;remoteSeekUntil=0;lastHardSeekAt=0;
+    roomId='';channel=null;lastSeq.clear();clearInterval(heartbeat);heartbeat=null;suppressUntil=0;remoteSeekUntil=0;lastHardSeekAt=0;patching=false;
   }
   function tick(){
     const s=st();
