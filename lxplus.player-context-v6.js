@@ -151,7 +151,7 @@
           const cover=catalogCover||coverIdentity(track?.cover);if(!cover)return;
           const key=item.albumCoverKey||cover;
           if(!groups.has(key))groups.set(key,{id:'',cover,entries:[]});
-          const title=String(track?.title||item.title||'Faixa').trim()||'Faixa';
+          const title=String(tracks.length===1?(item.title||track?.title||'Faixa'):(track?.title||item.title||'Faixa')).trim()||'Faixa';
           const artist=catalogArtist||String(track?.artist||'').trim();
           const album=explicitAlbum||(tracks.length>1&&norm(item.title)!==norm(title)?String(item.title||'').trim():'');
           groups.get(key).entries.push({id:item.id,index,title,artist,album,duration:Number(track?.duration||0),trackNumber:Number(track?.trackNumber||track?.number||0)});
@@ -184,10 +184,11 @@
         const manualCover=String(item.cover||item.artwork?.url||item.albumCover||'').trim();
         const manualArtist=String(item.artist||'').trim(),manualAlbum=albumName(item.album).trim();
         if(manualCover)live.cover=manualCover;
+        if(item.title&&!(Array.isArray(item.tracks)&&item.tracks.length>1))live.title=String(item.title).trim()||live.title;
         if(manualArtist)live.artist=manualArtist;
         if(manualAlbum)live.album=manualAlbum;
         else if(!(Array.isArray(item.tracks)&&item.tracks.length>1))live.album='';
-        if(manualCover||manualArtist||manualAlbum)document.dispatchEvent(new CustomEvent('lx:music-artwork-updated',{detail:{item:live,id:String(id),manualFirst:true}}));
+        if(manualCover||manualArtist||manualAlbum||item.title)document.dispatchEvent(new CustomEvent('lx:music-artwork-updated',{detail:{item:live,id:String(id),manualFirst:true}}));
       });
       return result;
     }
