@@ -118,7 +118,13 @@ jobs:
             {id:2,type:'Filme',title:'Toy Story 5',year:2026,genre:'Animação',cover:'assets/lxplus-logo-v27.png',banner:'assets/lxplus-logo-v27.png',published:true,trending:true,priority:8},
             {id:3,type:'Série',title:'Reacher',year:2026,genre:'Ação',cover:'assets/lxplus-logo-v27.png',banner:'assets/lxplus-logo-v27.png',published:true,trending:true,priority:7},
             {id:4,type:'Filme',title:'Só Por Uma Noite',year:2026,genre:'Drama',cover:'assets/lxplus-logo-v27.png',banner:'assets/lxplus-logo-v27.png',published:true,priority:6},
-            {id:5,type:'Música',title:'LUNCH',artist:'Billie Eilish',album:'HIT ME HARD AND SOFT',genre:'Pop',cover:'assets/lxplus-logo-v27.png',published:true,featured:true,trending:true,priority:10,mediaKey:''}
+            {id:5,type:'Música',title:'LUNCH',artist:'Billie Eilish',album:'HIT ME HARD AND SOFT',genre:'Pop',cover:'assets/lx-music-fallback.svg',banner:'assets/lx-music-fallback.svg',published:true,featured:true,trending:true,priority:10,mediaKey:''},
+            {id:6,type:'Música',title:'Starboy',artist:'The Weeknd',album:'Starboy',genre:'Pop',cover:'assets/lx-music-fallback.svg',published:true,trending:true,priority:9,mediaKey:''},
+            {id:7,type:'Música',title:'SOUR',artist:'Olivia Rodrigo',album:'SOUR',genre:'Pop Rock',cover:'assets/lx-music-fallback.svg',published:true,priority:8,mediaKey:''},
+            {id:8,type:'Música',title:'BRAT',artist:'Charli XCX',album:'BRAT',genre:'Dance',cover:'assets/lx-music-fallback.svg',published:true,priority:7,mediaKey:''},
+            {id:9,type:'Música',title:'Currents',artist:'Tame Impala',album:'Currents',genre:'Indie',cover:'assets/lx-music-fallback.svg',published:true,priority:6,mediaKey:''},
+            {id:10,type:'Música',title:'Mais Uma Vez',artist:'Jão',album:'Super',genre:'Brasil',cover:'assets/lx-music-fallback.svg',published:true,priority:5,mediaKey:''},
+            {id:11,type:'Música',title:'Espresso',artist:'Sabrina Carpenter',album:'Short n Sweet',genre:'Pop',cover:'assets/lx-music-fallback.svg',published:true,priority:4,mediaKey:''}
           ];
           (async()=>{
             const browser=await engines[process.env.BROWSER].launch({headless:true});
@@ -137,6 +143,7 @@ jobs:
               await page.waitForTimeout(3500);
               const auth=await page.locator('#auth').isVisible();
               assert(auth,vp.name+' auth not visible');
+              assert(!(await page.locator('#admin').isVisible()),vp.name+' admin leaked over auth');
               assert(await page.locator('#loginForm').count()===1,vp.name+' login form missing');
               if(vp.name==='desktop') await page.screenshot({path:'/tmp/lxshots/'+process.env.BROWSER+'-auth.png',fullPage:true});
 
@@ -166,17 +173,31 @@ jobs:
               assert(await page.locator('.lx41-home').count()===1,vp.name+' rebuilt home missing');
               assert(await page.locator('.lx41-hero').count()===1,vp.name+' rebuilt hero missing');
               assert(await page.locator('.lx41-top10-card').count()>=4,vp.name+' Top 10 missing');
+              assert(await page.locator('#lxDesktopRail').isVisible()=== (vp.name==='desktop'),vp.name+' desktop rail visibility wrong');
+              assert(await page.locator('#lx40Top10,#lx40Pulse,#lx40Premiere').count()===0,vp.name+' legacy v40 home block leaked');
+              const homeLayout=await page.evaluate(()=>({
+                first:document.querySelector('.lx41-home')?.firstElementChild?.className||'',
+                rail:document.querySelector('#lxDesktopRail')?.getBoundingClientRect().width||0,
+                art:document.querySelector('.lx41-card-art')?.getBoundingClientRect().height||0
+              }));
+              assert(String(homeLayout.first).includes('lx41-hero'),vp.name+' hero is not first home block');
+              if(vp.name==='desktop') assert(homeLayout.rail>60&&homeLayout.rail<110,'desktop rail width wrong: '+homeLayout.rail);
+              assert(homeLayout.art>60,vp.name+' content card artwork collapsed: '+homeLayout.art);
               if(vp.name==='desktop') await page.screenshot({path:'/tmp/lxshots/'+process.env.BROWSER+'-home.png',fullPage:true});
 
               await page.evaluate(()=>{LX.ui.state.mode='Ouvir';LX.ui.state.category='Início';LX.ui.state.musicView='home';LX.ui.renderApp()});
               await page.waitForTimeout(500);
-              assert(await page.locator('.lx-music-app-shell').count()===1,vp.name+' music shell missing');
+              assert(await page.locator('.lx41-music-shell').count()===1,vp.name+' rebuilt music shell missing');
+              assert(await page.locator('.lx41-music-card').count()>=6,vp.name+' music rows too sparse');
               if(vp.name==='desktop') await page.screenshot({path:'/tmp/lxshots/'+process.env.BROWSER+'-music.png',fullPage:true});
 
               await page.evaluate(()=>{LX.ui.state.screen='admin';LX.ui.show('admin');LX.admin.render('dashboard')});
               await page.waitForTimeout(500);
               assert(await page.locator('.lx41-admin-hero').count()===1,vp.name+' rebuilt admin missing');
               assert(await page.locator('.lx41-kpi').count()===6,vp.name+' admin KPIs missing');
+              assert(await page.locator('.lx-mass-launch:not(.lx41-mass-sentinel)').count()===0,vp.name+' legacy mass import banner leaked');
+              const adminLayout=await page.evaluate(()=>{const r=document.querySelector('#adminMain')?.getBoundingClientRect();return r?{x:r.x,width:r.width}:null});
+              if(vp.name==='desktop'){assert(adminLayout&&adminLayout.x>150,'admin main overlaps sidebar');assert(adminLayout.width>900,'admin main too narrow: '+(adminLayout&&adminLayout.width));}
               if(vp.name==='desktop') await page.screenshot({path:'/tmp/lxshots/'+process.env.BROWSER+'-admin.png',fullPage:true});
 
               const metrics=await page.evaluate(()=>({width:document.documentElement.scrollWidth,client:document.documentElement.clientWidth,build:document.documentElement.dataset.lxBuild||''}));
