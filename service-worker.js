@@ -1,14 +1,15 @@
-const LX_BUILD = 'R12.4-UI15-MODAL-V13-20260926';
+const LX_BUILD = 'R12.4-UI16-WATCH-PARTY-V14-20260926';
 const CACHE = 'lxplus-shell-' + LX_BUILD;
 const CORE = ['./', './index.html', './lxplus.bundle.js', './lxplus.album-grouping.js', './lxplus.bundle.css',
   './lxplus.recovery.js', './lxplus.support.js', './lxplus.audiofx.js', './lxplus.ambient-v1.css', './lxplus.ambient-v2.css', './lxplus.visual-v4.css',
   './lxplus.player-context-v6.js', './lxplus.player-context-v6.css', './lxplus.music-polish-v7.css', './lxplus.boot-recovery.js',
   './lxplus.future-ui-v9.js', './lxplus.future-ui-v9.css', './lxplus.books-v8.js', './lxplus.books-v8.css',
-  './lxplus.modal-safety-v13.js', './lxplus.modal-safety-v13.css',
+  './lxplus.watch-together-v10.js', './lxplus.detail-watch-v12.js', './lxplus.detail-watch-v12.css', './lxplus.player-audio-v10.js',
+  './lxplus.watch-party-v14.js', './lxplus.watch-party-v14.css', './lxplus.modal-safety-v13.js', './lxplus.modal-safety-v13.css',
   './manifest.webmanifest', './assets/lxplus-logo-v27.png', './assets/lx-music-fallback.svg'];
 const PLAYER_SCRIPT = '<script src="./lxplus.player-context-v6.js?v=20260926-4"></script>';
 const RECOVERY_SCRIPT = '<script src="./lxplus.boot-recovery.js?v=20260926-2"></script>';
-const FUTURE_SCRIPT = '<script src="./lxplus.future-ui-v9.js?v=20260926-1"></script>';
+const FUTURE_SCRIPT = '<script src="./lxplus.future-ui-v9.js?v=20260926-2"></script>';
 const MODAL_SCRIPT = '<script src="./lxplus.modal-safety-v13.js?v=20260926-2"></script>';
 const offline = () => new Response('<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;background:#050506;color:white;font:16px system-ui;display:grid;place-items:center;min-height:100vh;text-align:center;padding:24px}button{padding:12px 18px;border:0;border-radius:12px;font-weight:800}</style><main><h1>LX Plus</h1><p>Sem conexão. Verifique sua internet e tente novamente.</p><button onclick="location.reload()">Recarregar</button></main></html>',
   { status: 503, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
