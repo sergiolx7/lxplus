@@ -1,0 +1,190 @@
+/* LX Plus — Detail + Watch Invite V12
+   Compact movie/series detail dialog with internal scroll and friend invite sheet.
+   Loaded only after login through Watch Together V10. */
+
+#overlay.lx-detail-v12-open{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  padding:16px!important;
+}
+#overlay.lx-detail-v12-open #modal{
+  width:min(940px,calc(100vw - 32px))!important;
+  max-width:940px!important;
+  max-height:calc(100dvh - 32px)!important;
+  margin:auto!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  scrollbar-gutter:stable;
+  border-radius:24px!important;
+  box-shadow:0 30px 100px rgba(0,0,0,.62)!important;
+}
+#overlay.lx-detail-v12-open #modal::-webkit-scrollbar{width:7px}
+#overlay.lx-detail-v12-open #modal::-webkit-scrollbar-track{background:transparent}
+#overlay.lx-detail-v12-open #modal::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--accent,#8a2be2) 34%,rgba(255,255,255,.12));border-radius:999px}
+#overlay.lx-detail-v12-open #modal>.close-btn{
+  position:sticky!important;
+  float:right!important;
+  top:10px!important;
+  right:10px!important;
+  margin:10px 10px -52px 0!important;
+  z-index:80!important;
+  width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;
+  border-radius:50%!important;
+  background:rgba(8,10,16,.82)!important;
+  backdrop-filter:blur(16px)!important;
+}
+#overlay.lx-detail-v12-open .detail-shell-v256{
+  width:100%!important;
+  max-width:none!important;
+  min-height:0!important;
+  border-radius:24px!important;
+}
+#overlay.lx-detail-v12-open .detail-hero{
+  min-height:320px!important;
+  max-height:none!important;
+  background-position:center 24%!important;
+}
+#overlay.lx-detail-v12-open .detail-hero-inner{
+  grid-template-columns:148px minmax(0,1fr)!important;
+  gap:24px!important;
+  align-items:center!important;
+  padding:28px 30px 26px!important;
+  min-height:320px!important;
+}
+#overlay.lx-detail-v12-open .detail-poster{
+  width:148px!important;
+  max-width:148px!important;
+  align-self:center!important;
+  transform:none!important;
+  border-radius:16px!important;
+}
+#overlay.lx-detail-v12-open .detail-copy{padding:4px 0!important}
+#overlay.lx-detail-v12-open .detail-copy h2{
+  font-size:clamp(32px,4.2vw,56px)!important;
+  line-height:.98!important;
+  margin:8px 0 10px!important;
+  letter-spacing:-.055em!important;
+}
+#overlay.lx-detail-v12-open .detail-tagline{
+  max-width:620px!important;
+  margin:10px 0 0!important;
+  font-size:11.5px!important;
+  line-height:1.5!important;
+  display:-webkit-box!important;
+  -webkit-line-clamp:3!important;
+  -webkit-box-orient:vertical!important;
+  overflow:hidden!important;
+}
+#overlay.lx-detail-v12-open .detail-copy .hero-actions{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  flex-wrap:wrap!important;
+  margin-top:15px!important;
+}
+#overlay.lx-detail-v12-open .detail-copy .hero-actions>button{
+  min-height:38px!important;
+  height:38px!important;
+  padding:0 15px!important;
+  border-radius:999px!important;
+  font-size:10px!important;
+  font-weight:800!important;
+}
+#overlay.lx-detail-v12-open .lx-watch-friend-btn{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  border:1px solid color-mix(in srgb,var(--accent,#8a2be2) 34%,rgba(255,255,255,.09))!important;
+  background:color-mix(in srgb,var(--accent,#8a2be2) 11%,rgba(255,255,255,.035))!important;
+  color:#f4f5f8!important;
+}
+#overlay.lx-detail-v12-open .lx-watch-friend-btn:hover{
+  background:color-mix(in srgb,var(--accent,#8a2be2) 18%,rgba(255,255,255,.05))!important;
+  border-color:color-mix(in srgb,var(--accent,#8a2be2) 52%,rgba(255,255,255,.12))!important;
+}
+#overlay.lx-detail-v12-open .lx-watch-friend-btn svg{width:15px;height:15px;display:block}
+#overlay.lx-detail-v12-open .detail-body{
+  padding:16px 28px 28px!important;
+}
+#overlay.lx-detail-v12-open .detail-summary-grid{
+  grid-template-columns:minmax(0,1.55fr) minmax(220px,.75fr)!important;
+  gap:12px!important;
+}
+#overlay.lx-detail-v12-open .detail-description-card{padding:16px 18px!important}
+#overlay.lx-detail-v12-open .detail-description-card p{font-size:10.5px!important;line-height:1.6!important}
+#overlay.lx-detail-v12-open .detail-side-info>div{padding:11px 12px!important}
+#overlay.lx-detail-v12-open .rating-row{margin-top:11px!important;padding:8px 11px!important}
+#overlay.lx-detail-v12-open .detail-tabs{margin-top:12px!important}
+#overlay.lx-detail-v12-open #detailTab{padding-bottom:4px!important}
+
+/* Invite friend sheet */
+.lx-watch-invite-v12{
+  position:fixed;inset:0;z-index:2147483625;
+  display:grid;place-items:center;
+  padding:18px;
+  background:rgba(2,3,7,.70);
+  backdrop-filter:blur(14px) saturate(1.05);
+}
+.lx-watch-invite-v12[hidden]{display:none!important}
+.lx-watch-invite-panel{
+  width:min(440px,calc(100vw - 28px));
+  max-height:min(620px,calc(100dvh - 34px));
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  border-radius:22px;
+  border:1px solid color-mix(in srgb,var(--accent,#8a2be2) 34%,rgba(255,255,255,.10));
+  background:linear-gradient(155deg,rgba(18,20,31,.985),rgba(6,8,13,.995));
+  box-shadow:0 30px 100px rgba(0,0,0,.62),0 0 34px color-mix(in srgb,var(--accent,#8a2be2) 12%,transparent);
+}
+.lx-watch-invite-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:17px 18px 13px;
+  border-bottom:1px solid rgba(255,255,255,.065);
+}
+.lx-watch-invite-head>div{min-width:0}
+.lx-watch-invite-head small{display:block;color:color-mix(in srgb,var(--accent,#8a2be2) 64%,#fff 36%);font:800 8px/1.2 system-ui;letter-spacing:.12em;text-transform:uppercase}
+.lx-watch-invite-head strong{display:block;margin-top:5px;color:#f7f8fb;font:850 17px/1.15 system-ui;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lx-watch-invite-close{width:32px;height:32px;min-width:32px;border:0;border-radius:50%;background:rgba(255,255,255,.06);color:#fff;font-size:18px;cursor:pointer}
+.lx-watch-invite-sub{padding:0 18px 12px;color:#8f98a9;font:500 10px/1.45 system-ui}
+.lx-watch-invite-list{overflow:auto;padding:6px 10px 12px;display:grid;gap:6px}
+.lx-watch-invite-row{
+  display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:10px;align-items:center;
+  min-height:58px;padding:8px;border-radius:14px;border:1px solid transparent;background:rgba(255,255,255,.02);
+}
+.lx-watch-invite-row:hover{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.06)}
+.lx-watch-invite-avatar{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:color-mix(in srgb,var(--accent,#8a2be2) 22%,#151824);background-size:cover;background-position:center;color:#fff;font:850 12px system-ui}
+.lx-watch-invite-copy{min-width:0}
+.lx-watch-invite-copy strong{display:block;color:#f5f6f8;font:760 11px/1.25 system-ui;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lx-watch-invite-copy small{display:flex;align-items:center;gap:5px;margin-top:4px;color:#8992a3;font:600 8px/1.2 system-ui}
+.lx-watch-online-dot{width:6px;height:6px;border-radius:50%;background:#34d399;box-shadow:0 0 8px rgba(52,211,153,.55)}
+.lx-watch-invite-send{min-height:31px;padding:0 11px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent,#8a2be2) 42%,rgba(255,255,255,.09));background:color-mix(in srgb,var(--accent,#8a2be2) 18%,rgba(255,255,255,.035));color:#fff;font:800 9px system-ui;cursor:pointer}
+.lx-watch-invite-send:disabled{opacity:.55;cursor:wait}
+.lx-watch-invite-empty{padding:28px 18px 32px;text-align:center;color:#9ba3b2;font:600 10px/1.55 system-ui}
+.lx-watch-invite-empty strong{display:block;color:#f0f2f6;font-size:13px;margin-bottom:5px}
+
+@media(max-width:700px){
+  #overlay.lx-detail-v12-open{padding:0!important;align-items:flex-end!important}
+  #overlay.lx-detail-v12-open #modal{
+    width:100%!important;max-width:none!important;
+    max-height:94dvh!important;
+    border-radius:22px 22px 0 0!important;
+  }
+  #overlay.lx-detail-v12-open .detail-shell-v256{border-radius:22px 22px 0 0!important}
+  #overlay.lx-detail-v12-open .detail-hero{min-height:300px!important}
+  #overlay.lx-detail-v12-open .detail-hero-inner{
+    grid-template-columns:92px minmax(0,1fr)!important;
+    gap:14px!important;min-height:300px!important;padding:48px 17px 20px!important;
+  }
+  #overlay.lx-detail-v12-open .detail-poster{width:92px!important;max-width:92px!important;border-radius:12px!important}
+  #overlay.lx-detail-v12-open .detail-copy h2{font-size:clamp(29px,10vw,43px)!important}
+  #overlay.lx-detail-v12-open .detail-tagline{-webkit-line-clamp:2!important;font-size:10px!important}
+  #overlay.lx-detail-v12-open .detail-copy .hero-actions>button{height:35px!important;min-height:35px!important;padding:0 12px!important;font-size:9px!important}
+  #overlay.lx-detail-v12-open .detail-body{padding:12px 14px 24px!important}
+  #overlay.lx-detail-v12-open .detail-summary-grid{grid-template-columns:1fr!important}
+  #overlay.lx-detail-v12-open .detail-side-info{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .lx-watch-invite-v12{padding:0;place-items:end center}
+  .lx-watch-invite-panel{width:100%;max-height:80dvh;border-radius:22px 22px 0 0}
+}
