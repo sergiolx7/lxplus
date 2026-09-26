@@ -142,6 +142,16 @@ function decorateCommunity(){
     tabs.onclick=function(e){var b=e.target.closest('[data-lx41-social]');if(!b)return;qa('[data-lx41-social]',tabs).forEach(function(x){x.classList.toggle('active',x===b)});if(LX.social&&LX.social.open)LX.social.open(b.dataset.lx41Social)};
     var search=q('.lx41-community-search',drawer);if(search)search.after(tabs);else if(head)head.after(tabs);
   }
+  qa('nav,div,section',drawer).forEach(function(el){
+    if(el.classList&&el.classList.contains('lx41-community-tabs'))return;
+    var t=clean(el.textContent);
+    if(/Conversas/.test(t)&&/Pessoas/.test(t)&&/Grupos/.test(t)&&/Pedidos/.test(t)&&el.children.length<=8)el.style.display='none';
+  });
+  qa('input',drawer).forEach(function(inp){
+    if(/LX Social/i.test(inp.placeholder||'')){
+      var wrap=inp.closest('form,section,div');if(wrap&&!wrap.classList.contains('lx41-community-search'))wrap.style.display='none';
+    }
+  });
   if(!q('.lx41-community-footer',drawer)){
     var foot=document.createElement('div');foot.className='lx41-community-footer';foot.innerHTML='<div><span class="avatar">LX</span><p><b>Comunidade LX</b><small>Conectado</small></p></div><div><button type="button" title="Conversar">▢</button><button type="button" title="Chamada de voz">◉</button><button type="button" title="Chamada de vídeo">▣</button><button type="button" title="Mais">•••</button></div>';
     drawer.appendChild(foot);
