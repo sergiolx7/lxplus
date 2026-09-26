@@ -1,11 +1,12 @@
 /* LX Plus Future UI V9
    Safe post-login UI layer. Never mutates auth/bootstrap.
    - Lazy-loads Books V8 only after user enters Books
+   - Lazy-loads Watch Together V10 only after app is visible
    - Tracks current surface for scoped CSS
    - Adds full-screen control to LX Music Now Playing
    - Modernizes navigation/detail chrome without touching core logic */
 (()=>{'use strict';
-  const STYLE_ID='lxFutureUiV9Css',BOOKS_SCRIPT_ID='lxBooksV8LazyScript',BOOKS_STYLE_ID='lxBooksV8LazyStyle';
+  const STYLE_ID='lxFutureUiV9Css',BOOKS_SCRIPT_ID='lxBooksV8LazyScript',BOOKS_STYLE_ID='lxBooksV8LazyStyle',WATCH_SCRIPT_ID='lxWatchTogetherV10Script';
   let booksLoading=false,lastSurface='',timer=0;
   const byId=id=>document.getElementById(id);
   const state=()=>window.LX?.ui?.state||{};
@@ -65,6 +66,14 @@
     script=document.createElement('script');script.id=BOOKS_SCRIPT_ID;script.src='lxplus.books-v8.js?v=20260926-2';script.async=true;
     script.onload=()=>{booksLoading=false;setTimeout(()=>{try{window.LXBooksV8?.sync?.()}catch{}},80)};
     script.onerror=()=>{booksLoading=false;console.warn('LX Future UI: Books V8 lazy load failed')};
+    document.body.appendChild(script);
+  }
+
+  function lazyWatchTogether(){
+    if(!appVisible()||window.LXWatchTogetherV10||byId(WATCH_SCRIPT_ID))return;
+    const script=document.createElement('script');
+    script.id=WATCH_SCRIPT_ID;script.src='lxplus.watch-together-v10.js?v=20260926-1';script.async=true;
+    script.onerror=()=>console.warn('LX Future UI: Watch Together V10 load failed');
     document.body.appendChild(script);
   }
 
@@ -145,7 +154,7 @@
       document.documentElement.classList.remove('lx9-music-fullscreen');
       return;
     }
-    loadStyle();setSurface();enhanceDetail();addFullscreenButton();polishIcons();
+    loadStyle();setSurface();enhanceDetail();addFullscreenButton();polishIcons();lazyWatchTogether();
   }
 
   function queue(){clearTimeout(timer);timer=setTimeout(sync,0)}
@@ -160,7 +169,7 @@
     window.addEventListener('resize',queue,{passive:true});
     setInterval(sync,900);
     sync();
-    window.LXFutureUIV9={sync,lazyBooks,toggleMusicFullscreen:()=>document.querySelector('.lx9-fullscreen-btn')?.click()};
+    window.LXFutureUIV9={sync,lazyBooks,lazyWatchTogether,toggleMusicFullscreen:()=>document.querySelector('.lx9-fullscreen-btn')?.click()};
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
