@@ -1,0 +1,91 @@
+/* LX Plus — Visual V4: side LED dots + responsive fill helpers.
+   Visual-only layer. Does not change catalog, auth, data or Supabase. */
+
+/* Small luminous dots along both sides of the app. */
+#lxAmbientV1::before,
+#lxAmbientV1::after{
+  content:"";
+  position:fixed;
+  z-index:0;
+  top:12vh;
+  bottom:12vh;
+  width:7px;
+  pointer-events:none;
+  opacity:.64;
+  background:
+    radial-gradient(circle at 50% 50%,rgba(205,135,255,.92) 0 1.35px,rgba(116,67,255,.46) 1.5px 2.35px,transparent 2.7px)
+    center top/7px 25px repeat-y;
+  filter:drop-shadow(0 0 5px rgba(151,66,255,.58)) drop-shadow(0 0 11px rgba(71,124,255,.24));
+}
+#lxAmbientV1::before{left:max(7px,env(safe-area-inset-left))}
+#lxAmbientV1::after{
+  right:max(7px,env(safe-area-inset-right));
+  background:
+    radial-gradient(circle at 50% 50%,rgba(96,156,255,.90) 0 1.35px,rgba(145,76,255,.42) 1.5px 2.35px,transparent 2.7px)
+    center 12px/7px 25px repeat-y;
+}
+
+/* Matching little dots on the floating LX Music player. */
+#musicDock .lx-music-drag-handle::before,
+#musicDock .lx-music-drag-handle::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  width:5px;
+  height:5px;
+  margin-top:-2.5px;
+  border-radius:50%;
+  pointer-events:none;
+}
+#musicDock .lx-music-drag-handle::before{
+  left:-7px;
+  background:#b44cff;
+  box-shadow:0 0 7px rgba(180,76,255,.82),0 0 15px rgba(112,66,255,.38);
+}
+#musicDock .lx-music-drag-handle::after{
+  right:-7px;
+  background:#5799ff;
+  box-shadow:0 0 7px rgba(87,153,255,.82),0 0 15px rgba(89,92,255,.34);
+}
+#musicDock .music-timeline{position:relative}
+#musicDock .music-timeline::before,
+#musicDock .music-timeline::after{
+  content:"";
+  position:absolute;
+  top:50%;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  transform:translateY(-50%);
+  pointer-events:none;
+  opacity:.72;
+}
+#musicDock .music-timeline::before{left:-2px;background:#b64dff;box-shadow:0 0 7px rgba(182,77,255,.62)}
+#musicDock .music-timeline::after{right:-2px;background:#5b9cff;box-shadow:0 0 7px rgba(91,156,255,.58)}
+
+/* Legacy/secondary video surfaces also fill their stage responsively. */
+#playerModal video,
+.player-modal video,
+.live-player video,
+.stream-player video,
+.lx-stream-player video{
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  background:#000;
+}
+
+@media(max-width:900px){
+  #lxAmbientV1::before,#lxAmbientV1::after{top:15vh;bottom:15vh;opacity:.48;background-size:6px 29px;width:6px}
+}
+@media(max-width:520px){
+  #lxAmbientV1::before,#lxAmbientV1::after{opacity:.34;top:18vh;bottom:18vh;background-size:5px 32px;width:5px}
+  #lxAmbientV1::before{left:3px}
+  #lxAmbientV1::after{right:3px}
+}
+@media(prefers-reduced-motion:reduce){
+  #lxAmbientV1::before,#lxAmbientV1::after{filter:none}
+}
