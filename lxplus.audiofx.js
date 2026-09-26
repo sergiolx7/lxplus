@@ -73,9 +73,9 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();
 
-/* LX Music — compact floating player, draggable position and background media controls. */
+/* LX Music — compact floating player, freely draggable anywhere in the viewport. */
 (()=>{'use strict';
-  const POS_KEY='lx_music_float_pos_v2';
+  const POS_KEY='lx_music_float_pos_v5';
   const dock=()=>document.getElementById('musicDock');
   const audio=()=>document.getElementById('musicAudio');
   let drag=null,lastPositionUpdate=0;
@@ -83,20 +83,21 @@
   function readPos(){try{return JSON.parse(localStorage.getItem(POS_KEY)||'null')}catch{return null}}
   function savePos(x,y){try{localStorage.setItem(POS_KEY,JSON.stringify({x:Math.round(x),y:Math.round(y)}))}catch{}}
   function bounds(el,x,y){const pad=8,r=el.getBoundingClientRect(),mx=Math.max(pad,innerWidth-r.width-pad),my=Math.max(pad,innerHeight-r.height-pad);return{x:clamp(x,pad,mx),y:clamp(y,pad,my)}}
-  function setXY(el,x,y,save=true){const p=bounds(el,x,y);el.style.left=p.x+'px';el.style.top=p.y+'px';el.style.right='auto';el.style.bottom='auto';if(save)savePos(p.x,p.y)}
-  function restorePosition(){const el=dock(),p=readPos();if(!el||!p)return;requestAnimationFrame(()=>setXY(el,Number(p.x)||8,Number(p.y)||8,false))}
+  function setXY(el,x,y,save=true){const p=bounds(el,x,y);el.style.left=p.x+'px';el.style.top=p.y+'px';el.style.right='auto';el.style.bottom='auto';if(save)savePos(p.x,p.y);return p}
+  function defaultPosition(save=true){const el=dock();if(!el)return;requestAnimationFrame(()=>{const r=el.getBoundingClientRect(),x=Math.max(8,innerWidth-r.width-18),y=innerWidth<=700?66:18;setXY(el,x,y,save)})}
+  function restorePosition(){const el=dock(),p=readPos();if(!el)return;if(p&&Number.isFinite(+p.x)&&Number.isFinite(+p.y))requestAnimationFrame(()=>setXY(el,+p.x,+p.y,false));else defaultPosition(true)}
+  function beginDrag(e,handle){const el=dock();if(!el)return;if(e.button!==0&&e.pointerType!=='touch')return;const r=el.getBoundingClientRect();drag={id:e.pointerId,dx:e.clientX-r.left,dy:e.clientY-r.top};el.classList.add('lx-is-dragging');handle?.setPointerCapture?.(e.pointerId);e.preventDefault()}
+  function moveDrag(e){const el=dock();if(!el||!drag||drag.id!==e.pointerId)return;setXY(el,e.clientX-drag.dx,e.clientY-drag.dy,false);e.preventDefault()}
+  function endDrag(e,handle){const el=dock();if(!el||!drag||drag.id!==e.pointerId)return;const r=el.getBoundingClientRect();savePos(r.left,r.top);drag=null;el.classList.remove('lx-is-dragging');try{handle?.releasePointerCapture?.(e.pointerId)}catch{}}
   function ensureHandle(){
-    const el=dock();if(!el||el.querySelector('.lx-music-drag-handle'))return;
-    const h=document.createElement('div');h.className='lx-music-drag-handle';h.textContent='•••';h.title='Arraste o player';h.setAttribute('aria-label','Arraste o player de música');
-    h.addEventListener('pointerdown',e=>{
-      if(e.button!==0&&e.pointerType!=='touch')return;
-      const r=el.getBoundingClientRect();drag={id:e.pointerId,dx:e.clientX-r.left,dy:e.clientY-r.top};
-      el.classList.add('lx-is-dragging');h.setPointerCapture?.(e.pointerId);e.preventDefault();
-    });
-    h.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;setXY(el,e.clientX-drag.dx,e.clientY-drag.dy,false);e.preventDefault()});
-    const end=e=>{if(!drag||drag.id!==e.pointerId)return;const r=el.getBoundingClientRect();savePos(r.left,r.top);drag=null;el.classList.remove('lx-is-dragging');try{h.releasePointerCapture?.(e.pointerId)}catch{}};
-    h.addEventListener('pointerup',end);h.addEventListener('pointercancel',end);
-    el.prepend(h);restorePosition();
+    const el=dock();if(!el)return;let h=el.querySelector('.lx-music-drag-handle');
+    if(!h){h=document.createElement('div');h.className='lx-music-drag-handle';h.innerHTML='<span class="lx-drag-dots">•••</span><span class="lx-drag-label">MOVER</span>';h.title='Arraste o player para qualquer lugar';h.setAttribute('aria-label','Mover player de música');h.tabIndex=0;el.prepend(h)}
+    if(h.dataset.lxDragBound==='1')return;h.dataset.lxDragBound='1';
+    h.addEventListener('pointerdown',e=>beginDrag(e,h));h.addEventListener('pointermove',moveDrag);h.addEventListener('pointerup',e=>endDrag(e,h));h.addEventListener('pointercancel',e=>endDrag(e,h));
+    h.addEventListener('dblclick',e=>{e.preventDefault();defaultPosition(true)});
+    h.addEventListener('keydown',e=>{const el=dock();if(!el)return;const r=el.getBoundingClientRect(),step=e.shiftKey?40:16;let x=r.left,y=r.top,handled=true;if(e.key==='ArrowLeft')x-=step;else if(e.key==='ArrowRight')x+=step;else if(e.key==='ArrowUp')y-=step;else if(e.key==='ArrowDown')y+=step;else if(e.key==='Home'){defaultPosition(true);e.preventDefault();return}else handled=false;if(handled){e.preventDefault();setXY(el,x,y,true)}});
+    const info=el.querySelector('.music-info');if(info&&!info.dataset.lxDragBound){info.dataset.lxDragBound='1';info.title='Segure e arraste para mover o player';info.addEventListener('pointerdown',e=>{if(e.target.closest('button,a,input'))return;beginDrag(e,info)});info.addEventListener('pointermove',moveDrag);info.addEventListener('pointerup',e=>endDrag(e,info));info.addEventListener('pointercancel',e=>endDrag(e,info))}
+    restorePosition();
   }
   function coverURL(){
     const cover=document.getElementById('musicCover');if(!cover)return'';
@@ -128,7 +129,7 @@
     a.addEventListener('timeupdate',()=>positionState(false));
     document.addEventListener('lx:music-changed',()=>setTimeout(()=>{metadata();positionState(true)},30));
   }
-  function boot(){ensureHandle();setupMediaSession();metadata();window.addEventListener('resize',()=>{const el=dock();if(!el)return;const r=el.getBoundingClientRect();if(readPos())setXY(el,r.left,r.top,true)},{passive:true})}
+  function boot(){ensureHandle();setupMediaSession();metadata();window.addEventListener('resize',()=>{const el=dock();if(!el)return;const r=el.getBoundingClientRect();setXY(el,r.left,r.top,true)},{passive:true});window.addEventListener('orientationchange',()=>setTimeout(()=>{const el=dock();if(!el)return;const r=el.getBoundingClientRect();setXY(el,r.left,r.top,true)},90),{passive:true});LX.musicFloat={reset:()=>defaultPosition(true),moveTo:(x,y)=>{const el=dock();if(el)setXY(el,+x||8,+y||8,true)}}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 
@@ -161,7 +162,7 @@
     };
     if(button&&!button.dataset.lxBound){button.dataset.lxBound='1';button.addEventListener('click',e=>{e.stopPropagation();writeFit(readFit()==='fill'?'contain':'fill');apply()})}
     if(!video.dataset.lxFitBound){video.dataset.lxFitBound='1';video.addEventListener('loadedmetadata',apply);video.addEventListener('emptied',apply)}
-    if(!stage.dataset.lxResizeBound&&'ResizeObserver'in window){stage.dataset.lxResizeBound='1';const ro=new ResizeObserver(apply);ro.observe(stage);host.addEventListener('DOMNodeRemoved',()=>ro.disconnect(),{once:true})}
+    if(!stage.dataset.lxResizeBound&&'ResizeObserver'in window){stage.dataset.lxResizeBound='1';const ro=new ResizeObserver(apply);ro.observe(stage)}
     apply();return true;
   }
   function scan(){const host=document.getElementById('lxGlobalCinema');if(host)requestAnimationFrame(()=>enhanceCinema(host))}
