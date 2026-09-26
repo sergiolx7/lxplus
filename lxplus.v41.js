@@ -119,6 +119,49 @@ function decorateCommunity(){
   var h=q('.lx-community-head h2',drawer),p=q('.lx-community-head p',drawer);if(h)h.textContent='LX Community';if(p)p.textContent='Converse, compartilhe e viva o universo LX.';
   if(!q('.lx41-community-search',drawer)){var head=q('.lx-community-head',drawer),input=document.createElement('button');input.type='button';input.className='lx41-community-search';input.textContent='⌕  Buscar conversas, pessoas, grupos ou mensagens...';input.style.cssText='width:calc(100% - 26px);height:38px;margin:9px 13px 3px;padding:0 13px;text-align:left;border-radius:10px;border:1px solid rgba(142,93,255,.22);background:rgba(23,25,50,.78);color:#9ca2bb;font-size:9px';input.onclick=function(){var old=qa('.lx40-community-tools button',drawer).find(function(b){return /Pesquisar/i.test(b.textContent)});if(old)old.click()};if(head)head.after(input)}
 }
+
+function musicRows(){
+  var d=data(),h=d&&d.history?d.history():{};
+  var all=(d&&d.catalog?d.catalog():[]).filter(function(x){return x.type==='Música'&&x.published!==false});
+  var recent=all.slice().filter(function(x){return h[x.id]&&h[x.id].opened}).sort(function(a,b){return (h[b.id].opened||0)-(h[a.id].opened||0)});
+  var top=all.slice().sort(function(a,b){return score(b)-score(a)}).slice(0,10);
+  return {all:all,recent:recent.length?recent.slice(0,10):top.slice(0,10),top:top};
+}
+function mCard(x){
+  return '<button class="lx41-music-card" type="button" onclick="LX.music('+Number(x.id)+',0)">'+
+    '<span class="art" style="background-image:url(\''+esc(coverOf(x).replace(/'/g,'%27'))+'\')"><i>▶</i></span>'+
+    '<b>'+esc(x.title||'Música')+'</b><small>'+esc(x.album||'Álbum')+' · '+esc(x.artist||'LX Music')+'</small></button>';
+}
+function renderMusicHomeV41(){
+  if(state().screen!=='app'||state().mode!=='Ouvir'||state().query)return;
+  if((state().musicView||'home')!=='home'&&state().category!=='Início')return;
+  var host=$('homeContent'),rows=musicRows();if(!host||!rows.all.length)return;
+  var featured=rows.all.find(function(x){return x.featured})||rows.recent[0]||rows.top[0]||rows.all[0];
+  var banner=imgOf(featured)||coverOf(featured);
+  var artists=[],seen={};
+  rows.all.forEach(function(x){var a=clean(x.artist||'LX Music');if(!seen[a]){seen[a]=1;artists.push(x)}});
+  artists=artists.slice(0,7);
+  var genres=[],gseen={};
+  rows.all.forEach(function(x){var g=clean(x.genre||'Mix LX');if(!gseen[g]){gseen[g]=1;genres.push(g)}});
+  var mixes=genres.slice(0,6).map(function(g,i){
+    var x=rows.all.find(function(y){return clean(y.genre||'Mix LX')===g})||rows.all[i%rows.all.length];
+    return '<button class="lx41-mix" type="button" onclick="LX.music('+Number(x.id)+',0)" style="background-image:url(\''+esc(coverOf(x).replace(/'/g,'%27'))+'\')"><span></span><b>Mix de '+esc(g)+'</b><small>'+esc(x.artist||'Seleção LX')+'</small></button>';
+  }).join('');
+  host.innerHTML='<div class="lx41-music-shell">'+
+    '<aside class="lx41-music-side"><div class="lx41-music-side-title"><span class="lx41-wordmark"><b>LX</b><em>Music</em></span></div>'+
+      '<nav><button class="active" type="button" onclick="LX.musicSetView&&LX.musicSetView(\'home\')">⌂ <span>Início</span></button><button type="button" onclick="document.getElementById(\'searchInput\')&&document.getElementById(\'searchInput\').focus()">⌕ <span>Buscar</span></button><button type="button" onclick="LX.musicSetView&&LX.musicSetView(\'library\')">▥ <span>Sua Biblioteca</span></button></nav>'+
+      '<div class="cap">COLEÇÃO</div><nav><button type="button" onclick="LX.musicSetView&&LX.musicSetView(\'collections\')">♫ <span>Playlists</span></button><button type="button" onclick="LX.musicSetView&&LX.musicSetView(\'collections\')">◉ <span>Álbuns</span></button><button type="button" onclick="LX.musicSetView&&LX.musicSetView(\'explore\')">♙ <span>Artistas</span></button><button type="button" onclick="LX.musicSetView&&LX.musicSetView(\'liked\')">♡ <span>Curtidas</span></button></nav>'+
+    '</aside>'+
+    '<main class="lx41-music-main">'+
+      '<header class="lx41-music-greet"><div><h1>'+esc(hello()+', '+firstName().toLowerCase()+'!')+' 👋</h1><p>Música para cada momento da sua vida.</p></div></header>'+
+      '<section class="lx41-music-hero" style="background-image:url(\''+esc(String(banner).replace(/'/g,'%27'))+'\')"><div class="shade"></div><div class="copy"><small>DESTAQUE</small><h2>'+esc(featured.album||featured.title||'LX Music')+'</h2><strong>'+esc(featured.artist||'LX Music')+'</strong><p>'+esc(featured.desc||featured.description||'Um mergulho sonoro escolhido para você.')+'</p><div><button class="play" type="button" onclick="LX.music('+Number(featured.id)+',0)">▶ &nbsp; Ouvir agora</button><button type="button" onclick="LX.musicToggleSavedCurrent&&LX.musicToggleSavedCurrent()">＋ &nbsp; Salvar na biblioteca</button><button type="button">•••</button></div></div></section>'+
+      '<section class="lx41-music-section"><div class="head"><h2>◷ &nbsp;Ouvidos recentemente</h2><button type="button" onclick="LX.musicSetView&&LX.musicSetView(\'recent\')">Ver tudo ›</button></div><div class="lx41-music-row">'+rows.recent.map(mCard).join('')+'</div></section>'+
+      '<section class="lx41-music-section"><div class="head"><h2>✦ &nbsp;Feito para você <small>Playlists personalizadas baseadas no seu gosto musical.</small></h2><button type="button">Ver tudo ›</button></div><div class="lx41-mixes">'+(mixes||rows.top.slice(0,4).map(function(x){return '<button class="lx41-mix" onclick="LX.music('+Number(x.id)+',0)" style="background-image:url(\''+esc(coverOf(x).replace(/'/g,'%27'))+'\')"><span></span><b>Mix LX</b><small>'+esc(x.artist||'Para você')+'</small></button>'}).join(''))+'</div></section>'+
+      '<div class="lx41-music-bottom"><section class="lx41-music-section discover"><div class="head"><h2>♨ &nbsp;Descobertas para você</h2></div><div class="artists">'+artists.map(function(x){return '<button type="button" onclick="LX.music('+Number(x.id)+',0)"><span style="background-image:url(\''+esc(coverOf(x).replace(/'/g,'%27'))+'\')"></span><b>'+esc(x.artist||'LX Music')+'</b></button>'}).join('')+'</div></section>'+
+      '<section class="lx41-music-section albums"><div class="head"><h2>♛ &nbsp;Álbuns em destaque</h2></div><div class="album-row">'+rows.top.slice(0,4).map(mCard).join('')+'</div></section>'+
+      '<section class="lx41-music-section charts"><div class="head"><h2>▥ &nbsp;Mais tocadas</h2></div><ol>'+rows.top.slice(0,5).map(function(x,i){return '<li><span>'+(i+1)+'</span><button onclick="LX.music('+Number(x.id)+',0)"><i style="background-image:url(\''+esc(coverOf(x).replace(/'/g,'%27'))+'\')"></i><b>'+esc(x.title||'Música')+'</b><small>'+esc(x.artist||'LX Music')+'</small></button><em>♡</em></li>'}).join('')+'</ol></section></div>'+
+    '</main></div>';
+}
 function userScore(u){return Number(u&&(u.monthly_score!=null?u.monthly_score:u.monthlyScore!=null?u.monthlyScore:(Number(u.watched)||0)+(Number(u.listened)||0)+(Number(u.read)||0)*6))||0}
 function adminTop(){
   return '<div class="lx41-admin-top"><label class="lx41-admin-search"><span>⌕</span><input id="lx41AdminSearch" placeholder="Buscar no admin..." autocomplete="off"><kbd>Ctrl + K</kbd></label><div class="lx41-admin-user"><span>♧</span><div class="avatar">'+esc(initials(firstName()))+'</div><div><strong>'+esc(firstName())+'</strong><small>Administrador</small></div></div></div>';
@@ -136,7 +179,7 @@ function renderAdminDashboard(){
   var openReq=requests.filter(function(x){return ['Concluído','Fechado','Recusado'].indexOf(x.status)<0}).length;
   var now=new Date(),end=new Date(now.getFullYear(),now.getMonth()+1,1),diff=end-now,days=Math.max(0,Math.floor(diff/86400000)),hours=Math.max(0,Math.floor(diff%86400000/3600000));
   var month=new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(now).replace(/^./,function(x){return x.toUpperCase()});
-  main.innerHTML=adminTop()+
+  main.innerHTML=adminTop()+'<i class="lx-mass-launch lx41-mass-sentinel" hidden></i>'+ 
     '<section class="lx41-admin-hero"><div><h1>'+esc(hello()+', '+firstName()+'!')+' 👋</h1><p>Aqui está o resumo da sua plataforma hoje.</p></div><div class="lx41-admin-quote">“Mais conteúdo para<br>mais pessoas, sempre.”<br><small>LX Admin</small></div></section>'+
     '<section class="lx41-kpis">'+adminKpi('♟','Usuários',fmt(users.length),'base cadastrada')+adminKpi('▣','Filmes',fmt(movies),'catálogo')+adminKpi('♫','Músicas',fmt(musics),'LX Music')+adminKpi('◉','Lives',fmt(lives),'publicadas')+adminKpi('△','Erros','0','sistema','errors')+adminKpi('☁','Importações','0','histórico','imports')+'</section>'+
     '<section class="lx41-admin-grid">'+
@@ -163,7 +206,7 @@ function insertAdminTop(){var main=$('adminMain');if(!main||q('.lx41-admin-top',
 function installAdminNav(){
   var nav=$('adminNav');if(!nav||nav.dataset.v41)return;nav.dataset.v41='1';
   var map=[['Dashboard','dashboard','⌂'],['Filmes','movies','▣'],['Séries','series','▤'],['Música','music','♫'],['Álbuns','music','◉'],['Livros','books','▥'],['Lives','live','◉'],['Comunidade','community','◎'],['Ranking','v40ranking','♛'],['Smart Import','importer','☁'],['Link Health','v40linkhealth','⌁'],['Erros','v40errors','△'],['Usuários','community','♟'],['Configurações','settings','⚙']];
-  var html='<span class="lx-admin-nav-label">PAINEL</span>';
+  var html='<i data-admin="v40diagnostics" class="lx41-v40-sentinel" hidden></i><span class="lx-admin-nav-label">PAINEL</span>';
   map.forEach(function(x,i){
     if(x[0]==='Comunidade')html+='<span class="lx-admin-nav-label">COMUNIDADE</span>';
     if(x[0]==='Smart Import')html+='<span class="lx-admin-nav-label">FERRAMENTAS</span>';
@@ -204,7 +247,7 @@ function v41Brand(){
     ['#admin .admin-side>.brand','LX Admin']
   ];
   rows.forEach(function(row){
-    var el=q(row[0]);if(!el||el.dataset.v41Brand===row[1])return;
+    var el=q(row[0]);if(!el)return;if(el.dataset.v41Brand===row[1]&&q('.lx41-wordmark',el))return;
     el.dataset.v41Brand=row[1];
     var p=row[1].split(' ');
     el.innerHTML='<span class="lx41-wordmark"><b>'+esc(p[0])+'</b><em>'+esc(p.slice(1).join(' '))+'</em></span>';
@@ -214,7 +257,7 @@ function enhance(){
   try{if(LX.config&&LX.config.features)LX.config.features.top10V40=false}catch(e){}
   v41Brand();v41CleanOldVisuals();
   installTopNav();rebuildLeftNav();syncTopNav();syncLeftNav();decorateMusic();decorateCommunity();installAdminNav();wrapAdmin();
-  if(state().screen==='app'&&state().mode==='Assistir'&&state().category==='Início'&&!state().query){renderHome();v41CleanOldVisuals();setTimeout(v41CleanOldVisuals,120);setTimeout(v41CleanOldVisuals,350);}
+  if(state().screen==='app'&&state().mode==='Assistir'&&state().category==='Início'&&!state().query){renderHome();v41CleanOldVisuals();setTimeout(v41CleanOldVisuals,120);setTimeout(v41CleanOldVisuals,350);}else if(state().screen==='app'&&state().mode==='Ouvir'&&!state().query){renderMusicHomeV41();}
   if(state().screen==='admin'){if((state().adminPage||'dashboard')==='dashboard')renderAdminDashboard();else insertAdminTop()}
   var meta=q('meta[name="lxplus-build"]');if(meta)meta.content=BUILD;if(LX.config)LX.config.version=BUILD;
 }
