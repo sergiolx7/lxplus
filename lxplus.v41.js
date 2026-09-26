@@ -129,8 +129,23 @@ function decorateMusic(){
 }
 function decorateCommunity(){
   var drawer=$('lxCommunityDrawer')||q('.lx-community-drawer');if(!drawer)return;
-  var h=q('.lx-community-head h2',drawer),p=q('.lx-community-head p',drawer);if(h)h.textContent='LX Community';if(p)p.textContent='Converse, compartilhe e viva o universo LX.';
-  if(!q('.lx41-community-search',drawer)){var head=q('.lx-community-head',drawer),input=document.createElement('button');input.type='button';input.className='lx41-community-search';input.textContent='⌕  Buscar conversas, pessoas, grupos ou mensagens...';input.style.cssText='width:calc(100% - 26px);height:38px;margin:9px 13px 3px;padding:0 13px;text-align:left;border-radius:10px;border:1px solid rgba(142,93,255,.22);background:rgba(23,25,50,.78);color:#9ca2bb;font-size:9px';input.onclick=function(){var old=qa('.lx40-community-tools button',drawer).find(function(b){return /Pesquisar/i.test(b.textContent)});if(old)old.click()};if(head)head.after(input)}
+  var head=q('.lx-community-head',drawer),h=q('.lx-community-head h2',drawer),p=q('.lx-community-head p',drawer),ey=q('.lx-community-head .eyebrow,.lx-community-head>div>span',drawer);
+  if(h)h.textContent='LX Community';if(p)p.textContent='Converse, compartilhe e viva o universo LX.';if(ey)ey.textContent='LX COMMUNITY';
+  if(!q('.lx41-community-search',drawer)){
+    var input=document.createElement('button');input.type='button';input.className='lx41-community-search';input.innerHTML='<span>⌕</span><b>Buscar conversas, pessoas, grupos ou mensagens...</b><kbd>Ctrl K</kbd>';
+    input.onclick=function(){var old=qa('.lx40-community-tools button',drawer).find(function(b){return /Pesquisar/i.test(b.textContent)});if(old)old.click()};
+    if(head)head.after(input);
+  }
+  if(!q('.lx41-community-tabs',drawer)){
+    var tabs=document.createElement('nav');tabs.className='lx41-community-tabs';
+    tabs.innerHTML='<button class="active" data-lx41-social="friends">▢ <span>Conversas</span><i>3</i></button><button data-lx41-social="discover">♙ <span>Pessoas</span></button><button data-lx41-social="groups">♟ <span>Grupos</span></button><button data-lx41-social="requests">♧ <span>Pedidos</span></button>';
+    tabs.onclick=function(e){var b=e.target.closest('[data-lx41-social]');if(!b)return;qa('[data-lx41-social]',tabs).forEach(function(x){x.classList.toggle('active',x===b)});if(LX.social&&LX.social.open)LX.social.open(b.dataset.lx41Social)};
+    var search=q('.lx41-community-search',drawer);if(search)search.after(tabs);else if(head)head.after(tabs);
+  }
+  if(!q('.lx41-community-footer',drawer)){
+    var foot=document.createElement('div');foot.className='lx41-community-footer';foot.innerHTML='<div><span class="avatar">LX</span><p><b>Comunidade LX</b><small>Conectado</small></p></div><div><button type="button" title="Conversar">▢</button><button type="button" title="Chamada de voz">◉</button><button type="button" title="Chamada de vídeo">▣</button><button type="button" title="Mais">•••</button></div>';
+    drawer.appendChild(foot);
+  }
 }
 
 function musicRows(){
