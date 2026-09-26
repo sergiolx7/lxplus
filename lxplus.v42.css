@@ -176,3 +176,14 @@
 .lx-topnav button.active:after{bottom:0;left:27%;right:27%}
 .lx-home-arrow{position:absolute;z-index:4;top:50%;transform:translateY(-50%);width:43px;height:43px;border-radius:50%;border:1px solid rgba(255,255,255,.10);background:rgba(10,13,22,.66);color:#d8dae4;font-size:24px;backdrop-filter:blur(9px)}
 .lx-home-arrow.left{left:22px}.lx-home-arrow.right{right:18px}
+
+/* V42 fidelity pass 3 */
+.lx-hero-actions button{white-space:nowrap}
+.lx-hero-actions button:nth-child(1){min-width:170px}
+.lx-hero-actions button:nth-child(2){min-width:150px}
+.lx-hero-actions button:nth-child(3){min-width:190px}
+.lx-music-hero{background-color:#061326;background-size:auto 122%;background-repeat:no-repeat;background-position:70% 45%}
+.lx-music-hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(420px 210px at 62% 20%,rgba(51,84,209,.23),transparent 70%)}
+.lx-music-copy,.lx-album-label,.lx-hero-arrow,.lx-hero-mdots,.lx-floating{z-index:4}
+.lx-community{box-shadow:-26px 24px 90px rgba(0,0,0,.62),0 0 44px rgba(117,43,245,.23),inset 0 0 0 1px rgba(154,82,255,.06)}
+.lx-community-foot{height:78px}
