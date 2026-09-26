@@ -25,6 +25,31 @@
     center 12px/7px 25px repeat-y;
 }
 
+/* Music player: clear drag grip. Drag with mouse or touch; double-click returns to top-right. */
+#musicDock .lx-music-drag-handle{
+  width:104px!important;
+  height:18px!important;
+  top:-7px!important;
+  padding:0 10px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  border:1px solid rgba(154,79,255,.24)!important;
+  border-radius:999px!important;
+  background:rgba(8,10,19,.94)!important;
+  box-shadow:0 5px 18px rgba(0,0,0,.38),0 0 16px rgba(132,45,255,.13)!important;
+  color:#9da5b9!important;
+  cursor:grab!important;
+  touch-action:none!important;
+}
+#musicDock .lx-music-drag-handle:active,
+#musicDock.lx-is-dragging .lx-music-drag-handle{cursor:grabbing!important;color:#fff!important;border-color:rgba(181,91,255,.48)!important;box-shadow:0 7px 22px rgba(0,0,0,.45),0 0 23px rgba(132,45,255,.24)!important}
+#musicDock .lx-drag-dots{font:900 10px/1 system-ui;letter-spacing:3px;color:#a857ff;text-shadow:0 0 8px rgba(168,87,255,.75)}
+#musicDock .lx-drag-label{font:800 7px/1 system-ui;letter-spacing:1.4px;color:#8992a7}
+#musicDock .music-info{cursor:grab}
+#musicDock.lx-is-dragging .music-info{cursor:grabbing}
+
 /* Matching little dots on the floating LX Music player. */
 #musicDock .lx-music-drag-handle::before,
 #musicDock .lx-music-drag-handle::after{
@@ -38,12 +63,12 @@
   pointer-events:none;
 }
 #musicDock .lx-music-drag-handle::before{
-  left:-7px;
+  left:-8px;
   background:#b44cff;
   box-shadow:0 0 7px rgba(180,76,255,.82),0 0 15px rgba(112,66,255,.38);
 }
 #musicDock .lx-music-drag-handle::after{
-  right:-7px;
+  right:-8px;
   background:#5799ff;
   box-shadow:0 0 7px rgba(87,153,255,.82),0 0 15px rgba(89,92,255,.34);
 }
@@ -85,6 +110,7 @@
   #lxAmbientV1::before,#lxAmbientV1::after{opacity:.34;top:18vh;bottom:18vh;background-size:5px 32px;width:5px}
   #lxAmbientV1::before{left:3px}
   #lxAmbientV1::after{right:3px}
+  #musicDock .lx-music-drag-handle{width:92px!important;height:20px!important;top:-8px!important}
 }
 @media(prefers-reduced-motion:reduce){
   #lxAmbientV1::before,#lxAmbientV1::after{filter:none}
