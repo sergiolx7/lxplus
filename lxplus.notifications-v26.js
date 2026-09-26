@@ -34,7 +34,7 @@
     const c=db(),u=user();if(!c||!u?.id)throw new Error('CLOUD_NOT_READY');
     const keys=keysOf(subscription);if(!keys.p256dh||!keys.auth)throw new Error('PUSH_KEYS_MISSING');
     const row={user_id:u.id,endpoint:subscription.endpoint,p256dh:keys.p256dh,auth:keys.auth,user_agent:navigator.userAgent.slice(0,500),enabled:true,updated_at:new Date().toISOString()};
-    const {error}=await c.from('lx_push_subscriptions').upsert(row,{onConflict:'user_id,endpoint'});if(error)throw error;return row;
+    const {error}=await c.rpc('lx_claim_push_subscription',{p_endpoint:row.endpoint,p_p256dh:row.p256dh,p_auth:row.auth,p_user_agent:row.user_agent});if(error)throw error;return row;
   }
   async function currentSubscription(){
     if(!supported())return null;
