@@ -131,3 +131,40 @@
   function boot(){ensureHandle();setupMediaSession();metadata();window.addEventListener('resize',()=>{const el=dock();if(!el)return;const r=el.getBoundingClientRect();if(readPos())setXY(el,r.left,r.top,true)},{passive:true})}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
+
+/* LX Plus V4 — side LED dots + adaptive full-screen cinema fit. */
+(()=>{'use strict';
+  const VISUAL_ID='lxVisualV4Css',FIT_KEY='lx_video_fit_v4';
+  function loadVisual(){
+    let link=document.getElementById(VISUAL_ID);
+    if(!link){link=document.createElement('link');link.id=VISUAL_ID;link.rel='stylesheet';document.head.appendChild(link)}
+    link.href='lxplus.visual-v4.css?v=20260926-1';
+  }
+  function readFit(){try{return localStorage.getItem(FIT_KEY)==='contain'?'contain':'fill'}catch{return'fill'}}
+  function writeFit(mode){try{localStorage.setItem(FIT_KEY,mode)}catch{}}
+  function enhanceCinema(host){
+    const shadow=host?.shadowRoot;if(!shadow)return false;
+    const stage=shadow.getElementById('stage'),video=shadow.getElementById('video');
+    if(!stage||!video)return false;
+    if(!shadow.getElementById('lxAdaptiveFillV4')){
+      const style=document.createElement('style');style.id='lxAdaptiveFillV4';
+      style.textContent='#stage #video{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:center center!important;background:#000!important}#stage.lx-fit-contain-v4 #video{object-fit:contain!important}#poster{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center center!important}.actions #lxFitV4{font-size:15px;font-weight:900}.actions #lxFitV4.active{border-color:rgba(177,83,255,.58);box-shadow:0 0 18px rgba(138,43,226,.25)}@media(max-width:460px){.actions #lxFitV4{display:none!important}}';
+      shadow.appendChild(style);
+    }
+    const actions=shadow.querySelector('.actions');
+    let button=shadow.getElementById('lxFitV4');
+    if(actions&&!button){button=document.createElement('button');button.id='lxFitV4';button.className='round';button.type='button';button.setAttribute('aria-label','Alternar preenchimento do vídeo');actions.prepend(button)}
+    const apply=()=>{
+      const mode=readFit();stage.classList.toggle('lx-fit-contain-v4',mode==='contain');
+      stage.dataset.lxScreen=innerWidth>=innerHeight?'landscape':'portrait';
+      if(button){button.textContent=mode==='fill'?'▣':'□';button.classList.toggle('active',mode==='fill');button.title=mode==='fill'?'Tela preenchida · toque para ajustar sem corte':'Vídeo ajustado · toque para preencher a tela'}
+    };
+    if(button&&!button.dataset.lxBound){button.dataset.lxBound='1';button.addEventListener('click',e=>{e.stopPropagation();writeFit(readFit()==='fill'?'contain':'fill');apply()})}
+    if(!video.dataset.lxFitBound){video.dataset.lxFitBound='1';video.addEventListener('loadedmetadata',apply);video.addEventListener('emptied',apply)}
+    if(!stage.dataset.lxResizeBound&&'ResizeObserver'in window){stage.dataset.lxResizeBound='1';const ro=new ResizeObserver(apply);ro.observe(stage);host.addEventListener('DOMNodeRemoved',()=>ro.disconnect(),{once:true})}
+    apply();return true;
+  }
+  function scan(){const host=document.getElementById('lxGlobalCinema');if(host)requestAnimationFrame(()=>enhanceCinema(host))}
+  function boot(){loadVisual();scan();const obs=new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes){if(node?.nodeType!==1)continue;if(node.id==='lxGlobalCinema'||node.querySelector?.('#lxGlobalCinema'))setTimeout(scan,0)}});obs.observe(document.body,{childList:true,subtree:true});window.addEventListener('resize',scan,{passive:true});window.addEventListener('orientationchange',()=>setTimeout(scan,80),{passive:true})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
