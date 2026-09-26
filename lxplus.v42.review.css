@@ -1,0 +1,103 @@
+/* LX Plus V42 — review corrections for reference fidelity and viewport safety */
+.lx-cross-nav{display:none!important}
+.lx-music-main.has-cross-nav{padding-top:74px!important}
+
+/* Preserve the exact approved Music composition while keeping a clear path back to LX Plus/Films. */
+@media(min-width:821px){
+  .lx-floating{
+    position:absolute!important;
+    top:-56px!important;
+    right:22px!important;
+    left:auto!important;
+    bottom:auto!important;
+    width:380px!important;
+    height:182px!important;
+    max-width:calc(100vw - 280px)!important;
+    z-index:20!important;
+  }
+}
+
+/* Community must render as the visible right-side glass drawer from the approved reference. */
+.lx-community-scrim{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  position:fixed!important;
+  inset:0!important;
+  z-index:1600!important;
+  background:rgba(2,3,8,.48)!important;
+  backdrop-filter:blur(5px)!important;
+}
+.lx-community{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  transform:none!important;
+  position:fixed!important;
+  z-index:1601!important;
+  right:7px!important;
+  left:auto!important;
+  top:7px!important;
+  bottom:7px!important;
+  width:min(592px,calc(100vw - 14px))!important;
+  height:auto!important;
+  max-width:none!important;
+}
+.lx-convs{overflow:auto!important;max-height:calc(100dvh - 330px)!important;overscroll-behavior:contain}
+
+/* LED language requested across the final surfaces, subtle enough not to stack colors. */
+.lx-hero,.lx-music-hero,.lx-community,.lx-box,.lx-kpi{
+  border-color:rgba(145,72,255,.12)!important;
+}
+.lx-hero{box-shadow:0 24px 75px rgba(0,0,0,.36),0 0 34px rgba(72,110,255,.06)!important}
+.lx-music-hero{box-shadow:0 24px 70px rgba(0,0,0,.38),0 0 38px rgba(113,47,255,.09)!important}
+.lx-community{box-shadow:-30px 28px 100px rgba(0,0,0,.66),0 0 54px rgba(124,43,255,.25),inset 0 0 0 1px rgba(173,90,255,.08)!important}
+.lx-admin-side,.lx-rail,.lx-music-side{box-shadow:0 20px 58px rgba(0,0,0,.32),0 0 30px rgba(115,45,235,.07)!important}
+
+/* Defensive geometry: no accidental horizontal cuts on common screens. */
+html,body,.screen,#lxRoot{max-width:100%;overflow-x:hidden}
+.lx-main,.lx-music-main,.lx-admin-main{min-width:0}
+.lx-top10,.lx-mrow,.lx-artists,.lx-albumrow,.lx-tools{scrollbar-width:none}
+.lx-top10::-webkit-scrollbar,.lx-mrow::-webkit-scrollbar,.lx-artists::-webkit-scrollbar,.lx-albumrow::-webkit-scrollbar,.lx-tools::-webkit-scrollbar{display:none}
+
+@media(max-width:1024px) and (min-width:821px){
+  .lx-community{width:min(610px,72vw)!important}
+  .lx-floating{right:10px!important;width:330px!important;max-width:calc(100vw - 230px)!important}
+}
+
+@media(max-width:820px){
+  .lx-cross-nav{display:none!important}
+  .lx-music-main,.lx-music-main.has-cross-nav{margin:0!important;padding:68px 9px 104px!important}
+  .lx-floating{
+    position:fixed!important;
+    top:auto!important;
+    left:8px!important;
+    right:8px!important;
+    bottom:76px!important;
+    width:auto!important;
+    max-width:none!important;
+    height:86px!important;
+    z-index:1550!important;
+  }
+  .lx-community{
+    left:5px!important;
+    right:5px!important;
+    top:5px!important;
+    bottom:calc(72px + env(safe-area-inset-bottom))!important;
+    width:auto!important;
+    height:auto!important;
+    max-width:none!important;
+    border-radius:16px!important;
+  }
+  .lx-community-foot{left:10px!important;right:10px!important;bottom:8px!important}
+  .lx-convs{max-height:calc(100dvh - 370px)!important}
+}
+
+@media(max-width:520px){
+  .lx-community-title p{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lx-csearch{font-size:7.5px!important}
+  .lx-ctabs button{font-size:7px!important;padding:0 4px!important}
+  .lx-tools button{flex:0 0 auto}
+  .lx-conv{grid-template-columns:42px minmax(0,1fr) 44px!important}
+  .lx-community-foot .lx-quick button{width:32px!important;height:32px!important}
+}
