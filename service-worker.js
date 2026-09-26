@@ -1,11 +1,13 @@
-const LX_BUILD = 'R12.4-UI13-HARD-BOOT-RECOVERY-20260926';
+const LX_BUILD = 'R12.4-UI14-FUTURE-V9-20260926';
 const CACHE = 'lxplus-shell-' + LX_BUILD;
 const CORE = ['./', './index.html', './lxplus.bundle.js', './lxplus.album-grouping.js', './lxplus.bundle.css',
   './lxplus.recovery.js', './lxplus.support.js', './lxplus.audiofx.js', './lxplus.ambient-v1.css', './lxplus.ambient-v2.css', './lxplus.visual-v4.css',
   './lxplus.player-context-v6.js', './lxplus.player-context-v6.css', './lxplus.music-polish-v7.css', './lxplus.boot-recovery.js',
+  './lxplus.future-ui-v9.js', './lxplus.future-ui-v9.css', './lxplus.books-v8.js', './lxplus.books-v8.css',
   './manifest.webmanifest', './assets/lxplus-logo-v27.png', './assets/lx-music-fallback.svg'];
 const PLAYER_SCRIPT = '<script src="./lxplus.player-context-v6.js?v=20260926-4"></script>';
 const RECOVERY_SCRIPT = '<script src="./lxplus.boot-recovery.js?v=20260926-2"></script>';
+const FUTURE_SCRIPT = '<script src="./lxplus.future-ui-v9.js?v=20260926-1"></script>';
 const offline = () => new Response('<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;background:#050506;color:white;font:16px system-ui;display:grid;place-items:center;min-height:100vh;text-align:center;padding:24px}button{padding:12px 18px;border:0;border-radius:12px;font-weight:800}</style><main><h1>LX Plus</h1><p>Sem conexão. Verifique sua internet e tente novamente.</p><button onclick="location.reload()">Recarregar</button></main></html>',
   { status: 503, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 
@@ -17,6 +19,7 @@ async function decorateHtml(response) {
   const scripts=[];
   if (!text.includes('lxplus.player-context-v6.js')) scripts.push(PLAYER_SCRIPT);
   if (!text.includes('lxplus.boot-recovery.js')) scripts.push(RECOVERY_SCRIPT);
+  if (!text.includes('lxplus.future-ui-v9.js')) scripts.push(FUTURE_SCRIPT);
   if (scripts.length) text = text.includes('</body>') ? text.replace('</body>', scripts.join('\n') + '\n</body>') : text + scripts.join('\n');
   const headers = new Headers(response.headers);
   headers.delete('content-length');
