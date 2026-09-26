@@ -185,16 +185,43 @@ function wrapRender(){
   var wrapped=function(){var out=old.apply(null,arguments);queueMicrotask(enhance);setTimeout(enhance,40);return out};
   wrapped.__v41=true;LX.ui.renderApp=wrapped;
 }
+function v41CleanOldVisuals(){
+  var root=$('homeContent');
+  if(root){
+    ['#lx40Top10','#lx40Pulse','#lx40Premiere','.lx40-top10','.lx40-pulse','.lx40-premiere'].forEach(function(sel){
+      qa(sel,root).forEach(function(el){el.remove()});
+    });
+  }
+  qa('.lx40-music-brand').forEach(function(el){el.remove()});
+}
+function v41Brand(){
+  var mode=state().mode;
+  var rows=[
+    ['#brandHome',mode==='Ouvir'?'LX Music':'LX Plus'],
+    ['#auth .brand-lg','LX Plus'],
+    ['#auth .auth-mobile-brand','LX Plus'],
+    ['#profiles .brand','LX Plus'],
+    ['#admin .admin-side>.brand','LX Admin']
+  ];
+  rows.forEach(function(row){
+    var el=q(row[0]);if(!el||el.dataset.v41Brand===row[1])return;
+    el.dataset.v41Brand=row[1];
+    var p=row[1].split(' ');
+    el.innerHTML='<span class="lx41-wordmark"><b>'+esc(p[0])+'</b><em>'+esc(p.slice(1).join(' '))+'</em></span>';
+  });
+}
 function enhance(){
+  try{if(LX.config&&LX.config.features)LX.config.features.top10V40=false}catch(e){}
+  v41Brand();v41CleanOldVisuals();
   installTopNav();rebuildLeftNav();syncTopNav();syncLeftNav();decorateMusic();decorateCommunity();installAdminNav();wrapAdmin();
-  if(state().screen==='app'&&state().mode==='Assistir'&&state().category==='Início'&&!state().query)renderHome();
+  if(state().screen==='app'&&state().mode==='Assistir'&&state().category==='Início'&&!state().query){renderHome();v41CleanOldVisuals();setTimeout(v41CleanOldVisuals,120);setTimeout(v41CleanOldVisuals,350);}
   if(state().screen==='admin'){if((state().adminPage||'dashboard')==='dashboard')renderAdminDashboard();else insertAdminTop()}
   var meta=q('meta[name="lxplus-build"]');if(meta)meta.content=BUILD;if(LX.config)LX.config.version=BUILD;
 }
 function boot(){
   if(!window.LX||!LX.ui||!LX.data||!LX.admin){setTimeout(boot,80);return}
   wrapRender();wrapAdmin();installAdminNav();enhance();
-  var mo=new MutationObserver(function(){requestAnimationFrame(function(){decorateCommunity();decorateMusic();if(state().screen==='admin')insertAdminTop()})});
+  var mo=new MutationObserver(function(){requestAnimationFrame(function(){v41Brand();v41CleanOldVisuals();decorateCommunity();decorateMusic();if(state().screen==='admin')insertAdminTop()})});
   mo.observe(document.documentElement,{childList:true,subtree:true});
   window.addEventListener('pageshow',function(){setTimeout(enhance,0)});
   console.info('[LX Plus]',BUILD,'full rebuild active');
