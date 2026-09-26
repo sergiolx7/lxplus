@@ -1,7 +1,7 @@
-const LX_BUILD = 'R12.4-NEXUS-20260924';
+const LX_BUILD = 'R12.4-UI2-20260926';
 const CACHE = 'lxplus-shell-' + LX_BUILD;
 const CORE = ['./', './index.html', './lxplus.bundle.js', './lxplus.album-grouping.js', './lxplus.bundle.css',
-  './lxplus.recovery.js', './lxplus.support.js', './lxplus.audiofx.js',
+  './lxplus.recovery.js', './lxplus.support.js', './lxplus.audiofx.js', './lxplus.ambient-v1.css', './lxplus.ambient-v2.css',
   './manifest.webmanifest', './assets/lxplus-logo-v27.png', './assets/lx-music-fallback.svg'];
 const offline = () => new Response('<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;background:#050506;color:white;font:16px system-ui;display:grid;place-items:center;min-height:100vh;text-align:center;padding:24px}button{padding:12px 18px;border:0;border-radius:12px;font-weight:800}</style><main><h1>LX Plus</h1><p>Sem conexão. Verifique sua internet e tente novamente.</p><button onclick="location.reload()">Recarregar</button></main></html>',
   { status: 503, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
@@ -16,7 +16,6 @@ self.addEventListener('install', event => {
       await cache.put(request, response);
     }));
     if (results.some(result => result.status === 'rejected')) throw new Error('LX shell incomplete');
-    // A primeira instalação não precisa esperar outra aba.
     if (!self.registration.active) await self.skipWaiting();
   })());
 });
@@ -41,7 +40,6 @@ self.addEventListener('fetch', event => {
     try {
       const response = await fetch(request, { cache: 'no-store' });
       if (!response.ok) throw new Error('HTTP ' + response.status);
-      // Caches API keys by full URL, including query. The current build is always network-first.
       const cache = await caches.open(CACHE);
       await cache.put(request, response.clone());
       return response;
