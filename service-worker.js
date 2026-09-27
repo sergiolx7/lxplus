@@ -1,7 +1,7 @@
-/* LX Plus — Canonical Service Worker UI29
-   Music V8 polish + user settings + Web Push + existing player/watch runtimes.
+/* LX Plus — Canonical Service Worker UI30
+   Universal Music Sources V1 + Music V8 + user settings + Web Push + existing player/watch runtimes.
 */
-const LX_BUILD='R12.4-UI29-MUSIC-V8-20260927';
+const LX_BUILD='R12.4-UI30-MUSIC-SOURCES-V1-20260927';
 const CACHE='lxplus-canonical-'+LX_BUILD;
 const CORE=[
   './','./index.html','./lxplus.bundle.js','./lxplus.bundle.css',
@@ -10,7 +10,7 @@ const CORE=[
   './lxplus.player-context-v6.js','./lxplus.player-context-v6.css',
   './lxplus.detail-watch-v12.js','./lxplus.detail-watch-v12.css',
   './lxplus.modal-safety-v13.js','./lxplus.modal-safety-v13.css',
-  './lxplus.music-polish-v7.css','./lxplus.music-v8.css','./lxplus.music-v8.js',
+  './lxplus.music-polish-v7.css','./lxplus.music-v8.css','./lxplus.music-v8.js','./lxplus.music-sources-v1.css','./lxplus.music-sources-v1.js',
   './lxplus.notifications-v26.js','./lxplus.notifications-v26.css','./lxplus.notifications-hotfix-v27.js',
   './lxplus.user-settings-v28.js','./lxplus.user-settings-v28.css',
   './lxplus.watch-together-v10.js','./lxplus.watch-runtime-v16.js','./lxplus.watch-party-v14.js','./lxplus.watch-party-native-v15.js','./lxplus.watch-sync-v14-4.js',
@@ -18,32 +18,34 @@ const CORE=[
   './manifest.webmanifest','./assets/lxplus-logo-v27.png'
 ];
 const EARLY_STYLES=[
-  '<link id="lxFutureUiV9Css" rel="stylesheet" href="./lxplus.future-ui-v9.css?v=UI29">',
-  '<link rel="stylesheet" href="./lxplus.player-context-v6.css?v=UI29">',
-  '<link rel="stylesheet" href="./lxplus.detail-watch-v12.css?v=UI29">',
-  '<link rel="stylesheet" href="./lxplus.modal-safety-v13.css?v=UI29">',
-  '<link id="lxMusicPolishV7Css" rel="stylesheet" href="./lxplus.music-polish-v7.css?v=UI29">',
-  '<link id="lxMusicV8Css" rel="stylesheet" href="./lxplus.music-v8.css?v=UI29">',
-  '<link id="lxNotificationsV26Css" rel="stylesheet" href="./lxplus.notifications-v26.css?v=UI29">',
-  '<link id="lxUserSettingsV28Css" rel="stylesheet" href="./lxplus.user-settings-v28.css?v=UI29">'
+  '<link id="lxFutureUiV9Css" rel="stylesheet" href="./lxplus.future-ui-v9.css?v=UI30">',
+  '<link rel="stylesheet" href="./lxplus.player-context-v6.css?v=UI30">',
+  '<link rel="stylesheet" href="./lxplus.detail-watch-v12.css?v=UI30">',
+  '<link rel="stylesheet" href="./lxplus.modal-safety-v13.css?v=UI30">',
+  '<link id="lxMusicPolishV7Css" rel="stylesheet" href="./lxplus.music-polish-v7.css?v=UI30">',
+  '<link id="lxMusicV8Css" rel="stylesheet" href="./lxplus.music-v8.css?v=UI30">',
+  '<link id="lxMusicSourcesV1Css" rel="stylesheet" href="./lxplus.music-sources-v1.css?v=UI30">',
+  '<link id="lxNotificationsV26Css" rel="stylesheet" href="./lxplus.notifications-v26.css?v=UI30">',
+  '<link id="lxUserSettingsV28Css" rel="stylesheet" href="./lxplus.user-settings-v28.css?v=UI30">'
 ].join('\n');
 const POST_SCRIPTS=[
-  ['lxPlayerContextV6Script','./lxplus.player-context-v6.js?v=UI29'],
-  ['lxFutureUiV9Script','./lxplus.future-ui-v9.js?v=UI29'],
-  ['lxMusicV8Script','./lxplus.music-v8.js?v=UI29'],
-  ['lxModalSafetyV13Script','./lxplus.modal-safety-v13.js?v=UI29'],
-  ['lxDetailWatchV12Script','./lxplus.detail-watch-v12.js?v=UI29'],
-  ['lxPlayerAudioV12Script','./lxplus.player-audio-v12.js?v=UI29'],
-  ['lxNotificationsHotfixV27Script','./lxplus.notifications-hotfix-v27.js?v=UI29'],
-  ['lxUserSettingsV28Script','./lxplus.user-settings-v28.js?v=UI29']
+  ['lxPlayerContextV6Script','./lxplus.player-context-v6.js?v=UI30'],
+  ['lxFutureUiV9Script','./lxplus.future-ui-v9.js?v=UI30'],
+  ['lxMusicV8Script','./lxplus.music-v8.js?v=UI30'],
+  ['lxMusicSourcesV1Script','./lxplus.music-sources-v1.js?v=UI30'],
+  ['lxModalSafetyV13Script','./lxplus.modal-safety-v13.js?v=UI30'],
+  ['lxDetailWatchV12Script','./lxplus.detail-watch-v12.js?v=UI30'],
+  ['lxPlayerAudioV12Script','./lxplus.player-audio-v12.js?v=UI30'],
+  ['lxNotificationsHotfixV27Script','./lxplus.notifications-hotfix-v27.js?v=UI30'],
+  ['lxUserSettingsV28Script','./lxplus.user-settings-v28.js?v=UI30']
 ];
 const normalizedRequest=input=>{const u=new URL(typeof input==='string'?input:input.url,self.registration.scope);u.search='';u.hash='';return new Request(u.toString(),{method:'GET',credentials:'same-origin'})};
 async function decorateHtml(response){
   if(!response?.ok||!(response.headers.get('content-type')||'').includes('text/html'))return response;
   let text=await response.text();
   text=text.replace(/<meta\s+name=["']lxplus-build["']\s+content=["'][^"']*["']\s*\/?\s*>/i,`<meta name="lxplus-build" content="${LX_BUILD}">`);
-  if(!text.includes('data-lx-canonical-shell="29"')){
-    const marker=`<script data-lx-canonical-shell="29">window.LX_CANONICAL_SHELL='${LX_BUILD}';</script>`;
+  if(!text.includes('data-lx-canonical-shell="30"')){
+    const marker=`<script data-lx-canonical-shell="30">window.LX_CANONICAL_SHELL='${LX_BUILD}';</script>`;
     const styles=EARLY_STYLES.split('\n').filter(tag=>!text.includes(tag.match(/href="([^"]+)/)?.[1]?.split('?')[0]||'__none__')).join('\n');
     text=text.includes('</head>')?text.replace('</head>',marker+'\n'+styles+'\n</head>'):marker+'\n'+styles+'\n'+text;
   }
