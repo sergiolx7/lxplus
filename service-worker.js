@@ -1,8 +1,8 @@
-/* LX Plus — Service Worker UI32 SINGLE SHELL
+/* LX Plus — Service Worker UI32.1 SINGLE SHELL
    The HTML is canonical. This worker never injects UI, never rewrites the DOM, and never forces navigation.
 */
-const LX_BUILD='R12.4-UI32-SINGLE-SHELL-20260927';
-const LX_VERSION='UI32';
+const LX_BUILD='R12.4-UI32.1-UPDATER-FIX-20260927';
+const LX_VERSION='UI32.1';
 const CACHE='lxplus-shell-'+LX_BUILD;
 const CORE=[
   './','./index.html','./lxplus.bundle.js','./lxplus.bundle.css',
@@ -12,7 +12,7 @@ const CORE=[
   './lxplus.detail-watch-v12.js','./lxplus.detail-watch-v12.css','./lxplus.modal-safety-v13.js','./lxplus.modal-safety-v13.css',
   './lxplus.music-polish-v7.css','./lxplus.music-v8.css','./lxplus.music-v8.js','./lxplus.music-sources-v2.css','./lxplus.music-sources-v2.js',
   './lxplus.notifications-v26.js','./lxplus.notifications-v26.css','./lxplus.notifications-hotfix-v27.js',
-  './lxplus.user-settings-v28.js','./lxplus.user-settings-v28.css','./lxplus.release-v32.js',
+  './lxplus.user-settings-v28.js','./lxplus.user-settings-v28.css','./lxplus.release-v321.js',
   './lxplus.watch-together-v10.js','./lxplus.watch-runtime-v16.js','./lxplus.watch-party-v14.js','./lxplus.watch-party-native-v15.js','./lxplus.watch-sync-v14-4.js',
   './lxplus.player-audio-v11.js','./lxplus.player-audio-v12.js','./manifest.webmanifest','./assets/lxplus-logo-v27.png'
 ];
@@ -28,7 +28,7 @@ self.addEventListener('install',event=>event.waitUntil((async()=>{
     await cache.put(req,res.clone());
   }));
   const failed=results.filter(x=>x.status==='rejected');
-  if(failed.length)console.warn('LX UI32 partial precache',failed.map(x=>String(x.reason)));
+  if(failed.length)console.warn('LX UI32.1 partial precache',failed.map(x=>String(x.reason)));
   await self.skipWaiting();
 })()));
 
@@ -63,7 +63,7 @@ self.addEventListener('fetch',event=>{
       let res=navigation?await event.preloadResponse:null;
       if(!res)res=await fetch(request,{cache:'no-store'});
       if(!res.ok)throw new Error('HTTP '+res.status);
-      const headers=new Headers(res.headers);headers.set('x-lx-build',LX_BUILD);
+      const headers=new Headers(res.headers);headers.set('x-lx-build',LX_BUILD);headers.set('cache-control','no-store, no-cache, must-revalidate');
       const out=new Response(res.body,{status:res.status,statusText:res.statusText,headers});
       await cache.put(key,out.clone());
       return out;
