@@ -1,4 +1,4 @@
-name: Canonicalize LX Plus UI32
+name: Canonicalize LX Plus UI32.1
 
 on:
   push:
@@ -26,32 +26,32 @@ jobs:
 
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-          build='R12.4-UI32-SINGLE-SHELL-20260927'
+          build='R12.4-UI32.1-UPDATER-FIX-20260927'
+          version='UI32.1'
 
-          # One canonical build in the real HTML, not injected later by the service worker.
-          s=s.replace('R12.4-NEXUS-20260924', build)
-          s=s.replace('?v=UI29','?v=UI32').replace('?v=UI30','?v=UI32').replace('?v=UI31','?v=UI32')
+          # Keep one canonical build marker in the source HTML.
+          for old in ('R12.4-NEXUS-20260924','R12.4-UI32-SINGLE-SHELL-20260927'):
+              s=s.replace(old,build)
           s=re.sub(r'<meta\s+name=["\']lxplus-build["\']\s+content=["\'][^"\']*["\']\s*/?>',
                    f'<meta name="lxplus-build" content="{build}">',s,count=1,flags=re.I)
 
-          # Early, direct CSS. No second visual layer arriving after first paint.
-          styles='''\n  <!-- LX UI32 canonical styles: direct, single shell -->\n  <link id="lxFutureUiV9Css" rel="stylesheet" href="lxplus.future-ui-v9.css?v=UI32">\n  <link id="lxPlayerContextV6Css" rel="stylesheet" href="lxplus.player-context-v6.css?v=UI32">\n  <link id="lxMiniFloatingV11Css" rel="stylesheet" href="lxplus.mini-floating-player-v11.css?v=UI32">\n  <link id="lxDetailWatchV12Css" rel="stylesheet" href="lxplus.detail-watch-v12.css?v=UI32">\n  <link id="lxModalSafetyV13Css" rel="stylesheet" href="lxplus.modal-safety-v13.css?v=UI32">\n  <link id="lxMusicPolishV7Css" rel="stylesheet" href="lxplus.music-polish-v7.css?v=UI32">\n  <link id="lxMusicV8Css" rel="stylesheet" href="lxplus.music-v8.css?v=UI32">\n  <link id="lxMusicSourcesV2Css" rel="stylesheet" href="lxplus.music-sources-v2.css?v=UI32">\n  <link id="lxNotificationsV26Css" rel="stylesheet" href="lxplus.notifications-v26.css?v=UI32">\n  <link id="lxUserSettingsV28Css" rel="stylesheet" href="lxplus.user-settings-v28.css?v=UI32">\n'''
-          if 'LX UI32 canonical styles' not in s:
-              s=s.replace('</head>',styles+'\n</head>',1)
+          # Move every UI32 cache-buster to a new key so browsers cannot reuse the stale updater.
+          s=s.replace('?v=UI32','?v=UI321')
+          s=s.replace('service-worker.js?v=UI32','service-worker.js?v=UI321')
 
-          # Replace legacy PWA updater that used controllerchange + reload and created the back/front flash.
-          start="if('serviceWorker' in navigator){window.addEventListener('load',async()=>{"
-          end="  document.addEventListener('DOMContentLoaded',refresh);"
-          if start in s and end in s:
-              a=s.index(start)
-              b=s.index(end,a)
-              replacement="""if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('./service-worker.js?v=UI32',{scope:'./',updateViaCache:'none'});reg.update().catch(()=>{})}catch(err){console.warn('LX SW update',err)}});}\n"""
-              s=s[:a]+replacement+s[b:]
+          # Remove legacy updater script tags. UI32.1 is the only updater allowed to own the aliases.
+          s=re.sub(r'\s*<script[^>]*src=["\']lxplus\.(?:canonical-update-v31|release-v32)\.js[^>]*></script>', '', s, flags=re.I)
+          s=re.sub(r'\s*<script[^>]*id=["\']lxReleaseV321Script["\'][^>]*></script>', '', s, flags=re.I)
 
-          # Direct JS layer, once. The SW no longer injects UI scripts into HTML.
-          scripts='''\n<!-- LX UI32 canonical scripts: direct, single shell -->\n<script defer id="lxPlayerContextV6Script" src="lxplus.player-context-v6.js?v=UI32"></script>\n<script defer id="lxFutureUiV9Script" src="lxplus.future-ui-v9.js?v=UI32"></script>\n<script defer id="lxMusicV8Script" src="lxplus.music-v8.js?v=UI32"></script>\n<script defer id="lxMusicSourcesV2Script" src="lxplus.music-sources-v2.js?v=UI32"></script>\n<script defer id="lxModalSafetyV13Script" src="lxplus.modal-safety-v13.js?v=UI32"></script>\n<script defer id="lxDetailWatchV12Script" src="lxplus.detail-watch-v12.js?v=UI32"></script>\n<script defer id="lxPlayerAudioV12Script" src="lxplus.player-audio-v12.js?v=UI32"></script>\n<script defer id="lxNotificationsHotfixV27Script" src="lxplus.notifications-hotfix-v27.js?v=UI32"></script>\n<script defer id="lxUserSettingsV28Script" src="lxplus.user-settings-v28.js?v=UI32"></script>\n<script defer id="lxReleaseV32Script" src="lxplus.release-v32.js?v=UI32"></script>\n'''
-          if 'LX UI32 canonical scripts' not in s:
-              s=s.replace('</body>',scripts+'\n</body>',1)
+          # Early migration: an old ?lxui=UI26 URL must never define which interface is active.
+          marker='LX UI32.1 URL migration'
+          if marker not in s:
+              migration='''\n  <!-- LX UI32.1 URL migration -->\n  <script id="lxUi321Migration">\n  (()=>{try{\n    const u=new URL(location.href);\n    ['lxui','lxbuild','_'].forEach(k=>u.searchParams.delete(k));\n    const q=u.searchParams.toString();\n    const clean=u.pathname+(q?'?'+q:'')+u.hash;\n    history.replaceState(history.state,'',clean);\n    window.LX_CANONICAL_VERSION='UI32.1';\n    window.LX_CANONICAL_SHELL='__BUILD__';\n    document.documentElement.dataset.lxCanonicalVersion='UI32.1';\n  }catch(e){console.warn('LX URL migration',e)}})();\n  </script>\n'''.replace('__BUILD__',build)
+              s=s.replace('</head>',migration+'\n</head>',1)
+
+          # If an older canonical block exists, its normal modules stay, but only the new updater is appended.
+          release='''\n<script defer id="lxReleaseV321Script" src="lxplus.release-v321.js?v=UI321"></script>\n'''
+          s=s.replace('</body>',release+'\n</body>',1)
 
           p.write_text(s,encoding='utf-8')
           PY
@@ -65,5 +65,5 @@ jobs:
           git config user.name "sergiolx7"
           git config user.email "88542688+sergiolx7@users.noreply.github.com"
           git add index.html
-          git commit -m "fix(shell): make UI32 index canonical and remove double reload"
+          git commit -m "fix(shell): apply UI32.1 canonical updater and clean legacy URL"
           git push origin HEAD:main
