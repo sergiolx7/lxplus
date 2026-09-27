@@ -1,14 +1,14 @@
-/* LX Plus Notifications V26
+/* LX Plus Notifications V26.2
    iOS-inspired notification center + opt-in Web Push outside the browser.
+   Hotfix: notification center opener is non-recursive and the top bell is rebound directly.
 */
 (()=>{'use strict';
-  if(window.LXNotificationsV26)return;
+  if(window.LXNotificationsV26?.version==='26.2')return;
   const PUBLIC_KEY='BEwN7Hj2kCncrpplDhavvJUgVAE61a_va-B0SsxLVJ_wBYtGT6gXjh5QFDzpR_YIxHTbWAXFjCCZK5gCA89HK-g';
   const PROMPT_TEXT='Você aceita receber notificações da NC News?';
   const DISMISS_KEY='lx_push_prompt_dismissed_v26';
   const STYLE_ID='lxNotificationsV26Css';
-  let promptTimer=0,lastUser='',publishPatched=false,openPatched=false;
-  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  let promptTimer=0,lastUser='',publishPatched=false;
   const byId=id=>document.getElementById(id);
   const toast=m=>{try{window.LX?.toast?.(m)}catch{}};
   const appVisible=()=>{const a=byId('app');return !!a&&!a.classList.contains('hidden')&&getComputedStyle(a).display!=='none'};
@@ -20,7 +20,7 @@
 
   function loadStyle(){
     if(byId(STYLE_ID))return;
-    const l=document.createElement('link');l.id=STYLE_ID;l.rel='stylesheet';l.href='lxplus.notifications-v26.css?v=UI26';document.head.appendChild(l);
+    const l=document.createElement('link');l.id=STYLE_ID;l.rel='stylesheet';l.href='lxplus.notifications-v26.css?v=UI27-2';document.head.appendChild(l);
   }
   function applicationServerKey(){
     const pad='='.repeat((4-PUBLIC_KEY.length%4)%4),base64=(PUBLIC_KEY+pad).replace(/-/g,'+').replace(/_/g,'/'),raw=atob(base64),out=new Uint8Array(raw.length);
@@ -106,15 +106,32 @@
     }
     refreshCenterCard();
   }
+
+  // The old UI26 patch replaced noticeCenter.open with a wrapper around LX.openNotifications.
+  // LX.openNotifications itself called noticeCenter.open, creating infinite recursion.
+  // V26.2 always uses the real center opener as the base and never points it back at itself.
   function patchOpenNotifications(){
-    const LX=window.LX;if(!LX||openPatched)return false;
-    const original=LX.openNotifications;
-    if(typeof original!=='function')return false;
-    if(original.__lxPushV26){openPatched=true;return true}
-    const wrapped=function(...args){const out=original.apply(this,args);Promise.resolve(out).finally(()=>setTimeout(enhanceCenter,0));return out};
-    wrapped.__lxPushV26=true;wrapped.__original=original;LX.openNotifications=wrapped;
-    if(LX.noticeCenter&&typeof LX.noticeCenter.open==='function')LX.noticeCenter.open=wrapped;
-    openPatched=true;return true;
+    const LX=window.LX;if(!LX)return false;
+    const center=LX.noticeCenter;
+    if(!center||typeof center.open!=='function')return false;
+    let base=center.open;
+    if(base.__lxPushCenterBase)base=base.__lxPushCenterBase;
+    if(base.__original&&base.__original!==base&&base.__original!==LX.openNotifications&&typeof base.__original==='function')base=base.__original;
+    // If an already-broken UI26 wrapper is present, Hotfix V27 owns the opener; do not wrap it again.
+    if(window.LXNotificationsHotfixV27?.open){base=window.LXNotificationsHotfixV27.open}
+    const wrapped=function(...args){
+      let out;
+      try{out=base.apply(center,args)}catch(error){console.warn('LX notification center open',error);if(window.LXNotificationsHotfixV27?.open&&base!==window.LXNotificationsHotfixV27.open)out=window.LXNotificationsHotfixV27.open(...args);else throw error}
+      Promise.resolve(out).finally(()=>setTimeout(enhanceCenter,0));return out;
+    };
+    wrapped.__lxPushV26=true;wrapped.__lxPushCenterBase=base;
+    center.open=wrapped;
+    LX.openNotifications=(...args)=>wrapped(...args);
+    const bell=byId('notifyBtn');if(bell&&bell.dataset.lxNotifyDirect!=='262'){
+      bell.dataset.lxNotifyDirect='262';bell.title='Central de notificações';
+      bell.onclick=e=>{e.preventDefault();e.stopPropagation();LX.openNotifications('all')};
+    }
+    return true;
   }
   function patchPublish(){
     const cloud=window.LX?.cloud;if(!cloud||publishPatched||typeof cloud.publishNotices!=='function')return false;
@@ -140,8 +157,8 @@
     const observer=new MutationObserver(()=>{clearTimeout(observer.t);observer.t=setTimeout(sync,20)});observer.observe(document.documentElement,{subtree:true,childList:true});
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')sync()});
     window.addEventListener('focus',sync,{passive:true});
-    setInterval(sync,2500);
+    setInterval(sync,1800);
   }
-  window.LXNotificationsV26={version:'26.0',enable,disable,currentSubscription,showPrompt,enhanceCenter,get permission(){return 'Notification'in window?Notification.permission:'unsupported'},publicKey:PUBLIC_KEY};
+  window.LXNotificationsV26={version:'26.2',enable,disable,currentSubscription,showPrompt,enhanceCenter,patchOpenNotifications,get permission(){return 'Notification'in window?Notification.permission:'unsupported'},publicKey:PUBLIC_KEY};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
