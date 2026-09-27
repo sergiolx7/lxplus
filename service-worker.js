@@ -1,7 +1,7 @@
-/* LX Plus — Canonical Service Worker UI27
-   Notification opener hotfix + real 4K/AAC companion audio + Web Push.
+/* LX Plus — Canonical Service Worker UI28
+   User settings + Web Push outside browser + existing player/watch runtimes.
 */
-const LX_BUILD='R12.4-UI27-AUDIO-NOTIFY-HOTFIX-20260926';
+const LX_BUILD='R12.4-UI28-USER-SETTINGS-PUSH-20260926';
 const CACHE='lxplus-canonical-'+LX_BUILD;
 const CORE=[
   './','./index.html','./lxplus.bundle.js','./lxplus.bundle.css',
@@ -11,32 +11,35 @@ const CORE=[
   './lxplus.detail-watch-v12.js','./lxplus.detail-watch-v12.css',
   './lxplus.modal-safety-v13.js','./lxplus.modal-safety-v13.css',
   './lxplus.notifications-v26.js','./lxplus.notifications-v26.css','./lxplus.notifications-hotfix-v27.js',
+  './lxplus.user-settings-v28.js','./lxplus.user-settings-v28.css',
   './lxplus.watch-together-v10.js','./lxplus.watch-runtime-v16.js','./lxplus.watch-party-v14.js','./lxplus.watch-party-native-v15.js','./lxplus.watch-sync-v14-4.js',
   './lxplus.player-audio-v11.js','./lxplus.player-audio-v12.js',
   './manifest.webmanifest','./assets/lxplus-logo-v27.png'
 ];
 const EARLY_STYLES=[
-  '<link id="lxFutureUiV9Css" rel="stylesheet" href="./lxplus.future-ui-v9.css?v=UI27">',
-  '<link rel="stylesheet" href="./lxplus.player-context-v6.css?v=UI27">',
-  '<link rel="stylesheet" href="./lxplus.detail-watch-v12.css?v=UI27">',
-  '<link rel="stylesheet" href="./lxplus.modal-safety-v13.css?v=UI27">',
-  '<link id="lxNotificationsV26Css" rel="stylesheet" href="./lxplus.notifications-v26.css?v=UI27">'
+  '<link id="lxFutureUiV9Css" rel="stylesheet" href="./lxplus.future-ui-v9.css?v=UI28">',
+  '<link rel="stylesheet" href="./lxplus.player-context-v6.css?v=UI28">',
+  '<link rel="stylesheet" href="./lxplus.detail-watch-v12.css?v=UI28">',
+  '<link rel="stylesheet" href="./lxplus.modal-safety-v13.css?v=UI28">',
+  '<link id="lxNotificationsV26Css" rel="stylesheet" href="./lxplus.notifications-v26.css?v=UI28">',
+  '<link id="lxUserSettingsV28Css" rel="stylesheet" href="./lxplus.user-settings-v28.css?v=UI28">'
 ].join('\n');
 const POST_SCRIPTS=[
-  ['lxPlayerContextV6Script','./lxplus.player-context-v6.js?v=UI27'],
-  ['lxFutureUiV9Script','./lxplus.future-ui-v9.js?v=UI27'],
-  ['lxModalSafetyV13Script','./lxplus.modal-safety-v13.js?v=UI27'],
-  ['lxDetailWatchV12Script','./lxplus.detail-watch-v12.js?v=UI27'],
-  ['lxPlayerAudioV12Script','./lxplus.player-audio-v12.js?v=UI27'],
-  ['lxNotificationsHotfixV27Script','./lxplus.notifications-hotfix-v27.js?v=UI27']
+  ['lxPlayerContextV6Script','./lxplus.player-context-v6.js?v=UI28'],
+  ['lxFutureUiV9Script','./lxplus.future-ui-v9.js?v=UI28'],
+  ['lxModalSafetyV13Script','./lxplus.modal-safety-v13.js?v=UI28'],
+  ['lxDetailWatchV12Script','./lxplus.detail-watch-v12.js?v=UI28'],
+  ['lxPlayerAudioV12Script','./lxplus.player-audio-v12.js?v=UI28'],
+  ['lxNotificationsHotfixV27Script','./lxplus.notifications-hotfix-v27.js?v=UI28'],
+  ['lxUserSettingsV28Script','./lxplus.user-settings-v28.js?v=UI28']
 ];
 const normalizedRequest=input=>{const u=new URL(typeof input==='string'?input:input.url,self.registration.scope);u.search='';u.hash='';return new Request(u.toString(),{method:'GET',credentials:'same-origin'})};
 async function decorateHtml(response){
   if(!response?.ok||!(response.headers.get('content-type')||'').includes('text/html'))return response;
   let text=await response.text();
   text=text.replace(/<meta\s+name=["']lxplus-build["']\s+content=["'][^"']*["']\s*\/?\s*>/i,`<meta name="lxplus-build" content="${LX_BUILD}">`);
-  if(!text.includes('data-lx-canonical-shell="27"')){
-    const marker=`<script data-lx-canonical-shell="27">window.LX_CANONICAL_SHELL='${LX_BUILD}';</script>`;
+  if(!text.includes('data-lx-canonical-shell="28"')){
+    const marker=`<script data-lx-canonical-shell="28">window.LX_CANONICAL_SHELL='${LX_BUILD}';</script>`;
     const styles=EARLY_STYLES.split('\n').filter(tag=>!text.includes(tag.match(/href="([^"]+)/)?.[1]?.split('?')[0]||'__none__')).join('\n');
     text=text.includes('</head>')?text.replace('</head>',marker+'\n'+styles+'\n</head>'):marker+'\n'+styles+'\n'+text;
   }
