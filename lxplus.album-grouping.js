@@ -36,3 +36,123 @@
   root.LXAlbumGrouping=api;
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
+
+/* LX Plus v40 stability hotfixes — runtime-only, no catalog/data migration. */
+(function(root){
+  'use strict';
+  if(!root||typeof document==='undefined')return;
+  const BUILD='V40-BUGFIX-20260927';
+  root.__LX_BUGFIX_BUILD=BUILD;
+
+  /*
+   * v27's enhanced video player reads S.read/S.write from a nested module
+   * where S was never declared. Expose the canonical LX.store lazily so the
+   * existing code resolves the intended store instead of throwing a
+   * ReferenceError when a movie/episode player is enhanced.
+   */
+  try{
+    const descriptor=Object.getOwnPropertyDescriptor(root,'S');
+    if(!descriptor||descriptor.configurable){
+      Object.defineProperty(root,'S',{
+        configurable:true,
+        get(){return root.LX?.store},
+        set(value){Object.defineProperty(root,'S',{value,writable:true,configurable:true})}
+      });
+    }
+  }catch{}
+
+  function blockedQuery(){
+    let proxy;
+    const result={data:null,error:{code:'LX_AUTH_WAIT',message:'Aguardando autenticação'}};
+    proxy=new Proxy({}, {
+      get(_target,prop){
+        if(prop==='then')return (resolve,reject)=>Promise.resolve(result).then(resolve,reject);
+        if(prop==='catch')return reject=>Promise.resolve(result).catch(reject);
+        if(prop==='finally')return fn=>Promise.resolve(result).finally(fn);
+        return ()=>proxy;
+      }
+    });
+    return proxy;
+  }
+
+  /*
+   * Catalog and notification RLS intentionally require an authenticated,
+   * approved account. The legacy public bootstrap still polls those tables
+   * before login (and again after logout), generating 42501 errors every 12s.
+   * Short-circuit only those two reads while there is no LX session. As soon
+   * as hydrateUser establishes currentAuth, the original Supabase client is
+   * used untouched and realtime/catalog refresh works normally.
+   */
+  function guardProtectedAnonymousReads(){
+    const LX=root.LX,client=LX?.cloud?.db?.();
+    if(!client||client.__lxProtectedReadGuard)return false;
+    const originalFrom=client.from?.bind(client);if(!originalFrom)return false;
+    try{
+      Object.defineProperty(client,'__lxProtectedReadGuard',{value:true,configurable:true});
+      client.from=function(table){
+        const protectedTable=table==='lx_catalog'||table==='lx_notifications';
+        if(protectedTable&&!LX.cloud?.user?.())return blockedQuery();
+        return originalFrom(table);
+      };
+      return true;
+    }catch{return false}
+  }
+
+  const playerState={bound:false,drag:null};
+  function clamp(value,min,max){return Math.min(Math.max(Number(value)||0,min),Math.max(min,max))}
+  function playerPosition(el,left,top,persist=false){
+    if(!el)return;
+    if(root.innerWidth<901){
+      for(const prop of ['left','top','right','bottom'])el.style.removeProperty(prop);
+      return;
+    }
+    const width=Math.max(1,el.offsetWidth||360),height=Math.max(1,el.offsetHeight||86);
+    const x=clamp(left,8,root.innerWidth-width-8),y=clamp(top,62,root.innerHeight-height-8);
+    el.style.setProperty('left',x+'px','important');
+    el.style.setProperty('top',y+'px','important');
+    el.style.setProperty('right','auto','important');
+    el.style.setProperty('bottom','auto','important');
+    if(persist){try{localStorage.setItem('lx40:player-pos',JSON.stringify({left:x,top:y}))}catch{}}
+  }
+  function savedPlayerPosition(){try{return JSON.parse(localStorage.getItem('lx40:player-pos')||'null')}catch{return null}}
+  function restorePlayerPosition(){
+    const el=document.getElementById('musicDock');if(!el)return;
+    if(root.innerWidth<901)return playerPosition(el,0,0,false);
+    const saved=savedPlayerPosition(),rect=el.getBoundingClientRect();
+    playerPosition(el,saved?.left??rect.left??(root.innerWidth-el.offsetWidth-22),saved?.top??rect.top??84,false);
+  }
+  function bindFloatingPlayerFix(){
+    const el=document.getElementById('musicDock');if(!el||el.dataset.lxBugfixDrag==='1')return false;
+    el.dataset.lxBugfixDrag='1';playerState.bound=true;restorePlayerPosition();
+    el.addEventListener('pointerdown',event=>{
+      if(root.innerWidth<901||event.button!==0||event.target.closest('button,input,a,select,textarea')||root.LX?.config?.features?.floatingPlayer===false)return;
+      const rect=el.getBoundingClientRect();playerState.drag={pointerId:event.pointerId,x:event.clientX,y:event.clientY,left:rect.left,top:rect.top};
+      el.setPointerCapture?.(event.pointerId);
+    });
+    el.addEventListener('pointermove',event=>{
+      const drag=playerState.drag;if(!drag||drag.pointerId!==event.pointerId)return;
+      playerPosition(el,drag.left+event.clientX-drag.x,drag.top+event.clientY-drag.y,false);
+    });
+    const finish=event=>{
+      const drag=playerState.drag;if(!drag||event?.pointerId!=null&&drag.pointerId!==event.pointerId)return;
+      playerState.drag=null;const rect=el.getBoundingClientRect();playerPosition(el,rect.left,rect.top,true);
+    };
+    el.addEventListener('pointerup',finish);el.addEventListener('pointercancel',finish);
+    return true;
+  }
+
+  let resizeTimer=0;
+  root.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(restorePlayerPosition,90)},{passive:true});
+  root.addEventListener('orientationchange',()=>setTimeout(restorePlayerPosition,120),{passive:true});
+  document.addEventListener('lx:music-changed',()=>setTimeout(restorePlayerPosition,0));
+
+  let attempts=0;
+  const timer=setInterval(()=>{
+    guardProtectedAnonymousReads();
+    bindFloatingPlayerFix();
+    if(++attempts>240||(root.LX?.cloud?.db?.()&&playerState.bound))clearInterval(timer);
+  },50);
+  queueMicrotask(()=>{guardProtectedAnonymousReads();bindFloatingPlayerFix()});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{guardProtectedAnonymousReads();bindFloatingPlayerFix();restorePlayerPosition()},{once:true});
+  else setTimeout(()=>{guardProtectedAnonymousReads();bindFloatingPlayerFix();restorePlayerPosition()},0);
+})(typeof window!=='undefined'?window:globalThis);
