@@ -1,21 +1,14 @@
 {
-  "version": "UI32",
-  "build": "R12.4-UI32-SINGLE-SHELL-20260927",
-  "name": "Single Shell + World Music Catalog",
-  "base": "UI31",
-  "files": [
-    "index.html",
-    "service-worker.js",
-    "lxplus.release-v32.js",
-    "lxplus.music-sources-v2.js",
-    "lxplus.music-sources-v2.css"
-  ],
+  "version": "UI32.1",
+  "build": "R12.4-UI32.1-UPDATER-FIX-20260927",
+  "name": "UI32.1 Updater Fix",
+  "base": "UI32",
+  "files": ["index.html", "service-worker.js", "lxplus.release-v321.js"],
   "force": false,
   "features": [
-    "Uma única interface canônica carregada diretamente pelo index.html",
-    "Atualização sem injeção de segunda camada e sem loop controllerchange/reload",
-    "Busca mundial de metadados musicais com paginação",
-    "Áudio apenas de fontes LX, livres ou licenciadas, com rascunho de metadados quando não houver áudio disponível"
+    "Remove o parâmetro legado lxui da URL",
+    "Usa uma única versão canônica no painel de atualização",
+    "Recarrega arquivos técnicos sem alterar dados da conta"
   ],
-  "notes": "UI32 elimina a sobreposição entre shell antigo e interface nova. O Service Worker não injeta HTML nem força navegação; o catálogo musical mundial é consultado sob demanda e permite adicionar metadados como rascunho para anexar MP3 depois."
+  "notes": "Corrige a detecção incorreta de versão e o estado antigo UI26 na URL."
 }
