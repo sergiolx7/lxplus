@@ -1,7 +1,8 @@
-/* LX Plus — Canonical Service Worker UI30
-   Universal Music Sources V1 + Music V8 + user settings + Web Push + existing player/watch runtimes.
+/* LX Plus — Canonical Service Worker UI31
+   Canonical refresh + Universal Music Sources V1 + Music V8 + existing runtimes.
 */
-const LX_BUILD='R12.4-UI30-MUSIC-SOURCES-V1-20260927';
+const LX_BUILD='R12.4-UI31-CANONICAL-REFRESH-20260927';
+const LX_VERSION='UI31';
 const CACHE='lxplus-canonical-'+LX_BUILD;
 const CORE=[
   './','./index.html','./lxplus.bundle.js','./lxplus.bundle.css',
@@ -12,53 +13,83 @@ const CORE=[
   './lxplus.modal-safety-v13.js','./lxplus.modal-safety-v13.css',
   './lxplus.music-polish-v7.css','./lxplus.music-v8.css','./lxplus.music-v8.js','./lxplus.music-sources-v1.css','./lxplus.music-sources-v1.js',
   './lxplus.notifications-v26.js','./lxplus.notifications-v26.css','./lxplus.notifications-hotfix-v27.js',
-  './lxplus.user-settings-v28.js','./lxplus.user-settings-v28.css',
+  './lxplus.user-settings-v28.js','./lxplus.user-settings-v28.css','./lxplus.canonical-update-v31.js',
   './lxplus.watch-together-v10.js','./lxplus.watch-runtime-v16.js','./lxplus.watch-party-v14.js','./lxplus.watch-party-native-v15.js','./lxplus.watch-sync-v14-4.js',
   './lxplus.player-audio-v11.js','./lxplus.player-audio-v12.js',
   './manifest.webmanifest','./assets/lxplus-logo-v27.png'
 ];
 const EARLY_STYLES=[
-  '<link id="lxFutureUiV9Css" rel="stylesheet" href="./lxplus.future-ui-v9.css?v=UI30">',
-  '<link rel="stylesheet" href="./lxplus.player-context-v6.css?v=UI30">',
-  '<link rel="stylesheet" href="./lxplus.detail-watch-v12.css?v=UI30">',
-  '<link rel="stylesheet" href="./lxplus.modal-safety-v13.css?v=UI30">',
-  '<link id="lxMusicPolishV7Css" rel="stylesheet" href="./lxplus.music-polish-v7.css?v=UI30">',
-  '<link id="lxMusicV8Css" rel="stylesheet" href="./lxplus.music-v8.css?v=UI30">',
-  '<link id="lxMusicSourcesV1Css" rel="stylesheet" href="./lxplus.music-sources-v1.css?v=UI30">',
-  '<link id="lxNotificationsV26Css" rel="stylesheet" href="./lxplus.notifications-v26.css?v=UI30">',
-  '<link id="lxUserSettingsV28Css" rel="stylesheet" href="./lxplus.user-settings-v28.css?v=UI30">'
+  '<link id="lxFutureUiV9Css" rel="stylesheet" href="./lxplus.future-ui-v9.css?v=UI31">',
+  '<link rel="stylesheet" href="./lxplus.player-context-v6.css?v=UI31">',
+  '<link rel="stylesheet" href="./lxplus.detail-watch-v12.css?v=UI31">',
+  '<link rel="stylesheet" href="./lxplus.modal-safety-v13.css?v=UI31">',
+  '<link id="lxMusicPolishV7Css" rel="stylesheet" href="./lxplus.music-polish-v7.css?v=UI31">',
+  '<link id="lxMusicV8Css" rel="stylesheet" href="./lxplus.music-v8.css?v=UI31">',
+  '<link id="lxMusicSourcesV1Css" rel="stylesheet" href="./lxplus.music-sources-v1.css?v=UI31">',
+  '<link id="lxNotificationsV26Css" rel="stylesheet" href="./lxplus.notifications-v26.css?v=UI31">',
+  '<link id="lxUserSettingsV28Css" rel="stylesheet" href="./lxplus.user-settings-v28.css?v=UI31">'
 ].join('\n');
 const POST_SCRIPTS=[
-  ['lxPlayerContextV6Script','./lxplus.player-context-v6.js?v=UI30'],
-  ['lxFutureUiV9Script','./lxplus.future-ui-v9.js?v=UI30'],
-  ['lxMusicV8Script','./lxplus.music-v8.js?v=UI30'],
-  ['lxMusicSourcesV1Script','./lxplus.music-sources-v1.js?v=UI30'],
-  ['lxModalSafetyV13Script','./lxplus.modal-safety-v13.js?v=UI30'],
-  ['lxDetailWatchV12Script','./lxplus.detail-watch-v12.js?v=UI30'],
-  ['lxPlayerAudioV12Script','./lxplus.player-audio-v12.js?v=UI30'],
-  ['lxNotificationsHotfixV27Script','./lxplus.notifications-hotfix-v27.js?v=UI30'],
-  ['lxUserSettingsV28Script','./lxplus.user-settings-v28.js?v=UI30']
+  ['lxPlayerContextV6Script','./lxplus.player-context-v6.js?v=UI31'],
+  ['lxFutureUiV9Script','./lxplus.future-ui-v9.js?v=UI31'],
+  ['lxMusicV8Script','./lxplus.music-v8.js?v=UI31'],
+  ['lxMusicSourcesV1Script','./lxplus.music-sources-v1.js?v=UI31'],
+  ['lxModalSafetyV13Script','./lxplus.modal-safety-v13.js?v=UI31'],
+  ['lxDetailWatchV12Script','./lxplus.detail-watch-v12.js?v=UI31'],
+  ['lxPlayerAudioV12Script','./lxplus.player-audio-v12.js?v=UI31'],
+  ['lxNotificationsHotfixV27Script','./lxplus.notifications-hotfix-v27.js?v=UI31'],
+  ['lxUserSettingsV28Script','./lxplus.user-settings-v28.js?v=UI31'],
+  ['lxCanonicalUpdateV31Script','./lxplus.canonical-update-v31.js?v=UI31']
 ];
 const normalizedRequest=input=>{const u=new URL(typeof input==='string'?input:input.url,self.registration.scope);u.search='';u.hash='';return new Request(u.toString(),{method:'GET',credentials:'same-origin'})};
+function canonicalizeHtml(text){
+  return String(text||'')
+    .replaceAll('?v=R12.4-NEXUS-20260924','?v=UI31')
+    .replaceAll('?v=UI29','?v=UI31')
+    .replaceAll('?v=UI30','?v=UI31');
+}
 async function decorateHtml(response){
   if(!response?.ok||!(response.headers.get('content-type')||'').includes('text/html'))return response;
-  let text=await response.text();
+  let text=canonicalizeHtml(await response.text());
   text=text.replace(/<meta\s+name=["']lxplus-build["']\s+content=["'][^"']*["']\s*\/?\s*>/i,`<meta name="lxplus-build" content="${LX_BUILD}">`);
-  if(!text.includes('data-lx-canonical-shell="30"')){
-    const marker=`<script data-lx-canonical-shell="30">window.LX_CANONICAL_SHELL='${LX_BUILD}';</script>`;
+  if(!text.includes('data-lx-canonical-shell="31"')){
+    const marker=`<script data-lx-canonical-shell="31">window.LX_CANONICAL_SHELL='${LX_BUILD}';window.LX_CANONICAL_VERSION='${LX_VERSION}';</script>`;
     const styles=EARLY_STYLES.split('\n').filter(tag=>!text.includes(tag.match(/href="([^"]+)/)?.[1]?.split('?')[0]||'__none__')).join('\n');
     text=text.includes('</head>')?text.replace('</head>',marker+'\n'+styles+'\n</head>'):marker+'\n'+styles+'\n'+text;
   }
   const scripts=[];for(const [id,src] of POST_SCRIPTS){const base=src.split('?')[0].replace('./','');if(!text.includes(base))scripts.push(`<script id="${id}" src="${src}"></script>`)}
   if(scripts.length)text=text.includes('</body>')?text.replace('</body>',scripts.join('\n')+'\n</body>'):text+scripts.join('\n');
-  const h=new Headers(response.headers);h.delete('content-length');h.set('cache-control','no-store, no-cache, must-revalidate');h.set('pragma','no-cache');h.set('x-lx-build',LX_BUILD);return new Response(text,{status:response.status,statusText:response.statusText,headers:h});
+  const h=new Headers(response.headers);h.delete('content-length');h.set('cache-control','no-store, no-cache, must-revalidate');h.set('pragma','no-cache');h.set('expires','0');h.set('x-lx-build',LX_BUILD);return new Response(text,{status:response.status,statusText:response.statusText,headers:h});
+}
+async function navigateClientsToCanonical(){
+  const list=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+  let n=0;
+  for(const client of list){
+    try{
+      client.postMessage({type:'LX_CANONICAL_READY',build:LX_BUILD,version:LX_VERSION});
+      const u=new URL(client.url);
+      if(u.origin!==self.location.origin)continue;
+      if(u.searchParams.get('lxbuild')===LX_VERSION)continue;
+      u.searchParams.set('lxbuild',LX_VERSION);u.searchParams.set('_',String(Date.now()+n++));
+      await client.navigate(u.toString());
+    }catch(error){console.warn('LX canonical client refresh',error)}
+  }
 }
 self.addEventListener('install',event=>event.waitUntil((async()=>{
   const cache=await caches.open(CACHE);const results=await Promise.allSettled(CORE.map(async path=>{const req=normalizedRequest(new URL(path,self.registration.scope).toString()),res=await fetch(req,{cache:'no-store'});if(!res.ok)throw new Error(`${path} ${res.status}`);await cache.put(req,res.clone())}));
   if(results.some(x=>x.status==='rejected'))console.warn('LX canonical precache partial',results.filter(x=>x.status==='rejected').map(x=>String(x.reason)));await self.skipWaiting();
 })()));
-self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key!==CACHE)await caches.delete(key);try{await self.registration.navigationPreload?.enable?.()}catch{}await self.clients.claim();const list=await self.clients.matchAll({type:'window',includeUncontrolled:true});for(const client of list)try{client.postMessage({type:'LX_CANONICAL_READY',build:LX_BUILD})}catch{}})()));
-self.addEventListener('message',event=>{if(event.data?.type==='LX_SKIP_WAITING')self.skipWaiting();if(event.data?.type==='LX_CLEAR_CACHE')event.waitUntil((async()=>{for(const key of await caches.keys())if(key!==CACHE)await caches.delete(key)})())});
+self.addEventListener('activate',event=>event.waitUntil((async()=>{
+  for(const key of await caches.keys())if(key!==CACHE&&key.startsWith('lxplus-'))await caches.delete(key);
+  try{await self.registration.navigationPreload?.enable?.()}catch{}
+  await self.clients.claim();
+  await navigateClientsToCanonical();
+})()));
+self.addEventListener('message',event=>{
+  if(event.data?.type==='LX_SKIP_WAITING')self.skipWaiting();
+  if(event.data?.type==='LX_CLEAR_CACHE')event.waitUntil((async()=>{for(const key of await caches.keys())if(key!==CACHE&&key.startsWith('lxplus-'))await caches.delete(key)})());
+  if(event.data?.type==='LX_FORCE_UPDATE')event.waitUntil((async()=>{await self.skipWaiting();await navigateClientsToCanonical()})());
+});
 self.addEventListener('push',event=>{
   event.waitUntil((async()=>{let data={};try{data=event.data?.json?.()||{}}catch{try{data={body:event.data?.text?.()||''}}catch{}}const title=String(data.title||'LX Plus').slice(0,80),body=String(data.body||data.message||'Você tem uma nova notificação.').slice(0,400),url=String(data.url||'/'),tag=String(data.tag||'lx-plus');await self.registration.showNotification(title,{body,icon:'./assets/lxplus-logo-v27.png',badge:'./assets/lxplus-logo-v27.png',tag,renotify:true,silent:false,vibrate:[90,45,90],data:{url,source:data.source||'LX Plus'},actions:[{action:'open',title:'Abrir'}]})})());
 });
