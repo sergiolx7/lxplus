@@ -1,0 +1,69 @@
+name: Canonicalize LX Plus UI32
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/canonicalize-ui32.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  canonicalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Canonicalize production index
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          build='R12.4-UI32-SINGLE-SHELL-20260927'
+
+          # One canonical build in the real HTML, not injected later by the service worker.
+          s=s.replace('R12.4-NEXUS-20260924', build)
+          s=s.replace('?v=UI29','?v=UI32').replace('?v=UI30','?v=UI32').replace('?v=UI31','?v=UI32')
+          s=re.sub(r'<meta\s+name=["\']lxplus-build["\']\s+content=["\'][^"\']*["\']\s*/?>',
+                   f'<meta name="lxplus-build" content="{build}">',s,count=1,flags=re.I)
+
+          # Early, direct CSS. No second visual layer arriving after first paint.
+          styles='''\n  <!-- LX UI32 canonical styles: direct, single shell -->\n  <link id="lxFutureUiV9Css" rel="stylesheet" href="lxplus.future-ui-v9.css?v=UI32">\n  <link id="lxPlayerContextV6Css" rel="stylesheet" href="lxplus.player-context-v6.css?v=UI32">\n  <link id="lxMiniFloatingV11Css" rel="stylesheet" href="lxplus.mini-floating-player-v11.css?v=UI32">\n  <link id="lxDetailWatchV12Css" rel="stylesheet" href="lxplus.detail-watch-v12.css?v=UI32">\n  <link id="lxModalSafetyV13Css" rel="stylesheet" href="lxplus.modal-safety-v13.css?v=UI32">\n  <link id="lxMusicPolishV7Css" rel="stylesheet" href="lxplus.music-polish-v7.css?v=UI32">\n  <link id="lxMusicV8Css" rel="stylesheet" href="lxplus.music-v8.css?v=UI32">\n  <link id="lxMusicSourcesV2Css" rel="stylesheet" href="lxplus.music-sources-v2.css?v=UI32">\n  <link id="lxNotificationsV26Css" rel="stylesheet" href="lxplus.notifications-v26.css?v=UI32">\n  <link id="lxUserSettingsV28Css" rel="stylesheet" href="lxplus.user-settings-v28.css?v=UI32">\n'''
+          if 'LX UI32 canonical styles' not in s:
+              s=s.replace('</head>',styles+'\n</head>',1)
+
+          # Replace legacy PWA updater that used controllerchange + reload and created the back/front flash.
+          start="if('serviceWorker' in navigator){window.addEventListener('load',async()=>{"
+          end="  document.addEventListener('DOMContentLoaded',refresh);"
+          if start in s and end in s:
+              a=s.index(start)
+              b=s.index(end,a)
+              replacement="""if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('./service-worker.js?v=UI32',{scope:'./',updateViaCache:'none'});reg.update().catch(()=>{})}catch(err){console.warn('LX SW update',err)}});}\n"""
+              s=s[:a]+replacement+s[b:]
+
+          # Direct JS layer, once. The SW no longer injects UI scripts into HTML.
+          scripts='''\n<!-- LX UI32 canonical scripts: direct, single shell -->\n<script defer id="lxPlayerContextV6Script" src="lxplus.player-context-v6.js?v=UI32"></script>\n<script defer id="lxFutureUiV9Script" src="lxplus.future-ui-v9.js?v=UI32"></script>\n<script defer id="lxMusicV8Script" src="lxplus.music-v8.js?v=UI32"></script>\n<script defer id="lxMusicSourcesV2Script" src="lxplus.music-sources-v2.js?v=UI32"></script>\n<script defer id="lxModalSafetyV13Script" src="lxplus.modal-safety-v13.js?v=UI32"></script>\n<script defer id="lxDetailWatchV12Script" src="lxplus.detail-watch-v12.js?v=UI32"></script>\n<script defer id="lxPlayerAudioV12Script" src="lxplus.player-audio-v12.js?v=UI32"></script>\n<script defer id="lxNotificationsHotfixV27Script" src="lxplus.notifications-hotfix-v27.js?v=UI32"></script>\n<script defer id="lxUserSettingsV28Script" src="lxplus.user-settings-v28.js?v=UI32"></script>\n<script defer id="lxReleaseV32Script" src="lxplus.release-v32.js?v=UI32"></script>\n'''
+          if 'LX UI32 canonical scripts' not in s:
+              s=s.replace('</body>',scripts+'\n</body>',1)
+
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit canonical index
+        shell: bash
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "index already canonical"
+            exit 0
+          fi
+          git config user.name "sergiolx7"
+          git config user.email "88542688+sergiolx7@users.noreply.github.com"
+          git add index.html
+          git commit -m "fix(shell): make UI32 index canonical and remove double reload"
+          git push origin HEAD:main
