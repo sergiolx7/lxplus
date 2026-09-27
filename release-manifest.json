@@ -1,11 +1,14 @@
 {
-  "version": "25.46",
-  "name": "Drive Quality + Next Episode",
-  "base": "25.45",
+  "version": "UI31",
+  "build": "R12.4-UI31-CANONICAL-REFRESH-20260927",
+  "name": "Canonical Refresh + Universal Music Sources",
+  "base": "UI30",
   "files": [
-    "index.html",
-    "app.css",
-    "lxplus.js"
+    "service-worker.js",
+    "lxplus.canonical-update-v31.js",
+    "lxplus.music-sources-v1.js",
+    "lxplus.music-sources-v1.css"
   ],
-  "notes": "Google Drive quality variants (Auto/4K/1080p/720p/480p), bulk quality links per season, and persistent next-episode navigation including season transitions."
+  "force": true,
+  "notes": "Corrige a atualização presa em versões antigas, força a nova navegação após ativar o Service Worker e mantém a Busca Universal da LX Music disponível na UI31."
 }
