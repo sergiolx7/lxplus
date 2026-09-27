@@ -1,4 +1,4 @@
-const LX_BUILD = 'V40-COMPLETE-20260925';
+const LX_BUILD = 'V40-BUGFIX-20260927';
 const CACHE = 'lxplus-shell-' + LX_BUILD;
 const CORE = ['./', './index.html', './lxplus.bundle.js', './lxplus.album-grouping.js', './lxplus.bundle.css',
   './lxplus.recovery.js', './lxplus.support.js', './lxplus.audiofx.js', './lxplus.v40.js', './lxplus.v40.css',
