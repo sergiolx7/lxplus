@@ -1,14 +1,21 @@
 {
-  "version": "UI31",
-  "build": "R12.4-UI31-CANONICAL-REFRESH-20260927",
-  "name": "Canonical Refresh + Universal Music Sources",
-  "base": "UI30",
+  "version": "UI32",
+  "build": "R12.4-UI32-SINGLE-SHELL-20260927",
+  "name": "Single Shell + World Music Catalog",
+  "base": "UI31",
   "files": [
+    "index.html",
     "service-worker.js",
-    "lxplus.canonical-update-v31.js",
-    "lxplus.music-sources-v1.js",
-    "lxplus.music-sources-v1.css"
+    "lxplus.release-v32.js",
+    "lxplus.music-sources-v2.js",
+    "lxplus.music-sources-v2.css"
   ],
-  "force": true,
-  "notes": "Corrige a atualização presa em versões antigas, força a nova navegação após ativar o Service Worker e mantém a Busca Universal da LX Music disponível na UI31."
+  "force": false,
+  "features": [
+    "Uma única interface canônica carregada diretamente pelo index.html",
+    "Atualização sem injeção de segunda camada e sem loop controllerchange/reload",
+    "Busca mundial de metadados musicais com paginação",
+    "Áudio apenas de fontes LX, livres ou licenciadas, com rascunho de metadados quando não houver áudio disponível"
+  ],
+  "notes": "UI32 elimina a sobreposição entre shell antigo e interface nova. O Service Worker não injeta HTML nem força navegação; o catálogo musical mundial é consultado sob demanda e permite adicionar metadados como rascunho para anexar MP3 depois."
 }
