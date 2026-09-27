@@ -118,8 +118,9 @@
   function restorePlayerPosition(){
     const el=document.getElementById('musicDock');if(!el)return;
     if(root.innerWidth<901)return playerPosition(el,0,0,false);
-    const saved=savedPlayerPosition(),rect=el.getBoundingClientRect();
-    playerPosition(el,saved?.left??rect.left??(root.innerWidth-el.offsetWidth-22),saved?.top??rect.top??84,false);
+    const saved=savedPlayerPosition();
+    if(!saved||!Number.isFinite(Number(saved.left))||!Number.isFinite(Number(saved.top)))return;
+    playerPosition(el,Number(saved.left),Number(saved.top),false);
   }
   function bindFloatingPlayerFix(){
     const el=document.getElementById('musicDock');if(!el||el.dataset.lxBugfixDrag==='1')return false;
