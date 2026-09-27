@@ -10,7 +10,7 @@ const CORE=[
   './lxplus.player-context-v6.js','./lxplus.player-context-v6.css',
   './lxplus.detail-watch-v12.js','./lxplus.detail-watch-v12.css',
   './lxplus.modal-safety-v13.js','./lxplus.modal-safety-v13.css',
-  './lxplus.music-polish-v7.css','./lxplus.music-v8.css',
+  './lxplus.music-polish-v7.css','./lxplus.music-v8.css','./lxplus.music-v8.js',
   './lxplus.notifications-v26.js','./lxplus.notifications-v26.css','./lxplus.notifications-hotfix-v27.js',
   './lxplus.user-settings-v28.js','./lxplus.user-settings-v28.css',
   './lxplus.watch-together-v10.js','./lxplus.watch-runtime-v16.js','./lxplus.watch-party-v14.js','./lxplus.watch-party-native-v15.js','./lxplus.watch-sync-v14-4.js',
@@ -30,6 +30,7 @@ const EARLY_STYLES=[
 const POST_SCRIPTS=[
   ['lxPlayerContextV6Script','./lxplus.player-context-v6.js?v=UI29'],
   ['lxFutureUiV9Script','./lxplus.future-ui-v9.js?v=UI29'],
+  ['lxMusicV8Script','./lxplus.music-v8.js?v=UI29'],
   ['lxModalSafetyV13Script','./lxplus.modal-safety-v13.js?v=UI29'],
   ['lxDetailWatchV12Script','./lxplus.detail-watch-v12.js?v=UI29'],
   ['lxPlayerAudioV12Script','./lxplus.player-audio-v12.js?v=UI29'],
