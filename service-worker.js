@@ -3,7 +3,7 @@
 */
 const LX_BUILD='R12.4-UI33-MAINTENANCE-20260929';
 const LX_VERSION='UI33';
-const CACHE='lxplus-shell-'+LX_BUILD;
+const CACHE='lxplus-shell-'+LX_BUILD+'-support-fix1';
 const CORE=[
   './','./index.html','./lxplus.bundle.js','./lxplus.bundle.css',
   './lxplus.support.js','./lxplus.support-core.js','./lxplus.recovery.js','./lxplus.audiofx.js','./lxplus.album-grouping.js',
