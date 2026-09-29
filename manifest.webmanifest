@@ -11,11 +11,11 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "assets/icon-v27.svg",
+      "src": "assets/lxplus-icon-v34.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ],
-  "version": "R12.4-UI33-MAINTENANCE-20260929"
+  "version": "R12.4-UI34-REBUILD-20260929"
 }

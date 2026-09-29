@@ -1,4 +1,4 @@
-name: Verify LX Plus UI33
+name: Verify LX Plus UI34
 
 on:
   push:
@@ -6,14 +6,18 @@ on:
     paths:
       - 'index.html'
       - 'lxplus.bundle.js'
+      - 'lxplus.modal-safety-v13.js'
       - 'lxplus.support.js'
       - 'lxplus.music-v8.js'
       - 'lxplus.admin-health-v33.js'
-      - 'lxplus.maintenance-v33.css'
-      - 'lxplus.release-v33.js'
+      - 'lxplus.maintenance-v34.css'
+      - 'lxplus.release-v34.js'
       - 'release-manifest.json'
       - 'service-worker.js'
       - 'manifest.webmanifest'
+      - 'assets/lxplus-wordmark-v34.svg'
+      - 'assets/lxplus-icon-v34.svg'
+      - 'assets/lxplus-icon-v34.png'
       - '.github/workflows/canonicalize-ui32.yml'
   pull_request:
     branches: [main]
@@ -33,10 +37,11 @@ jobs:
       - name: Check syntax and deployment references
         run: |
           node --check lxplus.bundle.js
+          node --check lxplus.modal-safety-v13.js
           node --check lxplus.support.js
           node --check lxplus.music-v8.js
           node --check lxplus.admin-health-v33.js
-          node --check lxplus.release-v33.js
+          node --check lxplus.release-v34.js
           node --check service-worker.js
           node qa-ui33.cjs
       - name: Run media and interaction checks
