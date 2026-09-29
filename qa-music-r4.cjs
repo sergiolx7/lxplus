@@ -19,13 +19,14 @@ const extract = (start, end) => {
   const nodes = new Map(['musicDock', 'musicTitle', 'musicArtist'].map(id => [id, {
     textContent: '', classList: { hidden: true, contains: () => false, remove() { this.hidden = false } }
   }]));
+  nodes.set('musicAudio', { paused: false });
   let selected = 0, toggled = 0, loaded = 0;
   const LX = { artwork: { url: () => '', fallback: 'fallback' }, toast: message => assert(message) };
   const state = { musicQueue: [], musicIndex: 0, musicGenre: 'Todos' };
   const context = vm.createContext({ LX, state, D: { catalog: () => songs, track: () => {} },
     $: id => nodes.get(id), musicCatalog: () => songs, musicGenresOf: x => [x.genre],
     musicHasGenre: (x, g) => x.genre === g, currentMusic: () => state.musicQueue[state.musicIndex],
-    unlockMusicGesture() {}, toggleCurrentMusic() { toggled++ }, setMusicDockArtwork() {},
+    unlockMusicGesture() {}, isExternalMusicTrack: () => false, providerPlayback: { paused: false }, toggleCurrentMusic() { toggled++ }, setMusicDockArtwork() {},
     loadTrack: async () => { loaded++; return true }, rememberMusicStart() {},
     setMusicStatus() {}, musicErrorText: () => 'erro', console });
   vm.runInContext(extract('function music(id,index=0,autoplay=true,queueIds=null){', '\nlet musicLoadTicket'), context);
@@ -34,7 +35,9 @@ const extract = (start, end) => {
   assert.equal(nodes.get('musicTitle').textContent, 'CUIDA DO PET');
   assert.equal(state.musicQueue.length, 2, 'Automatic next must stay in the same genre');
   assert.equal(state.musicQueue[1].title, 'Para Ti Eu Vou');
-  context.music(1);assert.equal(toggled, 1, 'Tapping the active track must toggle playback');
+  context.music(1);assert.equal(toggled, 0, 'Opening the active playing track must not pause it');
+  nodes.get('musicAudio').paused = true;
+  context.music(1);assert.equal(toggled, 1, 'Opening the active paused track must resume it');
   context.music(1, 0, true, [1, 3]);assert.equal(state.musicQueue[1].title, 'SEMI NUA 2', 'Personal collection controls the queue');
   context.music(4);assert.equal(nodes.get('musicTitle').textContent, 'Sem arquivo', 'Missing source still opens a player with its title');
   assert.equal(state.musicQueue.length >= 1, true);

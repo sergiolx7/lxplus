@@ -1,0 +1,80 @@
+/* UI33: one final, scoped visual layer over the existing cinema, music and social surfaces. */
+:root{--lx33-border:rgba(255,255,255,.085);--lx33-muted:#a8b0c0;--lx33-panel:#11151e}
+/* The legacy mobile .admin display rule used !important and exposed hidden screens. */
+#splash.hidden,#auth.hidden,#profiles.hidden,#app.hidden,#admin.hidden{display:none!important}
+
+@media(min-width:761px){
+  #app:not(.hidden):not(.lx-music-mode) .hero{height:min(68vh,690px);min-height:480px}
+  #app:not(.hidden):not(.lx-music-mode) .hero-copy{width:min(670px,60vw);padding-bottom:clamp(75px,10vh,130px)}
+  #app:not(.hidden):not(.lx-music-mode) .hero-copy h1{font-size:clamp(40px,5vw,76px);line-height:.98;max-width:12ch}
+  #app .rail{grid-auto-columns:clamp(190px,18.5vw,290px);gap:14px}
+}
+#app .rail-filler{display:none}
+#app .rail-section{margin-bottom:clamp(26px,3.5vw,46px)}
+#app .rail-head h2{font-weight:820;letter-spacing:-.045em}
+#app .card-art{border-radius:16px;border-color:var(--lx33-border);box-shadow:0 18px 44px rgba(0,0,0,.32)}
+#app .card:focus-visible,#app .rail-arrow:focus-visible,#app .hero-actions button:focus-visible{outline:2px solid var(--accent,#8a2be2);outline-offset:3px}
+#app .card:hover .card-art{border-color:color-mix(in srgb,var(--accent,#8a2be2) 48%,white 12%);box-shadow:0 22px 55px rgba(0,0,0,.48)}
+#app .hero-bg:after{background:linear-gradient(90deg,rgba(3,5,9,.96) 0%,rgba(3,5,9,.72) 37%,rgba(3,5,9,.12) 78%),linear-gradient(0deg,#05060b,transparent 55%)}
+#app .hero-meta span{border-radius:999px;padding:6px 10px;background:rgba(6,8,14,.68);border-color:rgba(255,255,255,.14)}
+#app .hero-dots button{height:5px;border-radius:99px}
+#app .hero-dots button.active{background:var(--accent,#8a2be2)}
+
+/* Keep the Spotify-like music library readable without letting its artwork escape. */
+#app.lx-music-mode .lx-music-section{border-radius:20px}
+#app.lx-music-mode .lx-music-album,#app.lx-music-mode .lx-music-card{transition:background .18s ease,transform .18s ease}
+#app.lx-music-mode .lx-music-album:hover,#app.lx-music-mode .lx-music-card:hover{transform:translateY(-3px);background:rgba(255,255,255,.07)}
+#app.lx-music-mode .lx-music-feature-copy h2{letter-spacing:-.045em}
+#app.lx-music-mode .lx-music-feature-art img{object-fit:cover}
+
+/* Conversation cards and message bubbles keep an Instagram-like rhythm with LX colors. */
+.lx-community-drawer .lx-community-person{transition:background .18s ease,border-color .18s ease}
+.lx-community-drawer .lx-community-person:hover,.lx-community-drawer .lx-community-person.has-unread{border-color:color-mix(in srgb,var(--accent,#8a2be2) 40%,transparent)!important}
+.lx-community-drawer .lx-chat-bubble{line-height:1.45;overflow-wrap:anywhere}
+
+/* ADM catalogue review. It only reads the loaded catalogue. */
+#lxAdminHealth33{margin:22px 0 64px;padding:clamp(18px,2.4vw,30px);background:radial-gradient(620px 280px at 0% 0%,color-mix(in srgb,var(--accent,#8a2be2) 14%,transparent),transparent 70%),linear-gradient(145deg,#121724,#090c13);border:1px solid var(--lx33-border);border-radius:24px;box-shadow:0 24px 60px rgba(0,0,0,.18);color:#f8f9fc}
+.lx-health33-head{display:flex;justify-content:space-between;align-items:start;gap:20px}
+.lx-health33-head h2{font-size:clamp(22px,2.3vw,34px);letter-spacing:-.05em;margin:8px 0 5px}
+.lx-health33-head p{color:var(--lx33-muted);margin:0 0 9px;line-height:1.5}
+.lx-health33-head small{color:#7e8ea7}
+.lx-health33-actions,.lx-health33-foot>div{display:flex;flex-wrap:wrap;gap:8px}
+.lx-health33 button{min-height:36px;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:#f3f5fb;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.lx-health33 button:hover{border-color:color-mix(in srgb,var(--accent,#8a2be2) 60%,white 12%);background:rgba(255,255,255,.11)}
+.lx-health33 button:focus-visible,.lx-health33 input:focus-visible{outline:2px solid #b6a0ff;outline-offset:2px}
+.lx-health33 button:disabled{opacity:.55;cursor:wait}
+.lx-health33-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:21px 0}
+.lx-health33-stats span{min-width:0;padding:12px;border:1px solid var(--lx33-border);border-radius:14px;background:rgba(255,255,255,.035);color:#aab4c4;font-size:11px}
+.lx-health33-stats b{display:block;margin-bottom:3px;color:#fff;font-size:clamp(19px,2vw,27px);line-height:1}
+.lx-health33-stats .attention b{color:#f7b19e}
+.lx-health33-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.lx-health33-filters{display:flex;flex-wrap:wrap;gap:5px}
+.lx-health33-filters button{min-height:33px;padding:6px 10px;border-radius:99px}
+.lx-health33-filters button[aria-pressed="true"]{background:color-mix(in srgb,var(--accent,#8a2be2) 42%,#19202b);border-color:color-mix(in srgb,var(--accent,#8a2be2) 72%,white 12%)}
+#lxHealth33Search{min-width:180px;flex:1 1 180px;max-width:330px;height:36px;padding:0 12px;color:#fff;background:rgba(2,5,10,.55);border:1px solid rgba(255,255,255,.14);border-radius:10px;font:inherit;font-size:12px}
+#lxHealth33Count{margin-left:auto;white-space:nowrap;color:#aeb6c5}
+.lx-health33-list{max-height:400px;overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--lx33-border);border-radius:14px;background:rgba(2,5,10,.32)}
+.lx-health33-row{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 13px;border-bottom:1px solid rgba(255,255,255,.055)}
+.lx-health33-row:last-child{border-bottom:0}
+.lx-health33-row div{min-width:0}
+.lx-health33-row strong,.lx-health33-row small{display:block;overflow-wrap:anywhere}
+.lx-health33-row strong{font-size:13px}.lx-health33-row small{color:var(--lx33-muted);font-size:11px;margin-top:3px}
+.lx-health33-row button{white-space:nowrap}
+.lx-health33-kind{font-size:10px;font-weight:800;color:#e7c487}
+.lx-health33-kind.critical{color:#ffac99}.lx-health33-kind.draft{color:#91b7ee}
+.lx-health33-empty{margin:0;padding:20px;color:#aeb8ca}
+.lx-health33-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:14px;color:#9ba7b9;font-size:11px}
+
+@media(max-width:760px){
+  #app .rail{grid-auto-columns:minmax(160px,56vw);gap:10px}
+  #app .rail-head h2{font-size:18px}
+  #lxAdminHealth33{margin:15px 0 80px;padding:16px;border-radius:17px}
+  .lx-health33-head,.lx-health33-foot{flex-direction:column;align-items:stretch}
+  .lx-health33-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .lx-health33-stats span{padding:10px}
+  #lxHealth33Count{margin-left:0}
+  .lx-health33-row{grid-template-columns:1fr auto;gap:4px 8px}
+  .lx-health33-kind{grid-column:1/-1}
+  .lx-health33-row button{padding:7px}
+}
+@media(prefers-reduced-motion:reduce){#app .card,.lx-community-drawer .lx-community-person,#app.lx-music-mode .lx-music-album,#app.lx-music-mode .lx-music-card{transition:none}}

@@ -1,14 +1,16 @@
 {
-  "version": "UI32.1",
-  "build": "R12.4-UI32.1-UPDATER-FIX-20260927",
-  "name": "UI32.1 Updater Fix",
-  "base": "UI32",
-  "files": ["index.html", "service-worker.js", "lxplus.release-v321.js"],
+  "version": "UI33",
+  "build": "R12.4-UI33-MAINTENANCE-20260929",
+  "name": "UI33 · Manutenção e diagnóstico ADM",
+  "base": "UI32.1",
+  "files": ["index.html", "lxplus.bundle.js", "lxplus.music-v8.js", "lxplus.admin-health-v33.js", "lxplus.maintenance-v33.css", "lxplus.release-v33.js", "service-worker.js", "manifest.webmanifest"],
   "force": false,
   "features": [
-    "Remove o parâmetro legado lxui da URL",
-    "Usa uma única versão canônica no painel de atualização",
-    "Recarrega arquivos técnicos sem alterar dados da conta"
+    "Diagnóstico do catálogo no painel ADM, com filtros, busca e relatório CSV",
+    "Carrosséis sem cartões de preenchimento",
+    "Clique na música atual sem interromper a reprodução",
+    "Confirmação Premium somente após salvar no Supabase",
+    "Folha de estilo da música carregada uma única vez"
   ],
-  "notes": "Corrige a detecção incorreta de versão e o estado antigo UI26 na URL."
+  "notes": "Atualização aditiva do frontend, sem alterar tabelas ou dados dos usuários."
 }
