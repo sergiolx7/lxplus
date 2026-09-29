@@ -1,7 +1,7 @@
 /* LX Music V8 runtime — reuse the canonical stylesheet instead of loading it twice. */
 (()=>{'use strict';
   if(window.LXMusicV8)return;
-  const ID='lxMusicV8Css',HREF='lxplus.music-v8.css?v=UI34';
+  const ID='lxMusicV8Css',HREF='lxplus.music-v8.css?v=UI34-MB1';
   let queued=false;
   function ensure(){
     let link=document.getElementById(ID);

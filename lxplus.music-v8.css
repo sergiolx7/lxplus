@@ -3,13 +3,13 @@
    full music surface with the compact floating player without changing playback logic. */
 
 #app.lx-music-mode{
-  --lx-music-v8-bg:#090a0f;
-  --lx-music-v8-surface:#101218;
-  --lx-music-v8-card:#161820;
-  --lx-music-v8-card-hover:#1d2029;
+  --lx-music-v8-bg:#090b0a;
+  --lx-music-v8-surface:#121512;
+  --lx-music-v8-card:#1a1e1b;
+  --lx-music-v8-card-hover:#252b26;
   --lx-music-v8-muted:#9aa0ad;
   --lx-music-v8-border:rgba(255,255,255,.07);
-  --lx-music-v8-accent:var(--accent,#8a2be2);
+  --lx-music-v8-accent:#1ed760;
 }
 
 /* The hero owns exactly one artwork tile. Nothing inside it may bleed outside. */
@@ -21,6 +21,8 @@
 }
 #app.lx-music-mode .lx-music-carousel{
   position:relative!important;
+  height:auto!important;
+  max-height:none!important;
   margin:0 20px!important;
   border:1px solid var(--lx-music-v8-border)!important;
   border-radius:20px!important;
@@ -29,6 +31,8 @@
 }
 #app.lx-music-mode .lx-music-feature{
   position:relative!important;
+  height:auto!important;
+  max-height:none!important;
   min-height:286px!important;
   padding:24px!important;
   display:grid!important;
@@ -40,6 +44,8 @@
     linear-gradient(90deg,rgba(7,8,12,.97) 0%,rgba(8,9,13,.82) 48%,rgba(8,9,13,.58) 100%),
     var(--music-bg) center/cover no-repeat!important;
 }
+/* The carousel sets hidden on inactive slides; display:grid must not override it. */
+#app.lx-music-mode .lx-music-carousel [data-lx-music-slide][hidden]{display:none!important}
 #app.lx-music-mode .lx-music-feature::before{
   content:""!important;
   position:absolute!important;
@@ -138,7 +144,7 @@
   border:0!important;
   border-radius:50%!important;
   background:linear-gradient(135deg,color-mix(in srgb,var(--lx-music-v8-accent) 82%,white 18%),var(--lx-music-v8-accent))!important;
-  color:#fff!important;
+  color:#07170c!important;
   box-shadow:0 10px 28px color-mix(in srgb,var(--lx-music-v8-accent) 26%,transparent)!important;
   transform:none!important;
 }
@@ -331,6 +337,7 @@ body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-viz{
 }
 
 @media(max-width:700px){
+  #app.lx-music-mode .lx-music-mobile-tabs{position:relative!important;top:auto!important}
   #app.lx-music-mode .lx-music-carousel{margin:0 10px!important;border-radius:18px!important}
   #app.lx-music-mode .lx-music-feature{
     min-height:unset!important;
@@ -343,6 +350,8 @@ body[data-lx-surface]:not([data-lx-surface="music"]) #musicDock .music-viz{
   #app.lx-music-mode .lx-music-feature-copy{padding-right:0!important}
   #app.lx-music-mode .lx-music-feature-copy h2{font-size:clamp(30px,10vw,44px)!important}
   #app.lx-music-mode .lx-music-feature-actions,#app.lx-music-mode .lx-music-feature-copy .actions,#app.lx-music-mode .lx-music-feature-copy .hero-actions{margin-top:14px!important;gap:8px!important;flex-wrap:wrap!important}
+  #app.lx-music-mode .lx-music-feature-actions .secondary-btn{width:auto!important;min-width:116px!important;white-space:nowrap!important}
+  #app.lx-music-mode .lx-music-feature-actions .lx-music-hero-save{width:44px!important;min-width:44px!important;padding:0!important}
   body[data-lx-surface="music"] #musicDock.music-dock:not(.hidden),#app.lx-music-mode~#musicDock.music-dock:not(.hidden){
     min-height:72px!important;max-height:78px!important;padding:8px 10px!important;
     grid-template-columns:46px minmax(0,1fr) auto!important;gap:8px!important;

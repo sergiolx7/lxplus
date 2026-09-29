@@ -1,17 +1,15 @@
 {
   "version": "UI34",
-  "build": "R12.4-UI34-REBUILD-20260929",
-  "name": "UI34 · Interface estável e catálogo renovado",
+  "build": "R12.4-UI34-MUSICBOOKS-20260929",
+  "name": "UI34 · Correções de música e livros",
   "base": "UI33",
-  "files": ["index.html", "lxplus.bundle.js", "lxplus.modal-safety-v13.js", "lxplus.music-v8.js", "lxplus.admin-health-v33.js", "lxplus.maintenance-v34.css", "lxplus.release-v34.js", "lxplus.support.js", "service-worker.js", "manifest.webmanifest", "assets/lxplus-wordmark-v34.svg", "assets/lxplus-icon-v34.svg", "assets/lxplus-icon-v34.png"],
+  "files": ["index.html", "lxplus.bundle.js", "lxplus.music-v8.css", "lxplus.music-v8.js", "lxplus.maintenance-v34.css", "lxplus.release-v34.js", "lxplus.support.js", "service-worker.js"],
   "force": false,
   "features": [
-    "Corrigido o ciclo de alteração contínua da folha de estilo dos modais",
-    "Identidade visual, navegação e cartões de catálogo refeitos para desktop e celular",
-    "Capa vertical nítida no destaque quando não há imagem horizontal",
-    "Diagnóstico de catálogo em posição visível no painel ADM, com filtros, busca e CSV",
-    "Interface de música e comunidade refinada para o novo tema",
-    "Carrossel de destaque com atualização sem recriar todo o conteúdo"
+    "O carrossel mostra apenas a capa musical ativa",
+    "Cores da área de música ajustadas para preto, grafite e verde",
+    "O leitor libera PDF e EPUB ao fechar e evita abrir páginas externas como PDF",
+    "Importação de livros preserva arquivos locais e links de leitura compatíveis"
   ],
   "notes": "Atualização do frontend; não altera tabelas nem dados dos usuários."
 }

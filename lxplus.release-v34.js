@@ -1,6 +1,6 @@
 /* LX Plus Release UI34 — canonical updater for the maintenance build. */
 (()=>{'use strict';
-  const BUILD='R12.4-UI34-REBUILD-20260929';
+  const BUILD='R12.4-UI34-MUSICBOOKS-20260929';
   const VERSION='UI34';
   let busy=false,timer=0;
   const LX=()=>window.LX||{};

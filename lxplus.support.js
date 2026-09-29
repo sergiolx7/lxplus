@@ -1,6 +1,6 @@
 /* LX Plus UI34 — load support and notifications without the retired UI26 updater. */
 (()=>{'use strict';
-  const BUILD='R12.4-UI34-REBUILD-20260929';
+  const BUILD='R12.4-UI34-MUSICBOOKS-20260929';
   function loadSupport(){
     if(window.LX?.support||document.getElementById('lxSupportCoreUI34'))return;
     const script=document.createElement('script');script.id='lxSupportCoreUI34';

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="lxplus-build" content="R12.4-UI34-REBUILD-20260929">
+  <meta name="lxplus-build" content="R12.4-UI34-MUSICBOOKS-20260929">
   <script>window.LX_DRIVE_STORAGE_ENDPOINT="https://lxplus.sergio-sousa.workers.dev";</script>
   <script>window.__LX_INTRO_DONE=true;document.documentElement.classList.add("lx-intro-complete");</script>
   <meta name="theme-color" content="#050506">
@@ -38,7 +38,7 @@
   window.__lxCastAvailable=false;
   window.__onGCastApiAvailable=function(isAvailable){window.__lxCastAvailable=!!isAvailable;window.dispatchEvent(new CustomEvent('lx:cast-available',{detail:{isAvailable:!!isAvailable}}));};
   </script>
-<link rel="stylesheet" href="lxplus.bundle.css?v=R12.4-UI34-REBUILD-20260929">
+<link rel="stylesheet" href="lxplus.bundle.css?v=R12.4-UI34-MUSICBOOKS-20260929">
   <title>LX Plus</title>
 
   <!-- LX UI32 canonical styles: direct, single shell -->
@@ -48,11 +48,11 @@
   <link id="lxDetailWatchV12Css" rel="stylesheet" href="lxplus.detail-watch-v12.css?v=UI34">
   <link id="lxModalSafetyV13Css" rel="stylesheet" href="lxplus.modal-safety-v13.css?v=UI34">
   <link id="lxMusicPolishV7Css" rel="stylesheet" href="lxplus.music-polish-v7.css?v=UI34">
-  <link id="lxMusicV8Css" rel="stylesheet" href="lxplus.music-v8.css?v=UI34">
+  <link id="lxMusicV8Css" rel="stylesheet" href="lxplus.music-v8.css?v=UI34-MB1">
   <link id="lxMusicSourcesV2Css" rel="stylesheet" href="lxplus.music-sources-v2.css?v=UI34">
   <link id="lxNotificationsV26Css" rel="stylesheet" href="lxplus.notifications-v26.css?v=UI34">
   <link id="lxUserSettingsV28Css" rel="stylesheet" href="lxplus.user-settings-v28.css?v=UI34">
-  <link id="lxMaintenanceV34Css" rel="stylesheet" href="lxplus.maintenance-v34.css?v=UI34">
+  <link id="lxMaintenanceV34Css" rel="stylesheet" href="lxplus.maintenance-v34.css?v=UI34-MB1">
 
 
   <!-- LX UI34 URL migration -->
@@ -64,7 +64,7 @@
     const clean=u.pathname+(q?'?'+q:'')+u.hash;
     history.replaceState(history.state,'',clean);
     window.LX_CANONICAL_VERSION='UI34';
-    window.LX_CANONICAL_SHELL='R12.4-UI34-REBUILD-20260929';
+    window.LX_CANONICAL_SHELL='R12.4-UI34-MUSICBOOKS-20260929';
     document.documentElement.dataset.lxCanonicalVersion='UI34';
   }catch(e){console.warn('LX URL migration',e)}})();
   </script>
@@ -370,11 +370,11 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   })();
   </script>
-  <script defer src="lxplus.album-grouping.js?v=R12.4-UI34-REBUILD-20260929"></script>
-  <script defer src="lxplus.bundle.js?v=R12.4-UI34-REBUILD-20260929" onerror="var e=document.getElementById('lxBootEmergency');if(e){e.hidden=false;e.style.display='grid'}"></script>
-  <script defer src="lxplus.recovery.js?v=R12.4-UI34-REBUILD-20260929"></script>
-  <script defer src="lxplus.support.js?v=R12.4-UI34-REBUILD-20260929"></script>
-  <script defer src="lxplus.audiofx.js?v=R12.4-UI34-REBUILD-20260929"></script>
+  <script defer src="lxplus.album-grouping.js?v=R12.4-UI34-MUSICBOOKS-20260929"></script>
+  <script defer src="lxplus.bundle.js?v=R12.4-UI34-MUSICBOOKS-20260929" onerror="var e=document.getElementById('lxBootEmergency');if(e){e.hidden=false;e.style.display='grid'}"></script>
+  <script defer src="lxplus.recovery.js?v=R12.4-UI34-MUSICBOOKS-20260929"></script>
+  <script defer src="lxplus.support.js?v=R12.4-UI34-MUSICBOOKS-20260929"></script>
+  <script defer src="lxplus.audiofx.js?v=R12.4-UI34-MUSICBOOKS-20260929"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded',function(){
@@ -1493,7 +1493,7 @@
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();state.prompt=e;refresh();});
   window.addEventListener('appinstalled',()=>{state.prompt=null;refresh();window.LX?.toast?.('LX Plus instalado com sucesso.');});
   document.addEventListener('click',e=>{if(e.target.closest?.('#installAppBtn'))install();});
-  if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('./service-worker.js?v=UI34',{scope:'./',updateViaCache:'none'});reg.update().catch(()=>{})}catch(err){console.warn('LX SW update',err)}});}
+  if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('./service-worker.js?v=UI34-MB1',{scope:'./',updateViaCache:'none'});reg.update().catch(()=>{})}catch(err){console.warn('LX SW update',err)}});}
   document.addEventListener('DOMContentLoaded',refresh);
 })();
 </script>
@@ -1502,7 +1502,7 @@
 <!-- LX UI34 canonical scripts: direct, single shell -->
 <script defer id="lxPlayerContextV6Script" src="lxplus.player-context-v6.js?v=UI34"></script>
 <script defer id="lxFutureUiV9Script" src="lxplus.future-ui-v9.js?v=UI34"></script>
-<script defer id="lxMusicV8Script" src="lxplus.music-v8.js?v=UI34"></script>
+<script defer id="lxMusicV8Script" src="lxplus.music-v8.js?v=UI34-MB1"></script>
 <script defer id="lxMusicSourcesV2Script" src="lxplus.music-sources-v2.js?v=UI34"></script>
 <script defer id="lxModalSafetyV13Script" src="lxplus.modal-safety-v13.js?v=UI34"></script>
 <script defer id="lxDetailWatchV12Script" src="lxplus.detail-watch-v12.js?v=UI34"></script>
@@ -1512,7 +1512,7 @@
 
 
 <script defer id="lxAdminHealthV33Script" src="lxplus.admin-health-v33.js?v=UI34"></script>
-<script defer id="lxReleaseV34Script" src="lxplus.release-v34.js?v=UI34"></script>
+<script defer id="lxReleaseV34Script" src="lxplus.release-v34.js?v=UI34-MB1"></script>
 
 </body>
 </html>
