@@ -1,48 +1,25 @@
-/* LX Plus — Canonical Controller UI26
-   One owner for release state, technical cache and post-login platform modules.
-*/
+/* LX Plus UI33 — load support and notifications without the retired UI26 updater. */
 (()=>{'use strict';
-if(window.LXCanonicalUI26)return;
-const BUILD='R12.4-UI26-AUDIO-PUSH-20260926',VERSION='UI26',KEY='app_release',APPLIED='lx_canonical_release_ui26',BUILD_KEY='lx_canonical_build',NOTIFY_ID='lxNotificationsV26Script';
-let remote=null,dbClient=null,channel=null,refreshing=false,lastRead=0,queued=false;
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const toast=m=>{try{window.LX?.toast?.(m)}catch{}};
-const isAdmin=()=>!!window.LX?.ui?.state?.user?.admin;
-const appVisible=()=>{const a=document.getElementById('app');return !!a&&!a.classList.contains('hidden')&&getComputedStyle(a).display!=='none'};
-const uiNo=x=>Number(String(x||'').match(/UI\s*([0-9]+)/i)?.[1]||0);
-const needsUpdate=()=>uiNo(remote?.version||remote?.build)>uiNo(VERSION);
-const official=()=>String(remote?.version||VERSION);
-const status=()=>needsUpdate()?'Nova versão disponível':'Você está na versão mais recente';
-const token=()=>String(remote?.nonce||remote?.published_at||remote?.build||'');
-window.LX_CANONICAL_BUILD=BUILD;window.LX_CANONICAL_VERSION=VERSION;document.documentElement.dataset.lxCanonical='26';
-const meta=document.querySelector('meta[name="lxplus-build"]');if(meta)meta.content=BUILD;
-
-function style(){if(document.getElementById('lxCanonical26Css'))return;const s=document.createElement('style');s.id='lxCanonical26Css';s.textContent=`
-#lxProfileMenu .lx26-update-action{display:flex!important;align-items:center!important;gap:10px!important;width:100%!important;position:relative!important}#lxProfileMenu .lx26-update-action .lx26-copy{display:grid;gap:1px;min-width:0;text-align:left;flex:1}#lxProfileMenu .lx26-update-action .lx26-copy b{font:inherit;font-weight:700}#lxProfileMenu .lx26-update-action .lx26-copy small{font-size:8px;line-height:1.25;color:#35d07f;white-space:nowrap}.lx26-update-action.is-old .lx26-copy small{color:#ffb44a}.lx26-dot{width:7px;height:7px;min-width:7px;border-radius:50%;background:#35d07f;box-shadow:0 0 10px #35d07f70;flex:none}.is-old .lx26-dot{background:#ffb44a;box-shadow:0 0 10px #ffb44a70}.lx26-update-page{max-width:680px;margin:auto;padding:28px}.lx26-version-card{margin:18px 0;padding:20px;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:rgba(255,255,255,.035);display:grid;gap:8px}.lx26-version-card h3{margin:0;font-size:20px}.lx26-version-card p{margin:0;color:var(--muted,#9aa4b4);line-height:1.65}.lx26-actions{display:flex;gap:10px;flex-wrap:wrap}.lx26-actions button{min-height:40px}.lx26-admin{display:grid;gap:15px}.lx26-admin-hero{padding:20px;border-radius:20px;border:1px solid color-mix(in srgb,var(--accent,#42a5ff) 30%,rgba(255,255,255,.09));background:linear-gradient(145deg,color-mix(in srgb,var(--accent,#42a5ff) 9%,rgba(8,11,18,.96)),rgba(5,7,12,.97));display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center}.lx26-admin-hero h2{margin:5px 0}.lx26-admin-hero p{margin:0;color:var(--muted,#9aa4b4);font-size:11px;line-height:1.55}.lx26-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.lx26-admin-card{padding:18px;border-radius:17px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.035)}.lx26-admin-card small{color:var(--muted,#9aa4b4)}.lx26-admin-card strong{display:block;font-size:19px;margin:5px 0}@media(max-width:720px){.lx26-admin-grid,.lx26-admin-hero{grid-template-columns:1fr}.lx26-admin-hero button{width:100%}.lx26-update-page{padding:20px}}
-`;document.head.appendChild(s)}
-
-async function db(timeout=15000){if(dbClient)return dbClient;const end=Date.now()+timeout;while(Date.now()<end){try{const c=window.LX?.cloud?.db?.();if(c){dbClient=c;return c}}catch{}await sleep(160)}return null}
-function loadSupportCore(){if(window.LX?.support||document.getElementById('lxSupportCoreUI26'))return;const s=document.createElement('script');s.id='lxSupportCoreUI26';s.src='lxplus.support-core.js?v='+encodeURIComponent(BUILD);s.async=false;s.onerror=()=>console.warn('LX support core unavailable');document.head.appendChild(s)}
-function loadNotifications(){if(!appVisible()||window.LXNotificationsV26||document.getElementById(NOTIFY_ID))return;const s=document.createElement('script');s.id=NOTIFY_ID;s.src='lxplus.notifications-v26.js?v=UI26';s.async=true;s.onerror=()=>console.warn('LX notifications V26 unavailable');document.body.appendChild(s)}
-
-async function clearCache(){try{if('caches'in window)for(const k of await caches.keys())await caches.delete(k)}catch{}try{const regs=await navigator.serviceWorker?.getRegistrations?.()||[];for(const r of regs){const u=String(r.active?.scriptURL||r.waiting?.scriptURL||r.installing?.scriptURL||'');if(/\/sw\.js(?:\?|$)/i.test(u)){await r.unregister().catch(()=>{});continue}if(/\/service-worker\.js(?:\?|$)/i.test(u)){r.active?.postMessage?.({type:'LX_CLEAR_CACHE',build:BUILD});await r.update?.().catch(()=>{});r.waiting?.postMessage?.({type:'LX_SKIP_WAITING'})}}}catch{}}
-async function refresh(t='manual'){if(refreshing)return;refreshing=true;try{localStorage.setItem(APPLIED,String(t))}catch{}toast('LX Plus atualizando…');await clearCache();setTimeout(()=>{try{const u=new URL(location.href);u.searchParams.set('lxui',VERSION);u.searchParams.set('_',Date.now());location.replace(u)}catch{location.reload()}},240)}
-
-function menu(){style();const root=document.getElementById('lxProfileMenu'),actions=root?.querySelector('.lx-profile-menu-actions');if(!actions)return false;root.querySelectorAll('.lx-release-cert,[data-lx-update-menu],[data-lx25-update]').forEach(x=>x.remove());let b=actions.querySelector('[data-lx26-update]');if(!b){b=document.createElement('button');b.type='button';b.dataset.lx26Update='1';b.className='lx26-update-action';const a=actions.querySelector('[data-act="appearance"]');a?.after(b)||actions.prepend(b);b.onclick=e=>{e.preventDefault();e.stopPropagation();root.classList.add('hidden');openCenter()}}const sig=`${official()}|${status()}`;if(b.dataset.sig!==sig){b.dataset.sig=sig;b.classList.toggle('is-old',needsUpdate());b.innerHTML=`<span>↻</span><span class="lx26-copy"><b>Atualização do site</b><small>${esc(official())} · ${esc(status())}</small></span><i class="lx26-dot"></i>`}return true}
-function adminTab(){if(!isAdmin())return false;const nav=[...document.querySelectorAll('[data-admin]')];if(!nav.length)return false;document.querySelectorAll('[data-lx-release-admin-tab],[data-lx25-admin-tab]').forEach(x=>x.remove());let b=document.querySelector('[data-lx26-admin-tab]');if(!b){const a=nav.find(x=>x.dataset.admin==='appearance')||nav.at(-1);if(!a)return false;b=document.createElement('button');b.type='button';b.dataset.lx26AdminTab='1';b.className=a.className;b.innerHTML='↻ Atualização <i class="lx26-dot"></i>';a.after(b);b.onclick=()=>{nav.forEach(x=>x.classList.remove('active'));b.classList.add('active');renderAdmin()}}b.classList.toggle('is-old',needsUpdate());return true}
-
-async function openCenter(){await read().catch(()=>null);style();const m=document.getElementById('modal'),o=document.getElementById('overlay');if(!m||!o)return toast('Central de atualização indisponível.');const when=remote?.published_at?new Date(remote.published_at).toLocaleString('pt-BR'):'—';m.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page lx26-update-page"><span class="eyebrow">LX PLUS · ATUALIZAÇÕES</span><h2>Atualização do site</h2><div class="lx26-version-card"><h3>${needsUpdate()?'↻ Existe uma versão mais recente':'✓ Você está na versão mais recente'}</h3><p>Versão deste aparelho: <b>${VERSION}</b><br>Versão oficial: <b>${esc(official())}</b><br>Última publicação: <b>${esc(when)}</b></p></div><div class="lx26-actions"><button class="primary-btn" data-refresh>${needsUpdate()?'Atualizar agora':'Verificar e atualizar agora'}</button><button class="glass-btn" data-clean>Limpar cache técnico</button></div><p style="margin-top:14px;color:var(--muted);font-size:10px;line-height:1.55">A limpeza remove só arquivos temporários da LX Plus. Conta, perfil, histórico, listas e preferências permanecem.</p></div>`;o.classList.remove('hidden');m.querySelector('[data-refresh]').onclick=async()=>{await read();refresh(token()||'manual')};m.querySelector('[data-clean]').onclick=()=>refresh('clean_'+Date.now())}
-function renderAdmin(){if(!isAdmin())return toast('Acesso ADM indisponível.');style();const m=document.getElementById('adminMain');if(!m)return;const when=remote?.published_at?new Date(remote.published_at).toLocaleString('pt-BR'):'—';m.innerHTML=`<div class="lx26-admin"><section class="lx26-admin-hero"><div><span class="eyebrow">CENTRAL DE ATUALIZAÇÃO</span><h2>Uma versão oficial para toda a LX Plus</h2><p>Publica esta build para todos. Cada aparelho limpa apenas o cache técnico e recarrega a versão oficial.</p></div><button class="primary-btn" data-publish>Atualizar site para todos</button></section><div class="lx26-admin-grid"><section class="lx26-admin-card"><small>VERSÃO DESTE SITE</small><strong>${VERSION}</strong><small>${BUILD}</small></section><section class="lx26-admin-card"><small>VERSÃO OFICIAL</small><strong>${esc(official())}</strong><small>${esc(status())}</small></section><section class="lx26-admin-card"><small>ÚLTIMA PUBLICAÇÃO</small><strong>${esc(when)}</strong><small>Supabase</small></section><section class="lx26-admin-card"><small>RUNTIME</small><strong>Canônico UI26</strong><small>Áudio compatível + Web Push + um service worker.</small></section></div><div class="lx26-actions"><button class="glass-btn" data-self>Atualizar este aparelho</button><button class="glass-btn" data-clean>Limpar cache técnico</button></div></div>`;m.querySelector('[data-publish]').onclick=publish;m.querySelector('[data-self]').onclick=()=>refresh(token()||'manual');m.querySelector('[data-clean]').onclick=()=>refresh('clean_'+Date.now())}
-
-async function read(){const c=await db();if(!c)return null;try{const {data,error}=await c.from('lx_settings').select('key,value,updated_at').eq('key',KEY).maybeSingle();if(error)throw error;remote=data?.value||null;lastRead=Date.now();menu();adminTab();return data}catch(e){console.warn('LX release read',e);return null}}
-async function publish(e){if(!isAdmin())return toast('Somente o ADM pode publicar para todos.');const b=e?.currentTarget;if(b){b.disabled=true;b.textContent='Publicando…'}try{const c=await db();if(!c)throw new Error('Nuvem indisponível');const nonce=`ui26_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`,now=new Date().toISOString(),value={build:BUILD,version:VERSION,nonce,published_at:now,force:true};try{localStorage.setItem(APPLIED,nonce)}catch{}const {error}=await c.from('lx_settings').upsert({key:KEY,value,updated_at:now},{onConflict:'key'});if(error)throw error;remote=value;toast('Atualização publicada para todos.');renderAdmin();menu()}catch(err){console.error(err);toast('Não foi possível publicar.');if(b){b.disabled=false;b.textContent='Atualizar site para todos'}}}
-async function subscribe(){const c=await db();if(!c||channel)return;channel=c.channel('lx-canonical-ui26-'+Math.random().toString(36).slice(2,7)).on('postgres_changes',{event:'*',schema:'public',table:'lx_settings',filter:`key=eq.${KEY}`},async p=>{remote=p.new?.value||null;menu();adminTab();let applied='';try{applied=localStorage.getItem(APPLIED)||''}catch{}const t=token();if(t&&t!==applied&&(needsUpdate()||remote?.force===true))await refresh(t)}).subscribe()}
-function sync(){queued=false;menu();adminTab();loadNotifications()}
-function queue(){if(queued)return;queued=true;setTimeout(sync,0)}
-
-async function boot(){style();loadSupportCore();try{const prev=localStorage.getItem(BUILD_KEY)||'';localStorage.setItem(BUILD_KEY,BUILD);if(prev&&prev!==BUILD)await clearCache()}catch{}document.querySelectorAll('script[src*="release-manager-v17"],script[src*="release-manager-v18"]').forEach(x=>x.remove());new MutationObserver(queue).observe(document.documentElement,{subtree:true,childList:true});document.addEventListener('click',e=>{if(e.target.closest?.('#profileBtn')){setTimeout(menu,0);setTimeout(menu,50);setTimeout(menu,150)}},true);await read();await subscribe();sync();setInterval(()=>{sync();if(Date.now()-lastRead>60000)read()},2500)}
-window.LXCanonicalUI26={version:'26.0',build:BUILD,displayVersion:VERSION,openCenter,readRelease:read,publishAll:publish,clearTechnicalCache:clearCache,hardRefresh:refresh,get remote(){return remote},get latest(){return !needsUpdate()}};
-window.LXCanonicalUI25=window.LXCanonicalUI26;
-boot();
+  const BUILD='R12.4-UI33-MAINTENANCE-20260929';
+  function loadSupport(){
+    if(window.LX?.support||document.getElementById('lxSupportCoreUI33'))return;
+    const script=document.createElement('script');script.id='lxSupportCoreUI33';
+    script.src='lxplus.support-core.js?v='+encodeURIComponent(BUILD);
+    script.async=false;script.onerror=()=>console.warn('LX support core unavailable');
+    document.head.appendChild(script);
+  }
+  function loadNotifications(){
+    const app=document.getElementById('app');
+    if(!app||app.classList.contains('hidden')||window.LXNotificationsV26||document.getElementById('lxNotificationsV26Script'))return;
+    const script=document.createElement('script');script.id='lxNotificationsV26Script';
+    script.src='lxplus.notifications-v26.js?v=UI33';script.async=true;
+    script.onerror=()=>console.warn('LX notifications unavailable');
+    document.body.appendChild(script);
+  }
+  function boot(){
+    loadSupport();loadNotifications();
+    const app=document.getElementById('app');
+    if(app)new MutationObserver(loadNotifications).observe(app,{attributes:true,attributeFilter:['class']});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
