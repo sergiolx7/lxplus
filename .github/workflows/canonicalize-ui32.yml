@@ -1,69 +1,45 @@
-name: Canonicalize LX Plus UI32.1
+name: Verify LX Plus UI33
 
 on:
   push:
     branches: [main]
     paths:
+      - 'index.html'
+      - 'lxplus.bundle.js'
+      - 'lxplus.music-v8.js'
+      - 'lxplus.admin-health-v33.js'
+      - 'lxplus.maintenance-v33.css'
+      - 'lxplus.release-v33.js'
+      - 'release-manifest.json'
+      - 'service-worker.js'
+      - 'manifest.webmanifest'
       - '.github/workflows/canonicalize-ui32.yml'
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  canonicalize:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
-      - name: Canonicalize production index
-        shell: bash
+          node-version: '22'
+      - name: Check syntax and deployment references
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
-
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-          build='R12.4-UI32.1-UPDATER-FIX-20260927'
-          version='UI32.1'
-
-          # Keep one canonical build marker in the source HTML.
-          for old in ('R12.4-NEXUS-20260924','R12.4-UI32-SINGLE-SHELL-20260927'):
-              s=s.replace(old,build)
-          s=re.sub(r'<meta\s+name=["\']lxplus-build["\']\s+content=["\'][^"\']*["\']\s*/?>',
-                   f'<meta name="lxplus-build" content="{build}">',s,count=1,flags=re.I)
-
-          # Move every UI32 cache-buster to a new key so browsers cannot reuse the stale updater.
-          s=s.replace('?v=UI32','?v=UI321')
-          s=s.replace('service-worker.js?v=UI32','service-worker.js?v=UI321')
-
-          # Remove legacy updater script tags. UI32.1 is the only updater allowed to own the aliases.
-          s=re.sub(r'\s*<script[^>]*src=["\']lxplus\.(?:canonical-update-v31|release-v32)\.js[^>]*></script>', '', s, flags=re.I)
-          s=re.sub(r'\s*<script[^>]*id=["\']lxReleaseV321Script["\'][^>]*></script>', '', s, flags=re.I)
-
-          # Early migration: an old ?lxui=UI26 URL must never define which interface is active.
-          marker='LX UI32.1 URL migration'
-          if marker not in s:
-              migration='''\n  <!-- LX UI32.1 URL migration -->\n  <script id="lxUi321Migration">\n  (()=>{try{\n    const u=new URL(location.href);\n    ['lxui','lxbuild','_'].forEach(k=>u.searchParams.delete(k));\n    const q=u.searchParams.toString();\n    const clean=u.pathname+(q?'?'+q:'')+u.hash;\n    history.replaceState(history.state,'',clean);\n    window.LX_CANONICAL_VERSION='UI32.1';\n    window.LX_CANONICAL_SHELL='__BUILD__';\n    document.documentElement.dataset.lxCanonicalVersion='UI32.1';\n  }catch(e){console.warn('LX URL migration',e)}})();\n  </script>\n'''.replace('__BUILD__',build)
-              s=s.replace('</head>',migration+'\n</head>',1)
-
-          # If an older canonical block exists, its normal modules stay, but only the new updater is appended.
-          release='''\n<script defer id="lxReleaseV321Script" src="lxplus.release-v321.js?v=UI321"></script>\n'''
-          s=s.replace('</body>',release+'\n</body>',1)
-
-          p.write_text(s,encoding='utf-8')
-          PY
-      - name: Commit canonical index
-        shell: bash
+          node --check lxplus.bundle.js
+          node --check lxplus.music-v8.js
+          node --check lxplus.admin-health-v33.js
+          node --check lxplus.release-v33.js
+          node --check service-worker.js
+          node qa-ui33.cjs
+      - name: Run media and interaction checks
         run: |
-          if git diff --quiet -- index.html; then
-            echo "index already canonical"
-            exit 0
-          fi
-          git config user.name "sergiolx7"
-          git config user.email "88542688+sergiolx7@users.noreply.github.com"
-          git add index.html
-          git commit -m "fix(shell): apply UI32.1 canonical updater and clean legacy URL"
-          git push origin HEAD:main
+          node qa-music-r4.cjs
+          node qa-metadata-r12.cjs
+          node qa-drive-albums-r12-1.cjs
+          node --test cloudflare-worker/worker.test.mjs
