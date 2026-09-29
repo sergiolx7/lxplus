@@ -1,9 +1,9 @@
-/* LX Plus — Service Worker UI33 SINGLE SHELL
+/* LX Plus — Service Worker UI34 SINGLE SHELL
    The HTML is canonical. This worker never injects UI, never rewrites the DOM, and never forces navigation.
 */
-const LX_BUILD='R12.4-UI33-MAINTENANCE-20260929';
-const LX_VERSION='UI33';
-const CACHE='lxplus-shell-'+LX_BUILD+'-support-fix1';
+const LX_BUILD='R12.4-UI34-REBUILD-20260929';
+const LX_VERSION='UI34';
+const CACHE='lxplus-shell-'+LX_BUILD;
 const CORE=[
   './','./index.html','./lxplus.bundle.js','./lxplus.bundle.css',
   './lxplus.support.js','./lxplus.support-core.js','./lxplus.recovery.js','./lxplus.audiofx.js','./lxplus.album-grouping.js',
@@ -12,9 +12,9 @@ const CORE=[
   './lxplus.detail-watch-v12.js','./lxplus.detail-watch-v12.css','./lxplus.modal-safety-v13.js','./lxplus.modal-safety-v13.css',
   './lxplus.music-polish-v7.css','./lxplus.music-v8.css','./lxplus.music-v8.js','./lxplus.music-sources-v2.css','./lxplus.music-sources-v2.js',
   './lxplus.notifications-v26.js','./lxplus.notifications-v26.css','./lxplus.notifications-hotfix-v27.js',
-  './lxplus.user-settings-v28.js','./lxplus.user-settings-v28.css','./lxplus.admin-health-v33.js','./lxplus.maintenance-v33.css','./lxplus.release-v33.js',
+  './lxplus.user-settings-v28.js','./lxplus.user-settings-v28.css','./lxplus.admin-health-v33.js','./lxplus.maintenance-v34.css','./lxplus.release-v34.js',
   './lxplus.watch-together-v10.js','./lxplus.watch-runtime-v16.js','./lxplus.watch-party-v14.js','./lxplus.watch-party-native-v15.js','./lxplus.watch-sync-v14-4.js',
-  './lxplus.player-audio-v11.js','./lxplus.player-audio-v12.js','./manifest.webmanifest','./assets/lxplus-logo-v27.png'
+  './lxplus.player-audio-v11.js','./lxplus.player-audio-v12.js','./manifest.webmanifest','./assets/lxplus-wordmark-v34.svg','./assets/lxplus-icon-v34.svg','./assets/lxplus-icon-v34.png'
 ];
 const cleanRequest=input=>{const u=new URL(typeof input==='string'?input:input.url,self.registration.scope);u.search='';u.hash='';return new Request(u.toString(),{method:'GET',credentials:'same-origin'})};
 const samePath=(path,url)=>new URL(path,self.registration.scope).pathname.replace(/\/$/,'/index.html')===url.pathname.replace(/\/$/,'/index.html');
@@ -46,7 +46,7 @@ self.addEventListener('message',event=>{
 self.addEventListener('push',event=>event.waitUntil((async()=>{
   let data={};try{data=event.data?.json?.()||{}}catch{try{data={body:event.data?.text?.()||''}}catch{}}
   const title=String(data.title||'LX Plus').slice(0,80),body=String(data.body||data.message||'Você tem uma nova notificação.').slice(0,400),url=String(data.url||'/'),tag=String(data.tag||'lx-plus');
-  await self.registration.showNotification(title,{body,icon:'./assets/lxplus-logo-v27.png',badge:'./assets/lxplus-logo-v27.png',tag,renotify:true,silent:false,vibrate:[90,45,90],data:{url,source:data.source||'LX Plus'},actions:[{action:'open',title:'Abrir'}]});
+  await self.registration.showNotification(title,{body,icon:'./assets/lxplus-icon-v34.png',badge:'./assets/lxplus-icon-v34.png',tag,renotify:true,silent:false,vibrate:[90,45,90],data:{url,source:data.source||'LX Plus'},actions:[{action:'open',title:'Abrir'}]});
 })()));
 self.addEventListener('notificationclick',event=>{event.notification.close();event.waitUntil((async()=>{const target=new URL(String(event.notification?.data?.url||'/'),self.registration.scope).toString(),list=await self.clients.matchAll({type:'window',includeUncontrolled:true});for(const client of list){try{if('navigate'in client)await client.navigate(target);await client.focus();return}catch{}}if(self.clients.openWindow)await self.clients.openWindow(target)})())});
 

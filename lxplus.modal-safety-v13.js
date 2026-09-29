@@ -14,10 +14,7 @@
 
   function ensureStyle(){
     const existing=$(STYLE_ID);
-    if(existing){
-      if(existing.parentNode===document.head)document.head.appendChild(existing);
-      return existing;
-    }
+    if(existing)return existing;
     const link=document.createElement('link');
     link.id=STYLE_ID;link.rel='stylesheet';link.href='lxplus.modal-safety-v13.css?v=20260926-2';
     document.head.appendChild(link);
@@ -40,8 +37,8 @@
 
   function clear(){
     const overlay=$('overlay'),modal=$('modal');
-    overlay?.classList.remove('lx-modal-safety-v13','lx-admin-editor-v13','lx-modal-overflow-v13');
-    document.documentElement.classList.remove('lx-modal-open-v13');
+    if(overlay?.classList.contains('lx-modal-safety-v13')||overlay?.classList.contains('lx-admin-editor-v13')||overlay?.classList.contains('lx-modal-overflow-v13'))overlay.classList.remove('lx-modal-safety-v13','lx-admin-editor-v13','lx-modal-overflow-v13');
+    if(document.documentElement.classList.contains('lx-modal-open-v13'))document.documentElement.classList.remove('lx-modal-open-v13');
     if(modal?.dataset.lxModalSafetyV13==='1'){
       ['max-height','height','overflow-y','overflow-x','overscroll-behavior','-webkit-overflow-scrolling','touch-action'].forEach(p=>modal.style.removeProperty(p));
       delete modal.dataset.lxModalSafetyV13;
@@ -49,7 +46,7 @@
   }
 
   function forceScroll(modal){
-    if(!modal)return;
+    if(!modal||modal.dataset.lxModalSafetyV13==='1')return;
     modal.dataset.lxModalSafetyV13='1';
     modal.style.setProperty('height','auto','important');
     modal.style.setProperty('max-height','calc(100dvh - 28px)','important');
@@ -66,13 +63,15 @@
     if(!protectedSurfaceVisible()||!overlayOpen(overlay)||!modal||specialLayout(modal)){
       clear();return;
     }
-    overlay.classList.add('lx-modal-safety-v13');
-    overlay.classList.toggle('lx-admin-editor-v13',!!modal.querySelector('.quick-editor-page'));
-    document.documentElement.classList.add('lx-modal-open-v13');
+    if(!overlay.classList.contains('lx-modal-safety-v13'))overlay.classList.add('lx-modal-safety-v13');
+    const editor=!!modal.querySelector('.quick-editor-page');
+    if(overlay.classList.contains('lx-admin-editor-v13')!==editor)overlay.classList.toggle('lx-admin-editor-v13',editor);
+    if(!document.documentElement.classList.contains('lx-modal-open-v13'))document.documentElement.classList.add('lx-modal-open-v13');
     forceScroll(modal);
     requestAnimationFrame(()=>{
       if(!modal.isConnected)return;
-      overlay.classList.toggle('lx-modal-overflow-v13',modal.scrollHeight>modal.clientHeight+2);
+      const overflow=modal.scrollHeight>modal.clientHeight+2;
+      if(overlay.classList.contains('lx-modal-overflow-v13')!==overflow)overlay.classList.toggle('lx-modal-overflow-v13',overflow);
     });
   }
 
@@ -82,7 +81,7 @@
     ensureStyle();
     const overlay=$('overlay'),app=$('app'),admin=$('admin');
     if(overlay&&'MutationObserver'in window){
-      observer=new MutationObserver(queue);
+      observer=new MutationObserver(records=>{if(records.some(record=>record.type==='childList'||record.target===overlay))queue()});
       observer.observe(overlay,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
     }
     if('MutationObserver'in window){

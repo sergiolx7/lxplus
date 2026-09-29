@@ -1,13 +1,13 @@
 /* LX Music V8 runtime — reuse the canonical stylesheet instead of loading it twice. */
 (()=>{'use strict';
   if(window.LXMusicV8)return;
-  const ID='lxMusicV8Css',HREF='lxplus.music-v8.css?v=UI33';
+  const ID='lxMusicV8Css',HREF='lxplus.music-v8.css?v=UI34';
   let queued=false;
   function ensure(){
     let link=document.getElementById(ID);
     if(!link){link=document.createElement('link');link.id=ID;link.rel='stylesheet';document.head.appendChild(link)}
     if(link.getAttribute('href')!==HREF)link.href=HREF;
-    const final=document.getElementById('lxMaintenanceV33Css');
+    const final=document.getElementById('lxMaintenanceV34Css');
     if(final){if(link.nextElementSibling!==final)document.head.insertBefore(link,final)}
     else if(link!==document.head.lastElementChild)document.head.appendChild(link);
   }

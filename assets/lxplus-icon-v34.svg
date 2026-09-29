@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="LX Plus">
+  <title>LX Plus</title>
+  <rect width="512" height="512" rx="108" fill="#0b0d16"/>
+  <path d="M80 137h43v198h126v40H80V137Zm171 0h51l66 78 67-78h51l-92 115 96 123h-53l-70-87-72 87h-53l99-123-90-115Z" fill="#fff"/>
+  <path d="M426 360h63" stroke="#a784ff" stroke-width="16" stroke-linecap="round"/>
+  <path d="M458 328v64" stroke="#a784ff" stroke-width="16" stroke-linecap="round"/>
+</svg>
