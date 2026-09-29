@@ -1,13 +1,13 @@
 /* LX Plus — Service Worker UI34 SINGLE SHELL
    The HTML is canonical. This worker never injects UI, never rewrites the DOM, and never forces navigation.
 */
-const LX_BUILD='R12.4-UI34-MUSICBOOKS-20260929';
+const LX_BUILD='R12.4-UI34-BOOKFIX2-20260929';
 const LX_VERSION='UI34';
 const CACHE='lxplus-shell-'+LX_BUILD;
 const CORE=[
   './','./index.html','./lxplus.bundle.js','./lxplus.bundle.css',
   './lxplus.support.js','./lxplus.support-core.js','./lxplus.recovery.js','./lxplus.audiofx.js','./lxplus.album-grouping.js',
-  './lxplus.future-ui-v9.js','./lxplus.future-ui-v9.css',
+  './lxplus.future-ui-v9.js','./lxplus.future-ui-v9.css','./lxplus.books-v8.js','./lxplus.books-v8.css',
   './lxplus.player-context-v6.js','./lxplus.player-context-v6.css','./lxplus.mini-floating-player-v11.css',
   './lxplus.detail-watch-v12.js','./lxplus.detail-watch-v12.css','./lxplus.modal-safety-v13.js','./lxplus.modal-safety-v13.css',
   './lxplus.music-polish-v7.css','./lxplus.music-v8.css','./lxplus.music-v8.js','./lxplus.music-sources-v2.css','./lxplus.music-sources-v2.js',

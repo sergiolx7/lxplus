@@ -67,7 +67,7 @@
     if(!css){css=document.createElement('link');css.id=BOOKS_STYLE_ID;css.rel='stylesheet';css.href='lxplus.books-v8.css?v=20260926-2';document.head.appendChild(css)}
     let script=byId(BOOKS_SCRIPT_ID);
     if(script){booksLoading=false;return}
-    script=document.createElement('script');script.id=BOOKS_SCRIPT_ID;script.src='lxplus.books-v8.js?v=20260926-2';script.async=true;
+    script=document.createElement('script');script.id=BOOKS_SCRIPT_ID;script.src='lxplus.books-v8.js?v=UI34-BF2';script.async=true;
     script.onload=()=>{booksLoading=false;setTimeout(()=>{try{window.LXBooksV8?.sync?.()}catch{}},80)};
     script.onerror=()=>{booksLoading=false;console.warn('LX Future UI: Books V8 lazy load failed')};
     document.body.appendChild(script);
