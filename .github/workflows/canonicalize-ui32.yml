@@ -1,9 +1,12 @@
-name: Verify LX Plus UI34
+name: Verify LX Plus UI35
 
 on:
   push:
     branches: [main]
     paths:
+      - 'lxplus.insights-v35.js'
+      - 'lxplus.insights-v35.css'
+      - 'lxplus.player-audio-v12.js'
       - 'index.html'
       - 'lxplus.bundle.js'
       - 'lxplus.modal-safety-v13.js'
@@ -43,6 +46,9 @@ jobs:
           node --check lxplus.admin-health-v33.js
           node --check lxplus.release-v34.js
           node --check service-worker.js
+          node --check lxplus.insights-v35.js
+          node --check lxplus.player-audio-v12.js
+          node qa-insights-v35.cjs
           node qa-ui33.cjs
       - name: Run media and interaction checks
         run: |

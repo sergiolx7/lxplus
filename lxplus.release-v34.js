@@ -1,7 +1,7 @@
 /* LX Plus Release UI34 — canonical updater for the maintenance build. */
 (()=>{'use strict';
-  const BUILD='R12.4-UI34-BOOKFIX2-20260929';
-  const VERSION='UI34';
+  const BUILD='R12.4-UI35-MUSIC-SOCIAL-20261002';
+  const VERSION='UI35';
   let busy=false,timer=0;
   const LX=()=>window.LX||{};
   const toast=m=>{try{LX().toast?.(m)}catch{}};
@@ -100,7 +100,7 @@
     const mo=new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(bind,25)});mo.observe(document.documentElement,{subtree:true,childList:true});
   }
 
-  const api={version:'34',ui:VERSION,build:BUILD,openCenter,forceUpdate,check:published,status:()=>({version:VERSION,build:BUILD,current:loadedBuild(),ready:loadedBuild()===BUILD})};
+  const api={version:'35',ui:VERSION,build:BUILD,openCenter,forceUpdate,check:published,status:()=>({version:VERSION,build:BUILD,current:loadedBuild(),ready:loadedBuild()===BUILD})};
   window.LXReleaseV34=api;
   window.LXReleaseV33=api;
   window.LXReleaseV321=api;
