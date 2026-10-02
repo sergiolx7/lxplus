@@ -5,7 +5,7 @@
 (()=>{'use strict';
   if(window.LXNotificationsV26?.version==='26.2')return;
   const PUBLIC_KEY='BEwN7Hj2kCncrpplDhavvJUgVAE61a_va-B0SsxLVJ_wBYtGT6gXjh5QFDzpR_YIxHTbWAXFjCCZK5gCA89HK-g';
-  const PROMPT_TEXT='Você aceita receber notificações da NC News?';
+  const PROMPT_TEXT='Quer receber as novidades da LX Plus?';
   const DISMISS_KEY='lx_push_prompt_dismissed_v26';
   const STYLE_ID='lxNotificationsV26Css';
   let promptTimer=0,lastUser='',publishPatched=false;

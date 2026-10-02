@@ -51,12 +51,8 @@
 #app.lx-music-mode #homeContent{padding-bottom:112px!important}
 
 /* Float mode: compact movable second-screen player while browsing movies/books/etc. */
-#app:not(.lx-music-mode):not(.hidden) ~ #musicDock.music-dock:not(.hidden){
-  border-color:color-mix(in srgb,var(--accent,#8a2be2) 34%,rgba(255,255,255,.08))!important;
-  background:linear-gradient(150deg,rgba(17,20,31,.975),rgba(6,8,14,.985))!important;
-  box-shadow:0 22px 64px rgba(0,0,0,.50),0 0 32px color-mix(in srgb,var(--accent,#8a2be2) 18%,transparent)!important;
-}
-#app:not(.lx-music-mode):not(.hidden) ~ #musicDock .lx-music-drag-handle{display:flex!important}
+
+
 
 /* ===== Now Playing panel, opened by clicking artwork while inside Music ===== */
 .lx-now-playing-v6{max-width:880px!important;padding:0!important;overflow:hidden!important;border-radius:24px!important;background:linear-gradient(160deg,rgba(16,18,30,.985),rgba(5,7,12,.99))!important;border:1px solid color-mix(in srgb,var(--accent,#8a2be2) 28%,rgba(255,255,255,.08))!important;box-shadow:0 36px 110px rgba(0,0,0,.62),0 0 54px color-mix(in srgb,var(--accent,#8a2be2) 16%,transparent)!important}
@@ -101,16 +97,44 @@
   #app.lx-music-mode #homeContent{padding-bottom:96px!important}
 
   /* when leaving Music on phone, use a compact secondary floating bar below the header */
-  #app:not(.lx-music-mode):not(.hidden) ~ #musicDock.music-dock:not(.hidden){position:fixed!important;left:10px!important;right:10px!important;top:66px!important;bottom:auto!important;width:auto!important;min-width:0!important;min-height:62px!important;max-height:72px!important;padding:7px 8px!important;grid-template-columns:44px minmax(0,1fr) auto!important;grid-template-areas:"cover info right" "cover center center"!important;gap:2px 7px!important;border-radius:14px!important;overflow:hidden!important;transform:none!important;touch-action:auto!important}
-  #app:not(.lx-music-mode):not(.hidden) ~ #musicDock .lx-music-drag-handle{display:none!important}
-  #app:not(.lx-music-mode):not(.hidden) ~ #musicDock .music-cover-btn{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important}
-  #app:not(.lx-music-mode):not(.hidden) ~ #musicDock .music-right-controls button:not(#musicClose){display:none!important}
-  #app:not(.lx-music-mode):not(.hidden) ~ #musicDock .music-transport button{display:none!important}
-  #app:not(.lx-music-mode):not(.hidden) ~ #musicDock #musicPrev,#app:not(.lx-music-mode):not(.hidden) ~ #musicDock #musicPlay,#app:not(.lx-music-mode):not(.hidden) ~ #musicDock #musicNext{display:grid!important;width:26px!important;height:26px!important;min-width:26px!important;min-height:26px!important}
+
+
+
+
+
+
 
   .lx-now-playing-v6 .lx-now-playing-hero{grid-template-columns:1fr!important;gap:18px!important;padding:22px 18px!important;text-align:center!important}
   .lx-now-playing-v6 .lx-now-playing-art{width:min(72vw,330px)!important;justify-self:center!important}
   .lx-now-playing-v6 .lx-now-playing-copy h2{font-size:32px!important}
   .lx-now-playing-v6 .lx-now-playing-controls,.lx-now-playing-v6 .lx-now-playing-actions{justify-content:center!important}
   #lxMusicEffectsPanel{left:10px!important;right:10px!important;bottom:calc(82px + env(safe-area-inset-bottom))!important;width:auto!important}
+}
+
+/* UI36: readable controls and an adaptive integrated bar on phones/tablets. */
+@media(max-width:1100px){
+ #app.lx-music-mode ~ #musicDock.music-dock:not(.hidden){grid-template-columns:52px minmax(0,1fr) auto!important;grid-template-areas:"cover info right" "center center center" "provider provider provider"!important;gap:6px 10px!important;min-height:120px!important;max-height:160px!important;padding:10px 14px!important;width:calc(100vw - 28px)!important;left:14px!important;right:auto!important}
+ #app.lx-music-mode ~ #musicDock .music-center-controls{display:grid!important;grid-template-columns:auto minmax(0,1fr)!important;gap:12px!important;min-width:0!important}
+ #app.lx-music-mode ~ #musicDock .music-info{min-width:0!important}
+ #app.lx-music-mode ~ #musicDock .music-info strong{font-size:14px!important;line-height:1.35!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+ #app.lx-music-mode ~ #musicDock .music-info small{font-size:11px!important}
+ #app.lx-music-mode ~ #musicDock .music-cover-btn{width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important}
+ #app.lx-music-mode ~ #musicDock .music-transport button{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important}
+ #app.lx-music-mode ~ #musicDock .music-main-play{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important}
+ #app.lx-music-mode ~ #musicDock .music-right-controls{gap:2px!important}
+ #app.lx-music-mode ~ #musicDock .music-right-controls button{width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important}
+ #app.lx-music-mode ~ #musicDock .music-right-controls :is(#musicVolume,span,#musicCollectionBtn,#musicLyricsBtn,#musicEffectsBtn){display:none!important}
+ #app.lx-music-mode ~ #musicDock .music-timeline{min-width:0!important;grid-template-columns:30px minmax(0,1fr) 30px!important;font-size:10px!important;gap:6px!important}
+ #app.lx-music-mode #homeContent{padding-bottom:160px!important}
+}
+@media(max-width:700px){
+ #app.lx-music-mode ~ #musicDock.music-dock:not(.hidden){left:8px!important;width:calc(100vw - 16px)!important;padding:10px 12px!important;border-radius:18px!important;bottom:calc(68px + env(safe-area-inset-bottom))!important}
+ #app.lx-music-mode ~ #musicDock .music-transport :is(#musicShuffle,#musicRepeat){display:none!important}
+ #app.lx-music-mode ~ #musicDock :is(#musicPrev,#musicPlay,#musicNext){width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;display:grid!important}
+ #app.lx-music-mode ~ #musicDock .music-transport{gap:0!important}
+ #app.lx-music-mode ~ #musicDock .music-right-controls :is(#musicQueueBtn,#musicProviderToggle){display:none!important}
+ #app.lx-music-mode ~ #musicDock #musicClose{display:grid!important}
+ #app.lx-music-mode ~ #musicDock .music-timeline{grid-template-columns:25px minmax(0,1fr) 25px!important;gap:4px!important;font-size:9px!important}
+ #app.lx-music-mode ~ #musicDock .music-center-controls{gap:8px!important}
+ #app.lx-music-mode #homeContent{padding-bottom:220px!important}
 }

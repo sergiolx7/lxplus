@@ -29,10 +29,10 @@
     if(!appVisible())return;
     let link=byId(STYLE_ID);
     if(!link){link=document.createElement('link');link.id=STYLE_ID;link.rel='stylesheet';document.head.appendChild(link)}
-    link.href='lxplus.future-ui-v9.css?v=20260926-1';
+    if(link.getAttribute('href')!=='lxplus.future-ui-v9.css?v=UI36')link.href='lxplus.future-ui-v9.css?v=UI36';
     let mini=byId(MINI_STYLE_ID);
     if(!mini){mini=document.createElement('link');mini.id=MINI_STYLE_ID;mini.rel='stylesheet';document.head.appendChild(mini)}
-    mini.href='lxplus.mini-floating-player-v11.css?v=20260926-1';
+    if(mini.getAttribute('href')!=='lxplus.mini-floating-player-v11.css?v=UI36')mini.href='lxplus.mini-floating-player-v11.css?v=UI36';
   }
 
   function surface(){

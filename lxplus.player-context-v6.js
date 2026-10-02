@@ -7,8 +7,8 @@
    - Manual catalog metadata always wins over embedded/imported metadata */
 (()=>{'use strict';
   const STYLE_ID='lxPlayerContextV6Css',POLISH_STYLE_ID='lxMusicPolishV7Css';
-  const POS_KEYS=['lx_music_float_pos_v6','lx_music_float_pos_v5'];
-  let lastContext='',floatRestored=false,syncTimer=0;
+  const POS_KEYS=['lx_music_float_pos_v36','lx_music_float_pos_v6','lx_music_float_pos_v5'];
+  let lastContext='',floatRestored=false,syncTimer=0,drag=null,geometryFrame=0,suppressClickUntil=0;
 
   const byId=id=>document.getElementById(id);
   const app=()=>byId('app');
@@ -22,7 +22,7 @@
   function loadStyle(){
     let link=byId(STYLE_ID);
     if(!link){link=document.createElement('link');link.id=STYLE_ID;link.rel='stylesheet';document.head.appendChild(link)}
-    link.href='lxplus.player-context-v6.css?v=20260926-4';
+    link.href='lxplus.player-context-v6.css?v=UI36';
     let polish=byId(POLISH_STYLE_ID);
     if(!polish){polish=document.createElement('link');polish.id=POLISH_STYLE_ID;polish.rel='stylesheet';document.head.appendChild(polish)}
     polish.href='lxplus.music-polish-v7.css?v=20260926-1';
@@ -46,41 +46,83 @@
     for(const key of POS_KEYS){try{const p=JSON.parse(localStorage.getItem(key)||'null');if(p&&Number.isFinite(+p.x)&&Number.isFinite(+p.y))return{x:+p.x,y:+p.y}}catch{}}
     return null;
   }
-  function restoreDesktopFloat(){
-    const el=dock();if(!el||innerWidth<=700||el.classList.contains('hidden'))return;
-    requestAnimationFrame(()=>{
-      const r=el.getBoundingClientRect(),saved=readSavedPos(),pad=8;
-      const x=clamp(saved?.x??(innerWidth-r.width-18),pad,Math.max(pad,innerWidth-r.width-pad));
-      const y=clamp(saved?.y??18,pad,Math.max(pad,innerHeight-r.height-pad));
-      el.style.setProperty('position','fixed','important');
-      el.style.setProperty('left',x+'px','important');
-      el.style.setProperty('top',y+'px','important');
-      el.style.setProperty('right','auto','important');
-      el.style.setProperty('bottom','auto','important');
-      el.style.setProperty('transform','none','important');
+  function viewport(){
+    const v=window.visualViewport,pad=12;
+    return {x:(v?.offsetLeft||0)+pad,y:(v?.offsetTop||0)+pad,
+      width:v?.width||innerWidth,height:v?.height||innerHeight,pad,
+      bottom:innerWidth<=700?84:pad};
+  }
+  function position(x,y,save=false){
+    const el=dock();if(!el||context()!=='float'||el.classList.contains('hidden'))return;
+    const r=el.getBoundingClientRect(),v=viewport(),maxX=Math.max(v.x,v.x+v.width-r.width-v.pad*2),maxY=Math.max(v.y,v.y+v.height-r.height-v.pad-v.bottom);
+    const point={x:clamp(x,v.x,maxX),y:clamp(y,v.y,maxY)};
+    el.style.setProperty('position','fixed','important');
+    for(const [key,value] of Object.entries({left:Math.round(point.x)+'px',top:Math.round(point.y)+'px',right:'auto',bottom:'auto',transform:'none'}))el.style.setProperty(key,value,'important');
+    if(save)try{localStorage.setItem(POS_KEYS[0],JSON.stringify({...point,rx:maxX>v.x?(point.x-v.x)/(maxX-v.x):1,ry:maxY>v.y?(point.y-v.y)/(maxY-v.y):0,viewport:innerWidth}))}catch{}
+    return point;
+  }
+  function restoreFloat(reset=false){
+    cancelAnimationFrame(geometryFrame);geometryFrame=requestAnimationFrame(()=>{
+      const el=dock();if(!el||context()!=='float'||el.classList.contains('hidden'))return;
+      el.style.setProperty('position','fixed','important');el.style.setProperty('right','auto','important');el.style.setProperty('bottom','auto','important');
+      const r=el.getBoundingClientRect(),v=viewport(),saved=reset?null:readSavedPos(),raw=reset?null:(()=>{try{return JSON.parse(localStorage.getItem(POS_KEYS[0])||'null')}catch{return null}})();
+      const maxX=Math.max(v.x,v.x+v.width-r.width-v.pad*2),maxY=Math.max(v.y,v.y+v.height-r.height-v.pad-v.bottom);
+      const x=raw&&Number.isFinite(raw.rx)?v.x+raw.rx*(maxX-v.x):saved?.x??maxX;
+      const y=raw&&Number.isFinite(raw.ry)?v.y+raw.ry*(maxY-v.y):saved?.y??(innerWidth<=700?maxY:Math.min(maxY,88));
+      position(x,y,reset);floatRestored=true;
     });
   }
-
+  function finishDrag(event){
+    if(!drag||(event&&event.pointerId!==drag.id))return;
+    const active=drag;drag=null;cancelAnimationFrame(geometryFrame);
+    if(active.moved){position(active.x,active.y,true);suppressClickUntil=Date.now()+350}
+    dock()?.classList.remove('lx-is-dragging');
+    try{active.handle.releasePointerCapture(active.id)}catch{}
+  }
+  function bindDrag(){
+    const el=dock();if(!el)return;
+    let handle=el.querySelector('.lx-music-drag-handle');
+    if(!handle){handle=document.createElement('div');handle.className='lx-music-drag-handle';handle.innerHTML='<span aria-hidden="true">⠿</span>';handle.tabIndex=0;handle.setAttribute('role','button');handle.setAttribute('aria-label','Mover player. Use as setas; Home restaura a posição.');handle.title='Arraste para mover · Home para reposicionar';el.prepend(handle)}
+    document.addEventListener('pointerdown',e=>{
+      if(context()!=='float'||el.classList.contains('hidden')||drag||e.isPrimary===false||(e.pointerType==='mouse'&&e.button!==0))return;
+      const target=e.target.closest?.('#musicDock .music-info,#musicDock .lx-music-drag-handle');
+      if(!target||e.target.closest?.('button,a,input,select,textarea'))return;
+      const r=el.getBoundingClientRect();drag={id:e.pointerId,handle:target,startX:e.clientX,startY:e.clientY,originX:r.left,originY:r.top,x:r.left,y:r.top,moved:false};
+      try{target.setPointerCapture(e.pointerId)}catch{}
+    },true);
+    document.addEventListener('pointermove',e=>{
+      if(!drag||e.pointerId!==drag.id)return;
+      if(context()!=='float'){finishDrag();return}
+      const dx=e.clientX-drag.startX,dy=e.clientY-drag.startY;
+      if(!drag.moved&&Math.hypot(dx,dy)<4)return;
+      drag.moved=true;el.classList.add('lx-is-dragging');drag.x=drag.originX+dx;drag.y=drag.originY+dy;
+      cancelAnimationFrame(geometryFrame);geometryFrame=requestAnimationFrame(()=>{if(drag)position(drag.x,drag.y)});e.preventDefault();
+    },{capture:true,passive:false});
+    for(const event of ['pointerup','pointercancel','lostpointercapture'])document.addEventListener(event,finishDrag,true);
+    document.addEventListener('click',e=>{if(Date.now()<suppressClickUntil&&e.target.closest?.('#musicDock .music-info,#musicDock .lx-music-drag-handle')){e.preventDefault();e.stopImmediatePropagation()}},true);
+    handle.addEventListener('dblclick',()=>restoreFloat(true));
+    handle.addEventListener('keydown',e=>{
+      if(context()!=='float')return;
+      if(e.key==='Home'){e.preventDefault();restoreFloat(true);return}
+      const moves={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]},delta=moves[e.key];if(!delta)return;
+      e.preventDefault();const r=el.getBoundingClientRect(),step=e.shiftKey?40:16;position(r.left+delta[0]*step,r.top+delta[1]*step,true);
+    });
+    window.LX.musicFloat={reset:()=>restoreFloat(true),moveTo:(x,y)=>position(Number(x)||12,Number(y)||12,true)};
+    if('MutationObserver'in window)new MutationObserver(()=>sync()).observe(el,{attributes:true,attributeFilter:['class']});
+  }
   function sync(force=false){
     const el=dock(),next=context();if(!el)return;
-    document.body.dataset.lxPlayerContext=next;
-    if(!force&&next===lastContext)return;
-    lastContext=next;
+    if(document.body.dataset.lxPlayerContext!==next)document.body.dataset.lxPlayerContext=next;
+    const changed=next!==lastContext;
+    if(!force&&!changed){if(next==='float'&&!floatRestored&&!el.classList.contains('hidden'))restoreFloat();return}
+    if(changed)finishDrag();lastContext=next;
     if(next==='music'){
-      clearDockGeometry();
-      el.classList.add('lx-player-context-music');
-      el.classList.remove('lx-player-context-float');
-      floatRestored=false;
+      clearDockGeometry();el.classList.add('lx-player-context-music');el.classList.remove('lx-player-context-float');floatRestored=false;
     }else if(next==='float'){
-      el.classList.remove('lx-player-context-music');
-      el.classList.add('lx-player-context-float');
-      if(innerWidth<=700){clearDockGeometry();floatRestored=false}
-      else if(!floatRestored){restoreDesktopFloat();floatRestored=true}
+      el.classList.remove('lx-player-context-music');el.classList.add('lx-player-context-float');
+      if(changed||!floatRestored)restoreFloat();
     }else{
-      el.classList.remove('lx-player-context-music','lx-player-context-float');
-      clearDockGeometry();
-      floatRestored=false;
-      byId('lxMusicEffectsPanel')?.remove();
+      el.classList.remove('lx-player-context-music','lx-player-context-float');clearDockGeometry();floatRestored=false;byId('lxMusicEffectsPanel')?.remove();
     }
   }
 
@@ -216,10 +258,11 @@
     document.addEventListener('lx:music-changed',()=>{patchEffectsButton();installMusicPolish();setTimeout(()=>sync(true),0)});
     document.addEventListener('lx:music-closed',()=>setTimeout(()=>sync(true),0));
     window.addEventListener('resize',()=>{floatRestored=false;setTimeout(()=>sync(true),0)},{passive:true});
+    window.visualViewport?.addEventListener('resize',()=>{floatRestored=false;sync(true)},{passive:true});
     window.addEventListener('orientationchange',()=>{floatRestored=false;setTimeout(()=>sync(true),80)},{passive:true});
     setInterval(()=>{sync();installMusicPolish()},700);
   }
 
-  function boot(){loadStyle();patchEffectsButton();bindArtwork();installMusicPolish();watch();sync(true);window.LXPlayerContextV6={sync,openNowPlaying,installMusicPolish}}
+  function boot(){loadStyle();patchEffectsButton();bindDrag();bindArtwork();installMusicPolish();watch();sync(true);window.LXPlayerContextV6={sync,openNowPlaying,installMusicPolish}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

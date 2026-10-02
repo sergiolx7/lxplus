@@ -1,0 +1,10 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const source=fs.readFileSync('supabase/functions/lx-drive-audio-resolver/index.ts','utf8');
+const begin=source.indexOf('function parseQuery'),end=source.indexOf('Deno.serve',begin);
+const sandbox={URLSearchParams};vm.createContext(sandbox);vm.runInContext(source.slice(begin,end).replace('body:string','body')+';this.parse=parseQuery;this.choose=selectAudioStream;',sandbox);
+const body=new URLSearchParams({status:'ok',fmt_list:'18/640x360,160/256x144',fmt_stream_map:'160|'+encodeURIComponent('https://video.invalid/video-only')+',18|'+encodeURIComponent('https://video.invalid/mp4')+',140|'+encodeURIComponent('https://video.invalid/audio')}).toString();
+const streams=sandbox.parse(body).streams;assert.equal(streams.length,3);assert.equal(sandbox.choose(streams).code,'140');assert.equal(sandbox.choose(streams.filter(x=>x.code!=='140')).code,'18');assert.equal(sandbox.choose(streams.filter(x=>x.code==='160')),null);
+assert.equal(sandbox.parse(new URLSearchParams({fmt_stream_map:'18|%invalid'}).toString()).streams.length,0,'A malformed stream must not abort all resolution');
+assert.equal(sandbox.choose([{code:'x',type:'video/mp4; codecs="avc1.42001e"',url:'https://video.invalid'}]),null,'Video-only MP4 must not become an audio repair');
+assert(source.includes("req.method==='OPTIONS'"));assert(source.includes('Access-Control-Allow-Headers'));assert(source.includes('AbortSignal.timeout(12000)'));
+console.log('UI36 resolver PASS: CORS preflight, AAC preference, video-only exclusion, malformed metadata, bounded network wait');

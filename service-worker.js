@@ -1,11 +1,11 @@
 /* LX Plus — Service Worker UI34 SINGLE SHELL
    The HTML is canonical. This worker never injects UI, never rewrites the DOM, and never forces navigation.
 */
-const LX_BUILD='R12.4-UI35-MUSIC-SOCIAL-20261002';
-const LX_VERSION='UI35';
+const LX_BUILD='R12.5-UI36-MYPLAY-20261002';
+const LX_VERSION='UI36';
 const CACHE='lxplus-shell-'+LX_BUILD;
 const CORE=[
-  './lxplus.insights-v35.js','./lxplus.insights-v35.css','./','./index.html','./lxplus.bundle.js','./lxplus.bundle.css',
+  './lxplus.insights-v36.js','./lxplus.insights-v36.css','./','./index.html','./lxplus.bundle.js','./lxplus.bundle.css',
   './lxplus.support.js','./lxplus.support-core.js','./lxplus.recovery.js','./lxplus.audiofx.js','./lxplus.album-grouping.js',
   './lxplus.future-ui-v9.js','./lxplus.future-ui-v9.css','./lxplus.books-v8.js','./lxplus.books-v8.css',
   './lxplus.player-context-v6.js','./lxplus.player-context-v6.css','./lxplus.mini-floating-player-v11.css',
