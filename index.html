@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="lxplus-build" content="R12.4-UI35-MUSIC-SOCIAL-20261002">
+  <meta name="lxplus-build" content="R12.5-UI36-MYPLAY-20261002">
   <script>window.LX_DRIVE_STORAGE_ENDPOINT="https://lxplus.sergio-sousa.workers.dev";</script>
   <script>window.__LX_INTRO_DONE=true;document.documentElement.classList.add("lx-intro-complete");</script>
   <meta name="theme-color" content="#050506">
@@ -38,13 +38,13 @@
   window.__lxCastAvailable=false;
   window.__onGCastApiAvailable=function(isAvailable){window.__lxCastAvailable=!!isAvailable;window.dispatchEvent(new CustomEvent('lx:cast-available',{detail:{isAvailable:!!isAvailable}}));};
   </script>
-<link rel="stylesheet" href="lxplus.bundle.css?v=R12.4-UI35-MUSIC-SOCIAL-20261002">
+<link rel="stylesheet" href="lxplus.bundle.css?v=R12.5-UI36-MYPLAY-20261002">
   <title>LX Plus</title>
 
   <!-- LX UI32 canonical styles: direct, single shell -->
-  <link id="lxFutureUiV9Css" rel="stylesheet" href="lxplus.future-ui-v9.css?v=UI34">
-  <link id="lxPlayerContextV6Css" rel="stylesheet" href="lxplus.player-context-v6.css?v=UI34">
-  <link id="lxMiniFloatingV11Css" rel="stylesheet" href="lxplus.mini-floating-player-v11.css?v=UI34">
+  <link id="lxFutureUiV9Css" rel="stylesheet" href="lxplus.future-ui-v9.css?v=UI36">
+  <link id="lxPlayerContextV6Css" rel="stylesheet" href="lxplus.player-context-v6.css?v=UI36">
+  <link id="lxMiniFloatingV11Css" rel="stylesheet" href="lxplus.mini-floating-player-v11.css?v=UI36">
   <link id="lxDetailWatchV12Css" rel="stylesheet" href="lxplus.detail-watch-v12.css?v=UI34">
   <link id="lxModalSafetyV13Css" rel="stylesheet" href="lxplus.modal-safety-v13.css?v=UI34">
   <link id="lxMusicPolishV7Css" rel="stylesheet" href="lxplus.music-polish-v7.css?v=UI34">
@@ -63,13 +63,13 @@
     const q=u.searchParams.toString();
     const clean=u.pathname+(q?'?'+q:'')+u.hash;
     history.replaceState(history.state,'',clean);
-    window.LX_CANONICAL_VERSION='UI35';
-    window.LX_CANONICAL_SHELL='R12.4-UI35-MUSIC-SOCIAL-20261002';
-    document.documentElement.dataset.lxCanonicalVersion='UI35';
+    window.LX_CANONICAL_VERSION='UI36';
+    window.LX_CANONICAL_SHELL='R12.5-UI36-MYPLAY-20261002';
+    document.documentElement.dataset.lxCanonicalVersion='UI36';
   }catch(e){console.warn('LX URL migration',e)}})();
   </script>
 
-<link rel="stylesheet" href="lxplus.insights-v35.css?v=UI35">
+<link rel="stylesheet" href="lxplus.insights-v36.css?v=UI36">
 </head>
 <body>
 <div id="lxVisualIntro335" class="lx-visual-intro335" aria-hidden="true">
@@ -371,11 +371,11 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   })();
   </script>
-  <script defer src="lxplus.album-grouping.js?v=R12.4-UI35-MUSIC-SOCIAL-20261002"></script>
-  <script defer src="lxplus.bundle.js?v=R12.4-UI35-MUSIC-SOCIAL-20261002" onerror="var e=document.getElementById('lxBootEmergency');if(e){e.hidden=false;e.style.display='grid'}"></script>
-  <script defer src="lxplus.recovery.js?v=R12.4-UI35-MUSIC-SOCIAL-20261002"></script>
-  <script defer src="lxplus.support.js?v=R12.4-UI35-MUSIC-SOCIAL-20261002"></script>
-  <script defer src="lxplus.audiofx.js?v=R12.4-UI35-MUSIC-SOCIAL-20261002"></script>
+  <script defer src="lxplus.album-grouping.js?v=R12.5-UI36-MYPLAY-20261002"></script>
+  <script defer src="lxplus.bundle.js?v=R12.5-UI36-MYPLAY-20261002" onerror="var e=document.getElementById('lxBootEmergency');if(e){e.hidden=false;e.style.display='grid'}"></script>
+  <script defer src="lxplus.recovery.js?v=R12.5-UI36-MYPLAY-20261002"></script>
+  <script defer src="lxplus.support.js?v=R12.5-UI36-MYPLAY-20261002"></script>
+  <script defer src="lxplus.audiofx.js?v=R12.5-UI36-MYPLAY-20261002"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded',function(){
@@ -550,9 +550,10 @@
     const identity=await ensureCloudIdentity(1800),c=db(); if(!c||!identity?.id){state.lastError='A conexão da sua conta com a Comunidade ainda não ficou pronta. Tente novamente em instantes.';return []}
     state.loading=true; state.lastError='';
     try{
-      const {data,error}=await c.rpc('lx_social_directory');
+      const [{data,error},identities]=await Promise.all([c.rpc('lx_social_directory'),c.rpc('lx_community_identity')]);
       if(error)throw error;
-      state.directory=(data||[]).map(x=>({...x,relation:x.relation||'none',direction:x.direction||'none'}));
+      const identityMap=new Map((identities.data||[]).map(x=>[String(x.user_id),x]));
+      state.directory=(data||[]).map(x=>({...x,...identityMap.get(String(x.user_id)),relation:x.relation||'none',direction:x.direction||'none'}));
       updateBadge();
       return state.directory;
     }catch(e){
@@ -576,9 +577,9 @@
     const chat=p.relation==='accepted'?LX.chat?.summary?.(p.user_id):null;
     const preview=chat?.preview||p.bio||'Toque para abrir o perfil';
     const unread=Number(chat?.unread||0);
-    const presence=p.relation==='accepted'?`<em class="lx-presence-label ${isOnline(p.user_id)?'online':'offline'}" data-lx-presence-label="${esc(String(p.user_id))}">${esc(presenceText(p.user_id))}</em> · `:'';
+    const presence=`<em class="lx-presence-label ${isOnline(p.user_id)?'online':'offline'}" data-lx-presence-label="${esc(String(p.user_id))}">${esc(presenceText(p.user_id))}</em> · `;
     const time=chat?.time?` · ${esc(chat.time)}`:'';
-    return `<article class="lx-community-person lx-community-conversation ${unread?'has-unread':''}" data-name="${esc((p.name||'').toLowerCase())}"><button type="button" class="lx-community-profile-link" onclick="event.stopPropagation();LX.social.openProfile('${p.user_id}')" aria-label="Abrir perfil de ${esc(p.name)}">${avatar(p)}</button><div class="lx-community-person-copy"><strong>${verified(p)}${unread?`<i class="lx-community-unread">${unread>9?'9+':unread}</i>`:''}</strong><small class="${chat?.draft?'is-draft':''}">${esc(preview)}</small><span>${presence}${esc(status)}${time}</span></div><div class="lx-community-person-actions">${actions}</div></article>`;
+    return `<article class="lx-community-person lx-community-conversation ${unread?'has-unread':''}" data-name="${esc(((p.name||'')+' @'+(p.username||'')).toLowerCase())}"><button type="button" class="lx-community-profile-link" onclick="event.stopPropagation();LX.social.openProfile('${p.user_id}')" aria-label="Abrir perfil de ${esc(p.name)}">${avatar(p)}</button><div class="lx-community-person-copy"><strong><button type="button" class="lx36-community-name" onclick="event.stopPropagation();LX.social.openProfile('${p.user_id}')">${verified(p)}</button>${p.progress?`<span class="lx36-community-level">LV ${Number(p.progress.level)||1}</span>`:''}${unread?`<i class="lx-community-unread">${unread>9?'9+':unread}</i>`:''}</strong>${p.username?`<em class="lx36-community-handle">@${esc(p.username)}</em>`:''}<small class="${chat?.draft?'is-draft':''}">${esc(preview)}</small><span>${presence}${esc(status)}${time}</span></div><div class="lx-community-person-actions">${actions}</div></article>`;
   }
   function emptyCard(tab){
     if(state.lastError)return `<div class="lx-community-empty error"><b>Comunidade indisponível</b><p>${esc(state.lastError)}</p><button onclick="LX.social.retry()">Tentar novamente</button></div>`;
@@ -616,6 +617,7 @@
   }
   async function retry(){state.lastError='';await refreshDirectory();await render(state.openTab)}
   async function openProfile(id){
+    if(LX.insights?.openMember)return LX.insights.openMember(id);
     await refreshDirectory();
     const p=state.directory.find(x=>String(x.user_id)===String(id)); if(!p)return (LX.toast||((m)=>console.log(m)))('Perfil não encontrado.');
     const {drawer}=ensureShell(); setDrawerOpen(true);
@@ -1346,7 +1348,7 @@
     const rows=[row,...readRuntimeNotices().filter(x=>String(x.id)!==String(row.id))].slice(0,40);S()?.writeLocal?.(runtimeNoticeKey(),rows);LX.ui?.updateNoticeCount?.();return row;
   }
   function notificationItems(){
-    const cloud=(state.cloudNoticeRows||[]).slice(0,30).map(n=>({cat:'community',icon:n.kind==='call'?'☎':'✉',title:n.title||'Comunidade',text:n.message||'',time:fmtTime(n.created_at)||'Agora',tag:n.kind==='call'?'Chamada':'Mensagem',read:!!n.read_at,id:`cloud-${n.id}`}));
+    const cloud=(state.cloudNoticeRows||[]).slice(0,30).map(n=>({cat:n.kind==='update'?'system':'community',icon:n.kind==='update'?'✳':n.kind==='call'?'☎':'✉',title:n.title||'Comunidade',text:n.message||'',time:fmtTime(n.created_at)||'Agora',tag:n.kind==='update'?'Atualização':n.kind==='call'?'Chamada':'Mensagem',read:!!n.read_at,id:`cloud-${n.id}`}));
     const local=readRuntimeNotices().slice(0,20).map(n=>({cat:'community',icon:n.kind==='call'?'☎':'✦',title:n.title||'LX Plus',text:n.text||'',time:fmtTime(n.created_at)||'Agora',tag:n.kind==='call'?'Chamada':'Sistema',read:!!n.read,id:String(n.id)}));
     const seen=new Set();return [...cloud,...local].filter(x=>{const k=`${x.title}|${x.text}|${x.time}`;if(seen.has(k))return false;seen.add(k);return true}).slice(0,35)
   }
@@ -1505,20 +1507,20 @@
 
 
 <!-- LX UI34 canonical scripts: direct, single shell -->
-<script defer id="lxPlayerContextV6Script" src="lxplus.player-context-v6.js?v=UI34"></script>
-<script defer id="lxFutureUiV9Script" src="lxplus.future-ui-v9.js?v=UI34-BF2"></script>
+<script defer id="lxPlayerContextV6Script" src="lxplus.player-context-v6.js?v=UI36"></script>
+<script defer id="lxFutureUiV9Script" src="lxplus.future-ui-v9.js?v=UI36"></script>
 <script defer id="lxMusicV8Script" src="lxplus.music-v8.js?v=UI34-MB1"></script>
 <script defer id="lxMusicSourcesV2Script" src="lxplus.music-sources-v2.js?v=UI34"></script>
 <script defer id="lxModalSafetyV13Script" src="lxplus.modal-safety-v13.js?v=UI34"></script>
 <script defer id="lxDetailWatchV12Script" src="lxplus.detail-watch-v12.js?v=UI34"></script>
-<script defer id="lxPlayerAudioV12Script" src="lxplus.player-audio-v12.js?v=UI35"></script>
+<script defer id="lxPlayerAudioV12Script" src="lxplus.player-audio-v12.js?v=UI36"></script>
 <script defer id="lxNotificationsHotfixV27Script" src="lxplus.notifications-hotfix-v27.js?v=UI34"></script>
 <script defer id="lxUserSettingsV28Script" src="lxplus.user-settings-v28.js?v=UI34"></script>
 
 
 <script defer id="lxAdminHealthV33Script" src="lxplus.admin-health-v33.js?v=UI34"></script>
-<script defer src="lxplus.insights-v35.js?v=UI35"></script>
-<script defer id="lxReleaseV34Script" src="lxplus.release-v34.js?v=UI35"></script>
+<script defer src="lxplus.insights-v36.js?v=UI36"></script>
+<script defer id="lxReleaseV34Script" src="lxplus.release-v34.js?v=UI36"></script>
 
 </body>
 </html>

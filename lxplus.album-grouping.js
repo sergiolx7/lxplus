@@ -144,82 +144,6 @@
     document.head.appendChild(style);
   }
 
-  function readPos(){
-    try{return JSON.parse(localStorage.getItem(POS_KEY)||localStorage.getItem('lx_music_float_pos_v5')||'null')}catch{return null}
-  }
-  function savePos(x,y){
-    try{localStorage.setItem(POS_KEY,JSON.stringify({x:Math.round(x),y:Math.round(y)}))}catch{}
-  }
-  function bounds(el,x,y){
-    const pad=8,rect=el.getBoundingClientRect(),maxX=Math.max(pad,innerWidth-rect.width-pad),maxY=Math.max(pad,innerHeight-rect.height-pad);
-    return {x:clamp(x,pad,maxX),y:clamp(y,pad,maxY)};
-  }
-  function setDockPosition(x,y,save=true){
-    const el=dock();if(!el)return null;
-    const point=bounds(el,x,y);
-    el.style.setProperty('position','fixed','important');
-    el.style.setProperty('left',point.x+'px','important');
-    el.style.setProperty('top',point.y+'px','important');
-    el.style.setProperty('right','auto','important');
-    el.style.setProperty('bottom','auto','important');
-    el.style.setProperty('transform','none','important');
-    if(save)savePos(point.x,point.y);
-    return point;
-  }
-  function restoreDock(){
-    const el=dock();if(!el||innerWidth<=700)return;
-    const saved=readPos();
-    requestAnimationFrame(()=>{
-      const rect=el.getBoundingClientRect();
-      if(saved&&Number.isFinite(+saved.x)&&Number.isFinite(+saved.y))setDockPosition(+saved.x,+saved.y,false);
-      else setDockPosition(Math.max(8,innerWidth-rect.width-16),18,true);
-    });
-  }
-  function dragStart(event){
-    const el=dock();if(!el||el.classList.contains('hidden')||innerWidth<=700)return;
-    const handle=event.target.closest?.('.lx-music-drag-handle,.music-info');
-    if(!handle||!el.contains(handle)||event.target.closest?.('button,a,input,select,textarea'))return;
-    if(event.pointerType==='mouse'&&event.button!==0)return;
-    const rect=el.getBoundingClientRect();
-    state.drag={id:event.pointerId,dx:event.clientX-rect.left,dy:event.clientY-rect.top,handle};
-    el.classList.add('lx-hotfix-dragging','lx-is-dragging');
-    try{handle.setPointerCapture?.(event.pointerId)}catch{}
-    event.preventDefault();
-    event.stopPropagation();
-  }
-  function dragMove(event){
-    if(!state.drag||state.drag.id!==event.pointerId)return;
-    setDockPosition(event.clientX-state.drag.dx,event.clientY-state.drag.dy,false);
-    event.preventDefault();
-    event.stopPropagation();
-  }
-  function dragEnd(event){
-    if(!state.drag||state.drag.id!==event.pointerId)return;
-    const el=dock(),handle=state.drag.handle;
-    if(el){const rect=el.getBoundingClientRect();savePos(rect.left,rect.top);el.classList.remove('lx-hotfix-dragging','lx-is-dragging')}
-    try{handle?.releasePointerCapture?.(event.pointerId)}catch{}
-    state.drag=null;
-    event.preventDefault();
-    event.stopPropagation();
-  }
-  function bindDrag(){
-    document.addEventListener('pointerdown',dragStart,true);
-    document.addEventListener('pointermove',dragMove,true);
-    document.addEventListener('pointerup',dragEnd,true);
-    document.addEventListener('pointercancel',dragEnd,true);
-    document.addEventListener('dblclick',event=>{
-      if(!event.target.closest?.('#musicDock .lx-music-drag-handle'))return;
-      event.preventDefault();
-      const el=dock();if(!el)return;const rect=el.getBoundingClientRect();
-      setDockPosition(Math.max(8,innerWidth-rect.width-16),18,true);
-    },true);
-    window.addEventListener('resize',()=>{
-      if(innerWidth<=700)return;
-      const el=dock();if(!el)return;const rect=el.getBoundingClientRect();setDockPosition(rect.left,rect.top,true);
-    },{passive:true});
-    restoreDock();
-  }
-
   function entryMatches(live,entry){
     return !!live&&!!entry&&String(live.contentId)===String(entry.id)&&Number(live.index||0)===Number(entry.index||0);
   }
@@ -370,14 +294,11 @@
   function boot(){
     injectStyles();
     setTimeout(()=>{
-      bindDrag();
       wrapAlbumOpen();
       bindAlbumPlayback();
       observeMusic();
       renderAlbumSection();
-      root.LXMusicHotfix260926={playAlbum:playAutoAlbum,openAlbum:openAutoAlbum,shuffleAlbum:shuffleAutoAlbum,resetPlayerPosition:()=>{
-        const el=dock();if(!el)return;const rect=el.getBoundingClientRect();setDockPosition(Math.max(8,innerWidth-rect.width-16),18,true);
-      }};
+      root.LXMusicHotfix260926={playAlbum:playAutoAlbum,openAlbum:openAutoAlbum,shuffleAlbum:shuffleAutoAlbum,resetPlayerPosition:()=>root.LX?.musicFloat?.reset?.()};
     },0);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();

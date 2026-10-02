@@ -1,12 +1,22 @@
-name: Verify LX Plus UI35
+name: Verify LX Plus UI36
 
 on:
   push:
     branches: [main]
     paths:
-      - 'lxplus.insights-v35.js'
-      - 'lxplus.insights-v35.css'
+      - 'lxplus.insights-v36.js'
+      - 'lxplus.insights-v36.css'
       - 'lxplus.player-audio-v12.js'
+      - 'lxplus.player-context-v6.js'
+      - 'lxplus.mini-floating-player-v11.css'
+      - 'lxplus.album-grouping.js'
+      - 'lxplus.audiofx.js'
+      - 'lxplus.player-context-v6.css'
+      - 'lxplus.notifications-v26.js'
+      - 'supabase/functions/**'
+      - 'supabase/migrations/**'
+      - 'qa-audio-resolver-v36.cjs'
+      - 'qa-insights-v36.cjs'
       - 'index.html'
       - 'lxplus.bundle.js'
       - 'lxplus.modal-safety-v13.js'
@@ -46,9 +56,13 @@ jobs:
           node --check lxplus.admin-health-v33.js
           node --check lxplus.release-v34.js
           node --check service-worker.js
-          node --check lxplus.insights-v35.js
+          node --check lxplus.insights-v36.js
           node --check lxplus.player-audio-v12.js
-          node qa-insights-v35.cjs
+          node --check lxplus.player-context-v6.js
+          node --check lxplus.album-grouping.js
+          node --check lxplus.audiofx.js
+          node qa-insights-v36.cjs
+          node qa-audio-resolver-v36.cjs
           node qa-ui33.cjs
       - name: Run media and interaction checks
         run: |

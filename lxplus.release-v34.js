@@ -1,7 +1,7 @@
-/* LX Plus Release UI34 — canonical updater for the maintenance build. */
+/* LX Plus Release UI36 — canonical updater for the maintenance build. */
 (()=>{'use strict';
-  const BUILD='R12.4-UI35-MUSIC-SOCIAL-20261002';
-  const VERSION='UI35';
+  const BUILD='R12.5-UI36-MYPLAY-20261002';
+  const VERSION='UI36';
   let busy=false,timer=0;
   const LX=()=>window.LX||{};
   const toast=m=>{try{LX().toast?.(m)}catch{}};
