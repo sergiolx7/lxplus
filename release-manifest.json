@@ -1,14 +1,21 @@
 {
-  "version": "UI34",
-  "build": "R12.4-UI34-BOOKFIX2-20260929",
-  "name": "UI34 · Leitor de livros estável",
-  "base": "UI33",
-  "files": ["index.html", "lxplus.books-v8.js", "lxplus.future-ui-v9.js", "lxplus.release-v34.js", "lxplus.support.js", "service-worker.js"],
+  "version": "UI35",
+  "build": "R12.4-UI35-MUSIC-SOCIAL-20261002",
+  "name": "UI35 · Sua música, seus resultados",
+  "base": "UI34",
+  "files": [
+    "index.html",
+    "lxplus.bundle.js",
+    "lxplus.insights-v35.js",
+    "lxplus.insights-v35.css",
+    "lxplus.player-audio-v12.js",
+    "service-worker.js"
+  ],
   "force": false,
   "features": [
-    "Corrigido o ciclo de alterações da classe na seção Ler que travava o navegador",
-    "O módulo de livros recebe uma nova URL para substituir a versão antiga em cache",
-    "Leitura de links externos e retorno à estante continuam responsivos"
-  ],
-  "notes": "Atualização do frontend; não altera tabelas nem dados dos usuários."
+    "Retrospectiva musical mensal com tempo efetivamente ouvido",
+    "Ranking por período e perfis da comunidade",
+    "Status de música em reprodução com privacidade",
+    "Correção de áudio serializada e fallback compatível"
+  ]
 }

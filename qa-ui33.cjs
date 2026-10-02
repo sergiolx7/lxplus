@@ -34,6 +34,6 @@ const core=worker.match(/const CORE=\[([\s\S]*?)\];/)?.[1];
 assert(core,'Service Worker precache list was not found');
 for(const [,ref] of core.matchAll(/'\.\/([^']+)'/g))assert(fs.existsSync(path.join(root,ref)),`Missing precache asset: ${ref}`);
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'release-manifest.json'),'utf8'));
-assert.equal(manifest.version,'UI34');
+assert.equal(manifest.version,'UI35');
 assert(html.includes(manifest.build)&&worker.includes(manifest.build),'HTML, worker and release must share a build');
 process.stdout.write(`UI34 QA: PASS (${report.findings.length} sample findings; ${refs.length} HTML assets checked)\n`);
