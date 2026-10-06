@@ -48,8 +48,8 @@
     },300);
   }
   function modal(html){$('overlay')?.classList.remove('hidden');const m=$('modal');if(m){m.innerHTML=`<button class="close-btn" type="button" data-uc-close aria-label="Fechar">×</button>${html}`;m.scrollTop=0;m.tabIndex=-1;m.focus({preventScroll:true});const seq=state.modalSequence=(state.modalSequence||0)+1;requestAnimationFrame(()=>requestAnimationFrame(()=>{if(seq===state.modalSequence)m.scrollTo({top:0,behavior:'instant'});}));}if($('overlay'))$('overlay').scrollTop=0;}
-  function linksHtml(links){return (links||[]).filter(l=>url(l.url)).map(l=>`<a class="secondary-btn" href="${esc(url(l.url))}" target="_blank" rel="noopener noreferrer">${esc(l.provider==='plex'?'Assistir no Plex':l.label||'Ver na fonte oficial')} ↗</a>`).join('');}
-  const legacyReady=id=>{const x=LX.data?.catalog?.().find(i=>String(i.id)===String(id));return !!(x&&(x.type==='Livro'?(x.mediaKey||x.chapters?.length):(x.mediaKey||x.authorizedAudioUrl||x.tracks?.some(t=>t.mediaKey||t.authorizedAudioUrl)||x.episodes?.some(e=>e.mediaKey)||x.externalReadUrl)));};
+  function linksHtml(links){return (links||[]).filter(l=>String(l.provider||'').toLowerCase()!=='plex'&&!LX.plexPartner?.plexUrl?.(l.url)&&url(l.url)).map(l=>`<a class="secondary-btn" href="${esc(url(l.url))}" target="_blank" rel="noopener noreferrer">${esc(l.label||'Ver na fonte oficial')} ↗</a>`).join('');}
+  const legacyReady=id=>{const x=LX.data?.catalog?.().find(i=>String(i.id)===String(id));if(LX.catalogReady)return !!x&&LX.catalogReady(x);return !!(x&&(x.type==='Livro'?(x.mediaKey||x.chapters?.length):(x.mediaKey||x.authorizedAudioUrl||x.tracks?.some(t=>t.mediaKey||t.authorizedAudioUrl)||x.episodes?.some(e=>e.mediaKey)||x.externalReadUrl)));};
   function detailHtml(d){
     const x=d.item,m=x.metadata||{},r=d.resolved||{},playable=r.status==='playable'||r.status==='official_embed'||r.status==='legacy'&&legacyReady(r.legacy_id);
     const titleLabel=x.kind==='book'?'Ler agora':x.kind==='track'?'Ouvir agora':'Assistir';

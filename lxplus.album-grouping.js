@@ -158,6 +158,7 @@
     const group=albumById(albumId);if(!group?.entries?.length)return LX().toast?.('Esse álbum não possui faixas disponíveis.');
     const safeIndex=clamp(Number(index)||0,0,group.entries.length-1),entry=group.entries[safeIndex];
     state.activeAlbumId=group.id;state.activeIndex=safeIndex;state.pending=true;
+    if(LX().playMusicEntries){const ok=LX().playMusicEntries(group.entries,safeIndex);state.pending=false;if(!ok)state.activeAlbumId='';queueMicrotask(syncAlbumRows);return ok}
     try{
       LX().music?.(entry.id,entry.index,true);
       queueMicrotask(syncAlbumRows);
@@ -178,6 +179,7 @@
   }
   function shuffleAutoAlbum(albumId){
     const group=albumById(albumId);if(!group?.entries?.length)return;
+    if(LX().playMusicEntries){state.activeAlbumId=group.id;return LX().playMusicEntries(group.entries,0,true)}
     let next=Math.floor(Math.random()*group.entries.length);
     if(group.entries.length>1&&next===state.activeIndex)next=(next+1)%group.entries.length;
     playAutoAlbum(group.id,next);
@@ -256,14 +258,14 @@
   }
   function bindAlbumPlayback(){
     document.addEventListener('click',event=>{
-      if(!state.activeAlbumId)return;
+      if(!state.activeAlbumId||LX().playMusicEntries)return;
       const button=event.target.closest?.('#musicNext,#musicPrev');if(!button)return;
       event.preventDefault();event.stopImmediatePropagation();
       stepAlbum(button.id==='musicNext'?1:-1);
     },true);
     const audio=document.getElementById('musicAudio');
     audio?.addEventListener('ended',()=>{
-      if(!state.activeAlbumId)return;
+      if(!state.activeAlbumId||LX().playMusicEntries)return;
       const group=albumById(state.activeAlbumId);if(!group)return;
       const repeat=document.getElementById('musicRepeat');
       if(repeat?.querySelector('sup'))return;

@@ -46,3 +46,4 @@ jobs:
           node tools/run-browser-qa.cjs qa-universal-browser.cjs
           node tools/run-browser-qa.cjs qa-catalog-pending-browser.cjs
           node tools/run-browser-qa.cjs qa-music-priority-browser.cjs
+          node tools/run-browser-qa.cjs qa-session-album-plex-browser.cjs

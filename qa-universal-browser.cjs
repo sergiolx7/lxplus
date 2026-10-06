@@ -41,7 +41,7 @@ const out=process.env.LX_QA_OUTPUT||'/tmp/lx-universal-qa';fs.mkdirSync(out,{rec
    assert((await page.evaluate(()=>qaInvocations)).some(i=>i.body.filter==='book'),'Universal book filter');
    await page.click('[data-uc-result="0"]');await page.waitForSelector('.lx-uc-detail');
    assert.equal(await page.locator('[data-uc-play]').count(),0,'Metadata-only title must not open a broken player');
-   assert.equal(await page.locator('a:has-text("Assistir no Plex")').count(),1);
+   assert.equal(await page.locator('a:has-text("Assistir no Plex")').count(),0,'The Plex catalog no longer redirects playback to an external player');
    assert.deepEqual(await overflow(),{page:false,modal:false},'Detail overflow '+width);await page.waitForFunction(()=>document.getElementById('modal').scrollTop===0);
    await page.screenshot({path:path.join(out,'detail-'+width+'.png')});
    await page.click('[data-uc-save]');await page.waitForFunction(()=>document.querySelector('[data-uc-save]').getAttribute('aria-pressed')==='true');
@@ -79,5 +79,5 @@ const out=process.env.LX_QA_OUTPUT||'/tmp/lx-universal-qa';fs.mkdirSync(out,{rec
  await page.waitForFunction(()=>qaResolveCalls.length>=2);
  assert.equal((await page.evaluate(()=>qaResolveCalls[1])).media_id,'00000000-0000-4000-8000-000000000010','Failover must retain the playing title after another detail is opened');
  assert.deepEqual((await page.evaluate(()=>qaResolveCalls[1])).exclude,['source-a']);
- assert.deepEqual(errors,[],'Browser runtime errors');console.log('PASS Universal browser: login bootstrap; instant local + federated results; filters; stale response suppression; metadata-only availability; official Plex link; saved state; Admin preview; 320/390/820/1280/1920 widths; XSS escaping; adaptive quality/audio/subtitles and MIME hint; failover retains the playing title.');await browser.close();
+ assert.deepEqual(errors,[],'Browser runtime errors');console.log('PASS Universal browser: login bootstrap; instant local + federated results; filters; stale response suppression; metadata-only availability; external Plex playback removed; saved state; Admin preview; 320/390/820/1280/1920 widths; XSS escaping; adaptive quality/audio/subtitles and MIME hint; failover retains the playing title.');await browser.close();
 })().catch(e=>{console.error(e);process.exit(1)});

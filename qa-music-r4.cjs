@@ -29,9 +29,9 @@ const extract = (start, end) => {
     unlockMusicGesture() {}, isExternalMusicTrack: () => false, providerPlayback: { paused: false }, toggleCurrentMusic() { toggled++ }, setMusicDockArtwork() {},
     loadTrack: async () => { loaded++; return true }, rememberMusicStart() {},
     setMusicStatus() {}, musicErrorText: () => 'erro', console });
-  context.window={LX};context.URL=URL;context.catalogPending=()=>false;
+  context.window={LX};context.URL=URL;context.catalogPending=()=>false;context.musicShuffleMode=false;
   vm.runInContext(fs.readFileSync(__dirname+'/js/music-source-priority.js','utf8'),context);
-  vm.runInContext(extract('function music(id,index=0,autoplay=true,queueIds=null){', '\nlet musicLoadTicket'), context);
+  vm.runInContext(extract('function musicTracks(item){', '\nlet musicLoadTicket'), context);
   context.music(1);
   assert.equal(nodes.get('musicDock').classList.hidden, false, 'Selecting a track must open the dock immediately');
   assert.equal(nodes.get('musicTitle').textContent, 'CUIDA DO PET');
@@ -41,9 +41,10 @@ const extract = (start, end) => {
   nodes.get('musicAudio').paused = true;
   context.music(1);assert.equal(toggled, 1, 'Opening the active paused track must resume it');
   context.music(1, 0, true, [1, 3]);assert.equal(state.musicQueue[1].title, 'SEMI NUA 2', 'Personal collection controls the queue');
-  context.music(4);assert.equal(nodes.get('musicTitle').textContent, 'Sem arquivo', 'Missing source still opens a player with its title');
-  assert.equal(state.musicQueue.length >= 1, true);
-  await Promise.resolve();assert(loaded >= 3);
+  const before=state.musicQueue;context.music(4);
+  assert.equal(state.musicQueue,before,'A missing source preserves the active playable queue');
+  assert.equal(nodes.get('musicTitle').textContent,'CUIDA DO PET');
+  await Promise.resolve();assert.equal(loaded,2,'Missing tracks never start a load');
 
   const root = { contains: () => true, onclick: null };
   const bindContext = vm.createContext({ LX: { music(id) { selected = Number(id) }, artwork: { hydrate() {} }, syncMusicCardState() {} },
