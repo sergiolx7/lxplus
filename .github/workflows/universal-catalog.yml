@@ -1,0 +1,42 @@
+name: Verify LX Universal Catalog
+on:
+  push:
+    branches: [lxplus-v40-completa]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: tools/catalog-qa/package-lock.json
+      - run: npm ci --prefix tools/catalog-qa
+      - name: Verify contracts, database and existing media behavior
+        env:
+          LX_QA_NODE_MODULES: ${{ github.workspace }}/tools/catalog-qa/node_modules
+        run: |
+          node tests/static-checks.mjs
+          node tests/universal-core.mjs
+          node tests/universal-service.mjs
+          node tests/universal-database.mjs
+          node qa-insights-v36.cjs
+          node qa-audio-resolver-v36.cjs
+          node qa-music-r4.cjs
+          node qa-metadata-r12.cjs
+          node qa-drive-albums-r12-1.cjs
+          node --test cloudflare-worker/worker.test.mjs
+          tools/catalog-qa/node_modules/.bin/deno check --config supabase/functions/lx-universal-catalog/deno.json supabase/functions/lx-universal-catalog/index.ts
+      - run: tools/catalog-qa/node_modules/.bin/playwright install --with-deps chromium
+      - name: Verify responsive browser behavior
+        env:
+          LX_QA_NODE_MODULES: ${{ github.workspace }}/tools/catalog-qa/node_modules
+          LX_QA_OUTPUT: ${{ runner.temp }}/lx-universal-qa
+        run: node tools/run-browser-qa.cjs qa-universal-browser.cjs

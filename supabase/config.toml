@@ -1,0 +1,4 @@
+project_id = "lxplus-universal-staging"
+
+[functions.lx-universal-catalog]
+verify_jwt = true

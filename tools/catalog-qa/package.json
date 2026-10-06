@@ -1,0 +1,11 @@
+{
+  "name": "lx-universal-catalog-qa",
+  "private": true,
+  "version": "1.0.0",
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "deno": "2.9.6",
+    "@supabase/supabase-js": "2.117.2",
+    "playwright": "1.62.1"
+  }
+}

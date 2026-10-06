@@ -13,15 +13,12 @@ const check = (name, fn) => {
 };
 
 const html = read('index.html');
-const cssFiles = ['lxplus.bundle.css', 'lxplus.v40.css'];
-const jsFiles = ['lxplus.album-grouping.js', 'lxplus.bundle.js', 'lxplus.recovery.js', 'lxplus.support.js', 'lxplus.audiofx.js', 'lxplus.v40.js', 'service-worker.js'];
-const build = 'V40-COMPLETE-20260925';
-const bugfix = 'V40-BUGFIX-20260927';
+const local = value => value.split(/[?#]/)[0].replace(/^\.\//, '');
+const cssFiles = [...new Set([...html.matchAll(/<link[^>]*href=["']([^"']+\.css(?:\?[^"']*)?)["']/gi)].map(x=>local(x[1])).filter(x=>!/^https?:/.test(x)))];
+const jsFiles = [...new Set([...html.matchAll(/<script[^>]*src=["']([^"']+)["']/gi)].map(x=>local(x[1])).filter(x=>!/^https?:/.test(x)).concat('service-worker.js'))];
 
-check('active v40 production files exist', () => {
-  for (const file of ['index.html', ...cssFiles, ...jsFiles, 'manifest.webmanifest', 'assets/lx-music-fallback.svg', 'assets/lx-music-v40.svg', 'assets/lxplus-logo-v27.png']) {
-    assert.ok(exists(file), `missing ${file}`);
-  }
+check('active UI36 and universal files exist', () => {
+  for (const file of ['index.html', ...cssFiles, ...jsFiles, 'manifest.webmanifest', 'supabase/functions/_shared/universal-core.mjs']) assert.ok(exists(file), `missing ${file}`);
 });
 
 check('HTML static ids are unique', () => {
@@ -76,33 +73,24 @@ check('active local asset references exist', () => {
   assert.deepEqual(missing, []);
 });
 
-check('manifest, shell and service worker use the current builds', () => {
+check('manifest, canonical shell and service worker agree', () => {
   const manifest = JSON.parse(read('manifest.webmanifest'));
   const sw = read('service-worker.js');
   assert.equal(manifest.display, 'standalone');
   assert.equal(manifest.theme_color, '#050506');
-  assert.equal(manifest.version, build);
-  assert.ok(String(manifest.start_url).includes(build));
-  assert.ok(sw.includes(bugfix), 'bugfix cache marker missing');
-  for (const file of ['lxplus.bundle.js', 'lxplus.album-grouping.js', 'lxplus.recovery.js', 'lxplus.support.js', 'lxplus.audiofx.js', 'lxplus.v40.js', 'lxplus.v40.css']) assert.ok(sw.includes(file), `service worker missing ${file}`);
-  assert.match(sw, /fetch\(request, \{ cache: 'no-store' \}\)/);
+  const shell=html.match(/LX_CANONICAL_SHELL=['"]([^'"]+)/)?.[1];
+  const build=sw.match(/const LX_BUILD=['"]([^'"]+)/)?.[1];
+  assert.equal(manifest.version,shell);assert.equal(build,shell);
+  for (const file of ['lxplus.bundle.js','lxplus.insights-v36.js','lxplus.universal-catalog.js','lxplus.universal-catalog.css','universal-core.mjs']) assert.ok(sw.includes(file),`service worker missing ${file}`);
+  assert.match(sw,/fetch\(request,\s*\{cache:'no-store'\}\)/);
 });
 
-check('v40 stability hotfix contracts are present', () => {
-  const hotfix = read('lxplus.album-grouping.js');
-  for (const token of [bugfix, '__LX_BUGFIX_BUILD', '__lxProtectedReadGuard', 'LX_AUTH_WAIT', 'lxBugfixDrag']) assert.ok(hotfix.includes(token), `missing ${token}`);
-  assert.ok(hotfix.includes("get(){return root.LX?.store}"), 'missing S/store alias');
-  assert.ok(hotfix.includes("table==='lx_catalog'||table==='lx_notifications'"), 'missing anonymous RLS guard');
-  assert.ok(hotfix.includes("setProperty('left'"), 'floating player left priority fix missing');
-  assert.ok(hotfix.includes("setProperty('top'"), 'floating player top priority fix missing');
-  assert.ok(hotfix.includes("localStorage.setItem('lx40:player-pos'"), 'floating player persistence fix missing');
-});
-
-check('v40 migration keeps conversation data private', () => {
-  const migration = read('supabase/migrations/20260925_lxplus_v40.sql');
-  for (const token of ['lx_presence', 'lx_rank_seasons', 'lx_rank_scores', 'lx_rank_events', 'lx_saved_messages', 'lx_message_pins', 'lx_polls', 'lx_client_errors', 'lx_viewer_profiles', 'lx_v40_thread_member', 'INVALID_REFERENCE']) assert.ok(migration.includes(token), `missing migration token ${token}`);
-  assert.doesNotMatch(migration, /lx_(?:pins_auth_read|polls_read)[\s\S]{0,120}using\s*\(\s*true\s*\)/i);
-  assert.doesNotMatch(migration, /drop\s+table|truncate\s+table/i);
+check('universal migration is additive and source grants remain private', () => {
+  const migration=read('supabase/migrations/20261005233838_lx_universal_catalog.sql');
+  assert.doesNotMatch(migration,/drop\s+table|truncate\s+table|delete\s+from\s+public\.lx_catalog|update\s+public\.lx_catalog/i);
+  assert.match(migration,/revoke all on function %s from public,anon,authenticated/);
+  assert.match(migration,/security invoker/);assert.doesNotMatch(migration,/security definer/i);
+  assert.doesNotMatch(migration,/grant[^;]*on(?: table)? public\.lx_media_sources to authenticated/i);
 });
 
 check('no private server credential is embedded in active public files', () => {
