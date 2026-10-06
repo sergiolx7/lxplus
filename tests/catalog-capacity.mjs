@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { createRequire } from 'node:module';
+const require=createRequire(import.meta.url);
+const {PGlite}=require(path.join(process.env.LX_QA_NODE_MODULES||path.resolve('tools/catalog-qa/node_modules'),'@electric-sql/pglite'));
+const sql=fs.readFileSync('supabase/migrations/20261006113522_lx_catalog_legacy_capacity.sql','utf8');
+const pg=new PGlite();
+await pg.exec('create role authenticator; create table public.lx_catalog(id bigint primary key); insert into lx_catalog select generate_series(1,988);');
+const limit=async()=>((await pg.query("select setting from pg_db_role_setting s join pg_roles r on r.oid=s.setrole cross join lateral unnest(s.setconfig) setting where r.rolname='authenticator' and setting like 'pgrst.db_max_rows=%'" )).rows[0]?.setting);
+await pg.exec(sql);assert.equal(await limit(),'pgrst.db_max_rows=2500');
+await pg.exec(sql);assert.equal(await limit(),'pgrst.db_max_rows=2500');
+assert.equal((await pg.query('select count(*)::int as n from lx_catalog')).rows[0].n,988);
+await pg.exec("alter role authenticator set pgrst.db_max_rows='5000'");
+await assert.rejects(pg.exec(sql),/Existing API row limit differs/);assert.equal(await limit(),'pgrst.db_max_rows=5000');
+await pg.exec("alter role authenticator reset pgrst.db_max_rows; insert into lx_catalog select generate_series(989,2501)");
+await assert.rejects(pg.exec(sql),/exceeds the bounded legacy capacity/);assert.equal(await limit(),undefined);
+await pg.close();console.log('PASS legacy capacity: bounded 2500; idempotent; catalog unchanged; custom settings and oversized catalog preserved.');

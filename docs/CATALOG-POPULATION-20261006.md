@@ -1,5 +1,7 @@
 # Catálogo preenchido — 6 de outubro de 2026
 
+**Atualização posterior:** a ampliação para 2.134 conteúdos, 1.733 músicas e 18 fontes oficiais do YouTube está descrita em [MUSIC-PLAYBACK-20261006.md](MUSIC-PLAYBACK-20261006.md). O registro abaixo documenta o primeiro lote de 900, anterior à ampliação e à migration de capacidade da API.
+
 Foram cadastrados **900 novos itens no banco do site**, com capas, identificação da fonte e status **Disponível em breve**. Os 88 registros anteriores foram preservados. O catálogo passou a ter 988 registros, dos quais 986 estão publicados.
 
 | Tipo | Novos cadastros |

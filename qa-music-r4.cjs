@@ -21,7 +21,7 @@ const extract = (start, end) => {
   }]));
   nodes.set('musicAudio', { paused: false });
   let selected = 0, toggled = 0, loaded = 0;
-  const LX = { artwork: { url: () => '', fallback: 'fallback' }, toast: message => assert(message) };
+  const LX = { artwork: { url: () => '', fallback: 'fallback' }, toast: message => assert(message), mediaSources:{describe:ref=>({kind:String(ref).startsWith('cloud:')?'native':'missing'})} };
   const state = { musicQueue: [], musicIndex: 0, musicGenre: 'Todos' };
   const context = vm.createContext({ LX, state, D: { catalog: () => songs, track: () => {} },
     $: id => nodes.get(id), musicCatalog: () => songs, musicGenresOf: x => [x.genre],
@@ -29,6 +29,8 @@ const extract = (start, end) => {
     unlockMusicGesture() {}, isExternalMusicTrack: () => false, providerPlayback: { paused: false }, toggleCurrentMusic() { toggled++ }, setMusicDockArtwork() {},
     loadTrack: async () => { loaded++; return true }, rememberMusicStart() {},
     setMusicStatus() {}, musicErrorText: () => 'erro', console });
+  context.window={LX};context.URL=URL;context.catalogPending=()=>false;
+  vm.runInContext(fs.readFileSync(__dirname+'/js/music-source-priority.js','utf8'),context);
   vm.runInContext(extract('function music(id,index=0,autoplay=true,queueIds=null){', '\nlet musicLoadTicket'), context);
   context.music(1);
   assert.equal(nodes.get('musicDock').classList.hidden, false, 'Selecting a track must open the dock immediately');

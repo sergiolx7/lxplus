@@ -17,6 +17,13 @@ const output=process.env.LX_QA_OUTPUT||'/tmp/lx-catalog-pending-qa';fs.mkdirSync
   qaRows=Array.from({length:1205},(_,i)=>({id:i+1,payload:{title:'Título '+i,type:'Filme',cover:'assets/lxplus-icon-v34.png'},published:true,updated_at:'2026-10-06T00:00:00Z'}));qaRanges=[];await LX.cloud.retryCatalog();const count=LX.data.catalog().length,ranges=[...qaRanges];qaFailPage=true;await LX.cloud.retryCatalog();const preserved=LX.data.catalog().length,status=LX.cloud.catalogState();qaFailPage=false;return {count,ranges,preserved,status};
  });
  assert.deepEqual(paging,{count:1205,ranges:[[0,499],[500,999],[1000,1499]],preserved:1205,status:'error'});
+ if(process.env.LX_QA_CATALOG_FIXTURE){
+  const full=JSON.parse(fs.readFileSync(process.env.LX_QA_CATALOG_FIXTURE,'utf8'));
+  const cache=await page.evaluate(rows=>{localStorage.setItem('qa-account-reserve','x'.repeat(200000));LX.store.writeLocal(LX.store.keys.catalog,rows);return {count:LX.data.catalog().length,persisted:JSON.parse(localStorage.getItem('lx16_catalog')).length};},full);
+  assert.deepEqual(cache,{count:full.length,persisted:full.length},'The expanded real catalog must fit alongside account data');
+ }
+ const quota=await page.evaluate(()=>{LX.store.writeLocal('qa-quota',{version:'old'});const original=Storage.prototype.setItem;Storage.prototype.setItem=function(){throw new DOMException('Fixture quota full','QuotaExceededError')};try{LX.store.writeLocal('qa-quota',{version:'new'});return LX.store.read('qa-quota')}finally{Storage.prototype.setItem=original;localStorage.removeItem('lx16_qa-quota');}});
+ assert.deepEqual(quota,{version:'new'},'A full disk cache must not replace fresh in-memory data with stale data');
  await page.evaluate(()=>{
   window.qaItems=['Filme','Série','Anime','Dorama','Livro','Música'].map((type,i)=>({id:7000000000100+i,type,title:'Catálogo '+type,artist:type==='Música'?'Artista QA':'',genre:'Geral',cover:'assets/lxplus-icon-v34.png',banner:'assets/lxplus-icon-v34.png',desc:'Disponível em breve no LX Plus.',catalogOnly:true,metadataOnly:true,availability:'coming_soon',published:true,mediaKey:'',episodes:[],chapters:[],tracks:type==='Música'?[{title:'Faixa QA',mediaKey:''}]:[],metadataUrl:type==='Música'?'https://itunes.apple.com/br/album/example/123?i=456':'https://watch.plex.tv/pt-BR/movie/leprechaun'}));
   qaItems.push({id:102,title:'Música com arquivo',type:'Música',genre:'Geral',cover:'assets/lxplus-icon-v34.png',mediaKey:'https://media.example.invalid/owned.wav',published:true},{id:103,title:'Filme antigo sem arquivo',type:'Filme',cover:'assets/lxplus-icon-v34.png',published:true});

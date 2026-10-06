@@ -2,6 +2,7 @@
 export function populationSql(items, baseline, { maximumTotal = 1000 } = {}) {
   if (!Array.isArray(items) || !items.length || items.length > 50) throw new Error('INVALID_BATCH_SIZE');
   if (!/^[a-f0-9]{32}$/.test(baseline?.fingerprint || '')) throw new Error('INVALID_BASELINE');
+  if (!Array.isArray(baseline?.original_ids) || !Number.isSafeInteger(baseline.original_count) || baseline.original_count !== baseline.original_ids.length) throw new Error('INVALID_BASELINE');
   const ids = baseline.original_ids.map(id => { if (!Number.isSafeInteger(id) || id <= 0) throw new Error('INVALID_ORIGINAL_ID'); return id; });
   if (!Number.isSafeInteger(maximumTotal) || maximumTotal < baseline.original_count) throw new Error('INVALID_CATALOG_LIMIT');
   for (const x of items) {

@@ -28,6 +28,8 @@ jobs:
           node tests/universal-service.mjs
           node tests/universal-database.mjs
           node tests/catalog-population.mjs
+          node tests/catalog-capacity.mjs
+          node tests/catalog-updates.mjs
           node qa-insights-v36.cjs
           node qa-audio-resolver-v36.cjs
           node qa-music-r4.cjs
@@ -43,3 +45,4 @@ jobs:
         run: |
           node tools/run-browser-qa.cjs qa-universal-browser.cjs
           node tools/run-browser-qa.cjs qa-catalog-pending-browser.cjs
+          node tools/run-browser-qa.cjs qa-music-priority-browser.cjs
