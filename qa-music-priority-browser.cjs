@@ -44,7 +44,9 @@ const audioFixture=process.env.LX_QA_AUDIO_FIXTURE?fs.readFileSync(process.env.L
  await page.waitForFunction(()=>LX.musicPlaybackSource?.kind==='youtube'&&LX.musicPlaybackSource?.contentId===7100000000002,{timeout:12000});
  assert.equal(await page.locator('#musicProviderBrand').getAttribute('data-provider'),'youtube','If owned audio fails, branding follows the source actually used');
  await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));});
+ await page.waitForTimeout(80); // Catch delayed native listeners overwriting the provider's state.
  assert.equal(await page.evaluate(()=>navigator.mediaSession?.playbackState),'none');
+ assert.equal(await page.evaluate(()=>navigator.mediaSession?.metadata),null);
  await page.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'visible'});document.dispatchEvent(new Event('visibilitychange'));});
  await page.screenshot({path:path.join(output,'official-youtube-390.png')});
  await page.evaluate(()=>{

@@ -73,43 +73,7 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();
 
-/* LX Music — compact floating player, freely draggable anywhere in the viewport. */
-(()=>{'use strict';
-  const audio=()=>document.getElementById('musicAudio');
-  let lastPositionUpdate=0;
-  function coverURL(){
-    const cover=document.getElementById('musicCover');if(!cover)return'';
-    const img=cover.querySelector?.('img');if(img?.src)return img.src;
-    const bg=getComputedStyle(cover).backgroundImage||'';const m=bg.match(/url\(["']?(.*?)["']?\)/);return m?.[1]||'';
-  }
-  function metadata(){
-    if(!('mediaSession' in navigator))return;
-    const a=audio(),title=document.getElementById('musicTitle')?.textContent?.trim()||'LX Music',artist=document.getElementById('musicArtist')?.textContent?.trim()||'LX Plus',art=coverURL();
-    try{navigator.mediaSession.metadata=new MediaMetadata({title,artist,album:'LX Plus',artwork:art?[{src:art}]:[]})}catch{}
-    if(a)try{navigator.mediaSession.playbackState=a.paused?'paused':'playing'}catch{}
-  }
-  function positionState(force=false){
-    const a=audio();if(!a||!('mediaSession' in navigator)||typeof navigator.mediaSession.setPositionState!=='function'||!Number.isFinite(a.duration)||a.duration<=0)return;
-    const now=Date.now();if(!force&&now-lastPositionUpdate<900)return;lastPositionUpdate=now;
-    try{navigator.mediaSession.setPositionState({duration:a.duration,playbackRate:a.playbackRate||1,position:Math.min(a.duration,Math.max(0,a.currentTime||0))})}catch{}
-  }
-  function click(id){document.getElementById(id)?.click()}
-  function setupMediaSession(){
-    const a=audio();if(!a)return;a.setAttribute('playsinline','');a.setAttribute('preload','metadata');
-    if('mediaSession' in navigator){
-      const set=(name,fn)=>{try{navigator.mediaSession.setActionHandler(name,fn)}catch{}};
-      set('play',()=>a.play().catch(()=>{}));set('pause',()=>a.pause());set('previoustrack',()=>click('musicPrev'));set('nexttrack',()=>click('musicNext'));
-      set('seekbackward',d=>{a.currentTime=Math.max(0,(a.currentTime||0)-(d.seekOffset||10))});
-      set('seekforward',d=>{a.currentTime=Math.min(a.duration||Infinity,(a.currentTime||0)+(d.seekOffset||10))});
-      set('seekto',d=>{if(Number.isFinite(d.seekTime))a.currentTime=Math.max(0,Math.min(a.duration||d.seekTime,d.seekTime))});
-    }
-    for(const ev of ['play','pause','loadedmetadata','durationchange'])a.addEventListener(ev,()=>{metadata();positionState(true)});
-    a.addEventListener('timeupdate',()=>positionState(false));
-    document.addEventListener('lx:music-changed',()=>setTimeout(()=>{metadata();positionState(true)},30));
-  }
-  function boot(){setupMediaSession();metadata()}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-})();
+/* Media Session belongs to the canonical music player in lxplus.bundle.js. */
 
 /* LX Plus V4 — side LED dots + adaptive full-screen cinema fit. */
 (()=>{'use strict';

@@ -8,6 +8,7 @@ Existing playback sources are excluded. Nothing is written to the database.
 """
 import argparse
 import base64
+import collections
 import concurrent.futures
 import datetime
 import html
@@ -50,6 +51,17 @@ def artist_key(value):
     # credited name tokens without losing or inventing any credited artist.
     values = value if isinstance(value, list) else [value]
     return tuple(sorted(norm(' '.join(str(x) for x in values)).split()))
+
+
+def credited_artist_key(payload):
+    # Catalogs sometimes credit guests in the title rather than artist field.
+    # Add only explicitly named guests and do not duplicate existing credits.
+    credits = collections.Counter(artist_key(payload.get('artist')))
+    for feature in re.findall(r'[([]\s*(?:feat\.?|featuring|with)\s+([^\]\)]+)[)\]]', str(payload.get('title') or ''), flags=re.I):
+        guest = collections.Counter(artist_key(feature))
+        if not guest <= credits:
+            credits += guest
+    return tuple(sorted(credits.elements()))
 
 
 def public_entity(url):
@@ -102,6 +114,7 @@ def main():
     parser.add_argument('--output', required=True)
     parser.add_argument('--max-pages', type=int, default=1800)
     parser.add_argument('--resume', action='store_true')
+    parser.add_argument('--no-discovery', action='store_true', help='Verify only supplied pages without expanding related albums/artists.')
     args = parser.parse_args()
     rows = json.loads(pathlib.Path(args.catalog).read_text())['rows']
     missing = [r for r in rows if r['payload'].get('type') == 'Música' and r['payload'].get('catalogOnly') and not any(r['payload'].get(k) for k in ['mediaKey', 'authorizedAudioUrl', 'externalMusicUrl']) and not any(t.get('mediaKey') or t.get('authorizedAudioUrl') for t in r['payload'].get('tracks', []))]
@@ -153,9 +166,9 @@ def main():
                     for obj in walk(entities):
                         uri = str(obj.get('uri') or '')
                         name = obj.get('name') or obj.get('profile', {}).get('name')
-                        if uri.startswith('spotify:album:') and name and album_key(name) in wanted_albums:
+                        if not args.no_discovery and uri.startswith('spotify:album:') and name and album_key(name) in wanted_albums:
                             enqueue(uri)
-                        elif uri.startswith('spotify:artist:') and name and norm(name) in wanted_artists:
+                        elif not args.no_discovery and uri.startswith('spotify:artist:') and name and norm(name) in wanted_artists:
                             enqueue(uri)
                         record = track_record(obj, url)
                         if not record:
@@ -166,7 +179,7 @@ def main():
                             # Dominguinho is credited as a collective as well as
                             # its three musicians on Spotify's public recording.
                             candidates = [x for x in candidates if norm(x) != 'dominguinho'] if len(candidates) > 1 else candidates
-                            if artist_key(payload.get('artist')) != artist_key(candidates):
+                            if credited_artist_key(payload) != credited_artist_key({'artist': candidates, 'title': record['title']}):
                                 continue
                             seconds = float(payload.get('duration') or 0)
                             if seconds <= 0 or abs(seconds - record['duration']) > 3:
@@ -176,7 +189,7 @@ def main():
                                 continue
                             matches[row['id']] = {'catalogId': row['id'], 'catalogTitle': payload['title'], 'catalogArtist': payload['artist'], 'catalogDuration': seconds, 'provider': 'Spotify', **record, 'matchMethod': 'exact_title_artist_duration', 'playbackMode': 'official_embed'}
                             proofs[url]['verifiedTracks'] += 1
-                        if record['albumUri'] and album_key(record['album']) in wanted_albums:
+                        if not args.no_discovery and record['albumUri'] and album_key(record['album']) in wanted_albums:
                             enqueue(record['albumUri'])
                 except Exception as error:
                     failures.append({'url': url, 'reason': str(error)[:180]})
