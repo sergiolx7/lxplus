@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="lxplus-build" content="V40-COMPLETE-20260925">
+  <meta name="lxplus-build" content="R12.5-UI36-MYPLAY-20261002">
   <script>window.LX_DRIVE_STORAGE_ENDPOINT="https://lxplus.sergio-sousa.workers.dev";</script>
   <script>window.__LX_INTRO_DONE=true;document.documentElement.classList.add("lx-intro-complete");</script>
   <meta name="theme-color" content="#050506">
   <meta name="color-scheme" content="dark light">
   <meta name="description" content="LX Plus — Assistir, Ler e Ouvir em uma experiência premium.">
-  <link rel="icon" type="image/png" href="assets/lxplus-logo-v27.png?v=V40-COMPLETE-20260925">
-  <link rel="apple-touch-icon" href="assets/lxplus-logo-v27.png?v=V40-COMPLETE-20260925">
+  <link rel="icon" type="image/svg+xml" href="assets/lxplus-icon-v34.svg?v=UI34">
+  <link rel="apple-touch-icon" href="assets/lxplus-icon-v34.png?v=UI34">
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -38,9 +38,38 @@
   window.__lxCastAvailable=false;
   window.__onGCastApiAvailable=function(isAvailable){window.__lxCastAvailable=!!isAvailable;window.dispatchEvent(new CustomEvent('lx:cast-available',{detail:{isAvailable:!!isAvailable}}));};
   </script>
-<link rel="stylesheet" href="lxplus.bundle.css?v=V40-COMPLETE-20260925">
-<link rel="stylesheet" href="lxplus.v40.css?v=V40-COMPLETE-20260925">
+<link rel="stylesheet" href="lxplus.bundle.css?v=R12.5-UI36-MYPLAY-20261002">
   <title>LX Plus</title>
+
+  <!-- LX UI32 canonical styles: direct, single shell -->
+  <link id="lxFutureUiV9Css" rel="stylesheet" href="lxplus.future-ui-v9.css?v=UI36">
+  <link id="lxPlayerContextV6Css" rel="stylesheet" href="lxplus.player-context-v6.css?v=UI36">
+  <link id="lxMiniFloatingV11Css" rel="stylesheet" href="lxplus.mini-floating-player-v11.css?v=UI36">
+  <link id="lxDetailWatchV12Css" rel="stylesheet" href="lxplus.detail-watch-v12.css?v=UI34">
+  <link id="lxModalSafetyV13Css" rel="stylesheet" href="lxplus.modal-safety-v13.css?v=UI34">
+  <link id="lxMusicPolishV7Css" rel="stylesheet" href="lxplus.music-polish-v7.css?v=UI34">
+  <link id="lxMusicV8Css" rel="stylesheet" href="lxplus.music-v8.css?v=UI34-MB1">
+  <link id="lxMusicSourcesV2Css" rel="stylesheet" href="lxplus.music-sources-v2.css?v=UI34">
+  <link id="lxNotificationsV26Css" rel="stylesheet" href="lxplus.notifications-v26.css?v=UI34">
+  <link id="lxUserSettingsV28Css" rel="stylesheet" href="lxplus.user-settings-v28.css?v=UI34">
+  <link id="lxMaintenanceV34Css" rel="stylesheet" href="lxplus.maintenance-v34.css?v=UI34-MB1">
+
+
+  <!-- LX UI34 URL migration -->
+  <script id="lxUi321Migration">
+  (()=>{try{
+    const u=new URL(location.href);
+    ['lxui','lxbuild','_'].forEach(k=>u.searchParams.delete(k));
+    const q=u.searchParams.toString();
+    const clean=u.pathname+(q?'?'+q:'')+u.hash;
+    history.replaceState(history.state,'',clean);
+    window.LX_CANONICAL_VERSION='UI36';
+    window.LX_CANONICAL_SHELL='R12.5-UI36-MYPLAY-20261002';
+    document.documentElement.dataset.lxCanonicalVersion='UI36';
+  }catch(e){console.warn('LX URL migration',e)}})();
+  </script>
+
+<link rel="stylesheet" href="lxplus.insights-v36.css?v=UI36">
 </head>
 <body>
 <div id="lxVisualIntro335" class="lx-visual-intro335" aria-hidden="true">
@@ -73,7 +102,7 @@
     <div class="lx27-intro" aria-hidden="true">
       <div class="lx27-halo"></div>
       <div class="lx27-logo-stage">
-        <img src="assets/lxplus-logo-v27.png?v=V40-COMPLETE-20260925" alt="">
+        <img src="assets/lxplus-icon-v34.svg?v=UI34" alt="">
         <div class="lx27-wordmark" aria-label="LX Plus"><span>LX</span><span>Plus</span></div>
       </div>
       <div class="lx27-lightline"></div>
@@ -84,7 +113,7 @@
 
   <section id="auth" class="screen auth">
     <div class="auth-showcase">
-      <div class="brand brand-lg brand-approved"><img src="assets/lxplus-logo-v27.png?v=V40-COMPLETE-20260925" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div>
+      <div class="brand brand-lg brand-approved"><img src="assets/lxplus-wordmark-v34.svg?v=UI34" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div>
       <div class="auth-copy">
         <span class="eyebrow">UMA CONTA · QUATRO MODOS</span>
         <h1>Continue de onde parou, em qualquer formato.</h1>
@@ -98,7 +127,7 @@
       </div>
     </div>
     <div class="auth-panel">
-      <div class="auth-mobile-brand brand brand-approved" aria-hidden="true"><img src="assets/lxplus-logo-v27.png?v=V40-COMPLETE-20260925" alt="" class="lx-approved-logo lx-logo-v27"></div>
+      <div class="auth-mobile-brand brand brand-approved" aria-hidden="true"><img src="assets/lxplus-wordmark-v34.svg?v=UI34" alt="" class="lx-approved-logo lx-logo-v27"></div>
       <div class="auth-box">
         <div class="auth-tabs"><button id="tabLogin" class="active">Entrar</button><button id="tabRegister">Criar conta</button></div>
         <form id="loginForm" class="auth-form">
@@ -123,13 +152,13 @@
   </section>
 
   <section id="profiles" class="screen profiles hidden">
-    <header><div class="brand brand-lg brand-approved"><img src="assets/lxplus-logo-v27.png?v=V40-COMPLETE-20260925" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div><button id="profileLogout" class="glass-btn">Sair</button></header>
+    <header><div class="brand brand-lg brand-approved"><img src="assets/lxplus-wordmark-v34.svg?v=UI34" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div><button id="profileLogout" class="glass-btn">Sair</button></header>
     <main><span class="eyebrow">PERFIS</span><h1>Quem está usando a LX Plus?</h1><div id="profileGrid" class="profile-grid"></div></main>
   </section>
 
   <section id="app" class="app hidden">
     <aside id="lxDesktopRail" class="lx-desktop-rail" aria-label="Navegação principal">
-      <button class="lx-shell-brand" type="button" onclick="document.getElementById('brandHome')?.click()" aria-label="Ir para o início da LX Plus"><img src="assets/lxplus-logo-v27.png?v=V40-COMPLETE-20260925" class="lx-shell-logo lx-logo-v27" alt="LX Plus"></button>
+      <button class="lx-shell-brand" type="button" onclick="document.getElementById('brandHome')?.click()" aria-label="Ir para o início da LX Plus"><img src="assets/lxplus-wordmark-v34.svg?v=UI34" class="lx-shell-logo lx-logo-v27" alt="LX Plus"></button>
       <nav class="lx-shell-primary">
         <button data-shell-category="Início" class="active"><span>⌂</span><b>Início</b></button>
         <button data-shell-category="Filmes"><span>▣</span><b>Filmes</b></button>
@@ -170,7 +199,7 @@
     </aside>
     <header id="topbar" class="topbar">
       <div class="topbar-row">
-        <a href="#" id="brandHome" class="brand brand-sm brand-approved" aria-label="Ir para o início da LX Plus"><img src="assets/lxplus-logo-v27.png?v=V40-COMPLETE-20260925" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></a>
+        <a href="#" id="brandHome" class="brand brand-sm brand-approved" aria-label="Ir para o início da LX Plus"><img src="assets/lxplus-wordmark-v34.svg?v=UI34" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></a>
         <div id="modeSwitch" class="mode-switch">
           <button data-mode="Assistir" class="active"><span>▶</span>Assistir</button>
           <button data-mode="Ler"><span>▤</span>Ler</button>
@@ -221,7 +250,7 @@
 
   <section id="admin" class="admin hidden">
     <aside class="admin-side">
-      <div class="brand brand-sm brand-approved"><img src="assets/lxplus-logo-v27.png?v=V40-COMPLETE-20260925" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div>
+      <div class="brand brand-sm brand-approved"><img src="assets/lxplus-wordmark-v34.svg?v=UI34" alt="LX Plus" class="lx-approved-logo lx-logo-v27"></div>
       <div class="admin-identity"><div class="admin-avatar">LX</div><div><b>Administrador</b><small>LX Plus</small></div></div>
       <div class="admin-console-label"><span></span> LX PLUS</div>
       <nav id="adminNav">
@@ -342,12 +371,11 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
   })();
   </script>
-  <script defer src="lxplus.album-grouping.js?v=V40-COMPLETE-20260925"></script>
-  <script defer src="lxplus.bundle.js?v=V40-COMPLETE-20260925" onerror="var e=document.getElementById('lxBootEmergency');if(e){e.hidden=false;e.style.display='grid'}"></script>
-  <script defer src="lxplus.recovery.js?v=V40-COMPLETE-20260925"></script>
-  <script defer src="lxplus.support.js?v=V40-COMPLETE-20260925"></script>
-  <script defer src="lxplus.audiofx.js?v=V40-COMPLETE-20260925"></script>
-  <script defer src="lxplus.v40.js?v=V40-COMPLETE-20260925"></script>
+  <script defer src="lxplus.album-grouping.js?v=R12.5-UI36-MYPLAY-20261002"></script>
+  <script defer src="lxplus.bundle.js?v=R12.5-UI36-MYPLAY-20261002" onerror="var e=document.getElementById('lxBootEmergency');if(e){e.hidden=false;e.style.display='grid'}"></script>
+  <script defer src="lxplus.recovery.js?v=R12.5-UI36-MYPLAY-20261002"></script>
+  <script defer src="lxplus.support.js?v=R12.5-UI36-MYPLAY-20261002"></script>
+  <script defer src="lxplus.audiofx.js?v=R12.5-UI36-MYPLAY-20261002"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded',function(){
@@ -401,7 +429,7 @@
     if(y.toDateString()===d.toDateString())return `Visto por último ontem às ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`;
     return `Visto por último em ${d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} às ${d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`;
   }
-  function presenceText(id){if(isOnline(id))return 'Online agora';return fmtLastSeen(personById(id)?.last_seen)}
+  function presenceText(id){const activity=(state.presenceMap[String(id)]||[]).map(m=>m.music).find(m=>m?.title);if(isOnline(id)&&activity)return 'Ouvindo '+String(activity.title).slice(0,200)+' · '+String(activity.artist||'LX Music').slice(0,160);if(isOnline(id))return 'Online agora';return fmtLastSeen(personById(id)?.last_seen)}
   function applyPresenceUI(){
     document.querySelectorAll('[data-lx-presence-user]').forEach(el=>{const id=el.getAttribute('data-lx-presence-user'),on=isOnline(id),dot=el.querySelector('[data-lx-presence-dot]');if(dot){dot.classList.toggle('online',on);dot.classList.toggle('offline',!on);dot.setAttribute('aria-label',on?'Online':'Offline')}});
     document.querySelectorAll('[data-lx-presence-label]').forEach(el=>{const id=el.getAttribute('data-lx-presence-label'),on=isOnline(id);el.textContent=presenceText(id);el.classList.toggle('online',on);el.classList.toggle('offline',!on)});
@@ -415,7 +443,7 @@
     if(state.lastSeenTimer)clearInterval(state.lastSeenTimer);
     touchLastSeen(true);state.lastSeenTimer=setInterval(()=>touchLastSeen(false),45000);
   }
-  async function syncPresenceTracking(){const ch=state.presenceChannel,id=uid();if(!ch||!id)return;try{if(presenceVisible())await ch.track({user_id:String(id),visible:true,at:new Date().toISOString()});else await ch.untrack()}catch(e){console.warn('LX presence track',e)}}
+  async function syncPresenceTracking(){const ch=state.presenceChannel,id=uid();if(!ch||!id)return;try{if(presenceVisible())await ch.track({user_id:String(id),visible:true,music:LX.insights?.activity?.()||null,at:new Date().toISOString()});else await ch.untrack()}catch(e){console.warn('LX presence track',e)}}
   async function setPresenceVisible(v){try{LX.store?.write?.(presencePrefKey(),!!v)}catch{}await syncPresenceTracking();applyPresenceUI()}
   async function setupPresence(){
     const c=db(),id=uid();if(!c||!id||state.presenceChannel)return;
@@ -522,9 +550,10 @@
     const identity=await ensureCloudIdentity(1800),c=db(); if(!c||!identity?.id){state.lastError='A conexão da sua conta com a Comunidade ainda não ficou pronta. Tente novamente em instantes.';return []}
     state.loading=true; state.lastError='';
     try{
-      const {data,error}=await c.rpc('lx_social_directory');
+      const [{data,error},identities]=await Promise.all([c.rpc('lx_social_directory'),c.rpc('lx_community_identity')]);
       if(error)throw error;
-      state.directory=(data||[]).map(x=>({...x,relation:x.relation||'none',direction:x.direction||'none'}));
+      const identityMap=new Map((identities.data||[]).map(x=>[String(x.user_id),x]));
+      state.directory=(data||[]).map(x=>({...x,...identityMap.get(String(x.user_id)),relation:x.relation||'none',direction:x.direction||'none'}));
       updateBadge();
       return state.directory;
     }catch(e){
@@ -548,9 +577,9 @@
     const chat=p.relation==='accepted'?LX.chat?.summary?.(p.user_id):null;
     const preview=chat?.preview||p.bio||'Toque para abrir o perfil';
     const unread=Number(chat?.unread||0);
-    const presence=p.relation==='accepted'?`<em class="lx-presence-label ${isOnline(p.user_id)?'online':'offline'}" data-lx-presence-label="${esc(String(p.user_id))}">${presenceText(p.user_id)}</em> · `:'';
+    const presence=`<em class="lx-presence-label ${isOnline(p.user_id)?'online':'offline'}" data-lx-presence-label="${esc(String(p.user_id))}">${esc(presenceText(p.user_id))}</em> · `;
     const time=chat?.time?` · ${esc(chat.time)}`:'';
-    return `<article class="lx-community-person lx-community-conversation ${unread?'has-unread':''}" data-name="${esc((p.name||'').toLowerCase())}">${avatar(p)}<div class="lx-community-person-copy"><strong>${verified(p)}${unread?`<i class="lx-community-unread">${unread>9?'9+':unread}</i>`:''}</strong><small class="${chat?.draft?'is-draft':''}">${esc(preview)}</small><span>${presence}${esc(status)}${time}</span></div><div class="lx-community-person-actions">${actions}</div></article>`;
+    return `<article class="lx-community-person lx-community-conversation ${unread?'has-unread':''}" data-name="${esc(((p.name||'')+' @'+(p.username||'')).toLowerCase())}"><button type="button" class="lx-community-profile-link" onclick="event.stopPropagation();LX.social.openProfile('${p.user_id}')" aria-label="Abrir perfil de ${esc(p.name)}">${avatar(p)}</button><div class="lx-community-person-copy"><strong><button type="button" class="lx36-community-name" onclick="event.stopPropagation();LX.social.openProfile('${p.user_id}')">${verified(p)}</button>${p.progress?`<span class="lx36-community-level">LV ${Number(p.progress.level)||1}</span>`:''}${unread?`<i class="lx-community-unread">${unread>9?'9+':unread}</i>`:''}</strong>${p.username?`<em class="lx36-community-handle">@${esc(p.username)}</em>`:''}<small class="${chat?.draft?'is-draft':''}">${esc(preview)}</small><span>${presence}${esc(status)}${time}</span></div><div class="lx-community-person-actions">${actions}</div></article>`;
   }
   function emptyCard(tab){
     if(state.lastError)return `<div class="lx-community-empty error"><b>Comunidade indisponível</b><p>${esc(state.lastError)}</p><button onclick="LX.social.retry()">Tentar novamente</button></div>`;
@@ -588,6 +617,7 @@
   }
   async function retry(){state.lastError='';await refreshDirectory();await render(state.openTab)}
   async function openProfile(id){
+    if(LX.insights?.openMember)return LX.insights.openMember(id);
     await refreshDirectory();
     const p=state.directory.find(x=>String(x.user_id)===String(id)); if(!p)return (LX.toast||((m)=>console.log(m)))('Perfil não encontrado.');
     const {drawer}=ensureShell(); setDrawerOpen(true);
@@ -596,7 +626,8 @@
     else if(p.relation==='pending'&&p.direction==='incoming')actions=`<button class="lx-community-big primary" onclick="LX.social.respond('${p.user_id}',true)">Aceitar solicitação</button><button class="lx-community-big" onclick="LX.social.respond('${p.user_id}',false)">Recusar</button>`;
     else if(p.relation==='pending')actions='<button class="lx-community-big" disabled>Solicitação enviada</button>';
     else actions=`<button class="lx-community-big primary" onclick="LX.social.add('${p.user_id}')">${icon('add')} Adicionar contato</button>`;
-    drawer.innerHTML=`${shellHeader('Perfil','Comunidade LX Plus')}<button class="lx-community-back" onclick="LX.social.open('${state.openTab}')">← Voltar</button><section class="lx-community-profile">${avatar(p,'lx-social-profile-avatar')}<div><span>PERFIL LX</span><h2>${verified(p)}</h2><p>${esc(p.bio||'Sem bio ainda.')}</p><small><span class="lx-presence-label ${isOnline(p.user_id)?'online':'offline'}" data-lx-presence-label="${esc(String(p.user_id))}">${presenceText(p.user_id)}</span> · ${p.calls_enabled?'Disponível para chamadas':'Chamadas desativadas'}</small></div></section><div class="lx-community-profile-actions">${actions}</div><div class="lx-community-note"><b>Chamadas:</b> câmera, microfone e compartilhamento de tela pedem permissão do navegador.</div>`;
+    drawer.innerHTML=`${shellHeader('Perfil','Comunidade LX Plus')}<button class="lx-community-back" onclick="LX.social.open('${state.openTab}')">← Voltar</button><section class="lx-community-profile">${avatar(p,'lx-social-profile-avatar')}<div><span>PERFIL LX</span><h2>${verified(p)}</h2><p>${esc(p.bio||'Sem bio ainda.')}</p><small><span class="lx-presence-label ${isOnline(p.user_id)?'online':'offline'}" data-lx-presence-label="${esc(String(p.user_id))}">${esc(presenceText(p.user_id))}</span> · ${p.calls_enabled?'Disponível para chamadas':'Chamadas desativadas'}</small></div></section><div class="lx-community-profile-actions">${actions}</div><section id="lxPublicMusicStats" class="lx-public-music-stats"></section><div class="lx-community-note"><b>Chamadas:</b> câmera, microfone e compartilhamento de tela pedem permissão do navegador.</div>`;
+    LX.insights?.mountProfile?.(p.user_id,document.getElementById('lxPublicMusicStats'));
   }
   async function openSettings(){
     const settings=await getOwnSocialSettings(); if(!settings)return (LX.toast||((m)=>console.log(m)))('Não foi possível abrir as configurações.');
@@ -1066,7 +1097,10 @@
   document.addEventListener('click',e=>{const b=e.target?.closest?.('[data-lx-hangup="1"]');if(b&&document.getElementById('lxCallOverlay')){e.preventDefault();e.stopPropagation();endCurrentCall()}},true);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){touchLastSeen(true);refreshDirectory().then(applyPresenceUI).catch(()=>{})}else touchLastSeen(true)});
   window.addEventListener('pagehide',()=>{touchLastSeen(true);if(state.lastSeenTimer){clearInterval(state.lastSeenTimer);state.lastSeenTimer=null}});
-  LX.social={boot,shutdown,open,close,showConversation:()=>setDrawerOpen(true),retry,openProfile,openSettings,commitSettings,refreshDirectory,syncMyProfile,add,respond,removeFriend,startCall,acceptIncoming,rejectIncoming,endCurrentCall,minimizeCall,restoreCall,toggleMic,toggleCamera,shareScreen,toggleSharePicker,toggleReactions,sendReaction,toggleCallFullscreen,resumeCallAudio,isOnline,presenceText,presenceVisible,setPresenceVisible,ready:true}; window.LXOpenCommunity=function(tab){return open(tab||'friends')};
+  LX.social={syncMusicPresence:syncPresenceTracking,boot,shutdown,open,close,showConversation:()=>setDrawerOpen(true),retry,openProfile,openSettings,commitSettings,refreshDirectory,syncMyProfile,add,respond,removeFriend,startCall,acceptIncoming,rejectIncoming,endCurrentCall,minimizeCall,restoreCall,toggleMic,toggleCamera,shareScreen,toggleSharePicker,toggleReactions,sendReaction,toggleCallFullscreen,resumeCallAudio,isOnline,presenceText,presenceVisible,setPresenceVisible,ready:true}; window.LXOpenCommunity=function(tab){return open(tab||'friends')};
+  setInterval(()=>{if(uid())syncPresenceTracking()},15000);
+  document.addEventListener('play',e=>{if(e.target?.id==='musicAudio')syncPresenceTracking()},true);
+  document.addEventListener('pause',e=>{if(e.target?.id==='musicAudio')syncPresenceTracking()},true);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindLauncher,{once:true});else bindLauncher();
 })();
 
@@ -1314,7 +1348,7 @@
     const rows=[row,...readRuntimeNotices().filter(x=>String(x.id)!==String(row.id))].slice(0,40);S()?.writeLocal?.(runtimeNoticeKey(),rows);LX.ui?.updateNoticeCount?.();return row;
   }
   function notificationItems(){
-    const cloud=(state.cloudNoticeRows||[]).slice(0,30).map(n=>({cat:'community',icon:n.kind==='call'?'☎':'✉',title:n.title||'Comunidade',text:n.message||'',time:fmtTime(n.created_at)||'Agora',tag:n.kind==='call'?'Chamada':'Mensagem',read:!!n.read_at,id:`cloud-${n.id}`}));
+    const cloud=(state.cloudNoticeRows||[]).slice(0,30).map(n=>({cat:n.kind==='update'?'system':'community',icon:n.kind==='update'?'✳':n.kind==='call'?'☎':'✉',title:n.title||'Comunidade',text:n.message||'',time:fmtTime(n.created_at)||'Agora',tag:n.kind==='update'?'Atualização':n.kind==='call'?'Chamada':'Mensagem',read:!!n.read_at,id:`cloud-${n.id}`}));
     const local=readRuntimeNotices().slice(0,20).map(n=>({cat:'community',icon:n.kind==='call'?'☎':'✦',title:n.title||'LX Plus',text:n.text||'',time:fmtTime(n.created_at)||'Agora',tag:n.kind==='call'?'Chamada':'Sistema',read:!!n.read,id:String(n.id)}));
     const seen=new Set();return [...cloud,...local].filter(x=>{const k=`${x.title}|${x.text}|${x.time}`;if(seen.has(k))return false;seen.add(k);return true}).slice(0,35)
   }
@@ -1453,7 +1487,7 @@
   function guide(){
     if(window.LX?.ui?.$){
       const overlay=document.getElementById('overlay'),modal=document.getElementById('modal');
-      if(overlay&&modal){overlay.classList.remove('hidden');modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page lx-install-guide"><div class="panel-head"><div><span class="eyebrow">LX PLUS</span><h2>Instalar aplicativo</h2><p>${isIOS()?'No iPhone/iPad, abra o menu Compartilhar e escolha “Adicionar à Tela de Início”.':'No navegador, abra o menu e escolha “Instalar LX Plus” ou “Adicionar à tela inicial”.'}</p></div></div><img src="assets/lxplus-logo-v27.png?v=V40-COMPLETE-20260925" alt="LX Plus"><strong>Abra o LX Plus como um app, em tela cheia e com acesso rápido.</strong></div>`;return;}
+      if(overlay&&modal){overlay.classList.remove('hidden');modal.innerHTML=`<button class="close-btn" onclick="LX.ui.close()">×</button><div class="panel-page lx-install-guide"><div class="panel-head"><div><span class="eyebrow">LX PLUS</span><h2>Instalar aplicativo</h2><p>${isIOS()?'No iPhone/iPad, abra o menu Compartilhar e escolha “Adicionar à Tela de Início”.':'No navegador, abra o menu e escolha “Instalar LX Plus” ou “Adicionar à tela inicial”.'}</p></div></div><img src="assets/lxplus-wordmark-v34.svg?v=UI34" alt="LX Plus"><strong>Abra o LX Plus como um app, em tela cheia e com acesso rápido.</strong></div>`;return;}
     }
     alert(isIOS()?'Use Compartilhar → Adicionar à Tela de Início.':'Abra o menu do navegador e escolha Instalar LX Plus.');
   }
@@ -1466,10 +1500,27 @@
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();state.prompt=e;refresh();});
   window.addEventListener('appinstalled',()=>{state.prompt=null;refresh();window.LX?.toast?.('LX Plus instalado com sucesso.');});
   document.addEventListener('click',e=>{if(e.target.closest?.('#installAppBtn'))install();});
-  if('serviceWorker' in navigator){window.addEventListener('load',async()=>{const hadController=!!navigator.serviceWorker.controller;let reloading=false;const showUpdate=reg=>{if(!reg.waiting||!navigator.serviceWorker.controller||document.getElementById('lxUpdateNotice'))return;const bar=document.createElement('div');bar.id='lxUpdateNotice';bar.setAttribute('role','status');bar.style.cssText='position:fixed;z-index:2147483646;left:50%;bottom:calc(78px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(92vw,450px);padding:12px 14px;border:1px solid #8a60db;border-radius:14px;background:#171326;color:white;box-shadow:0 12px 36px #0009;display:flex;justify-content:space-between;align-items:center;gap:12px;font:600 13px system-ui';bar.innerHTML='<span>Nova versão da LX Plus disponível</span><button type="button" style="padding:8px 12px;border:0;border-radius:9px;background:#8a2be2;color:white;font-weight:800;cursor:pointer">Atualizar agora</button>';bar.querySelector('button').onclick=()=>{reg.waiting?.postMessage({type:'LX_SKIP_WAITING'});bar.querySelector('button').disabled=true};document.body.appendChild(bar)};try{const reg=await navigator.serviceWorker.register('./service-worker.js?v=V40-COMPLETE-20260925',{scope:'./',updateViaCache:'none'});showUpdate(reg);reg.addEventListener('updatefound',()=>reg.installing?.addEventListener('statechange',()=>{if(reg.waiting)showUpdate(reg)}));navigator.serviceWorker.addEventListener('controllerchange',()=>{if(hadController&&!reloading){reloading=true;location.reload()}});reg.update().catch(()=>{})}catch(err){console.warn('LX SW update',err)}});}
+  if('serviceWorker' in navigator){window.addEventListener('load',async()=>{try{const reg=await navigator.serviceWorker.register('./service-worker.js?v=UI34-BF2',{scope:'./',updateViaCache:'none'});reg.update().catch(()=>{})}catch(err){console.warn('LX SW update',err)}});}
   document.addEventListener('DOMContentLoaded',refresh);
 })();
 </script>
+
+
+<!-- LX UI34 canonical scripts: direct, single shell -->
+<script defer id="lxPlayerContextV6Script" src="lxplus.player-context-v6.js?v=UI36"></script>
+<script defer id="lxFutureUiV9Script" src="lxplus.future-ui-v9.js?v=UI36"></script>
+<script defer id="lxMusicV8Script" src="lxplus.music-v8.js?v=UI34-MB1"></script>
+<script defer id="lxMusicSourcesV2Script" src="lxplus.music-sources-v2.js?v=UI34"></script>
+<script defer id="lxModalSafetyV13Script" src="lxplus.modal-safety-v13.js?v=UI34"></script>
+<script defer id="lxDetailWatchV12Script" src="lxplus.detail-watch-v12.js?v=UI34"></script>
+<script defer id="lxPlayerAudioV12Script" src="lxplus.player-audio-v12.js?v=UI36"></script>
+<script defer id="lxNotificationsHotfixV27Script" src="lxplus.notifications-hotfix-v27.js?v=UI34"></script>
+<script defer id="lxUserSettingsV28Script" src="lxplus.user-settings-v28.js?v=UI34"></script>
+
+
+<script defer id="lxAdminHealthV33Script" src="lxplus.admin-health-v33.js?v=UI34"></script>
+<script defer src="lxplus.insights-v36.js?v=UI36"></script>
+<script defer id="lxReleaseV34Script" src="lxplus.release-v34.js?v=UI36"></script>
 
 </body>
 </html>

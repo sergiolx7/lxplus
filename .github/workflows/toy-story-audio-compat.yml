@@ -1,0 +1,136 @@
+name: Toy Story 5 Audio Compatibility
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/toy-story-audio-compat.yml'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  transcode-audio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      SOURCE_URL: https://lxplus.sergio-sousa.workers.dev/v/1wUgilp33ORePNkS_nsGMbu_t96qzSCd_
+      BROKER_URL: https://ubidogquzpdvrbzbhxda.supabase.co/functions/v1/lx-github-media-broker
+    steps:
+      - name: Install FFmpeg tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version | head -1
+          ffprobe -version | head -1
+
+      - name: Probe media streams
+        shell: bash
+        run: |
+          set -euo pipefail
+          ffprobe -v error -show_streams -show_format -of json "$SOURCE_URL" > probe.json
+          python3 - <<'PY'
+          import json, os
+          d=json.load(open('probe.json'))
+          audio=[s for s in d.get('streams',[]) if s.get('codec_type')=='audio']
+          if not audio: raise SystemExit('No audio stream found')
+          def score(s):
+              lang=str((s.get('tags') or {}).get('language','')).lower()
+              return (3 if lang in {'por','pt','pt-br','pob'} else 2 if lang.startswith('pt') else 1)
+          chosen=sorted(audio,key=score,reverse=True)[0]
+          print('Selected audio stream:', chosen.get('index'), chosen.get('codec_name'), (chosen.get('tags') or {}).get('language'))
+          with open(os.environ['GITHUB_ENV'],'a') as f:
+              f.write(f"AUDIO_INDEX={chosen['index']}\n")
+          PY
+
+      - name: Transcode compatible AAC track
+        shell: bash
+        run: |
+          set -euo pipefail
+          ffmpeg -hide_banner -loglevel warning -y -i "$SOURCE_URL" -map "0:${AUDIO_INDEX}" -vn -c:a aac -profile:a aac_low -ac 2 -ar 48000 -b:a 160k -movflags +faststart toy-story-5-aac.m4a
+          test -s toy-story-5-aac.m4a
+          ffprobe -v error -show_streams -show_format -of json toy-story-5-aac.m4a > output-probe.json
+          ls -lh toy-story-5-aac.m4a
+
+      - name: Get GitHub OIDC token
+        shell: bash
+        run: |
+          set -euo pipefail
+          R="$(curl -fsSL -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=lxplus-supabase")"
+          OIDC="$(printf '%s' "$R" | python3 -c 'import sys,json; print(json.load(sys.stdin)["value"])')"
+          echo "OIDC_TOKEN=$OIDC" >> "$GITHUB_ENV"
+
+      - name: Start private resumable upload
+        shell: bash
+        run: |
+          set -euo pipefail
+          SIZE="$(stat -c%s toy-story-5-aac.m4a)"
+          R="$(curl -fsSL -X POST "$BROKER_URL" -H "Authorization: Bearer $OIDC_TOKEN" -H 'x-lx-action: tus-start' -H "x-upload-length: $SIZE")"
+          printf '%s' "$R" > tus-start.json
+          python3 - <<'PY'
+          import json, os
+          d=json.load(open('tus-start.json'))
+          if not d.get('ok') or not d.get('location'): raise SystemExit(d)
+          with open(os.environ['GITHUB_ENV'],'a') as f:
+              f.write('TUS_LOCATION='+d['location']+'\n')
+              f.write('TUS_OFFSET='+str(d.get('offset') or 0)+'\n')
+          PY
+
+      - name: Upload AAC in 5 MB authenticated chunks
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f chunk_*
+          split -b 5m -d -a 3 toy-story-5-aac.m4a chunk_
+          OFFSET="${TUS_OFFSET:-0}"
+          TOTAL="$(stat -c%s toy-story-5-aac.m4a)"
+          COUNT=0
+          for PART in chunk_*; do
+            LEN="$(stat -c%s "$PART")"
+            R="$(curl -fsSL -X POST "$BROKER_URL" \
+              -H "Authorization: Bearer $OIDC_TOKEN" \
+              -H 'x-lx-action: tus-chunk' \
+              -H "x-upload-url: $TUS_LOCATION" \
+              -H "x-upload-offset: $OFFSET" \
+              -H 'content-type: application/octet-stream' \
+              --data-binary "@$PART")"
+            OFFSET="$(printf '%s' "$R" | python3 -c 'import sys,json; d=json.load(sys.stdin); assert d.get("ok"), d; print(d["offset"])')"
+            COUNT=$((COUNT+1))
+            PCT=$(( OFFSET * 100 / TOTAL ))
+            echo "AAC upload ${PCT}% · chunk ${COUNT} · offset ${OFFSET}/${TOTAL}"
+            rm -f "$PART"
+          done
+          test "$OFFSET" -eq "$TOTAL"
+
+      - name: Activate compatible track in LX catalog
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' > finalize.json
+          import json
+          source=json.load(open('probe.json'))
+          output=json.load(open('output-probe.json'))
+          audio=[s for s in source.get('streams',[]) if s.get('codec_type')=='audio']
+          video=[s for s in source.get('streams',[]) if s.get('codec_type')=='video']
+          safe={
+            'sourceAudio':[{'index':s.get('index'),'codec':s.get('codec_name'),'profile':s.get('profile'),'channels':s.get('channels'),'layout':s.get('channel_layout'),'language':(s.get('tags') or {}).get('language')} for s in audio],
+            'sourceVideo':[{'index':s.get('index'),'codec':s.get('codec_name'),'profile':s.get('profile'),'width':s.get('width'),'height':s.get('height')} for s in video],
+            'outputAudio':[{'codec':s.get('codec_name'),'profile':s.get('profile'),'channels':s.get('channels'),'sample_rate':s.get('sample_rate')} for s in output.get('streams',[]) if s.get('codec_type')=='audio']
+          }
+          print(json.dumps({'probe':safe},separators=(',',':')))
+          PY
+          curl -fsSL -X POST "$BROKER_URL" \
+            -H "Authorization: Bearer $OIDC_TOKEN" \
+            -H 'x-lx-action: finalize' \
+            -H 'content-type: application/json' \
+            --data-binary @finalize.json | tee finalize-result.json
+          python3 - <<'PY'
+          import json
+          d=json.load(open('finalize-result.json'))
+          if not d.get('ok'): raise SystemExit(d)
+          print('Catalog activated:',d['audioMediaKey'])
+          print('Release:',d.get('release'))
+          PY

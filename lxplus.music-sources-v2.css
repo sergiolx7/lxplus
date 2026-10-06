@@ -1,0 +1,9 @@
+@import url('./lxplus.music-sources-v1.css?v=UI32');
+/* LX Music Sources V2 — world catalog additions */
+.lx-ums-worldbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin:10px 0 2px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--accent,#8a2be2) 32%,transparent);border-radius:14px;background:rgba(12,12,18,.72)}
+.lx-ums-worldbar>div{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.lx-ums-worldbar b{font-size:12px}.lx-ums-worldbar small{color:#aaa8b3;font-size:11px}
+.lx-ums-more,.lx-ums-bulk{border:1px solid rgba(255,255,255,.12);background:#17151e;color:#fff;border-radius:10px;padding:9px 12px;font-weight:800;cursor:pointer}.lx-ums-more:hover,.lx-ums-bulk:hover{border-color:var(--accent,#8a2be2)}
+.lx-ums-card[data-metadata-only="1"] .lx-ums-art:after{content:'METADADOS';position:absolute;left:7px;bottom:7px;padding:3px 6px;border-radius:7px;background:rgba(0,0,0,.72);font-size:8px;font-weight:900;letter-spacing:.08em}.lx-ums-art{position:relative;overflow:hidden}
+.lx-ums-source.is-metadata{opacity:.78}.lx-ums-meta-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;border-radius:10px;padding:8px 10px;font-size:11px;font-weight:800;cursor:pointer}
+.lx-ums-meta-btn:hover{border-color:var(--accent,#8a2be2)}
+@media(max-width:640px){.lx-ums-worldbar{align-items:flex-start}.lx-ums-worldbar>div:last-child{width:100%}.lx-ums-more,.lx-ums-bulk{flex:1}}

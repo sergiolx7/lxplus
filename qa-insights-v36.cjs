@@ -1,0 +1,27 @@
+const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
+const document={getElementById:()=>null,addEventListener(){},readyState:'loading'};
+const window={LX:{},addEventListener(){}};
+vm.runInNewContext(fs.readFileSync('lxplus.insights-v36.js','utf8'),{window,document,setInterval(){},performance,crypto,Intl,Date,console});
+const {sampleDelta,recapHTML,progressHTML,trackRef}=window.LX.insights;
+const sample={key:'a',user:'u',at:1000,position:20,playing:true,rate:1};
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:21}),1);
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:50}),0,'seek must not add time');
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:21,playing:false}),0,'paused');
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:21,user:'v'}),0,'account switch');
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:21,seeking:true}),0,'active seek');
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:20}),0,'buffering');
+assert.equal(sampleDelta(sample,{...sample,at:121000,position:140}),0,'suspended timer');
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:22,rate:2}),1,'wall-clock listening at 2x');
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:19}),0,'rewind');
+const html=recapHTML({seconds:3600,tracks:5,artists:2,days:3,top_tracks:[{title:'<img onerror=evil()>',artist:'A & B',seconds:120}],top_artists:[],months:[]});
+assert(!html.includes('<img onerror'));
+assert(html.includes('&lt;img onerror=evil()&gt;'));
+assert(recapHTML({private:true,seconds:1000}).includes('privadas'));
+assert(!recapHTML({private:true,seconds:1000}).includes('1.000'));
+assert(progressHTML({xp:0,level:1,level_start:0,level_next:50}).includes('50 para o nível 2'));
+assert(progressHTML({xp:100,level:2,level_start:50,level_next:200}).includes('aria-valuenow="100"'));
+assert.deepEqual(JSON.parse(JSON.stringify(trackRef('album:2'))),{id:'album',index:2});
+assert.equal(trackRef('<bad>'),null);
+const index=fs.readFileSync('index.html','utf8');
+for(const m of index.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)){if(m[1].trim())new vm.Script(m[1]);}
+console.log('UI36 PASS: elapsed playback, seeks, pauses, buffering, accounts, speed, private recap, XSS, inline scripts');

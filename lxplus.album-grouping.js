@@ -37,123 +37,269 @@
   if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof window!=='undefined'?window:globalThis);
 
-/* LX Plus v40 stability hotfixes — runtime-only, no catalog/data migration. */
+/* LX Music hotfix 2026-09-26:
+   - truly free X/Y drag for the floating player
+   - smaller desktop player
+   - automatic albums become playable queues even when tracks are separate catalog items */
 (function(root){
   'use strict';
-  if(!root||typeof document==='undefined')return;
-  const BUILD='V40-BUGFIX-20260927';
-  root.__LX_BUGFIX_BUILD=BUILD;
+  if(typeof document==='undefined')return;
 
-  /*
-   * v27's enhanced video player reads S.read/S.write from a nested module
-   * where S was never declared. Expose the canonical LX.store lazily so the
-   * existing code resolves the intended store instead of throwing a
-   * ReferenceError when a movie/episode player is enhanced.
-   */
-  try{
-    const descriptor=Object.getOwnPropertyDescriptor(root,'S');
-    if(!descriptor||descriptor.configurable){
-      Object.defineProperty(root,'S',{
-        configurable:true,
-        get(){return root.LX?.store},
-        set(value){Object.defineProperty(root,'S',{value,writable:true,configurable:true})}
-      });
-    }
-  }catch{}
+  const POS_KEY='lx_music_float_pos_v6';
+  const STYLE_ID='lxMusicHotfix260926';
+  const state={drag:null,activeAlbumId:'',activeIndex:-1,pending:false,albumSignature:''};
+  const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
+  const LX=()=>root.LX||{};
+  const dock=()=>document.getElementById('musicDock');
+  const catalog=()=>LX().data?.catalog?.()||[];
+  const albums=()=>root.LXAlbumGrouping?.groupAlbums?.(catalog())||[];
+  const albumById=id=>albums().find(group=>String(group.id)===String(id))||null;
+  const albumForItem=id=>albums().find(group=>group.itemIds?.includes(String(id)))||null;
+  const current=()=>LX().currentMusic?.()||null;
 
-  function blockedQuery(){
-    let proxy;
-    const result={data:null,error:{code:'LX_AUTH_WAIT',message:'Aguardando autenticação'}};
-    proxy=new Proxy({}, {
-      get(_target,prop){
-        if(prop==='then')return (resolve,reject)=>Promise.resolve(result).then(resolve,reject);
-        if(prop==='catch')return reject=>Promise.resolve(result).catch(reject);
-        if(prop==='finally')return fn=>Promise.resolve(result).finally(fn);
-        return ()=>proxy;
+  function injectStyles(){
+    let style=document.getElementById(STYLE_ID);
+    if(style)return;
+    style=document.createElement('style');
+    style.id=STYLE_ID;
+    style.textContent=`
+      @media (min-width:701px){
+        #musicDock.music-dock{
+          width:min(312px,calc(100vw - 20px))!important;
+          min-width:260px!important;
+          min-height:104px!important;
+          padding:14px 9px 9px!important;
+          grid-template-columns:48px minmax(0,1fr) auto!important;
+          gap:4px 7px!important;
+          border-radius:15px!important;
+          touch-action:none!important;
+        }
+        #musicDock .music-cover-btn{
+          width:48px!important;height:48px!important;
+          min-width:48px!important;min-height:48px!important;
+          border-radius:10px!important;
+        }
+        #musicDock .music-info strong{font-size:11px!important}
+        #musicDock .music-info small{font-size:8px!important;margin-top:2px!important}
+        #musicDock .music-center-controls{gap:5px!important}
+        #musicDock .music-transport{gap:1px!important}
+        #musicDock .music-transport button{
+          width:24px!important;height:24px!important;
+          min-width:24px!important;min-height:24px!important;
+          font-size:10px!important;
+        }
+        #musicDock .music-main-play{
+          width:29px!important;height:29px!important;
+          min-width:29px!important;min-height:29px!important;
+        }
+        #musicDock .music-timeline{
+          grid-template-columns:25px minmax(0,1fr) 25px!important;
+          gap:3px!important;font-size:6.5px!important;
+        }
+        #musicDock .music-right-controls button{
+          width:23px!important;height:23px!important;
+          min-width:23px!important;min-height:23px!important;
+          border-radius:7px!important;
+        }
+        #musicDock .lx-music-drag-handle{
+          top:1px!important;width:72px!important;height:13px!important;
+          font-size:8px!important;letter-spacing:2px!important;
+        }
+        #musicDock .music-provider-panel{
+          width:min(312px,calc(100vw - 20px))!important;
+        }
       }
-    });
-    return proxy;
+      #musicDock.lx-hotfix-dragging{transition:none!important;cursor:grabbing!important}
+      .lx-auto-albums-section .lx-music-album .lx-auto-album-art{
+        display:block;position:relative;aspect-ratio:1/1;border-radius:14px;overflow:hidden;
+        background:#111 center/cover no-repeat;
+      }
+      .lx-auto-albums-section .lx-auto-album-art::after{
+        content:"▶";position:absolute;right:10px;bottom:10px;width:38px;height:38px;
+        display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.94);
+        color:#09090d;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.34);
+      }
+      .lx-auto-albums-section .lx-auto-album-main{
+        width:100%;padding:0;border:0;background:none;color:inherit;text-align:left;cursor:pointer;
+      }
+      .lx-auto-albums-section .lx-auto-album-copy{
+        display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center;margin-top:8px;
+      }
+      .lx-auto-albums-section .lx-auto-album-copy button{
+        border:0;background:none;color:inherit;text-align:left;min-width:0;cursor:pointer;padding:0;
+      }
+      .lx-auto-albums-section .lx-auto-album-copy strong,
+      .lx-auto-albums-section .lx-auto-album-copy small{
+        display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      }
+      .lx-auto-albums-section .lx-auto-album-copy small{opacity:.62;font-size:11px;margin-top:3px}
+      .lx-auto-albums-section .lx-auto-album-open{
+        width:31px;height:31px!important;min-width:31px!important;border-radius:9px!important;
+        border:1px solid rgba(255,255,255,.12)!important;background:rgba(255,255,255,.055)!important;
+        display:grid;place-items:center;text-align:center!important;
+      }
+      .lx-album-page [data-auto-track].is-playing{background:rgba(138,43,226,.13)!important}
+    `;
+    document.head.appendChild(style);
   }
 
-  /*
-   * Catalog and notification RLS intentionally require an authenticated,
-   * approved account. The legacy public bootstrap still polls those tables
-   * before login (and again after logout), generating 42501 errors every 12s.
-   * Short-circuit only those two reads while there is no LX session. As soon
-   * as hydrateUser establishes currentAuth, the original Supabase client is
-   * used untouched and realtime/catalog refresh works normally.
-   */
-  function guardProtectedAnonymousReads(){
-    const LX=root.LX,client=LX?.cloud?.db?.();
-    if(!client||client.__lxProtectedReadGuard)return false;
-    const originalFrom=client.from?.bind(client);if(!originalFrom)return false;
+  function entryMatches(live,entry){
+    return !!live&&!!entry&&String(live.contentId)===String(entry.id)&&Number(live.index||0)===Number(entry.index||0);
+  }
+  function syncAlbumRows(){
+    const group=albumById(state.activeAlbumId),live=current();
+    document.querySelectorAll('[data-auto-track]').forEach(row=>{
+      const index=Number(row.dataset.autoTrack),entry=group?.entries?.[index];
+      row.classList.toggle('is-playing',entryMatches(live,entry));
+    });
+  }
+  function playAutoAlbum(albumId,index=0){
+    const group=albumById(albumId);if(!group?.entries?.length)return LX().toast?.('Esse álbum não possui faixas disponíveis.');
+    const safeIndex=clamp(Number(index)||0,0,group.entries.length-1),entry=group.entries[safeIndex];
+    state.activeAlbumId=group.id;state.activeIndex=safeIndex;state.pending=true;
     try{
-      Object.defineProperty(client,'__lxProtectedReadGuard',{value:true,configurable:true});
-      client.from=function(table){
-        const protectedTable=table==='lx_catalog'||table==='lx_notifications';
-        if(protectedTable&&!LX.cloud?.user?.())return blockedQuery();
-        return originalFrom(table);
-      };
-      return true;
-    }catch{return false}
-  }
-
-  const playerState={bound:false,drag:null};
-  function clamp(value,min,max){return Math.min(Math.max(Number(value)||0,min),Math.max(min,max))}
-  function playerPosition(el,left,top,persist=false){
-    if(!el)return;
-    if(root.innerWidth<901){
-      for(const prop of ['left','top','right','bottom'])el.style.removeProperty(prop);
-      return;
+      LX().music?.(entry.id,entry.index,true);
+      queueMicrotask(syncAlbumRows);
+    }finally{
+      setTimeout(()=>{state.pending=false},80);
     }
-    const width=Math.max(1,el.offsetWidth||360),height=Math.max(1,el.offsetHeight||86);
-    const x=clamp(left,8,root.innerWidth-width-8),y=clamp(top,62,root.innerHeight-height-8);
-    el.style.setProperty('left',x+'px','important');
-    el.style.setProperty('top',y+'px','important');
-    el.style.setProperty('right','auto','important');
-    el.style.setProperty('bottom','auto','important');
-    if(persist){try{localStorage.setItem('lx40:player-pos',JSON.stringify({left:x,top:y}))}catch{}}
   }
-  function savedPlayerPosition(){try{return JSON.parse(localStorage.getItem('lx40:player-pos')||'null')}catch{return null}}
-  function restorePlayerPosition(){
-    const el=document.getElementById('musicDock');if(!el)return;
-    if(root.innerWidth<901)return playerPosition(el,0,0,false);
-    const saved=savedPlayerPosition();
-    if(!saved||!Number.isFinite(Number(saved.left))||!Number.isFinite(Number(saved.top)))return;
-    playerPosition(el,Number(saved.left),Number(saved.top),false);
+  function stepAlbum(delta){
+    const group=albumById(state.activeAlbumId);if(!group?.entries?.length)return false;
+    const next=state.activeIndex+delta;
+    if(next<0){playAutoAlbum(group.id,group.entries.length-1);return true}
+    if(next>=group.entries.length){
+      const repeat=document.getElementById('musicRepeat');
+      if(repeat?.classList.contains('active'))playAutoAlbum(group.id,0);
+      return true;
+    }
+    playAutoAlbum(group.id,next);return true;
   }
-  function bindFloatingPlayerFix(){
-    const el=document.getElementById('musicDock');if(!el||el.dataset.lxBugfixDrag==='1')return false;
-    el.dataset.lxBugfixDrag='1';playerState.bound=true;restorePlayerPosition();
-    el.addEventListener('pointerdown',event=>{
-      if(root.innerWidth<901||event.button!==0||event.target.closest('button,input,a,select,textarea')||root.LX?.config?.features?.floatingPlayer===false)return;
-      const rect=el.getBoundingClientRect();playerState.drag={pointerId:event.pointerId,x:event.clientX,y:event.clientY,left:rect.left,top:rect.top};
-      el.setPointerCapture?.(event.pointerId);
-    });
-    el.addEventListener('pointermove',event=>{
-      const drag=playerState.drag;if(!drag||drag.pointerId!==event.pointerId)return;
-      playerPosition(el,drag.left+event.clientX-drag.x,drag.top+event.clientY-drag.y,false);
-    });
-    const finish=event=>{
-      const drag=playerState.drag;if(!drag||event?.pointerId!=null&&drag.pointerId!==event.pointerId)return;
-      playerState.drag=null;const rect=el.getBoundingClientRect();playerPosition(el,rect.left,rect.top,true);
-    };
-    el.addEventListener('pointerup',finish);el.addEventListener('pointercancel',finish);
+  function shuffleAutoAlbum(albumId){
+    const group=albumById(albumId);if(!group?.entries?.length)return;
+    let next=Math.floor(Math.random()*group.entries.length);
+    if(group.entries.length>1&&next===state.activeIndex)next=(next+1)%group.entries.length;
+    playAutoAlbum(group.id,next);
+  }
+  function openAutoAlbum(albumId){
+    const group=albumById(albumId);if(!group)return false;
+    const modal=document.getElementById('modal'),overlay=document.getElementById('overlay');if(!modal||!overlay)return false;
+    const total=group.entries.reduce((sum,entry)=>sum+(Number(entry.duration)||0),0);
+    modal.innerHTML=`<button class="close-btn" type="button" data-auto-close>×</button>
+      <div class="lx-album-page lx-album-page-v256 lx-album-page-v260" data-auto-album="${esc(group.id)}">
+        <section class="lx-album-hero">
+          <div class="lx-album-cover" data-auto-album-cover></div>
+          <div class="lx-album-copy">
+            <span class="eyebrow">LX MUSIC · ÁLBUM</span>
+            <h2>${esc(group.title)}</h2>
+            <p>${esc(group.artist)} · ${group.entries.length} faixas</p>
+            <div class="lx-album-badges"><span>LX Music</span><span>${group.entries.length} faixas</span><span>${total?LX().fmt?.(total)||'':'Álbum'}</span></div>
+            <div class="hero-actions">
+              <button class="primary-btn" type="button" data-auto-play>▶ Reproduzir</button>
+              <button class="secondary-btn" type="button" data-auto-shuffle>⇄ Embaralhar</button>
+            </div>
+          </div>
+        </section>
+        <div class="lx-track-list lx-track-list-v256">
+          <div class="lx-track-list-head"><span>#</span><span>Título</span><span>Duração</span><span></span></div>
+          ${group.entries.map((entry,index)=>`<button class="lx-track-row" type="button" data-auto-track="${index}"><b>${index+1}</b><span><strong>${esc(entry.title||`Faixa ${index+1}`)}</strong><small>${esc(entry.artist||group.artist||'LX Music')}</small></span><em>${esc(LX().fmt?.(entry.duration||0)||'0:00')}</em><i data-music-play-icon>▶</i></button>`).join('')}
+        </div>
+      </div>`;
+    const cover=modal.querySelector('[data-auto-album-cover]');if(cover)cover.style.backgroundImage=`url(${JSON.stringify(group.cover)})`;
+    modal.querySelector('[data-auto-close]')?.addEventListener('click',()=>LX().ui?.close?.());
+    modal.querySelector('[data-auto-play]')?.addEventListener('click',()=>playAutoAlbum(group.id,0));
+    modal.querySelector('[data-auto-shuffle]')?.addEventListener('click',()=>shuffleAutoAlbum(group.id));
+    modal.querySelectorAll('[data-auto-track]').forEach(row=>row.addEventListener('click',()=>playAutoAlbum(group.id,Number(row.dataset.autoTrack)||0)));
+    overlay.classList.remove('hidden');
+    syncAlbumRows();
     return true;
   }
 
-  let resizeTimer=0;
-  root.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(restorePlayerPosition,90)},{passive:true});
-  root.addEventListener('orientationchange',()=>setTimeout(restorePlayerPosition,120),{passive:true});
-  document.addEventListener('lx:music-changed',()=>setTimeout(restorePlayerPosition,0));
-
-  let attempts=0;
-  const timer=setInterval(()=>{
-    guardProtectedAnonymousReads();
-    bindFloatingPlayerFix();
-    if(++attempts>240||(root.LX?.cloud?.db?.()&&playerState.bound))clearInterval(timer);
-  },50);
-  queueMicrotask(()=>{guardProtectedAnonymousReads();bindFloatingPlayerFix()});
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{guardProtectedAnonymousReads();bindFloatingPlayerFix();restorePlayerPosition()},{once:true});
-  else setTimeout(()=>{guardProtectedAnonymousReads();bindFloatingPlayerFix();restorePlayerPosition()},0);
+  function wrapAlbumOpen(){
+    const lx=LX(),original=lx.openMusicAlbum;
+    if(typeof original!=='function'||original.__lxAutoAlbumWrapped)return;
+    const wrapped=function(id){
+      const group=albumForItem(id);
+      if(group)return openAutoAlbum(group.id);
+      return original.apply(this,arguments);
+    };
+    wrapped.__lxAutoAlbumWrapped=true;
+    wrapped.__lxOriginal=original;
+    lx.openMusicAlbum=wrapped;
+  }
+  function renderAlbumSection(){
+    const lx=LX(),uiState=lx.state||lx.ui?.state,main=document.querySelector('.lx-music-main');
+    if(!main||uiState?.mode!=='Ouvir')return;
+    const groups=albums(),signature=groups.map(group=>`${group.id}:${group.entries.length}`).join('|');
+    let section=main.querySelector('.lx-auto-albums-section');
+    if(!groups.length){section?.remove();state.albumSignature='';return}
+    if(section&&section.dataset.signature===signature)return;
+    section?.remove();
+    section=document.createElement('section');section.className='lx-music-section lx-auto-albums-section';section.dataset.signature=signature;
+    section.innerHTML=`<div class="lx-section-title"><div><h2>Álbuns</h2><p>Faixas organizadas automaticamente pela capa e pelo álbum.</p></div></div>
+      <div class="lx-music-grid">${groups.slice(0,18).map(group=>`<article class="lx-music-album" data-auto-album-card="${esc(group.id)}">
+        <button class="lx-auto-album-main" type="button" data-auto-album-play="${esc(group.id)}" aria-label="Reproduzir ${esc(group.title)}">
+          <span class="lx-auto-album-art" data-cover="${esc(group.cover)}"></span>
+        </button>
+        <div class="lx-auto-album-copy">
+          <button type="button" data-auto-album-open="${esc(group.id)}"><strong>${esc(group.title)}</strong><small>${esc(group.artist)} · ${group.entries.length} faixas</small></button>
+          <button class="lx-auto-album-open" type="button" data-auto-album-open="${esc(group.id)}" aria-label="Abrir álbum">›</button>
+        </div>
+      </article>`).join('')}</div>`;
+    section.querySelectorAll('[data-cover]').forEach(node=>node.style.backgroundImage=`url(${JSON.stringify(node.dataset.cover||'')})`);
+    section.querySelectorAll('[data-auto-album-play]').forEach(button=>button.addEventListener('click',()=>playAutoAlbum(button.dataset.autoAlbumPlay,0)));
+    section.querySelectorAll('[data-auto-album-open]').forEach(button=>button.addEventListener('click',()=>openAutoAlbum(button.dataset.autoAlbumOpen)));
+    const anchor=main.querySelector('.lx-music-quick-section')||main.querySelector('.lx-music-section');
+    if(anchor)anchor.insertAdjacentElement('afterend',section);else main.appendChild(section);
+    state.albumSignature=signature;
+  }
+  function bindAlbumPlayback(){
+    document.addEventListener('click',event=>{
+      if(!state.activeAlbumId)return;
+      const button=event.target.closest?.('#musicNext,#musicPrev');if(!button)return;
+      event.preventDefault();event.stopImmediatePropagation();
+      stepAlbum(button.id==='musicNext'?1:-1);
+    },true);
+    const audio=document.getElementById('musicAudio');
+    audio?.addEventListener('ended',()=>{
+      if(!state.activeAlbumId)return;
+      const group=albumById(state.activeAlbumId);if(!group)return;
+      const repeat=document.getElementById('musicRepeat');
+      if(repeat?.querySelector('sup'))return;
+      const next=state.activeIndex+1;
+      setTimeout(()=>{
+        const fresh=albumById(state.activeAlbumId);if(!fresh)return;
+        const expected=fresh.entries[next];
+        if(expected&&entryMatches(current(),expected)){state.activeIndex=next;syncAlbumRows();return}
+        if(next<fresh.entries.length)playAutoAlbum(fresh.id,next);
+        else if(repeat?.classList.contains('active'))playAutoAlbum(fresh.id,0);
+      },0);
+    });
+    document.addEventListener('lx:music-changed',()=>{
+      if(!state.activeAlbumId)return;
+      const group=albumById(state.activeAlbumId),live=current();if(!group||!live)return;
+      const index=group.entries.findIndex(entry=>entryMatches(live,entry));
+      if(index>=0){state.activeIndex=index;syncAlbumRows()}
+      else if(!state.pending){state.activeAlbumId='';state.activeIndex=-1}
+    });
+  }
+  function observeMusic(){
+    const rootNode=document.getElementById('homeContent')||document.body;
+    let timer=null;
+    const observer=new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(()=>{wrapAlbumOpen();renderAlbumSection()},50)});
+    observer.observe(rootNode,{childList:true,subtree:true});
+    setTimeout(()=>{wrapAlbumOpen();renderAlbumSection()},120);
+  }
+  function boot(){
+    injectStyles();
+    setTimeout(()=>{
+      wrapAlbumOpen();
+      bindAlbumPlayback();
+      observeMusic();
+      renderAlbumSection();
+      root.LXMusicHotfix260926={playAlbum:playAutoAlbum,openAlbum:openAutoAlbum,shuffleAlbum:shuffleAutoAlbum,resetPlayerPosition:()=>root.LX?.musicFloat?.reset?.()};
+    },0);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })(typeof window!=='undefined'?window:globalThis);

@@ -1,0 +1,100 @@
+/* LX Plus — Modal Safety V13
+   Guard for generic LX dialogs that exceed the viewport.
+   Works in the main app and ADM, but never changes auth/bootstrap layouts.
+   Forces reliable vertical scrolling even if another stylesheet later changes overflow. */
+(()=>{'use strict';
+  const STYLE_ID='lxModalSafetyV13Css';
+  let timer=0,observer=null;
+  const $=id=>document.getElementById(id);
+  const visible=el=>!!el&&!el.classList.contains('hidden')&&getComputedStyle(el).display!=='none';
+
+  function protectedSurfaceVisible(){
+    return visible($('app'))||visible($('admin'));
+  }
+
+  function ensureStyle(){
+    const existing=$(STYLE_ID);
+    if(existing)return existing;
+    const link=document.createElement('link');
+    link.id=STYLE_ID;link.rel='stylesheet';link.href='lxplus.modal-safety-v13.css?v=20260926-2';
+    document.head.appendChild(link);
+    return link;
+  }
+
+  function overlayOpen(overlay){
+    return visible(overlay);
+  }
+
+  function specialLayout(modal){
+    if(!modal)return true;
+    return !!(
+      modal.querySelector('.detail-shell-v256')||
+      modal.querySelector('.lx-now-playing-v6')||
+      modal.querySelector('.watch-player')||
+      modal.querySelector('.reader-page')
+    );
+  }
+
+  function clear(){
+    const overlay=$('overlay'),modal=$('modal');
+    if(overlay?.classList.contains('lx-modal-safety-v13')||overlay?.classList.contains('lx-admin-editor-v13')||overlay?.classList.contains('lx-modal-overflow-v13'))overlay.classList.remove('lx-modal-safety-v13','lx-admin-editor-v13','lx-modal-overflow-v13');
+    if(document.documentElement.classList.contains('lx-modal-open-v13'))document.documentElement.classList.remove('lx-modal-open-v13');
+    if(modal?.dataset.lxModalSafetyV13==='1'){
+      ['max-height','height','overflow-y','overflow-x','overscroll-behavior','-webkit-overflow-scrolling','touch-action'].forEach(p=>modal.style.removeProperty(p));
+      delete modal.dataset.lxModalSafetyV13;
+    }
+  }
+
+  function forceScroll(modal){
+    if(!modal||modal.dataset.lxModalSafetyV13==='1')return;
+    modal.dataset.lxModalSafetyV13='1';
+    modal.style.setProperty('height','auto','important');
+    modal.style.setProperty('max-height','calc(100dvh - 28px)','important');
+    modal.style.setProperty('overflow-y','auto','important');
+    modal.style.setProperty('overflow-x','hidden','important');
+    modal.style.setProperty('overscroll-behavior','contain','important');
+    modal.style.setProperty('-webkit-overflow-scrolling','touch','important');
+    modal.style.setProperty('touch-action','pan-y','important');
+  }
+
+  function sync(){
+    ensureStyle();
+    const overlay=$('overlay'),modal=$('modal');
+    if(!protectedSurfaceVisible()||!overlayOpen(overlay)||!modal||specialLayout(modal)){
+      clear();return;
+    }
+    if(!overlay.classList.contains('lx-modal-safety-v13'))overlay.classList.add('lx-modal-safety-v13');
+    const editor=!!modal.querySelector('.quick-editor-page');
+    if(overlay.classList.contains('lx-admin-editor-v13')!==editor)overlay.classList.toggle('lx-admin-editor-v13',editor);
+    if(!document.documentElement.classList.contains('lx-modal-open-v13'))document.documentElement.classList.add('lx-modal-open-v13');
+    forceScroll(modal);
+    requestAnimationFrame(()=>{
+      if(!modal.isConnected)return;
+      const overflow=modal.scrollHeight>modal.clientHeight+2;
+      if(overlay.classList.contains('lx-modal-overflow-v13')!==overflow)overlay.classList.toggle('lx-modal-overflow-v13',overflow);
+    });
+  }
+
+  function queue(){clearTimeout(timer);timer=setTimeout(sync,0)}
+
+  function boot(){
+    ensureStyle();
+    const overlay=$('overlay'),app=$('app'),admin=$('admin');
+    if(overlay&&'MutationObserver'in window){
+      observer=new MutationObserver(records=>{if(records.some(record=>record.type==='childList'||record.target===overlay))queue()});
+      observer.observe(overlay,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
+    }
+    if('MutationObserver'in window){
+      if(app)new MutationObserver(queue).observe(app,{attributes:true,attributeFilter:['class']});
+      if(admin)new MutationObserver(queue).observe(admin,{attributes:true,attributeFilter:['class']});
+    }
+    document.addEventListener('click',()=>setTimeout(sync,0),true);
+    window.addEventListener('resize',queue,{passive:true});
+    window.addEventListener('orientationchange',()=>setTimeout(sync,120),{passive:true});
+    setInterval(sync,1000);
+    sync();
+    window.LXModalSafetyV13={version:'13.3',sync,forceScroll};
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();

@@ -1,0 +1,72 @@
+name: Verify LX Plus UI36
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lxplus.insights-v36.js'
+      - 'lxplus.insights-v36.css'
+      - 'lxplus.player-audio-v12.js'
+      - 'lxplus.player-context-v6.js'
+      - 'lxplus.mini-floating-player-v11.css'
+      - 'lxplus.album-grouping.js'
+      - 'lxplus.audiofx.js'
+      - 'lxplus.player-context-v6.css'
+      - 'lxplus.notifications-v26.js'
+      - 'supabase/functions/**'
+      - 'supabase/migrations/**'
+      - 'qa-audio-resolver-v36.cjs'
+      - 'qa-insights-v36.cjs'
+      - 'index.html'
+      - 'lxplus.bundle.js'
+      - 'lxplus.modal-safety-v13.js'
+      - 'lxplus.support.js'
+      - 'lxplus.music-v8.js'
+      - 'lxplus.admin-health-v33.js'
+      - 'lxplus.maintenance-v34.css'
+      - 'lxplus.release-v34.js'
+      - 'release-manifest.json'
+      - 'service-worker.js'
+      - 'manifest.webmanifest'
+      - 'assets/lxplus-wordmark-v34.svg'
+      - 'assets/lxplus-icon-v34.svg'
+      - 'assets/lxplus-icon-v34.png'
+      - '.github/workflows/canonicalize-ui32.yml'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check syntax and deployment references
+        run: |
+          node --check lxplus.bundle.js
+          node --check lxplus.modal-safety-v13.js
+          node --check lxplus.support.js
+          node --check lxplus.music-v8.js
+          node --check lxplus.admin-health-v33.js
+          node --check lxplus.release-v34.js
+          node --check service-worker.js
+          node --check lxplus.insights-v36.js
+          node --check lxplus.player-audio-v12.js
+          node --check lxplus.player-context-v6.js
+          node --check lxplus.album-grouping.js
+          node --check lxplus.audiofx.js
+          node qa-insights-v36.cjs
+          node qa-audio-resolver-v36.cjs
+          node qa-ui33.cjs
+      - name: Run media and interaction checks
+        run: |
+          node qa-music-r4.cjs
+          node qa-metadata-r12.cjs
+          node qa-drive-albums-r12-1.cjs
+          node --test cloudflare-worker/worker.test.mjs

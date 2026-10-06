@@ -1,0 +1,23 @@
+const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');
+const document={getElementById:()=>null,addEventListener(){},readyState:'loading'};
+const window={LX:{},addEventListener(){}};
+vm.runInNewContext(fs.readFileSync('lxplus.insights-v35.js','utf8'),{window,document,setInterval(){},performance,crypto,Intl,Date,console});
+const {sampleDelta,recapHTML}=window.LX.insights;
+const sample={key:'a',user:'u',at:1000,position:20,playing:true,rate:1};
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:21}),1);
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:50}),0,'seek must not add time');
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:21,playing:false}),0,'paused');
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:21,user:'v'}),0,'account switch');
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:21,seeking:true}),0,'active seek');
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:20}),0,'buffering');
+assert.equal(sampleDelta(sample,{...sample,at:121000,position:140}),0,'suspended timer');
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:22,rate:2}),1,'wall-clock listening at 2x');
+assert.equal(sampleDelta(sample,{...sample,at:2000,position:19}),0,'rewind');
+const html=recapHTML({seconds:3600,tracks:5,artists:2,days:3,top_tracks:[{title:'<img onerror=evil()>',artist:'A & B',seconds:120}],top_artists:[],months:[]});
+assert(!html.includes('<img onerror'));
+assert(html.includes('&lt;img onerror=evil()&gt;'));
+assert(recapHTML({private:true,seconds:1000}).includes('privadas'));
+assert(!recapHTML({private:true,seconds:1000}).includes('1.000'));
+const index=fs.readFileSync('index.html','utf8');
+for(const m of index.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)){if(m[1].trim())new vm.Script(m[1]);}
+console.log('UI35 PASS: elapsed playback, seeks, pauses, buffering, accounts, speed, private recap, XSS, inline scripts');

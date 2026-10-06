@@ -1,11 +1,29 @@
 {
-  "version": "25.46",
-  "name": "Drive Quality + Next Episode",
-  "base": "25.45",
+  "version": "UI36",
+  "build": "R12.5-UI36-MYPLAY-20261002",
+  "name": "UI36 · Meu play. Minha história.",
+  "base": "UI35",
   "files": [
     "index.html",
-    "app.css",
-    "lxplus.js"
+    "lxplus.bundle.js",
+    "lxplus.insights-v36.js",
+    "lxplus.insights-v36.css",
+    "lxplus.player-context-v6.js",
+    "lxplus.mini-floating-player-v11.css",
+    "lxplus.audiofx.js",
+    "lxplus.album-grouping.js",
+    "lxplus.player-audio-v12.js",
+    "service-worker.js",
+    "lxplus.player-context-v6.css",
+    "lxplus.future-ui-v9.js",
+    "lxplus.notifications-v26.js"
   ],
-  "notes": "Google Drive quality variants (Auto/4K/1080p/720p/480p), bulk quality links per season, and persistent next-episode navigation including season transitions."
+  "force": false,
+  "features": [
+    "Retrospectiva mensal e anual em cartões interativos",
+    "Resumo pessoal em imagem para compartilhar",
+    "Níveis e conquistas com XP confirmado",
+    "Perfis públicos com @ único e controle de privacidade",
+    "Player flutuante com arraste estável em celular, tablet e computador"
+  ]
 }

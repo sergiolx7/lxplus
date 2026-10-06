@@ -1,0 +1,71 @@
+/* Local browser checks. Supply LX_QA_CHROMIUM or an installed Playwright browser. */
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
+const output=process.env.LX_QA_OUTPUT||'/tmp/lx-ui36-qa';fs.mkdirSync(output,{recursive:true});
+(async()=>{
+ const browser=await chromium.launch({executablePath:process.env.LX_QA_CHROMIUM,args:['--no-sandbox','--disable-gpu','--disable-software-rasterizer','--use-gl=disabled','--disable-dev-shm-usage','--no-zygote','--single-process'],headless:true});
+ const context=await browser.newContext({viewport:{width:1280,height:940}});const page=await context.newPage(),errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/*',r=>r.request().url().startsWith('http://127.0.0.1:8765/')?r.continue():r.abort());
+ await page.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.LX?.insights?.version===36);
+ assert.deepEqual(errors,[],'Real page bootstrap');
+ await page.evaluate(()=>{
+  window.qaCalls=[];const me='00000000-0000-4000-8000-000000000001',other='00000000-0000-4000-8000-000000000002';
+  const progress={xp:145,level:2,level_start:50,level_next:200,music:19,watched:5,books:0};
+  const profile={user_id:me,name:'Ana Silva',username:'ana',avatar_url:'assets/lxplus-icon-v34.png',bio:'A vida fica melhor com uma trilha sonora.',created_at:'2026-08-01T12:00:00Z',progress,results_visible:true,favorites_visible:true,favorite_ids:[101],private:false};
+  const recap={seconds:89400,tracks:74,artists:23,days:21,month:'2026-10-01',private:false,top_tracks:[{track_key:'101:0',title:'O Sol',artist:'Vitor Kley',seconds:6900},{track_key:'102:0',title:'Velha infância',artist:'Tribalistas',seconds:5400},{track_key:'103:0',title:'A sua maneira',artist:'Capital Inicial',seconds:4200},{track_key:'104:0',title:'Anunciação',artist:'Alceu Valença',seconds:3900},{track_key:'105:0',title:'Trevo',artist:'ANAVITÓRIA',seconds:1800}],top_artists:[{artist:'Vitor Kley',seconds:23400},{artist:'Tribalistas',seconds:18400}],months:[{month:'2026-08-01',seconds:35400},{month:'2026-09-01',seconds:64400},{month:'2026-10-01',seconds:89400}],best_day:{day:'2026-10-01',seconds:9600}};
+  const dir=[{...profile,user_id:other,name:'Lucas Oliveira',username:'lucas',relation:'accepted',calls_enabled:true,activity_visible:true,social_visible:true,verified:true,last_seen:new Date().toISOString()}];
+  const rows=[{...profile,user_id:other,name:'Lucas Oliveira',username:'lucas',position:1,score:720,verified:true,progress:{...progress,level:4,xp:720,level_start:450,level_next:800}},{...profile,position:2,score:145},{...profile,user_id:'00000000-0000-4000-8000-000000000003',name:'Bia Santos',username:'bia',position:3,score:130}];
+  function query(){const q={};for(const key of ['select','eq','neq','in','order','limit','update','upsert','delete','insert','gte','lt'])q[key]=()=>q;q.maybeSingle=async()=>({data:{activity_visible:true,...profile},error:null});q.single=q.maybeSingle;q.then=(resolve,reject)=>Promise.resolve({data:[],error:null}).then(resolve,reject);return q}
+  const channel={on(){return this},subscribe(fn){fn?.('SUBSCRIBED');return this},track:async()=>{},untrack:async()=>{},unsubscribe:async()=>{},presenceState:()=>({}),send:async()=>{}};
+  window.qaDb={from:()=>query(),channel:()=>channel,removeChannel:async()=>{},auth:{getSession:async()=>({data:{session:{user:{id:me}}}}),getUser:async()=>({data:{user:{id:me}}})},functions:{invoke:async()=>({data:null,error:null})},rpc:async(name,args)=>{qaCalls.push({name,args});return {error:null,data:name==='lx_music_story'?{...recap,year:args?.p_year}:name==='lx_member_profile'?{...profile,user_id:args.p_user,name:args.p_user===me?'Ana Silva':'Lucas Oliveira',username:args.p_user===me?'ana':'lucas'}:name==='lx_ranking_insights'?{rows,me:rows[1],participants:3,progress}:name==='lx_social_directory'?dir:name==='lx_community_identity'?dir:name==='lx_is_approved'?true:[]}}};
+  LX.cloud.db=()=>qaDb;LX.cloud.user=()=>({id:me,name:'Ana Silva',email:'qa@example.invalid'});LX.state.user={id:me,name:'Ana Silva',email:'qa@example.invalid'};LX.ui.state.user=LX.state.user;LX.ui.state.screen='app';LX.ui.state.mode='Assistir';
+  LX.data.catalog=()=>recap.top_tracks.map((t,i)=>({id:101+i,type:'Música',title:t.title,artist:t.artist,genre:'MPB',cover:'assets/lx-music-fallback.svg',tracks:[{title:t.title,artist:t.artist}],published:true}));
+  document.getElementById('app').classList.remove('hidden');document.querySelectorAll('#auth,#profiles,#admin').forEach(e=>e.classList.add('hidden'));document.body.dataset.lxSurface='watch';
+ });
+ const overflow=async()=>page.evaluate(()=>({page:document.documentElement.scrollWidth>innerWidth+1,modal:document.getElementById('modal').scrollWidth>document.getElementById('modal').clientWidth+1}));
+ for(const width of [320,390,820,1280]){
+  await page.setViewportSize({width,height:940});await page.evaluate(()=>LX.insights.openRecap());await page.waitForSelector('.lx36-story-intro');await page.waitForTimeout(300);
+  assert.deepEqual(await overflow(),{page:false,modal:false},'Recap overflow at '+width);
+  await page.screenshot({path:path.join(output,'recap-'+width+'.png')});
+  for(let i=1;i<6;i++){await page.click('#lxStoryNext');assert.equal(await page.textContent('#lxStoryCount'),(i+1)+' / 6');assert.deepEqual(await overflow(),{page:false,modal:false},'Slide '+i+' overflow at '+width);}
+  await page.waitForTimeout(400);await page.screenshot({path:path.join(output,'summary-'+width+'.png')});
+  if(width===390){const [download]=await Promise.all([page.waitForEvent('download'),page.click('[data-share-story]')]);assert.equal(download.suggestedFilename(),'meu-play-lx.png');const png=fs.readFileSync(await download.path());assert.equal(png.readUInt32BE(16),1080);assert.equal(png.readUInt32BE(20),1440);}
+  await page.click('[data-scope="year"]');await page.waitForSelector('.lx36-story-intro');assert((await page.evaluate(()=>qaCalls)).some(c=>c.name==='lx_music_story'&&c.args.p_year===2026),'Year scope');
+  await page.evaluate(()=>LX.insights.openRanking());await page.waitForSelector('.lx36-podium');assert.deepEqual(await overflow(),{page:false,modal:false},'Ranking overflow at '+width);
+  await page.screenshot({path:path.join(output,'ranking-'+width+'.png')});await page.fill('#lxRankSearch','@lucas');assert.equal(await page.locator('.lx36-rank-list li:visible').count(),1);
+  await page.click('[data-period="Semanal"]');await page.waitForSelector('.lx36-podium');assert((await page.evaluate(()=>qaCalls)).some(c=>c.name==='lx_ranking_insights'&&c.args.p_period==='Semanal'),'Weekly ranking');
+  await page.evaluate(()=>LX.insights.openMember('00000000-0000-4000-8000-000000000002'));await page.waitForSelector('.lx36-member-head');assert(await page.textContent('.lx36-handle')==='@lucas');assert.deepEqual(await overflow(),{page:false,modal:false},'Profile overflow at '+width);await page.screenshot({path:path.join(output,'profile-'+width+'.png')});
+  await page.click('[data-profile-tab="badges"]');assert.equal(await page.locator('#lxMemberBadges:visible').count(),1);await page.click('[data-profile-tab="results"]');
+ }
+ // Dragging on both touch-width and desktop layouts, preserving the floating position across mode switches.
+ await page.evaluate(()=>{LX.ui.close();const d=document.getElementById('musicDock');d.classList.remove('hidden');document.getElementById('musicTitle').textContent='Minha música em segundo plano';document.getElementById('musicArtist').textContent='Artista LX';document.getElementById('musicCover').style.backgroundImage='url("assets/lx-music-fallback.svg")';document.getElementById('app').classList.remove('lx-music-mode');LX.ui.state.mode='Assistir';LXPlayerContextV6.sync(true)});
+ for(const width of [320,390,820,1280]){
+  await page.setViewportSize({width,height:940});await page.waitForTimeout(100);await page.evaluate(()=>LX.musicFloat.reset());await page.waitForTimeout(100);
+  const dock=page.locator('#musicDock'),before=await dock.boundingBox(),handle=await page.locator('.lx-music-drag-handle').boundingBox();
+  if(!before||!handle){console.log('PLAYER DEBUG',await page.evaluate(()=>({body:document.body.dataset,app:document.getElementById('app').className,appDisplay:getComputedStyle(document.getElementById('app')).display,screen:LX.ui.state.screen,mode:LX.ui.state.mode,dock:document.getElementById('musicDock').className,dockDisplay:getComputedStyle(document.getElementById('musicDock')).display,handleDisplay:getComputedStyle(document.querySelector('.lx-music-drag-handle')).display})));await page.screenshot({path:path.join(output,'player-debug-'+width+'.png')});}
+  await page.mouse.move(handle.x+22,handle.y+22);await page.mouse.down();await page.mouse.move(90,190,{steps:12});await page.mouse.up();await page.waitForTimeout(100);const moved=await dock.boundingBox();assert(Math.abs(before.x-moved.x)>10||Math.abs(before.y-moved.y)>10,'Player actually moved '+width);assert(moved.x>=10&&moved.y>=10&&moved.x+moved.width<=width-10,'Player bounds '+width);
+  await page.evaluate(()=>{LX.ui.state.mode='Ouvir';document.getElementById('app').classList.add('lx-music-mode');LXPlayerContextV6.sync(true)});await page.waitForTimeout(60);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'Integrated player overflow '+width);await page.evaluate(()=>{LX.ui.state.mode='Assistir';document.getElementById('app').classList.remove('lx-music-mode');LXPlayerContextV6.sync(true)});await page.waitForTimeout(100);const restored=await dock.boundingBox();if(Math.abs(restored.x-moved.x)>=3||Math.abs(restored.y-moved.y)>=3)console.log('RESTORE DEBUG',{width,before,moved,restored},await page.evaluate(()=>({floatDebug:window.__LXFloatDebug,saved:localStorage.getItem('lx_music_float_pos_v36'),context:document.body.dataset.lxPlayerContext,surface:document.body.dataset.lxSurface,styles:document.getElementById('musicDock').style.cssText,app:document.getElementById('app').className})));assert(Math.abs(restored.x-moved.x)<3&&Math.abs(restored.y-moved.y)<3,'Player position restored '+width);await page.screenshot({path:path.join(output,'player-'+width+'.png')});
+ }
+ // Real touch pointer events use the same controller without scrolling the page.
+ await page.setViewportSize({width:390,height:844});await page.evaluate(()=>LX.musicFloat.reset());await page.waitForTimeout(100);
+ const touchBefore=await page.locator('#musicDock').boundingBox(),touchHandle=await page.locator('.lx-music-drag-handle').boundingBox(),cdp=await context.newCDPSession(page);
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:touchHandle.x+22,y:touchHandle.y+22}]});
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:100,y:180}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await page.waitForTimeout(80);
+ const touchAfter=await page.locator('#musicDock').boundingBox();assert(Math.abs(touchAfter.y-touchBefore.y)>20,'Touch player moved');
+ // Decode actual PCM audio; verify serialization, paused state, playback, seek and cleanup.
+ const samples=8000*12,wav=Buffer.alloc(44+samples*2);wav.write('RIFF',0);wav.writeUInt32LE(wav.length-8,4);wav.write('WAVEfmt ',8);wav.writeUInt32LE(16,16);wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(8000,24);wav.writeUInt32LE(16000,28);wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write('data',36);wav.writeUInt32LE(samples*2,40);for(let i=0;i<samples;i++)wav.writeInt16LE(Math.round(Math.sin(i*2*Math.PI*220/8000)*1000),44+i*2);
+ await page.route('**/qa-*.wav',r=>r.fulfill({status:200,contentType:'audio/wav',body:wav}));
+ const audio=await page.evaluate(async()=>{
+  const host=document.createElement('div');host.id='lxGlobalCinema';host.dataset.lxContentId='qa';host.__lxMedia={id:'qa',audioUrl:location.origin+'/qa-companion.wav'};document.body.append(host);const shadow=host.attachShadow({mode:'open'});shadow.innerHTML='<div id="stage"><video id="video" src="/qa-video.wav"></video><button id="mute">Mute</button><button id="audioFix">Corrigir áudio</button><input id="volume" type="range" min="0" max="1" step=".01"></div>';
+  const v=shadow.querySelector('video');v.volume=.35;await new Promise(resolve=>v.addEventListener('canplay',resolve,{once:true}));LXPlayerAudioV12.patch(host);
+  const first=LXPlayerAudioV12.repair(),second=LXPlayerAudioV12.repair(),serialized=first===second,result=await first,b=LXPlayerAudioV12.bridgeFor(v),paused=b?.audio.paused;
+  await v.play();await new Promise(r=>setTimeout(r,180));const playing=!b.audio.paused;v.pause();await new Promise(r=>setTimeout(r,60));const pauseSynced=b.audio.paused;
+  v.currentTime=3;await new Promise(r=>setTimeout(r,80));await v.play();await new Promise(r=>setTimeout(r,100));const seekSynced=Math.abs(v.currentTime-b.audio.currentTime)<.4;v.pause();
+  const preservedVolume=Math.abs(b.audio.volume-.35)<.01;LXPlayerAudioV12.stop(v,true);const cleaned=!LXPlayerAudioV12.bridgeFor(v)&&v.muted===false;
+  host.__lxMedia={id:'qa',mediaKey:'gdrive:abcdefghijklmnop'};let resolveRequest;qaDb.functions.invoke=()=>new Promise(resolve=>resolveRequest=resolve);let fallbacks=0;host.__lxAudioFallback=()=>{fallbacks++;return true};const stale=LXPlayerAudioV12.repair();await new Promise(r=>setTimeout(r,20));v.src='/qa-next.wav';v.load();await new Promise(r=>setTimeout(r,20));resolveRequest({data:{url:location.origin+'/qa-companion.wav'},error:null});const staleResult=await stale,staleProtected=!staleResult&&!LXPlayerAudioV12.bridgeFor(v)&&fallbacks===0;host.remove();
+  return {serialized,result,paused,playing,pauseSynced,seekSynced,preservedVolume,cleaned,staleProtected};
+ });
+ for(const [key,value] of Object.entries(audio))assert.equal(value,true,'Audio '+key);
+ assert.deepEqual(errors,[],'Browser errors');console.log('UI36 browser PASS: 390, 820, 1280 px; 6 story cards; year/month; ranking filters/search; public profile tabs; drag/mode restoration; touch drag; actual audio decode, synchronization and source-change cancellation.');console.log('Screenshots: '+output);await browser.close();
+})().catch(e=>{console.error(e);process.exit(1)});

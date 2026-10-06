@@ -53,3 +53,97 @@
  document.addEventListener('lx:music-closed',()=>document.getElementById('lxMusicEffectsPanel')?.remove());
  LX.audioEffects={open,state:()=>({...state}),resume:()=>state.enabled?context?.resume?.():Promise.resolve()};
 })();
+
+/* LX Plus — Ambient Glow V2 loader. */
+(()=>{'use strict';
+  const CSS_ID='lxAmbientV1Css';
+  const LAYER_ID='lxAmbientV1';
+  function mount(){
+    let link=document.getElementById(CSS_ID);
+    if(!link){link=document.createElement('link');link.id=CSS_ID;link.rel='stylesheet';document.head.appendChild(link)}
+    link.href='lxplus.ambient-v2.css?v=20260926-2';
+    if(!document.getElementById(LAYER_ID)){
+      const layer=document.createElement('div');
+      layer.id=LAYER_ID;
+      layer.setAttribute('aria-hidden','true');
+      layer.innerHTML='<i class="lx-ambient-blob-a"></i><i class="lx-ambient-blob-b"></i><i class="lx-ambient-arc-a"></i><i class="lx-ambient-arc-b"></i><i class="lx-ambient-line"></i>';
+      document.body.prepend(layer);
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+})();
+
+/* LX Music — compact floating player, freely draggable anywhere in the viewport. */
+(()=>{'use strict';
+  const audio=()=>document.getElementById('musicAudio');
+  let lastPositionUpdate=0;
+  function coverURL(){
+    const cover=document.getElementById('musicCover');if(!cover)return'';
+    const img=cover.querySelector?.('img');if(img?.src)return img.src;
+    const bg=getComputedStyle(cover).backgroundImage||'';const m=bg.match(/url\(["']?(.*?)["']?\)/);return m?.[1]||'';
+  }
+  function metadata(){
+    if(!('mediaSession' in navigator))return;
+    const a=audio(),title=document.getElementById('musicTitle')?.textContent?.trim()||'LX Music',artist=document.getElementById('musicArtist')?.textContent?.trim()||'LX Plus',art=coverURL();
+    try{navigator.mediaSession.metadata=new MediaMetadata({title,artist,album:'LX Plus',artwork:art?[{src:art}]:[]})}catch{}
+    if(a)try{navigator.mediaSession.playbackState=a.paused?'paused':'playing'}catch{}
+  }
+  function positionState(force=false){
+    const a=audio();if(!a||!('mediaSession' in navigator)||typeof navigator.mediaSession.setPositionState!=='function'||!Number.isFinite(a.duration)||a.duration<=0)return;
+    const now=Date.now();if(!force&&now-lastPositionUpdate<900)return;lastPositionUpdate=now;
+    try{navigator.mediaSession.setPositionState({duration:a.duration,playbackRate:a.playbackRate||1,position:Math.min(a.duration,Math.max(0,a.currentTime||0))})}catch{}
+  }
+  function click(id){document.getElementById(id)?.click()}
+  function setupMediaSession(){
+    const a=audio();if(!a)return;a.setAttribute('playsinline','');a.setAttribute('preload','metadata');
+    if('mediaSession' in navigator){
+      const set=(name,fn)=>{try{navigator.mediaSession.setActionHandler(name,fn)}catch{}};
+      set('play',()=>a.play().catch(()=>{}));set('pause',()=>a.pause());set('previoustrack',()=>click('musicPrev'));set('nexttrack',()=>click('musicNext'));
+      set('seekbackward',d=>{a.currentTime=Math.max(0,(a.currentTime||0)-(d.seekOffset||10))});
+      set('seekforward',d=>{a.currentTime=Math.min(a.duration||Infinity,(a.currentTime||0)+(d.seekOffset||10))});
+      set('seekto',d=>{if(Number.isFinite(d.seekTime))a.currentTime=Math.max(0,Math.min(a.duration||d.seekTime,d.seekTime))});
+    }
+    for(const ev of ['play','pause','loadedmetadata','durationchange'])a.addEventListener(ev,()=>{metadata();positionState(true)});
+    a.addEventListener('timeupdate',()=>positionState(false));
+    document.addEventListener('lx:music-changed',()=>setTimeout(()=>{metadata();positionState(true)},30));
+  }
+  function boot(){setupMediaSession();metadata()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
+
+/* LX Plus V4 — side LED dots + adaptive full-screen cinema fit. */
+(()=>{'use strict';
+  const VISUAL_ID='lxVisualV4Css',FIT_KEY='lx_video_fit_v4';
+  function loadVisual(){
+    let link=document.getElementById(VISUAL_ID);
+    if(!link){link=document.createElement('link');link.id=VISUAL_ID;link.rel='stylesheet';document.head.appendChild(link)}
+    link.href='lxplus.visual-v4.css?v=20260926-1';
+  }
+  function readFit(){try{return localStorage.getItem(FIT_KEY)==='contain'?'contain':'fill'}catch{return'fill'}}
+  function writeFit(mode){try{localStorage.setItem(FIT_KEY,mode)}catch{}}
+  function enhanceCinema(host){
+    const shadow=host?.shadowRoot;if(!shadow)return false;
+    const stage=shadow.getElementById('stage'),video=shadow.getElementById('video');
+    if(!stage||!video)return false;
+    if(!shadow.getElementById('lxAdaptiveFillV4')){
+      const style=document.createElement('style');style.id='lxAdaptiveFillV4';
+      style.textContent='#stage #video{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;object-position:center center!important;background:#000!important}#stage.lx-fit-contain-v4 #video{object-fit:contain!important}#poster{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center center!important}.actions #lxFitV4{font-size:15px;font-weight:900}.actions #lxFitV4.active{border-color:rgba(177,83,255,.58);box-shadow:0 0 18px rgba(138,43,226,.25)}@media(max-width:460px){.actions #lxFitV4{display:none!important}}';
+      shadow.appendChild(style);
+    }
+    const actions=shadow.querySelector('.actions');
+    let button=shadow.getElementById('lxFitV4');
+    if(actions&&!button){button=document.createElement('button');button.id='lxFitV4';button.className='round';button.type='button';button.setAttribute('aria-label','Alternar preenchimento do vídeo');actions.prepend(button)}
+    const apply=()=>{
+      const mode=readFit();stage.classList.toggle('lx-fit-contain-v4',mode==='contain');
+      stage.dataset.lxScreen=innerWidth>=innerHeight?'landscape':'portrait';
+      if(button){button.textContent=mode==='fill'?'▣':'□';button.classList.toggle('active',mode==='fill');button.title=mode==='fill'?'Tela preenchida · toque para ajustar sem corte':'Vídeo ajustado · toque para preencher a tela'}
+    };
+    if(button&&!button.dataset.lxBound){button.dataset.lxBound='1';button.addEventListener('click',e=>{e.stopPropagation();writeFit(readFit()==='fill'?'contain':'fill');apply()})}
+    if(!video.dataset.lxFitBound){video.dataset.lxFitBound='1';video.addEventListener('loadedmetadata',apply);video.addEventListener('emptied',apply)}
+    if(!stage.dataset.lxResizeBound&&'ResizeObserver'in window){stage.dataset.lxResizeBound='1';const ro=new ResizeObserver(apply);ro.observe(stage)}
+    apply();return true;
+  }
+  function scan(){const host=document.getElementById('lxGlobalCinema');if(host)requestAnimationFrame(()=>enhanceCinema(host))}
+  function boot(){loadVisual();scan();const obs=new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes){if(node?.nodeType!==1)continue;if(node.id==='lxGlobalCinema'||node.querySelector?.('#lxGlobalCinema'))setTimeout(scan,0)}});obs.observe(document.body,{childList:true,subtree:true});window.addEventListener('resize',scan,{passive:true});window.addEventListener('orientationchange',()=>setTimeout(scan,80),{passive:true})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
