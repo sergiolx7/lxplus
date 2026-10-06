@@ -44,6 +44,7 @@ const output=process.env.LX_QA_OUTPUT||'/tmp/lx-catalog-pending-qa';fs.mkdirSync
  await page.evaluate(()=>LX.admin.edit(7000000000105));await page.locator('details:has(#cAuthorizedAudio) summary').click();await page.waitForSelector('#cAuthorizedAudio');await page.fill('#cAuthorizedAudio','https://media.example.invalid/owned.mp3');
  await page.evaluate(async()=>{await document.getElementById('contentForm').onsubmit({preventDefault(){}})});
  assert.deepEqual(await page.evaluate(()=>({metadataOnly:qaSaved.metadataOnly,availability:qaSaved.availability,pending:LX.catalogPending(qaSaved)})),{metadataOnly:false,availability:'available',pending:false});
+ assert.equal(await page.evaluate(()=>qaSaved.desc.includes('Disponível em breve')),false,'Uploaded source clears the generated waiting description');
  await page.evaluate(()=>{delete qaItems.find(i=>i.id===7000000000105).authorizedAudioUrl;});
  await page.evaluate(()=>{LX.ui.close();LX.ui.state.screen='app';LX.ui.state.mode='Ouvir';document.getElementById('admin').classList.add('hidden');document.getElementById('app').classList.remove('hidden');LX.music(102,0,false,[102,7000000000105]);});
  assert.deepEqual(await page.evaluate(()=>LX.ui.state.musicQueue.map(t=>t.contentId)),[102],'Upcoming music must stay out of playable queues');
