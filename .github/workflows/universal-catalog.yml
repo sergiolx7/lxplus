@@ -30,6 +30,7 @@ jobs:
           node tests/catalog-population.mjs
           node tests/catalog-capacity.mjs
           node tests/catalog-updates.mjs
+          node tests/open-film-catalog.mjs
           node qa-insights-v36.cjs
           node qa-audio-resolver-v36.cjs
           node qa-music-r4.cjs
@@ -48,3 +49,4 @@ jobs:
           node tools/run-browser-qa.cjs qa-music-priority-browser.cjs
           node tools/run-browser-qa.cjs qa-session-album-plex-browser.cjs
           node tools/run-browser-qa.cjs qa-loading-browser.cjs
+          node tools/run-browser-qa.cjs qa-open-films-browser.cjs

@@ -1,0 +1,25 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {createRequire} from 'node:module';
+const {PGlite}=createRequire(import.meta.url)((process.env.LX_QA_NODE_MODULES||process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES||new URL('../tools/catalog-qa/node_modules',import.meta.url).pathname)+'/@electric-sql/pglite');
+import {prepareOpenFilms,openFilmSql,validateFilm} from '../tools/open-film-catalog.mjs';
+const feed=JSON.parse(fs.readFileSync(new URL('../catalog/open-films.json',import.meta.url)));assert.equal(feed.complete,true);assert(feed.items.length>0);feed.items.forEach(validateFilm);
+const db=new PGlite();await db.exec('create table lx_catalog(id bigint primary key,payload jsonb not null,published boolean not null,updated_at timestamptz not null default now());');
+const row={id:101,type:'Filme',title:'Um filme',year:2020,cover:'https://example.invalid/owner-cover.png',desc:'Sinopse do dono',catalogOnly:true};
+await db.query('insert into lx_catalog(id,payload,published) values($1,$2,false)',[101,row]);
+await db.query('insert into lx_catalog(id,payload,published) values($1,$2,true)',[102,{...row,id:102,title:'Original do dono'}]);
+async function snapshot(){return (await db.query("select jsonb_build_object('fingerprint',md5(string_agg(id::text||payload::text||published::text||updated_at::text,'' order by id)),'rows',jsonb_agg(jsonb_build_object('id',id,'payload',payload,'published',published,'updated_at',updated_at,'expected_hash',md5(payload::text||published::text)))) as snapshot from lx_catalog;")).rows[0].snapshot}
+const item={id:9001,type:'Filme',title:'Um filme',year:2020,cover:'https://archive.org/services/img/demo',mediaKey:'https://archive.org/download/demo/film.mp4',authorizedVideoUrl:'https://archive.org/download/demo/film.mp4',openFilm:true,sourceVerified:true,availability:'available',playbackMode:'native_remote',sourceProvider:'Fonte livre',externalId:'prelinger:demo',license:{name:'CC BY 4.0',creator:'Autor',url:'https://creativecommons.org/licenses/by/4.0/',evidenceUrl:'https://archive.org/details/demo',sourceUrl:'https://archive.org/details/demo'},openFilmEvidence:{codecProbe:{status:'verified',url:'https://archive.org/download/demo/film.mp4',videoCodec:'h264',audioCodec:'aac',durationSeconds:60,decodedFirstFrame:true},fileFormat:'h.264 IA',streamProbe:{status:206,url:'https://archive.org/download/demo/film.mp4',contentRange:'bytes 0-8191/12345'}}};
+assert.throws(()=>validateFilm({...item,mediaKey:'https://watch.plex.tv/pt-BR/movie/demo'}),/UNVERIFIED|HOST/);
+assert.throws(()=>validateFilm({...item,license:{...item.license,url:'https://creativecommons.org/licenses/by-nc/4.0/'}}),/LICENSE/);
+assert.throws(()=>validateFilm({...item,openFilmEvidence:{...item.openFilmEvidence,codecProbe:{...item.openFilmEvidence.codecProbe,videoCodec:'mpeg4'}}}),/BROWSER_CODEC/);
+assert.throws(()=>validateFilm({...item,license:{...item.license,url:'https://creativecommons.org/licenses/by/999.0/'}}),/LICENSE/);
+const before=await snapshot(),plan=prepareOpenFilms([item,{...item,id:9002,title:'Novo',externalId:'prelinger:new'},{...item,id:9003,title:'Original do dono',externalId:'prelinger:original'}],before,[102]);
+assert.equal(plan.inserts.length,1);assert.equal(plan.updates.length,1);assert.equal(plan.skipped.length,1);
+await db.exec(openFilmSql(plan,before));const after=await snapshot();assert.equal(after.rows.length,3);
+const changed=after.rows.find(r=>Number(r.id)===101);assert.equal(changed.payload.cover,row.cover);assert.equal(changed.payload.desc,row.desc);assert.equal(changed.published,false);assert.equal(changed.payload.mediaKey,item.mediaKey);
+assert.deepEqual(after.rows.find(r=>Number(r.id)===102),before.rows.find(r=>Number(r.id)===102),'Owner original payload, publication and timestamp remain exact');
+await db.exec(openFilmSql(plan,before));assert.deepEqual(await snapshot(),after,'Replaying a stale batch is a no-op');
+assert.equal(prepareOpenFilms([item,{...item,id:9002,title:'Novo',externalId:'prelinger:new'}],after,[102]).inserts.length,0,'No duplicate insertion after a repeat scan');
+const next=prepareOpenFilms([{...item,id:9004,title:'Fourth',externalId:'prelinger:fourth'}],after,[102]);await db.query("update lx_catalog set payload=payload||'{\"title\":\"Owner edit\"}'::jsonb where id=101");const edited=await snapshot();await db.exec(openFilmSql(next,after));assert.deepEqual(await snapshot(),edited,'Concurrent owner changes reject the entire batch');
+await db.close();console.log('PASS license/host/full-media guards, title/year reuse, existing artwork and publication, originals, duplicate scans, stale replay and concurrent-edit rejection.');
