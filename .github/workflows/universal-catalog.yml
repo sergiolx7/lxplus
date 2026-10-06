@@ -47,3 +47,4 @@ jobs:
           node tools/run-browser-qa.cjs qa-catalog-pending-browser.cjs
           node tools/run-browser-qa.cjs qa-music-priority-browser.cjs
           node tools/run-browser-qa.cjs qa-session-album-plex-browser.cjs
+          node tools/run-browser-qa.cjs qa-loading-browser.cjs

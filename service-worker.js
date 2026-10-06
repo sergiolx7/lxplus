@@ -1,10 +1,11 @@
 /* LX Plus — Service Worker UI34 SINGLE SHELL
    The HTML is canonical. This worker never injects UI, never rewrites the DOM, and never forces navigation.
 */
-const LX_BUILD='R12.7-V40-SESSION-ALBUM-PLEX-20261006';
+const LX_BUILD='R12.8-V40-LOADING-MUSIC-20261006';
 const LX_VERSION='UI36';
 const CACHE='lxplus-shell-'+LX_BUILD;
 const CORE=[
+  './vendor/supabase-2.117.2.js','./lxplus.plex-partner.css',
   './lxplus.universal-catalog.js','./lxplus.universal-catalog.css','./supabase/functions/_shared/universal-core.mjs',
   './lxplus.insights-v36.js','./lxplus.insights-v36.css','./','./index.html','./lxplus.bundle.js','./lxplus.bundle.css',
   './lxplus.support.js','./lxplus.support-core.js','./lxplus.recovery.js','./lxplus.audiofx.js','./lxplus.album-grouping.js',
