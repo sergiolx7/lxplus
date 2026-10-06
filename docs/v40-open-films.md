@@ -1,6 +1,6 @@
 # LX Plus v40 — Cinema livre
 
-Build: `R12.11-V40-OPEN-FILMS-20261006`. Publicação exclusiva na branch `lxplus-v40-completa`.
+Build: `R12.12-V40-OPEN-FILMS-20261006`. Publicação exclusiva na branch `lxplus-v40-completa`.
 
 A aba **Assistir → Filmes → Cinema livre** reúne filmes e curtas com licença aberta, capa e fonte nativa verificada. O navegador transmite o MP4 diretamente do Internet Archive no player LX Plus. Nenhum arquivo completo de filme é copiado para o Storage da LX. As versões originais mantêm seus créditos, e a ficha mostra autor, licença, fonte e evidência de autorização. As fontes comerciais do Plex continuam dependendo de uma integração de playback autorizada.
 

@@ -47,6 +47,7 @@ async function waitApp(page){await page.waitForFunction(()=>window.LX?.ui?.state
  await page.click('[data-film-tab="Cinema livre"]');assert.equal(await page.locator('[data-film-tab="Cinema livre"]').getAttribute('aria-pressed'),'true');
  assert.equal(await page.locator('#hero').isHidden(),true,'Free-film grid is reachable without an empty hero');
  assert.match(await page.locator('#homeContent').textContent(),new RegExp(films.length+' títulos disponíveis'));
+ assert.match(await page.locator('#homeContent').textContent(),/Blender Studio/);assert.match(await page.locator('#homeContent').textContent(),/Acervo histórico/);
  assert(!(await page.locator('#homeContent').textContent()).includes('Plex ainda sem mídia'));
  for(const width of [390,820,1280]){await page.setViewportSize({width,height:940});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);await page.screenshot({path:path.join(output,'cinema-livre-'+width+'.png')});}
  await page.evaluate(id=>LX.detail(id),films[0].id);assert.equal(await page.locator('.detail-copy .primary-btn').isDisabled(),false);
