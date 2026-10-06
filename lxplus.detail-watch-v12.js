@@ -2,7 +2,7 @@
    Robust movie/series Watch Party entry.
    - captures the content id when LX.detail() opens any title
    - supports current and legacy detail DOM structures
-   - always exposes "Assistir com amigo" for Filme/Série/Anime/Dorama
+   - exposes "Assistir com amigo" when a video source is registered
    - hands the action to Watch Party V14
 */
 (()=>{'use strict';
@@ -20,7 +20,7 @@
   function appVisible(){const app=$('app');return !!app&&!app.classList.contains('hidden')&&getComputedStyle(app).display!=='none'}
   function overlayVisible(){const o=$('overlay');return !!o&&!o.classList.contains('hidden')&&getComputedStyle(o).display!=='none'}
   function catalogItem(id){return (window.LX?.data?.catalog?.()||[]).find(x=>String(x.id)===String(id))||null}
-  function watchableItem(item){return !!item&&['Filme','Série','Serie','Anime','Dorama'].includes(String(item.type||''))}
+  function watchableItem(item){return !!item&&['Filme','Série','Serie','Anime','Dorama'].includes(String(item.type||''))&&!!(item.mediaKey||item.episodes?.some(e=>e.mediaKey))}
   function currentShell(){
     const o=$('overlay');if(!o)return null;
     return o.querySelector('.detail-shell-v256,.detail-shell,[class*="detail-shell"],[data-detail-id],.detail-hero')?.closest?.('.detail-shell-v256,.detail-shell,[class*="detail-shell"],#modal')||null;

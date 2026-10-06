@@ -13,3 +13,7 @@
 
 .lx-uc-grid{align-items:start}
 .lx-uc-pagination button,.lx-uc-panel button:not(.primary-btn):not(.secondary-btn){min-height:44px;padding:10px 15px;color:inherit;background:var(--uc-surface);border:1px solid var(--uc-border);border-radius:10px;cursor:pointer}
+
+.lx-catalog-source-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.lx-catalog-source-links a{display:inline-flex;align-items:center;text-decoration:none}.lx-catalog-pending-note{font-size:12px!important;line-height:1.55!important;color:#b9c1cc!important;margin-top:14px!important}.lx-catalog-soon-badge{font-size:9px!important;white-space:nowrap}.detail-copy .primary-btn:disabled{opacity:.7;cursor:default;pointer-events:none}
+
+.lx-catalog-store-link{display:inline-flex;align-items:center;justify-content:center;max-width:100%;margin:6px 10px 10px;min-height:40px}.lx-catalog-store-link img{width:120px;height:40px;object-fit:contain}.lx-catalog-source-links .lx-catalog-store-link{margin:0}.lx-catalog-music-quick{display:flex;flex-direction:column;min-width:0}.lx-catalog-music-quick .lx-music-quick{width:100%}

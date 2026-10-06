@@ -27,6 +27,7 @@ jobs:
           node tests/universal-core.mjs
           node tests/universal-service.mjs
           node tests/universal-database.mjs
+          node tests/catalog-population.mjs
           node qa-insights-v36.cjs
           node qa-audio-resolver-v36.cjs
           node qa-music-r4.cjs
@@ -39,4 +40,6 @@ jobs:
         env:
           LX_QA_NODE_MODULES: ${{ github.workspace }}/tools/catalog-qa/node_modules
           LX_QA_OUTPUT: ${{ runner.temp }}/lx-universal-qa
-        run: node tools/run-browser-qa.cjs qa-universal-browser.cjs
+        run: |
+          node tools/run-browser-qa.cjs qa-universal-browser.cjs
+          node tools/run-browser-qa.cjs qa-catalog-pending-browser.cjs

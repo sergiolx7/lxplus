@@ -16,7 +16,7 @@ Com a CLI instalada, o comando de implantação da função em staging é:
 supabase functions deploy lx-universal-catalog --project-ref "$LX_STAGING_PROJECT_REF"
 ```
 
-Defina `LX_STAGING_PROJECT_REF` explicitamente com o ambiente de teste. Este comando não foi executado nesta sessão. O projeto de produção auditado foi utilizado somente para leitura.
+Defina `LX_STAGING_PROJECT_REF` explicitamente com o ambiente de teste. Este comando não foi executado nesta sessão. Na preparação desse módulo, o projeto de produção auditado foi utilizado somente para leitura. Posteriormente, foram adicionadas 900 fichas à tabela de catálogo já existente, conforme [o relatório de preenchimento](CATALOG-POPULATION-20261006.md); a migration e as funções deste módulo continuam sem implantação.
 
 ## Variáveis no servidor
 
@@ -98,7 +98,7 @@ Referências: TMDB, IMDb, Google Books, Open Library (obras/autores), MusicBrain
 
 Pesquisas/discovery têm cache de seis horas; detalhes, quatorze dias; episódios, sete dias. A abertura de uma ficha já importada usa o banco. MusicBrainz possui limite global de uma chamada por 1,1 segundo; consultas gerais incluem faixas, artistas e releases. O site limita cada janela a sessenta cards e oferece paginação, lazy loading e `content-visibility`.
 
-Fontes novas usam tabela privada separada; somente o resolver entrega uma URL autorizada de reprodução. Storage recebe URLs assinadas curtas. Um usuário comum não tem grants para inserir/consultar URLs nessa tabela. Links de provedor podem existir sem uma fonte interna. Sem fonte válida, a ficha mostra **Disponível externamente**; livros exibem **Ler agora** somente quando há fonte de leitura no resolver ou arquivo já existente.
+Fontes novas usam tabela privada separada; somente o resolver entrega uma URL autorizada de reprodução. Storage recebe URLs assinadas curtas. Um usuário comum não tem grants para inserir/consultar URLs nessa tabela. Links de provedor podem existir sem uma fonte interna. Sem fonte válida, a ficha mostra **Disponível em breve**; livros exibem **Ler agora** somente quando há fonte de leitura no resolver ou arquivo já existente.
 
 ## Validação obrigatória antes de produção
 

@@ -1,5 +1,7 @@
 # LX Plus — entrega do LX Universal Catalog
 
+
+Atualização posterior: [900 novos cadastros foram gravados no catálogo existente](CATALOG-POPULATION-20261006.md), com capas e status “Disponível em breve”. As contagens e a condição de leitura abaixo descrevem a auditoria anterior a esse preenchimento. A main e a implantação do catálogo universal continuam inalteradas.
 Data: 06/10/2026. Branch: `lxplus-v40-completa`. Base preservada: UI36, `6a5b30b47861a39ad89b06ffcf1efbc878c96842`.
 
 ## Resultado e situação de implantação
