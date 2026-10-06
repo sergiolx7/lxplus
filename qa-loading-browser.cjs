@@ -55,7 +55,7 @@ async function installDb(context,{stallBoot=false}={}){
  await page.evaluate(()=>{
   window.qaSpotifyListeners={};window.qaSpotifyLoads=[];window.qaSpotifyUri='';window.qaSpotifyPosition=0;
   const ctrl={loadEntity(uri){qaSpotifyUri=uri;qaSpotifyPosition=0;qaSpotifyLoads.push(uri)},pause(){qaSpotifyListeners.playback_update?.({data:{playingURI:qaSpotifyUri,isPaused:true,isBuffering:false,position:qaSpotifyPosition,duration:3000}})},play(){qaSpotifyListeners.playback_started?.({data:{playingURI:qaSpotifyUri}})},addListener(name,fn){qaSpotifyListeners[name]=fn},seek(at){qaSpotifyPosition=at*1000}};
-  LX.spotifyEmbed.api={createController(_el,_options,callback){callback(ctrl)}};
+  LX.spotifyEmbed.api={createController(_el,options,callback){qaSpotifyUri=options.uri;qaSpotifyLoads.push(options.uri);callback(ctrl)}};
   const a={id:8101,type:'Música',title:'Primeira',artist:'LX QA',album:'Álbum QA',cover:'assets/lxplus-icon-v34.png',mediaKey:'spotify:track:1111111111111111111111',published:true},b={...a,id:8102,title:'Segunda',mediaKey:'spotify:track:2222222222222222222222'};
   LX.store.writeLocal(LX.store.keys.catalog,[a,b]);LX.playMusicEntries([a,b].map(x=>({...x,contentId:x.id,index:0,sourceMediaKey:x.mediaKey})));
  });

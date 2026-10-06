@@ -1,6 +1,6 @@
 # LX Plus v40 — loading e fontes musicais
 
-Build: `R12.8-V40-LOADING-MUSIC-20261006`. Publicação exclusiva na branch `lxplus-v40-completa`.
+Build: `R12.9-V40-LOADING-MUSIC-20261006`. Publicação exclusiva na branch `lxplus-v40-completa`.
 
 O SDK oficial Supabase 2.117.2 é servido pelo próprio site, com versão fixa e cache offline. As requisições de catálogo compartilham a carga em andamento, têm prazo total de 20 segundos e cancelam o pedido quando necessário. Respostas atrasadas não substituem cargas mais recentes. Falhas preservam o catálogo salvo e permitem tentar novamente; uma falha ao iniciar o SDK também encerra o loading. O catálogo e as notificações deixaram de bloquear a sessão já validada. O polling foi reduzido de 12 para 60 segundos e fica suspenso com a aba oculta; as atualizações em tempo real continuam ativas.
 
