@@ -34,9 +34,9 @@ async function fixture(context,{delay=0,seed=true}={}){
   window.supabase={createClient(_url,_key,options){storage=options.auth.storage;window.qaStorage=storage;return qaDb}};
  },{delay,seed});
 }
-async function waitApp(page){await page.waitForFunction(()=>window.LX?.ui?.state?.screen==='app',{},{timeout:14000})}
+async function waitApp(page){await page.waitForFunction(()=>window.LX?.ui?.state?.screen==='app',{},{timeout:14000});await page.evaluate(()=>{LX.config.features.nativePlaybackOnly=false})}
 (async()=>{
- const browser=await chromium.launch({executablePath:process.env.LX_QA_CHROMIUM,args:['--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--no-zygote','--autoplay-policy=no-user-gesture-required'],headless:true});await page.evaluate(()=>{LX.config.features.nativePlaybackOnly=false});
+ const browser=await chromium.launch({executablePath:process.env.LX_QA_CHROMIUM,args:['--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--no-zygote','--autoplay-policy=no-user-gesture-required'],headless:true});
  const context=await browser.newContext({viewport:{width:1280,height:940}});await fixture(context,{delay:7000});let page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.stack));
  await page.goto(base,{waitUntil:'domcontentloaded'});await page.waitForSelector('#lxSessionRestoreStatus:not(.hidden)',{state:'attached',timeout:11000});
  assert.match(await page.locator('#lxSessionRestoreStatus').textContent(),/Restaurando/);await waitApp(page);

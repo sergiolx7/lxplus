@@ -33,7 +33,7 @@ async function installDb(context,{stallBoot=false}={}){
  let allowVideo=false;
  await context.route('**/*',route=>{const url=route.request().url();if(url.includes('/qa-loading-video.mp4'))return allowVideo?route.fulfill({contentType:'video/mp4',body:fs.readFileSync(path.join(__dirname,'tools/catalog-qa/owned-video.mp4'))}):undefined;if(url.startsWith('https://open.spotify.com/embed/'))return route.fulfill({contentType:'text/html',body:'<!doctype html><title>Spotify transport fixture</title>'});return url.startsWith(base)?route.continue():route.abort()});
  await installDb(context,{stallBoot:true});const page=await context.newPage();page.on('pageerror',error=>errors.push(error.message));await page.goto(base,{waitUntil:'domcontentloaded'});
- await page.waitForFunction(()=>window.LX?.ui?.state?.screen==='app');
+ await page.waitForFunction(()=>window.LX?.ui?.state?.screen==='app');await page.evaluate(()=>{LX.config.features.nativePlaybackOnly=false});
  assert.equal(await page.evaluate(()=>LX.cloud.catalogState()),'loading','A stalled catalog must not block a validated persisted session');
  assert.equal(await page.evaluate(()=>LX.store.read(LX.store.keys.history).safe.position),42,'Cloud history remains intact');
  await page.clock.install();

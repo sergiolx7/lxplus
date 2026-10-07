@@ -16,7 +16,7 @@ const free=JSON.parse(fs.readFileSync(path.join(__dirname,'catalog/open-films.js
    seekTo(time){this.position=time}destroy(){this.destroyed=true;this.frame.remove()}loadVideoById(data){this.position=data.startSeconds;this.state=1;this.events.onStateChange({data:1})}
   }};
  });
- const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.stack));await page.goto('http://127.0.0.1:8765/');await waitApp(page);
+ const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.stack));await page.goto('http://127.0.0.1:8765/');await waitApp(page);await page.evaluate(()=>{LX.config.features.nativePlaybackOnly=false});
  await page.evaluate(({feed,free})=>{
   const extra=[{id:70001,type:'Dorama',title:'Dorama QA',year:2025,cover:feed[0].cover,published:true},{id:70002,type:'Série',title:'Série QA',year:2024,cover:feed[1].cover,published:true},{id:70003,type:'Anime',title:'Anime QA',year:2025,cover:feed[2].cover,published:true},{id:70004,type:'Filme',title:'Longa do proprietário',year:2021,duration:'1h40min',mediaKey:location.origin+'/qa-owned-film.mp4',cover:feed[0].cover,published:true}];
   window.qaFilms=[...feed,...free,...extra];LX.data.catalog=()=>qaFilms;LX.ui.state.mode='Assistir';LX.ui.state.category='Início';LX.ui.renderApp();
@@ -35,7 +35,7 @@ const free=JSON.parse(fs.readFileSync(path.join(__dirname,'catalog/open-films.js
  await page.click('[data-cat="Doramas"]');assert.equal(await page.locator('.lx-cinema-grid .card').count(),1);assert.equal(await page.locator('[data-cinema-section="recent-films"]').count(),0);
  await page.evaluate(id=>LX.detail(id),feed[0].id);assert.match(await page.locator('.lx-cinema-provider-credit').textContent(),/YouTube/);
  await page.evaluate(id=>{LX.ui.close();const h=LX.data.history();h[id]={position:123,duration:6000,context:'main',progress:2};LX.store.write(LX.store.keys.history,h);LX.play(id)},feed[0].id);
- await page.waitForFunction(()=>window.qaYT.active&&!qaYT.active.destroyed);await page.evaluate(()=>{LX.config.features.nativePlaybackOnly=false});
+ await page.waitForFunction(()=>window.qaYT.active&&!qaYT.active.destroyed);
  const frame=page.locator('#lxGlobalCinema iframe');assert.equal(await frame.getAttribute('referrerpolicy'),'strict-origin-when-cross-origin');assert.match(await frame.getAttribute('src'),/start=123/);
  assert.equal(await page.locator('#lxGlobalCinema').evaluate(node=>node.shadowRoot.querySelector('header').getBoundingClientRect().bottom<=node.shadowRoot.querySelector('iframe').getBoundingClientRect().top),true,'LX header never covers provider controls');
  await page.locator('#lxGlobalCinema #forward').click();assert.equal(await page.evaluate(()=>qaYT.active.position),133);
