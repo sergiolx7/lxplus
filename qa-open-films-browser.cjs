@@ -36,7 +36,8 @@ async function fixture(context,{delay=0,seed=true}={}){
 }
 async function waitApp(page){await page.waitForFunction(()=>window.LX?.ui?.state?.screen==='app',{},{timeout:14000})}
 
-(async()=>{
+module.exports={fixture,waitApp};
+if(require.main===module)(async()=>{
  let proxy;if(realStreams&&process.env.HTTPS_PROXY){const p=new URL(process.env.HTTPS_PROXY);proxy={server:p.protocol+'//'+p.host,bypass:'127.0.0.1,localhost',...(p.username?{username:decodeURIComponent(p.username),password:decodeURIComponent(p.password)}:{})}}
  const browser=await chromium.launch({executablePath:process.env.LX_QA_CHROMIUM,proxy,args:['--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--no-zygote','--autoplay-policy=no-user-gesture-required'],headless:true});
  const context=await browser.newContext({viewport:{width:390,height:844},ignoreHTTPSErrors:realStreams});await fixture(context);const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.stack));
