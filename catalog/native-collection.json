@@ -1,0 +1,2356 @@
+{
+  "items": [
+    {
+      "id": 9355892585926,
+      "type": "Música",
+      "title": "The Britons",
+      "artist": "Kevin MacLeod",
+      "year": 2026,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2600004.svg",
+      "banner": "assets/licensed-music/USUAN2600004.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2026-06-29.",
+      "duration": 307,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2600004.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2600004.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "The Britons",
+          "artist": "Kevin MacLeod",
+          "duration": 307,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2600004.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2600004.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2600004.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2600004",
+            "creator": "Kevin MacLeod",
+            "credit": "The Britons · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:41:45.319586+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2600004",
+      "externalId": "incompetech:USUAN2600004",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2600004",
+        "creator": "Kevin MacLeod",
+        "credit": "The Britons · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "00e766ef7a2635b1e7c116bfff794cb3485c17730ec26c114a9b3fb21d7a837d",
+        "bytes": 12271315,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/The%20Britons.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9338427814514,
+      "type": "Música",
+      "title": "Dentaneosuchus Hunt",
+      "artist": "Kevin MacLeod",
+      "year": 2025,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2500003.svg",
+      "banner": "assets/licensed-music/USUAN2500003.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2025-12-15.",
+      "duration": 247,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2500003.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2500003.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Dentaneosuchus Hunt",
+          "artist": "Kevin MacLeod",
+          "duration": 247,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2500003.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2500003.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2500003.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2500003",
+            "creator": "Kevin MacLeod",
+            "credit": "Dentaneosuchus Hunt · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:41:43.541073+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2500003",
+      "externalId": "incompetech:USUAN2500003",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2500003",
+        "creator": "Kevin MacLeod",
+        "credit": "Dentaneosuchus Hunt · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "9db6b36ce1f47769a4f3b5c36c4a06981dea0e7a8fa9d44d7d30ddf180760ace",
+        "bytes": 4932317,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Dentaneosuchus%20Hunt.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9309501682024,
+      "type": "Música",
+      "title": "Sauropod Spotting",
+      "artist": "Kevin MacLeod",
+      "year": 2025,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2500002.svg",
+      "banner": "assets/licensed-music/USUAN2500002.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2025-12-15.",
+      "duration": 225,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2500002.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2500002.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Sauropod Spotting",
+          "artist": "Kevin MacLeod",
+          "duration": 225,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2500002.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2500002.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2500002.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2500002",
+            "creator": "Kevin MacLeod",
+            "credit": "Sauropod Spotting · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:41:43.614762+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2500002",
+      "externalId": "incompetech:USUAN2500002",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2500002",
+        "creator": "Kevin MacLeod",
+        "credit": "Sauropod Spotting · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "d62bc20e3e9f97386ff7611d32f0e91936aaf2a218782cbca25e70caaf31b1b6",
+        "bytes": 4506075,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Sauropod%20Spotting.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9366625240974,
+      "type": "Música",
+      "title": "Cretaceous Dawn",
+      "artist": "Kevin MacLeod",
+      "year": 2025,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2500001.svg",
+      "banner": "assets/licensed-music/USUAN2500001.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2025-12-15.",
+      "duration": 245,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2500001.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2500001.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Cretaceous Dawn",
+          "artist": "Kevin MacLeod",
+          "duration": 245,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2500001.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2500001.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2500001.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2500001",
+            "creator": "Kevin MacLeod",
+            "credit": "Cretaceous Dawn · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:42:00.119475+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2500001",
+      "externalId": "incompetech:USUAN2500001",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2500001",
+        "creator": "Kevin MacLeod",
+        "credit": "Cretaceous Dawn · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "a3f7bc1b0e0947d9b2a00c4faaeec55c73458b13b97d7fcb5d20e830da6e9226",
+        "bytes": 4903512,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Cretaceous%20Dawn.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9300861687275,
+      "type": "Música",
+      "title": "That Zen Moment",
+      "artist": "Kevin MacLeod",
+      "year": 2024,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2400001.svg",
+      "banner": "assets/licensed-music/USUAN2400001.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2024-04-14.",
+      "duration": 602,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2400001.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2400001.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "That Zen Moment",
+          "artist": "Kevin MacLeod",
+          "duration": 602,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2400001.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2400001.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2400001.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2400001",
+            "creator": "Kevin MacLeod",
+            "credit": "That Zen Moment · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:42:10.965711+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2400001",
+      "externalId": "incompetech:USUAN2400001",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2400001",
+        "creator": "Kevin MacLeod",
+        "credit": "That Zen Moment · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "d796b819607ebb2b9c04a5b5a838d0e167ed66b765ecacf9423fb6c0953853dc",
+        "bytes": 12038401,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/That%20Zen%20Moment.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9315203268489,
+      "type": "Música",
+      "title": "Sergio's Magic Dustbin",
+      "artist": "Kevin MacLeod",
+      "year": 2023,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2300012.svg",
+      "banner": "assets/licensed-music/USUAN2300012.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2023-12-23.",
+      "duration": 151,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300012.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300012.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Sergio's Magic Dustbin",
+          "artist": "Kevin MacLeod",
+          "duration": 151,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300012.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300012.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2300012.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300012",
+            "creator": "Kevin MacLeod",
+            "credit": "Sergio's Magic Dustbin · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:42:00.770158+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300012",
+      "externalId": "incompetech:USUAN2300012",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300012",
+        "creator": "Kevin MacLeod",
+        "credit": "Sergio's Magic Dustbin · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "c7732bf0e41a419208359132d3f105f2e542157f7e5eeb52d26b722015c6140f",
+        "bytes": 4850751,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Sergio%27s%20Magic%20Dustbin.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9368376390439,
+      "type": "Música",
+      "title": "Mesmerizing Galaxy",
+      "artist": "Kevin MacLeod",
+      "year": 2023,
+      "genre": "Eletrônica",
+      "genres": [
+        "Eletrônica",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2300011.svg",
+      "banner": "assets/licensed-music/USUAN2300011.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2023-12-23.",
+      "duration": 93,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300011.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300011.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Mesmerizing Galaxy",
+          "artist": "Kevin MacLeod",
+          "duration": 93,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300011.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300011.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2300011.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300011",
+            "creator": "Kevin MacLeod",
+            "credit": "Mesmerizing Galaxy · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:42:12.854743+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300011",
+      "externalId": "incompetech:USUAN2300011",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300011",
+        "creator": "Kevin MacLeod",
+        "credit": "Mesmerizing Galaxy · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "25470853676263801b044d22761e579a750db722aefbf1d8d48676f49f626184",
+        "bytes": 2979130,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Mesmerizing%20Galaxy%20Loop.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9340028156828,
+      "type": "Música",
+      "title": "Lord of the Rangs",
+      "artist": "Kevin MacLeod",
+      "year": 2023,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2300010.svg",
+      "banner": "assets/licensed-music/USUAN2300010.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2023-12-23.",
+      "duration": 92,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300010.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300010.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Lord of the Rangs",
+          "artist": "Kevin MacLeod",
+          "duration": 92,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300010.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300010.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2300010.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300010",
+            "creator": "Kevin MacLeod",
+            "credit": "Lord of the Rangs · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:42:12.854363+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300010",
+      "externalId": "incompetech:USUAN2300010",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300010",
+        "creator": "Kevin MacLeod",
+        "credit": "Lord of the Rangs · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "4d778e867aaa95e6ffaafeed18230772904dc10d977f1b35d885421c227d41e6",
+        "bytes": 2959904,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Lord%20of%20the%20Rangs.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9366523611306,
+      "type": "Música",
+      "title": "Galactic Rap",
+      "artist": "Kevin MacLeod",
+      "year": 2023,
+      "genre": "Eletrônica",
+      "genres": [
+        "Eletrônica",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2300009.svg",
+      "banner": "assets/licensed-music/USUAN2300009.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2023-12-23.",
+      "duration": 142,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300009.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300009.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Galactic Rap",
+          "artist": "Kevin MacLeod",
+          "duration": 142,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300009.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300009.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2300009.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300009",
+            "creator": "Kevin MacLeod",
+            "credit": "Galactic Rap · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:42:13.305676+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300009",
+      "externalId": "incompetech:USUAN2300009",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300009",
+        "creator": "Kevin MacLeod",
+        "credit": "Galactic Rap · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "dbf1de02e2a109c551eb9df55c79c7c6118fb297411a02eb07abca654b571863",
+        "bytes": 4549821,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Galactic%20Rap.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9368067177822,
+      "type": "Música",
+      "title": "Equatorial Complex",
+      "artist": "Kevin MacLeod",
+      "year": 2023,
+      "genre": "Eletrônica",
+      "genres": [
+        "Eletrônica",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2300008.svg",
+      "banner": "assets/licensed-music/USUAN2300008.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2023-12-23.",
+      "duration": 240,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300008.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300008.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Equatorial Complex",
+          "artist": "Kevin MacLeod",
+          "duration": 240,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300008.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300008.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2300008.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300008",
+            "creator": "Kevin MacLeod",
+            "credit": "Equatorial Complex · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:42:27.314863+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300008",
+      "externalId": "incompetech:USUAN2300008",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300008",
+        "creator": "Kevin MacLeod",
+        "credit": "Equatorial Complex · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "b31de67f7422c0a48eb9faf16f3d2379dd568f9b37f275c537d320194e327f2c",
+        "bytes": 7686186,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Equatorial%20Complex.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9351827945125,
+      "type": "Música",
+      "title": "Cloud Dancer",
+      "artist": "Kevin MacLeod",
+      "year": 2023,
+      "genre": "Eletrônica",
+      "genres": [
+        "Eletrônica",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2300007.svg",
+      "banner": "assets/licensed-music/USUAN2300007.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2023-12-23.",
+      "duration": 220,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300007.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300007.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Cloud Dancer",
+          "artist": "Kevin MacLeod",
+          "duration": 220,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300007.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300007.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2300007.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300007",
+            "creator": "Kevin MacLeod",
+            "credit": "Cloud Dancer · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:42:27.401803+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300007",
+      "externalId": "incompetech:USUAN2300007",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300007",
+        "creator": "Kevin MacLeod",
+        "credit": "Cloud Dancer · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "d329666f15f516b8742532d9dc45309e2019cc1505d4636fdadb7bf6000a8d5c",
+        "bytes": 7040022,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Cloud%20Dancer.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9329520587490,
+      "type": "Música",
+      "title": "Brain Dance",
+      "artist": "Kevin MacLeod",
+      "year": 2023,
+      "genre": "Eletrônica",
+      "genres": [
+        "Eletrônica",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2300006.svg",
+      "banner": "assets/licensed-music/USUAN2300006.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2023-11-30.",
+      "duration": 215,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300006.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300006.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Brain Dance",
+          "artist": "Kevin MacLeod",
+          "duration": 215,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300006.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300006.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2300006.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300006",
+            "creator": "Kevin MacLeod",
+            "credit": "Brain Dance · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:42:41.038893+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300006",
+      "externalId": "incompetech:USUAN2300006",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300006",
+        "creator": "Kevin MacLeod",
+        "credit": "Brain Dance · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "59daa6423c9d61238dd9c31f7139606267238b6e448dc42e12e0d6d77d663b8e",
+        "bytes": 6881197,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Brain%20Dance.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9314090674072,
+      "type": "Música",
+      "title": "Vibing Over Venus",
+      "artist": "Kevin MacLeod",
+      "year": 2023,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2300005.svg",
+      "banner": "assets/licensed-music/USUAN2300005.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2023-08-15.",
+      "duration": 411,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300005.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300005.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Vibing Over Venus",
+          "artist": "Kevin MacLeod",
+          "duration": 411,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300005.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300005.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2300005.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300005",
+            "creator": "Kevin MacLeod",
+            "credit": "Vibing Over Venus · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:42:42.282002+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300005",
+      "externalId": "incompetech:USUAN2300005",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300005",
+        "creator": "Kevin MacLeod",
+        "credit": "Vibing Over Venus · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "48a4ceca61ec6e93a3634ddb4db31a45e9c2c36fd22716bde4badf6821593c6a",
+        "bytes": 8225055,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Vibing%20Over%20Venus.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9329587423947,
+      "type": "Música",
+      "title": "Southern Gothic",
+      "artist": "Kevin MacLeod",
+      "year": 2023,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2300004.svg",
+      "banner": "assets/licensed-music/USUAN2300004.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2023-08-15.",
+      "duration": 147,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300004.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300004.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Southern Gothic",
+          "artist": "Kevin MacLeod",
+          "duration": 147,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300004.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300004.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2300004.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300004",
+            "creator": "Kevin MacLeod",
+            "credit": "Southern Gothic · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:42:42.137878+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300004",
+      "externalId": "incompetech:USUAN2300004",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300004",
+        "creator": "Kevin MacLeod",
+        "credit": "Southern Gothic · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "533074b8fabe8d5b4ab1c1588535eacf29e3f7e4a49fe9056162a8ce85324a16",
+        "bytes": 2946231,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Southern%20Gothic.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9304207761084,
+      "type": "Música",
+      "title": "Morning",
+      "artist": "Kevin MacLeod",
+      "year": 2023,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2300003.svg",
+      "banner": "assets/licensed-music/USUAN2300003.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2023-08-15.",
+      "duration": 153,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300003.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300003.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Morning",
+          "artist": "Kevin MacLeod",
+          "duration": 153,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300003.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300003.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2300003.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300003",
+            "creator": "Kevin MacLeod",
+            "credit": "Morning · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:42:57.008821+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300003",
+      "externalId": "incompetech:USUAN2300003",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300003",
+        "creator": "Kevin MacLeod",
+        "credit": "Morning · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "25a18be2e8b47ee75c336d9e27ac709bf71f0409806d696ab49ea2bddc113d80",
+        "bytes": 3068475,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Morning.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9314672860234,
+      "type": "Música",
+      "title": "Evening",
+      "artist": "Kevin MacLeod",
+      "year": 2023,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2300002.svg",
+      "banner": "assets/licensed-music/USUAN2300002.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2023-08-15.",
+      "duration": 186,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300002.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300002.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Evening",
+          "artist": "Kevin MacLeod",
+          "duration": 186,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300002.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300002.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2300002.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300002",
+            "creator": "Kevin MacLeod",
+            "credit": "Evening · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:42:56.614060+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300002",
+      "externalId": "incompetech:USUAN2300002",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300002",
+        "creator": "Kevin MacLeod",
+        "credit": "Evening · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "45e91c3a804bab0a27f54323a34b3a404cfb172ccace169518384afdb51c311a",
+        "bytes": 3727283,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Evening.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9307740836459,
+      "type": "Música",
+      "title": "Goblin Tinker Soldier Spy",
+      "artist": "Kevin MacLeod",
+      "year": 2023,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2300001.svg",
+      "banner": "assets/licensed-music/USUAN2300001.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2023-02-15.",
+      "duration": 136,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300001.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300001.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Goblin Tinker Soldier Spy",
+          "artist": "Kevin MacLeod",
+          "duration": 136,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300001.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300001.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2300001.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300001",
+            "creator": "Kevin MacLeod",
+            "credit": "Goblin Tinker Soldier Spy · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:42:56.718759+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300001",
+      "externalId": "incompetech:USUAN2300001",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300001",
+        "creator": "Kevin MacLeod",
+        "credit": "Goblin Tinker Soldier Spy · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "5e2d25fda4309de800a8128e5d4c74fdbcd056ce646bbfa02850b6551b511e81",
+        "bytes": 2724203,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Goblin_Tinker_Soldier_Spy.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9309342265309,
+      "type": "Música",
+      "title": "Paradise Found",
+      "artist": "Kevin MacLeod",
+      "year": 2023,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN2300000.svg",
+      "banner": "assets/licensed-music/USUAN2300000.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2023-01-18.",
+      "duration": 187,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300000.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300000.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Paradise Found",
+          "artist": "Kevin MacLeod",
+          "duration": 187,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300000.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN2300000.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN2300000.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300000",
+            "creator": "Kevin MacLeod",
+            "credit": "Paradise Found · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:43:13.808489+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300000",
+      "externalId": "incompetech:USUAN2300000",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN2300000",
+        "creator": "Kevin MacLeod",
+        "credit": "Paradise Found · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "7ea20dd113983ecaab67f774da1f0699114b3a6f93a386c202b977a2cb9e00a2",
+        "bytes": 3751848,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Paradise_Found.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9359205865778,
+      "type": "Música",
+      "title": "Life of Riley",
+      "artist": "Kevin MacLeod",
+      "year": 2014,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN1400054.svg",
+      "banner": "assets/licensed-music/USUAN1400054.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2014-11-25.",
+      "duration": 235,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1400054.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1400054.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Life of Riley",
+          "artist": "Kevin MacLeod",
+          "duration": 235,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1400054.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1400054.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN1400054.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400054",
+            "creator": "Kevin MacLeod",
+            "credit": "Life of Riley · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:43:13.743363+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400054",
+      "externalId": "incompetech:USUAN1400054",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400054",
+        "creator": "Kevin MacLeod",
+        "credit": "Life of Riley · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "1916f05cd1860949f9241e17966d334c39852b531329e4a05802720bb154c564",
+        "bytes": 7533831,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Life%20of%20Riley.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9315848932323,
+      "type": "Música",
+      "title": "Carefree",
+      "artist": "Kevin MacLeod",
+      "year": 2014,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN1400037.svg",
+      "banner": "assets/licensed-music/USUAN1400037.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2014-08-16.",
+      "duration": 205,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1400037.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1400037.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Carefree",
+          "artist": "Kevin MacLeod",
+          "duration": 205,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1400037.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1400037.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN1400037.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037",
+            "creator": "Kevin MacLeod",
+            "credit": "Carefree · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:43:13.308279+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037",
+      "externalId": "incompetech:USUAN1400037",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400037",
+        "creator": "Kevin MacLeod",
+        "credit": "Carefree · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "8433b770a630d9b1594fd484442c677907ece899a4d149954cd2e74fd733e311",
+        "bytes": 6566713,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Carefree.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9358000302691,
+      "type": "Música",
+      "title": "Monkeys Spinning Monkeys",
+      "artist": "Kevin MacLeod",
+      "year": 2014,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN1400011.svg",
+      "banner": "assets/licensed-music/USUAN1400011.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2014-02-03.",
+      "duration": 125,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1400011.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1400011.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Monkeys Spinning Monkeys",
+          "artist": "Kevin MacLeod",
+          "duration": 125,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1400011.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1400011.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN1400011.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400011",
+            "creator": "Kevin MacLeod",
+            "credit": "Monkeys Spinning Monkeys · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:43:25.461777+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400011",
+      "externalId": "incompetech:USUAN1400011",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1400011",
+        "creator": "Kevin MacLeod",
+        "credit": "Monkeys Spinning Monkeys · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "a5bb345c23849ad0786aa0bc5157a9f2d4039660fe00282e55754d475f36dc14",
+        "bytes": 5005207,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Monkeys%20Spinning%20Monkeys.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9361858530495,
+      "type": "Música",
+      "title": "Cipher",
+      "artist": "Kevin MacLeod",
+      "year": 2011,
+      "genre": "Eletrônica",
+      "genres": [
+        "Eletrônica",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN1100844.svg",
+      "banner": "assets/licensed-music/USUAN1100844.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2011-07-29.",
+      "duration": 231,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1100844.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1100844.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Cipher",
+          "artist": "Kevin MacLeod",
+          "duration": 231,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1100844.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1100844.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN1100844.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100844",
+            "creator": "Kevin MacLeod",
+            "credit": "Cipher · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:43:25.959845+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100844",
+      "externalId": "incompetech:USUAN1100844",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100844",
+        "creator": "Kevin MacLeod",
+        "credit": "Cipher · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "d3d0614535a61d748e2fd8d5117fc4d781022a7624794802a2462d8af3fdd522",
+        "bytes": 9252699,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Cipher2.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9343611966438,
+      "type": "Música",
+      "title": "Sneaky Snitch",
+      "artist": "Kevin MacLeod",
+      "year": 2010,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN1100772.svg",
+      "banner": "assets/licensed-music/USUAN1100772.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2010-11-25.",
+      "duration": 137,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1100772.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1100772.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Sneaky Snitch",
+          "artist": "Kevin MacLeod",
+          "duration": 137,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1100772.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1100772.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN1100772.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100772",
+            "creator": "Kevin MacLeod",
+            "credit": "Sneaky Snitch · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:43:25.416050+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100772",
+      "externalId": "incompetech:USUAN1100772",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100772",
+        "creator": "Kevin MacLeod",
+        "credit": "Sneaky Snitch · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "db1710333d68a215277f77e4e17e1a64bf4ed38f87c70f8d0f56b16b6aa4f884",
+        "bytes": 5466943,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Sneaky%20Snitch.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9318498303959,
+      "type": "Música",
+      "title": "Fluffing a Duck",
+      "artist": "Kevin MacLeod",
+      "year": 2010,
+      "genre": "Instrumental",
+      "genres": [
+        "Instrumental",
+        "Música livre"
+      ],
+      "cover": "assets/licensed-music/USUAN1100768.svg",
+      "banner": "assets/licensed-music/USUAN1100768.svg",
+      "desc": "Faixa instrumental de Kevin MacLeod. Arquivo MP3 integral com reprodução no player LX Music. Publicação original: 2010-10-31.",
+      "duration": 67,
+      "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1100768.mp3",
+      "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1100768.mp3",
+      "tracks": [
+        {
+          "number": 1,
+          "title": "Fluffing a Duck",
+          "artist": "Kevin MacLeod",
+          "duration": 67,
+          "mediaKey": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1100768.mp3",
+          "authorizedAudioUrl": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/music/USUAN1100768.mp3",
+          "mimeType": "audio/mpeg",
+          "cover": "assets/licensed-music/USUAN1100768.svg",
+          "license": {
+            "name": "CC BY 4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+            "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+            "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100768",
+            "creator": "Kevin MacLeod",
+            "credit": "Fluffing a Duck · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+            "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+          }
+        }
+      ],
+      "mimeType": "audio/mpeg",
+      "published": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "playbackMode": "native_owned",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T13:43:40.310097+00:00",
+      "sourceProvider": "LX Storage",
+      "metadataProvider": "Incompetech",
+      "metadataUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100768",
+      "externalId": "incompetech:USUAN1100768",
+      "license": {
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
+        "evidenceUrl": "https://incompetech.com/music/royalty-free/licenses/",
+        "sourceUrl": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100768",
+        "creator": "Kevin MacLeod",
+        "credit": "Fluffing a Duck · Kevin MacLeod (incompetech.com) · CC BY 4.0",
+        "changes": "Arquivo MP3 original, reproduzido sem edição pela LX Plus."
+      },
+      "nativeAsset": {
+        "sha256": "cb23b1833c35e391de10d998d6a40cfc760565ce31d23014c86025523ca8239b",
+        "bytes": 2696840,
+        "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Fluffing%20a%20Duck.mp3"
+      },
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "priority": 0,
+      "featured": false,
+      "trending": false,
+      "freeAccess": true
+    },
+    {
+      "id": 9242294626484,
+      "type": "Filme",
+      "title": "Valkaama",
+      "year": 2010,
+      "genre": "Drama",
+      "genres": [
+        "Drama",
+        "Cinema livre"
+      ],
+      "cover": "https://archive.org/services/img/valkaama",
+      "banner": "https://archive.org/services/img/valkaama",
+      "desc": "Um poeta e seus companheiros viajam ao norte da Finlândia enquanto enfrentam os vínculos e conflitos de seu passado.",
+      "creator": "Tim Baumann",
+      "studio": "Tim Baumann",
+      "duration": "93 min",
+      "durationSeconds": 5586,
+      "published": true,
+      "featured": false,
+      "trending": false,
+      "priority": 0,
+      "createdAt": "2026-10-07T14:09:07.900888+00:00",
+      "importedAt": "2026-10-07T14:09:07.900888+00:00",
+      "openFilm": true,
+      "catalogOnly": false,
+      "metadataOnly": false,
+      "availability": "available",
+      "mediaKey": "https://archive.org/download/valkaama/Valkaama_720p.mp4",
+      "authorizedVideoUrl": "https://archive.org/download/valkaama/Valkaama_720p.mp4",
+      "sourceProvider": "Tim Baumann / Internet Archive",
+      "metadataProvider": "Tim Baumann / Internet Archive",
+      "metadataUrl": "https://www.valkaama.com/index.php?page=movie",
+      "externalId": "licensed:valkaama",
+      "catalogIdentity": "9d8f4c8b41045ee96e0332610fc0d114948568c40bd9cba2d2ef5cb7d0abbd0a",
+      "sourceVerified": true,
+      "sourceVerifiedAt": "2026-10-07T14:07:38.831801+00:00",
+      "playbackMode": "native_remote",
+      "license": {
+        "name": "CC BY-SA 3.0",
+        "url": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "creator": "Tim Baumann",
+        "sourceUrl": "https://www.valkaama.com/index.php?page=movie",
+        "evidenceUrl": "https://www.valkaama.com/index.php?page=movie",
+        "credit": "Valkaama · Tim Baumann · CC BY-SA 3.0",
+        "changes": "Reproduzido sem edição pela LX Plus."
+      },
+      "openFilmEvidence": {
+        "licenseEvidence": "https://www.valkaama.com/index.php?page=movie",
+        "producerPage": "https://www.valkaama.com/index.php?page=movie",
+        "coverProbe": {
+          "url": "https://archive.org/services/img/valkaama",
+          "status": 206,
+          "contentType": "image/jpeg",
+          "contentRange": "bytes 0-6457/6458",
+          "cors": null,
+          "bytesChecked": 6458,
+          "checkedAt": "2026-10-07T13:51:48.794305+00:00"
+        },
+        "fileFormat": "h.264",
+        "filename": "Valkaama_720p.mp4",
+        "streamProbe": {
+          "url": "https://archive.org/download/valkaama/Valkaama_720p.mp4",
+          "status": 206,
+          "contentType": "video/mp4",
+          "contentRange": "bytes 0-4194303/575902916",
+          "bytesChecked": 4194304,
+          "checkedAt": "2026-10-07T14:07:38.831801+00:00"
+        },
+        "codecProbe": {
+          "url": "https://archive.org/download/valkaama/Valkaama_720p.mp4",
+          "status": "verified",
+          "videoCodec": "h264",
+          "audioCodec": "aac",
+          "width": 854,
+          "height": 480,
+          "durationSeconds": 5585.96,
+          "decodedFirstFrame": true,
+          "bytesChecked": 8388608,
+          "method": "MP4 metadata, head, tail and first video packet read using HTTP byte ranges; first 30 video frames decoded. Complete film not downloaded.",
+          "checkedAt": "2026-10-07T14:07:38.831801+00:00"
+        }
+      },
+      "freeAccess": true
+    }
+  ],
+  "books": [
+    {
+      "id": 1789001600001,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/1342.txt",
+          "sha256": "3f6bb9d6f78e0293b56acd4714dd68cb7d6d1d293402031ce9d5a216bcaf9d75",
+          "bytes": 772386,
+          "format": "utf8",
+          "gutenbergId": "1342"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/1342",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/1342",
+          "creator": "Jane Austen",
+          "credit": "Pride and Prejudice · Jane Austen · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 1789001600002,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/84.txt",
+          "sha256": "7810cd483cffcf2cc8a1d8f0d5807931e69d4f48cd14149b8c76f88af82fead3",
+          "bytes": 448885,
+          "format": "utf8",
+          "gutenbergId": "84"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/84",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/84",
+          "creator": "Mary Shelley",
+          "credit": "Frankenstein · Mary Shelley · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 1789001600003,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/345.txt",
+          "sha256": "96cd16eacdbfebae8fdda5591f66e0cc8ee76be18e0cd1aca02bc00615782d28",
+          "bytes": 890348,
+          "format": "utf8",
+          "gutenbergId": "345"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/345",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/345",
+          "creator": "Bram Stoker",
+          "credit": "Dracula · Bram Stoker · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 1789001600004,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/2701.txt",
+          "sha256": "907420db6c4b68c70e2988cd2ad9c8cf79138667a01b63376d18dd17fef1a18b",
+          "bytes": 1276267,
+          "format": "utf8",
+          "gutenbergId": "2701"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/2701",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/2701",
+          "creator": "Herman Melville",
+          "credit": "Moby-Dick; or, The Whale · Herman Melville · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 1789001600005,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/11.txt",
+          "sha256": "01b38ea4c710a84bc18d0bd41271a5a1a92b94e97b2812f4dece97d4a694725e",
+          "bytes": 174311,
+          "format": "utf8",
+          "gutenbergId": "11"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/11",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/11",
+          "creator": "Lewis Carroll",
+          "credit": "Alice’s Adventures in Wonderland · Lewis Carroll · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 1789001600006,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/1661.txt",
+          "sha256": "922e2a12ccb43a4c9544c260b2166c6ad2097aeb5957faeee113f173bb857cd0",
+          "bytes": 607606,
+          "format": "utf8",
+          "gutenbergId": "1661"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/1661",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/1661",
+          "creator": "Arthur Conan Doyle",
+          "credit": "The Adventures of Sherlock Holmes · Arthur Conan Doyle · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 8600000023919,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/23919.txt",
+          "sha256": "ff922bf2f80bb44a5feda24e20994750ee6cbcfce2e9e82b2c7fa0971b6d44ef",
+          "bytes": 373826,
+          "format": "utf8",
+          "gutenbergId": "23919"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/23919",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/23919",
+          "creator": "António Nunes Ribeiro Sanches",
+          "credit": "Cartas sobre a educação da mocidade · António Nunes Ribeiro Sanches · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 8600000028055,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/28055.txt",
+          "sha256": "cf217f4c87f608e3d4e5deb44092e1e8586160ed9920a6ffb96d2012c136b44a",
+          "bytes": 154137,
+          "format": "utf8",
+          "gutenbergId": "28055"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/28055",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/28055",
+          "creator": "Conde de Ficalho",
+          "credit": "Memórias sobre os descobrimentos portugueses e o conhecimento das plantas · Conde de Ficalho · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 8600000029161,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/29161.txt",
+          "sha256": "1b8fa9975f5fcaa85bf94c5c1963d59b83036fe0c0ccf7878fa6940ec9b18a17",
+          "bytes": 112199,
+          "format": "utf8",
+          "gutenbergId": "29161"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/29161",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/29161",
+          "creator": "João Marques de Carvalho",
+          "credit": "Entre as Nymphéas · João Marques de Carvalho · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 8600000030068,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/30068.txt",
+          "sha256": "5d5969ac7ac15e57c5c7aa824bc67c6ee4396a7646850aba819f7845014ec468",
+          "bytes": 38853,
+          "format": "utf8",
+          "gutenbergId": "30068"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/30068",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/30068",
+          "creator": "M. Duhamel du Monceau",
+          "credit": "Descrição sobre a cultura do Cânhamo ou Cânave · M. Duhamel du Monceau · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 8600000034756,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/34756.txt",
+          "sha256": "39b92f130d65519bd43f21616f5a9b595ff483bb42907727570f1e8de988aca8",
+          "bytes": 374925,
+          "format": "utf8",
+          "gutenbergId": "34756"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/34756",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/34756",
+          "creator": "Camilo Castelo Branco",
+          "credit": "Livro de Consolação · Camilo Castelo Branco · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 8600000039086,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/39086.txt",
+          "sha256": "3cfc1e9bf41accf81dbfae7d9b19767d4d00429259216bf0f36da22718262e52",
+          "bytes": 302720,
+          "format": "utf8",
+          "gutenbergId": "39086"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/39086",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/39086",
+          "creator": "Augusto Joaquim Alves dos Santos",
+          "credit": "Educação nova: As bases · Augusto Joaquim Alves dos Santos · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 8600000053101,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/53101.txt",
+          "sha256": "e6d16a57466e1b5abe1f3c4e116128c47664fb3b9d9be9c0409d04149c690b97",
+          "bytes": 232167,
+          "format": "utf8",
+          "gutenbergId": "53101"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/53101",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/53101",
+          "creator": "Machado de Assis",
+          "credit": "A Mão e a Luva · Machado de Assis · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 8600000055752,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/55752.txt",
+          "sha256": "0fc3dbf384544d81d87e5a731e67b7976ac3a57acb378f0f354d12a3b52bd0c7",
+          "bytes": 418230,
+          "format": "utf8",
+          "gutenbergId": "55752"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/55752",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/55752",
+          "creator": "Machado de Assis",
+          "credit": "Dom Casmurro · Machado de Assis · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 8600000062896,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/62896.txt",
+          "sha256": "a92b8ddb6680507eec6ba082fa5ab4e80aa71d9ae26e15081fd07cb0074738e6",
+          "bytes": 229092,
+          "format": "utf8",
+          "gutenbergId": "62896"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/62896",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/62896",
+          "creator": "Alfredo d'Escragnolle Taunay",
+          "credit": "Ao Entardecer (Contos Vários) · Alfredo d'Escragnolle Taunay · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 8600000063606,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/63606.txt",
+          "sha256": "25d6701bd244a7b5f554e6a2d2d6e4e3930f8652fdf0c30ecb978894d49d0497",
+          "bytes": 149168,
+          "format": "utf8",
+          "gutenbergId": "63606"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/63606",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/63606",
+          "creator": "Affonso Celso",
+          "credit": "Lupe · Affonso Celso · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 8600000067162,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/67162.txt",
+          "sha256": "c64a05fa3a269f7036e359048b2ffc27ad0d693d47add748f7c350a94ee8c69a",
+          "bytes": 369976,
+          "format": "utf8",
+          "gutenbergId": "67162"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/67162",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/67162",
+          "creator": "Machado de Assis",
+          "credit": "Helena · Machado de Assis · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 8600000067535,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/67535.txt",
+          "sha256": "7898e07218e1431f00d6e6aa1d5ebe364bb6d770afaab865868a11df6da07350",
+          "bytes": 434928,
+          "format": "utf8",
+          "gutenbergId": "67535"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/67535",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/67535",
+          "creator": "Lima Barreto",
+          "credit": "Triste Fim de Policarpo Quaresma · Lima Barreto · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 8600000067740,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/67740.txt",
+          "sha256": "e19bbd57aa2fff7715832b52e1c28562d8bdc4a908515609a6f638799d916bac",
+          "bytes": 208019,
+          "format": "utf8",
+          "gutenbergId": "67740"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/67740",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/67740",
+          "creator": "José de Alencar",
+          "credit": "Iracema · José de Alencar · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    },
+    {
+      "id": 8600000069187,
+      "patch": {
+        "textAsset": {
+          "url": "https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/books/69187.txt",
+          "sha256": "f17560b8cc8b260e61251090e62c6ed7794d1e1e57c5a573910bcbf726e169e5",
+          "bytes": 511843,
+          "format": "utf8",
+          "gutenbergId": "69187"
+        },
+        "playbackMode": "native_text",
+        "publicDomain": true,
+        "publicDomainRegion": "BR",
+        "freeAccess": true,
+        "catalogOnly": false,
+        "metadataOnly": false,
+        "availability": "available",
+        "license": {
+          "name": "Domínio público · Brasil",
+          "url": "https://www.gutenberg.org/policy/license.html",
+          "evidenceUrl": "https://www.gutenberg.org/ebooks/69187",
+          "sourceUrl": "https://www.gutenberg.org/ebooks/69187",
+          "creator": "Aluísio Azevedo",
+          "credit": "O Cortiço · Aluísio Azevedo · Project Gutenberg",
+          "changes": "Texto completo com paginação adaptada pela LX Plus. O arquivo preserva a licença da edição."
+        }
+      }
+    }
+  ],
+  "at": "2026-10-07T17:00:00Z",
+  "verifiedAt": "2026-10-07T14:09:07.900888+00:00"
+}

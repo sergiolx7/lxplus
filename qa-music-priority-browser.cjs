@@ -8,7 +8,7 @@ const audioFixture=process.env.LX_QA_AUDIO_FIXTURE?fs.readFileSync(process.env.L
  const browser=await chromium.launch({executablePath:process.env.LX_QA_CHROMIUM,args:['--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--autoplay-policy=no-user-gesture-required'],headless:true});
  const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',route=>{const url=route.request().url();if(url.endsWith('/qa-owned.wav'))return route.fulfill({contentType:audioMime,body:audioFixture});if(url.startsWith('https://www.youtube.com/embed/'))return route.fulfill({contentType:'text/html',body:'<!doctype html><title>Official player transport fixture</title><p>Provider transport fixture</p>'});if(url.startsWith('http://127.0.0.1:8765/'))return route.continue();return route.abort();});
- await page.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.LX?.musicSourcePriority&&window.LX?.music);
+ await page.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.LX?.musicSourcePriority&&window.LX?.music);await page.evaluate(()=>{LX.config.features.nativePlaybackOnly=false});
  const matrix=await page.evaluate(()=>{
   const p=LX.musicSourcePriority,y='youtube:abcdefghijk',owned=location.origin+'/qa-owned.wav',s='spotify:track:1234567890123456789012';
   const single={mediaKey:y,externalMusicUrl:'https://youtu.be/abcdefghijk',authorizedAudioUrl:owned,tracks:[{mediaKey:y}]};

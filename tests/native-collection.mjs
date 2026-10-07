@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {createRequire} from 'node:module';
+import {validateCollection,nativeCollectionSql} from '../tools/native-collection.mjs';
+const require=createRequire(import.meta.url);
+const {PGlite}=require((process.env.LX_QA_NODE_MODULES||process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES)+'/\u0040electric-sql/pglite');
+const feed=JSON.parse(fs.readFileSync('catalog/native-collection.json','utf8'));
+validateCollection(feed);
+const db=new PGlite();
+await db.exec('create schema if not exists public; create table public.lx_catalog(id bigint primary key,payload jsonb not null,published boolean not null,updated_at timestamptz not null);');
+for(const book of feed.books)await db.query('insert into public.lx_catalog values($1,$2,true,$3)',[book.id,{id:book.id,type:'Livro',metadataProvider:'Project Gutenberg',title:'Original '+book.id,cover:'https://original.example/cover.jpg',externalReadUrl:'https://www.gutenberg.org/ebooks/55752',published:true},'2026-10-01T00:00:00Z']);
+await db.query('insert into public.lx_catalog values(1,$1,false,$2)',[{id:1,type:'Música',title:'Owner file',mediaKey:'cloud:owned-file'},'2026-10-01T00:00:00Z']);
+const owner=(await db.query('select * from public.lx_catalog where id=1')).rows[0];
+async function snapshot(){
+ const summary=(await db.query("select count(*)::int count,md5(string_agg(id::text||payload::text||published::text||updated_at::text,'' order by id)) fingerprint from public.lx_catalog")).rows[0];
+ const hashes=(await db.query("select id::text,md5(payload::text||published::text) hash from public.lx_catalog where payload->>'type'='Livro'")).rows;
+ return {...summary,bookHashes:Object.fromEntries(hashes.map(x=>[x.id,x.hash]))};
+}
+let guard=await snapshot();let sql=nativeCollectionSql(feed,guard);
+await db.exec("update public.lx_catalog set payload=payload||'{\"edited\":true}'::jsonb where id=1");
+let result=(await db.exec(sql)).find(x=>x.rows?.[0]?.safe!==undefined).rows[0];
+assert.equal(result.safe,false);assert.equal(result.inserted,0);assert.equal(result.updated,0);
+await db.query('update public.lx_catalog set payload=$1 where id=1',[owner.payload]);
+guard=await snapshot();sql=nativeCollectionSql(feed,guard);
+result=(await db.exec(sql)).find(x=>x.rows?.[0]?.safe!==undefined).rows[0];
+assert.equal(result.safe,true);assert.equal(result.inserted,feed.items.length);assert.equal(result.updated,feed.books.length);
+assert.deepEqual((await db.query('select * from public.lx_catalog where id=1')).rows[0],owner,'Owner file and publication are preserved');
+const book=(await db.query('select payload from public.lx_catalog where id=$1',[feed.books[0].id])).rows[0].payload;
+assert.equal(book.cover,'https://original.example/cover.jpg');assert.equal(book.textAsset.url,feed.books[0].patch.textAsset.url);
+result=(await db.exec(sql)).find(x=>x.rows?.[0]?.safe!==undefined).rows[0];assert.equal(result.safe,false);assert.equal(result.inserted,0);
+const malformed=structuredClone(feed);malformed.items[0].license.url='https://example.com/unverified';assert.throws(()=>validateCollection(malformed),/UNVERIFIED_MP3/);
+const mismatch=structuredClone(feed);mismatch.items[0].tracks[0].mediaKey='https://example.com/wrong-song.mp3';assert.throws(()=>validateCollection(mismatch),/UNVERIFIED_MP3/);
+const badBook=structuredClone(feed);badBook.books[0].patch.textAsset.sha256='invalid';assert.throws(()=>validateCollection(badBook),/UNVERIFIED_BOOK/);
+await db.close();console.log('PASS verified native assets, additive book upgrades, original-cover preservation, stale replay and concurrent-change rejection.');

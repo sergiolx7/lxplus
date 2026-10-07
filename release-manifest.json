@@ -1,7 +1,7 @@
 {
   "version": "UI36",
-  "build": "R12.5-UI36-MYPLAY-20261002",
-  "name": "UI36 · Meu play. Minha história.",
+  "build": "R12.14-V40-NATIVE-20261007",
+  "name": "UI36 · Player LX e leitura integrada",
   "base": "UI35",
   "files": [
     "index.html",
@@ -16,10 +16,15 @@
     "service-worker.js",
     "lxplus.player-context-v6.css",
     "lxplus.future-ui-v9.js",
-    "lxplus.notifications-v26.js"
+    "lxplus.notifications-v26.js",
+    "js/native-playback.js",
+    "catalog/native-collection.json"
   ],
   "force": false,
   "features": [
+    "Reprodução nativa sem player externo de fallback",
+    "MP3 com licença aberta hospedados na LX",
+    "Textos completos com leitura e progresso dentro da LX",
     "Retrospectiva mensal e anual em cartões interativos",
     "Resumo pessoal em imagem para compartilhar",
     "Níveis e conquistas com XP confirmado",

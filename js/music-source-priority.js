@@ -37,9 +37,10 @@
   add(track,['sourceMediaKey']);if(parentSingle)add(content,['sourceMediaKey']);
   add(track,['externalMusicUrl','youtubeUrl','spotifyUrl'],true);
   if(parentSingle)add(content,['externalMusicUrl','youtubeUrl','spotifyUrl'],true);
-  return [...entries.filter(x=>x.kind==='native'),...entries.filter(x=>x.kind!=='native')];
+  const ordered=[...entries.filter(x=>x.kind==='native'),...entries.filter(x=>x.kind!=='native')];
+  return LX.config?.features?.nativePlaybackOnly===true?ordered.filter(x=>x.kind==='native'):ordered;
  }
- function select(track={},content={}){return ordered(track,content)[0]||null}
+ function select(track={},content={}){const entries=ordered(track,content);return (LX.config?.features?.nativePlaybackOnly===true?entries.filter(x=>x.kind==='native'):entries)[0]||null}
  function forContent(content={}){const tracks=content.tracks?.length?content.tracks:[{}];return tracks.map(track=>select(track,content)).filter(Boolean)}
  function preferred(item={},content={}){return item.tracks?.length?forContent(item)[0]||null:select(item,content)}
  function kind(item={},content={}){

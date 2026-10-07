@@ -35,7 +35,7 @@ const free=JSON.parse(fs.readFileSync(path.join(__dirname,'catalog/open-films.js
  await page.click('[data-cat="Doramas"]');assert.equal(await page.locator('.lx-cinema-grid .card').count(),1);assert.equal(await page.locator('[data-cinema-section="recent-films"]').count(),0);
  await page.evaluate(id=>LX.detail(id),feed[0].id);assert.match(await page.locator('.lx-cinema-provider-credit').textContent(),/YouTube/);
  await page.evaluate(id=>{LX.ui.close();const h=LX.data.history();h[id]={position:123,duration:6000,context:'main',progress:2};LX.store.write(LX.store.keys.history,h);LX.play(id)},feed[0].id);
- await page.waitForFunction(()=>window.qaYT.active&&!qaYT.active.destroyed);
+ await page.waitForFunction(()=>window.qaYT.active&&!qaYT.active.destroyed);await page.evaluate(()=>{LX.config.features.nativePlaybackOnly=false});
  const frame=page.locator('#lxGlobalCinema iframe');assert.equal(await frame.getAttribute('referrerpolicy'),'strict-origin-when-cross-origin');assert.match(await frame.getAttribute('src'),/start=123/);
  assert.equal(await page.locator('#lxGlobalCinema').evaluate(node=>node.shadowRoot.querySelector('header').getBoundingClientRect().bottom<=node.shadowRoot.querySelector('iframe').getBoundingClientRect().top),true,'LX header never covers provider controls');
  await page.locator('#lxGlobalCinema #forward').click();assert.equal(await page.evaluate(()=>qaYT.active.position),133);

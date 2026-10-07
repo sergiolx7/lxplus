@@ -24,6 +24,8 @@ jobs:
           LX_QA_NODE_MODULES: ${{ github.workspace }}/tools/catalog-qa/node_modules
         run: |
           node tests/static-checks.mjs
+          node tests/native-playback.mjs
+          node tests/native-collection.mjs
           node tests/universal-core.mjs
           node tests/universal-service.mjs
           node tests/universal-database.mjs
@@ -52,3 +54,4 @@ jobs:
           node tools/run-browser-qa.cjs qa-loading-browser.cjs
           node tools/run-browser-qa.cjs qa-open-films-browser.cjs
           node tools/run-browser-qa.cjs qa-cinema-browser.cjs
+          LX_QA_REAL_NATIVE=1 node tools/run-browser-qa.cjs qa-native-playback-browser.cjs
