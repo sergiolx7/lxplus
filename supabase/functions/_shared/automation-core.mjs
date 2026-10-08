@@ -76,7 +76,7 @@ export function createAutomation({db,fetcher=fetch,base,now=()=>Date.now()}){
  }
  async function films(j){
   const recent=j.processed===0,year=new Date().getUTCFullYear();
-  const select=recent?`SELECT DISTINCT ?film WHERE { ?film wdt:P31 wd:Q11424; wdt:P577 ?date . FILTER(?date >= "${year}-01-01T00:00:00Z"^^xsd:dateTime) } LIMIT ${j.batch_size}`:`SELECT DISTINCT ?film WHERE { ?film wdt:P31 wd:Q11424 } LIMIT ${j.batch_size} OFFSET ${j.cursor}`;
+  const select=recent?`SELECT DISTINCT ?film WHERE { ?film wdt:P31 wd:Q11424; wdt:P577 ?date . FILTER(?date >= "${year}-01-01T00:00:00Z"^^xsd:dateTime) } ORDER BY ?film LIMIT ${j.batch_size}`:`SELECT DISTINCT ?film WHERE { ?film wdt:P31 wd:Q11424 } ORDER BY ?film LIMIT ${j.batch_size} OFFSET ${j.cursor}`;
   const query=`SELECT ?film (SAMPLE(?pt) AS ?ptLabel) (SAMPLE(?en) AS ?enLabel) (SAMPLE(?other) AS ?label) (MIN(?date) AS ?release) (SAMPLE(?description) AS ?desc) (SAMPLE(?image) AS ?image) WHERE { { ${select} } OPTIONAL { ?film rdfs:label ?pt FILTER(LANG(?pt)="pt") } OPTIONAL { ?film rdfs:label ?en FILTER(LANG(?en)="en") } OPTIONAL { ?film rdfs:label ?other } OPTIONAL { ?film wdt:P577 ?date } OPTIONAL { ?film schema:description ?description FILTER(LANG(?description)="pt"||LANG(?description)="en") } OPTIONAL { ?film wdt:P18 ?image } } GROUP BY ?film`;
   const result=await request('https://query.wikidata.org/sparql?'+new URLSearchParams({query,format:'json'}),{headers:{accept:'application/sparql-results+json'},timeout:35000});
   const bindings=result.results?.bindings||[],ids=[...new Set(bindings.map(r=>r.film?.value?.split('/').pop()).filter(id=>/^Q\d+$/.test(id)))];

@@ -77,7 +77,7 @@ async function waitApp(page){await page.waitForFunction(()=>window.LX?.ui?.state
   LX.ui.state.mode='Assistir';LX.ui.state.category='Filmes';LX.ui.renderApp();
  });
  await page.click('[data-film-tab="Parceria com Plex"]');assert.equal(await page.locator('[data-film-tab="Parceria com Plex"]').getAttribute('aria-pressed'),'true');
- const titles=await page.locator('#homeContent').textContent();assert.match(titles,/Plex sem arquivo/);assert.match(titles,/Vídeo autorizado QA/);assert(!titles.includes('Outro catálogo'));
+ const titles=await page.locator('#homeContent').textContent();assert(!titles.includes('Plex sem arquivo'),'Unavailable titles are removed from public grids');assert.match(titles,/Vídeo autorizado QA/);assert(!titles.includes('Outro catálogo'));
  await page.evaluate(()=>LX.detail(8201));assert(await page.locator('.detail-copy .primary-btn').isDisabled());assert.equal(await page.locator('a:has-text("Assistir no Plex")').count(),0);
  assert.equal(await page.evaluate(()=>LX.plexPartner.nativeRef({mediaKey:'https://watch.plex.tv/pt-BR/movie/leprechaun'})),'');
  assert.equal(await page.evaluate(()=>LX.plexPartner.nativeRef({authorizedStreamUrl:location.origin+'/qa-owned-film.mp4',drm:'widevine'})),'');
