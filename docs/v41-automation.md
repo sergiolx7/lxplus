@@ -1,12 +1,12 @@
 # Manutenção e automação LX Plus
 
-Versão R12.18-V40-AUTO-20261008. Atualização na branch `lxplus-v40-completa`.
+Versão R12.19-V40-AUTO-20261008. Atualização na branch `lxplus-v40-completa`.
 
 ## Acesso e organização
 
 A manutenção fica ativada para visitantes e membros. Uma conta autenticada com permissão administrativa pode entrar no site. Em **ADM → Configurações**, o botão **Reabrir o site** encerra a manutenção. A tela usa iluminação azul e lilás, sem alterar as permissões de acesso do servidor.
 
-Só a entrada de Assistir mantém o carrossel principal. Livros, música e demais categorias usam grades. O catálogo público de reprodução mostra apenas itens com fonte nativa utilizável ou texto disponível. 1.858 registros indisponíveis foram retirados da publicação: 1.675 músicas, 100 filmes, 50 séries, 17 doramas e 16 animes. Seus registros originais estão preservados no ADM e em `lx_maintenance_archive`; nenhum arquivo do proprietário foi apagado.
+Só a entrada de Assistir mantém o carrossel principal. Livros, música e demais categorias usam grades. As músicas marcadas como destaque aparecem em uma grade na entrada de Música, mantendo o botão de reprodução nativa. O catálogo público de reprodução mostra apenas itens com fonte nativa utilizável ou texto disponível. 1.858 registros indisponíveis foram retirados da publicação: 1.675 músicas, 100 filmes, 50 séries, 17 doramas e 16 animes. Seus registros originais estão preservados no ADM e em `lx_maintenance_archive`; nenhum arquivo do proprietário foi apagado.
 
 O **Acervo mundial** mostra fichas de descoberta separadas do catálogo de reprodução, com pesquisa e paginação de 36 itens. Uma ficha não oferece um botão de reprodução sem arquivo autorizado. Imagens livres do Wikimedia Commons incluem crédito e licença. Quando não existe imagem verificável, a capa apresenta o título e a identificação **Arte LX**. O ADM pode editar a capa por URL HTTPS; essa edição fica protegida contra substituição automática.
 
