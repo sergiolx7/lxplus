@@ -26,6 +26,8 @@ jobs:
           node tests/static-checks.mjs
           node tests/native-playback.mjs
           node tests/native-collection.mjs
+          node tests/automation-core.mjs
+          node tests/automation-database.mjs
           node tests/universal-core.mjs
           node tests/universal-service.mjs
           node tests/universal-database.mjs
@@ -41,6 +43,7 @@ jobs:
           node qa-drive-albums-r12-1.cjs
           node --test cloudflare-worker/worker.test.mjs
           tools/catalog-qa/node_modules/.bin/deno check --config supabase/functions/lx-universal-catalog/deno.json supabase/functions/lx-universal-catalog/index.ts
+          tools/catalog-qa/node_modules/.bin/deno check --config supabase/functions/lx-auto-catalog/deno.json supabase/functions/lx-auto-catalog/index.ts
       - run: tools/catalog-qa/node_modules/.bin/playwright install --with-deps chromium
       - name: Verify responsive browser behavior
         env:
@@ -48,8 +51,15 @@ jobs:
           LX_QA_OUTPUT: ${{ runner.temp }}/lx-universal-qa
         run: |
           failed=0
-          for qa in qa-universal-browser.cjs qa-catalog-pending-browser.cjs qa-music-priority-browser.cjs qa-session-album-plex-browser.cjs qa-loading-browser.cjs qa-open-films-browser.cjs qa-cinema-browser.cjs; do
+          for qa in qa-universal-browser.cjs qa-catalog-pending-browser.cjs qa-music-priority-browser.cjs qa-session-album-plex-browser.cjs qa-loading-browser.cjs qa-open-films-browser.cjs qa-cinema-browser.cjs qa-automation-browser.cjs; do
             if ! node tools/run-browser-qa.cjs "$qa"; then failed=1; fi
           done
           if ! LX_QA_REAL_NATIVE=1 node tools/run-browser-qa.cjs qa-native-playback-browser.cjs; then failed=1; fi
           exit "$failed"
+      - name: Save browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lx-browser-qa
+          path: ${{ runner.temp }}/lx-universal-qa
+          retention-days: 14

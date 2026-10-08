@@ -1,5 +1,6 @@
 html.lx-maintenance-active body{background:#050710!important}
 html.lx-maintenance-active:not(.lx-maintenance-login) #auth,html.lx-maintenance-active #splash,html.lx-maintenance-active #profiles,html.lx-maintenance-active #app,html.lx-maintenance-active #admin,html.lx-maintenance-active #lxVisualIntro335,html.lx-maintenance-active #lxBootEmergency,html.lx-maintenance-active #overlay,html.lx-maintenance-active #musicDock{display:none!important}
+html.lx-maintenance-active #lxV27Install{display:none!important}
 html.lx-maintenance-login #lxMaintenance41{display:none}
 html:not(.lx-maintenance-active) #lxMaintenance41{display:none}
 #lxMaintenance41{position:fixed;inset:0;z-index:2147482000;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;padding:44px 24px;color:#f4f7ff;background:radial-gradient(ellipse at 16% 12%,#122354 0,transparent 43%),radial-gradient(ellipse at 84% 80%,#241841 0,transparent 43%),#050710;font-family:Inter,system-ui,sans-serif;isolation:isolate}

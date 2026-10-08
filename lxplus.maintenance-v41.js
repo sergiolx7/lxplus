@@ -2,7 +2,7 @@
 (()=>{'use strict';
  const root=document.documentElement,LX=window.LX=window.LX||{};
  let login=false,previous='',wrapped=false;
- const active=()=>LX.data?.branding?.()?.maintenance?.enabled!==false;
+ const active=()=>!(location.hostname==='127.0.0.1'&&window.__LX_QA_MAINTENANCE_DISABLED===true)&&LX.data?.branding?.()?.maintenance?.enabled!==false;
  const admin=()=>LX.cloud?.isAdmin?.()===true&&!!LX.cloud?.user?.();
  function sync(){const locked=active()&&!admin();
   root.classList.toggle('lx-maintenance-active',locked);root.classList.toggle('lx-maintenance-login',locked&&login&&LX.state?.screen==='auth');

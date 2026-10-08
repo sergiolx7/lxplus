@@ -1,10 +1,11 @@
 /* LX Plus — Service Worker UI34 SINGLE SHELL
    The HTML is canonical. This worker never injects UI, never rewrites the DOM, and never forces navigation.
 */
-const LX_BUILD='R12.15-V40-AUTO-20261008';
+const LX_BUILD='R12.16-V40-AUTO-20261008';
 const LX_VERSION='UI36';
 const CACHE='lxplus-shell-'+LX_BUILD;
 const CORE=[
+  './lxplus.automation-v41.js','./lxplus.automation-v41.css',
   './lxplus.maintenance-v41.js','./lxplus.maintenance-v41.css',
   './lxplus.cinema-catalog.css',
   './vendor/supabase-2.117.2.js','./lxplus.plex-partner.css',
