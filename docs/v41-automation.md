@@ -1,6 +1,6 @@
 # Manutenção e automação LX Plus
 
-Versão R12.17-V40-AUTO-20261008. Atualização na branch `lxplus-v40-completa`.
+Versão R12.18-V40-AUTO-20261008. Atualização na branch `lxplus-v40-completa`.
 
 ## Acesso e organização
 
@@ -16,10 +16,10 @@ Os processos usam Supabase Cron e a função `lx-auto-catalog`. Continuam execut
 
 | Processo | Frequência | Limite diário | Comportamento |
 | --- | --- | --- | --- |
-| Filmes | A cada 15 minutos | Até 2.000 fichas examinadas | Descoberta incremental no Wikidata, capas livres e revisão de capas faltantes; filmes do acervo Prelinger com licença verificável e MP4 acessível são publicados no player LX. |
+| Filmes | A cada 15 minutos | Até 2.000 fichas examinadas | Lote inicial com prioridade aos lançamentos mais recentes do ano, seguido de descoberta incremental no Wikidata, capas livres e revisão de capas faltantes; filmes do acervo Prelinger com licença verificável e MP4 acessível são publicados no player LX. |
 | Músicas | Minutos 7, 22, 37 e 52 | Até 50 faixas examinadas e 150 MB | Consulta o catálogo autorizado de Kevin MacLeod, baixa MP3 completos de até 25 MB, confere estrutura, duração e SHA-256, hospeda na LX, reconfere a cópia e publica com créditos CC BY 4.0. |
 
-O orçamento operacional do bucket `lx-assets` é 800 MB, incluindo arquivos anteriores. O processo pausa quando precisa de espaço ou quando atinge o limite; não aumenta plano nem compra armazenamento. Arquivos acima do limite, inválidos ou removidos na origem são pulados; falhas temporárias e limites de requisição geram nova tentativa com espera. Duplicatas não são publicadas novamente. Remoções e capas definidas pelo ADM são respeitadas.
+O orçamento operacional do bucket `lx-assets` é 800 MB, incluindo arquivos anteriores. O processo pausa quando precisa de espaço ou quando atinge o limite; não aumenta plano nem compra armazenamento. Ao atingir a reserva diária de áudio, o processo aguarda a próxima meia-noite no fuso de Fortaleza, mantendo o próximo arquivo na fila. A falta de espaço total tem uma indicação diferente no ADM e uma nova conferência a cada hora. Arquivos acima do limite, inválidos ou removidos na origem são pulados; falhas temporárias e limites de requisição geram nova tentativa com espera. Duplicatas não são publicadas novamente. Remoções e capas definidas pelo ADM são respeitadas.
 
 As 2.000 fichas são uma capacidade de descoberta, não uma promessa de 2.000 filmes disponíveis para assistir. As fontes podem impor limites ou mudar. O processo não baixa obras comerciais sem autorização, não usa YouTube nem Spotify para reprodução e não contorna proteção de acesso. Filmes autorizados podem usar o arquivo MP4 da origem dentro dos controles LX; os MP3 novos são hospedados no próprio site. O catálogo nativo aceita até 5.000 registros; as fichas mundiais têm consulta paginada separada.
 

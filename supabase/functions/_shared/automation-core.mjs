@@ -7,6 +7,16 @@ export const xml=v=>clean(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':
 export const seconds=v=>String(v||'').split(':').reduce((n,p)=>n*60+Number(p),0);
 export const digest=async bytes=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(b=>b.toString(16).padStart(2,'0')).join('');
 export const stableId=async identity=>9000000000000+parseInt((await digest(new TextEncoder().encode(identity))).slice(0,11),16);
+export function dailyResumeSeconds(time){
+ const parts=new Intl.DateTimeFormat('en-GB',{timeZone:'America/Fortaleza',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date(time));
+ const read=key=>Number(parts.find(p=>p.type===key)?.value)||0;
+ return Math.min(86400,86400-read('hour')*3600-read('minute')*60-read('second')+5);
+}
+export function discoveryQuery(j,time){
+ const year=Number(String(j.day||'').slice(0,4))||new Date(time).getUTCFullYear(),stamp=new Date(time).toISOString();
+ const select=j.processed===0?`SELECT ?film (MAX(?date) AS ?latestRelease) WHERE { ?film wdt:P31 wd:Q11424; wdt:P577 ?date . FILTER(?date >= "${year}-01-01T00:00:00Z"^^xsd:dateTime && ?date <= "${stamp}"^^xsd:dateTime) FILTER NOT EXISTS { ?film wdt:P577 ?earlier . FILTER(?earlier < "${year}-01-01T00:00:00Z"^^xsd:dateTime) } } GROUP BY ?film ORDER BY DESC(?latestRelease) ?film LIMIT ${j.batch_size}`:`SELECT DISTINCT ?film WHERE { ?film wdt:P31 wd:Q11424 } ORDER BY ?film LIMIT ${j.batch_size} OFFSET ${j.cursor}`;
+ return `SELECT ?film (SAMPLE(?pt) AS ?ptLabel) (SAMPLE(?en) AS ?enLabel) (SAMPLE(?other) AS ?label) (MIN(?date) AS ?release) (SAMPLE(?description) AS ?desc) (SAMPLE(?image) AS ?image) WHERE { { ${select} } OPTIONAL { ?film rdfs:label ?pt FILTER(LANG(?pt)="pt") } OPTIONAL { ?film rdfs:label ?en FILTER(LANG(?en)="en") } OPTIONAL { ?film rdfs:label ?other } OPTIONAL { ?film wdt:P577 ?date } OPTIONAL { ?film schema:description ?description FILTER(LANG(?description)="pt"||LANG(?description)="en") } OPTIONAL { ?film wdt:P18 ?image } } GROUP BY ?film`;
+}
 export function artwork(title,subtitle,seed='LX'){
  const lines=clean(title).slice(0,100).match(/.{1,22}(?:\s|$)|.{1,22}/g)||['LX'];
  const hue=[...String(seed)].reduce((n,c)=>n+c.charCodeAt(0),0)%360;
@@ -75,9 +85,7 @@ export function createAutomation({db,fetcher=fetch,base,now=()=>Date.now()}){
   const bytes=await boundedResponse(response,max);return raw?{bytes,response}:JSON.parse(new TextDecoder().decode(bytes));
  }
  async function films(j){
-  const recent=j.processed===0,year=new Date().getUTCFullYear();
-  const select=recent?`SELECT DISTINCT ?film WHERE { ?film wdt:P31 wd:Q11424; wdt:P577 ?date . FILTER(?date >= "${year}-01-01T00:00:00Z"^^xsd:dateTime) } ORDER BY ?film LIMIT ${j.batch_size}`:`SELECT DISTINCT ?film WHERE { ?film wdt:P31 wd:Q11424 } ORDER BY ?film LIMIT ${j.batch_size} OFFSET ${j.cursor}`;
-  const query=`SELECT ?film (SAMPLE(?pt) AS ?ptLabel) (SAMPLE(?en) AS ?enLabel) (SAMPLE(?other) AS ?label) (MIN(?date) AS ?release) (SAMPLE(?description) AS ?desc) (SAMPLE(?image) AS ?image) WHERE { { ${select} } OPTIONAL { ?film rdfs:label ?pt FILTER(LANG(?pt)="pt") } OPTIONAL { ?film rdfs:label ?en FILTER(LANG(?en)="en") } OPTIONAL { ?film rdfs:label ?other } OPTIONAL { ?film wdt:P577 ?date } OPTIONAL { ?film schema:description ?description FILTER(LANG(?description)="pt"||LANG(?description)="en") } OPTIONAL { ?film wdt:P18 ?image } } GROUP BY ?film`;
+  const recent=j.processed===0,query=discoveryQuery(j,now());
   const result=await request('https://query.wikidata.org/sparql?'+new URLSearchParams({query,format:'json'}),{headers:{accept:'application/sparql-results+json'},timeout:35000});
   const bindings=result.results?.bindings||[],ids=[...new Set(bindings.map(r=>r.film?.value?.split('/').pop()).filter(id=>/^Q\d+$/.test(id)))];
   const rows=bindings.map(r=>{const id=r.film?.value?.split('/').pop(),title=r.ptLabel?.value||r.enLabel?.value||r.label?.value;if(!/^Q\d+$/.test(id||'')||!title)return null;let file='';try{if(r.image?.value?.startsWith('http://commons.wikimedia.org/wiki/Special:FilePath/'))file=decodeURIComponent(r.image.value.split('/Special:FilePath/')[1]);}catch{}const release=Number(String(r.release?.value||'').slice(0,4));return {id,title:clean(title).slice(0,500),year:release>=1850&&release<=2100?release:null,description:clean(r.desc?.value||''),cover_url:'',artwork:{kind:'lx',commons_file:file},source_url:'https://www.wikidata.org/wiki/'+id,commonsFile:file};}).filter(Boolean);
@@ -110,17 +118,21 @@ export function createAutomation({db,fetcher=fetch,base,now=()=>Date.now()}){
   }return {cursor:candidates.length?cursor:0,added:0};
  }
  async function music(j,progress){
+  let scanned=0,added=0,bytes=0,cursor=j.cursor;
+  const usage=Number(check(await db.rpc('lx_auto_asset_usage')))||0;
+  function checkBudget(){
+   if(usage+bytes+25000000>j.asset_budget_bytes){const e=new Error('ASSET_STORAGE_BUDGET');e.retry=3600;throw e;}
+   if(j.bytes+bytes+25000000>j.daily_budget_bytes){const e=new Error('DAILY_AUDIO_BUDGET');e.retry=dailyResumeSeconds(now());throw e;}
+  }
+  checkBudget();
   const feed=await request(CREATOR_CATALOG,{max:5000000});if(!Array.isArray(feed)||feed.length>5000)throw new Error('CREATOR_CATALOG_INVALID');
   const pieces=feed.filter(p=>{try{musicSource(p);return true;}catch{return false;}});
   pieces.sort((a,b)=>(/^\d{4}-\d{2}-\d{2}$/.test(b.uploaded)?b.uploaded:'').localeCompare(/^\d{4}-\d{2}-\d{2}$/.test(a.uploaded)?a.uploaded:'')||String(a.isrc).localeCompare(String(b.isrc)));
-  let scanned=0,added=0,bytes=0,cursor=j.cursor;
-  const usage=Number(check(await db.rpc('lx_auto_asset_usage')))||0;
-  if(usage+25000000>j.asset_budget_bytes)throw new Error('ASSET_STORAGE_BUDGET');
   while(scanned<j.batch_size&&pieces.length){
+   checkBudget();
    const piece=pieces[cursor%pieces.length];cursor=(cursor+1)%pieces.length;scanned++;progress.scanned=scanned;
    const source=musicSource(piece),externalId='incompetech:'+piece.isrc;
    const existing=check(await db.from('lx_catalog').select('id').eq('payload->>externalId',externalId).limit(1));if(existing.length){progress.cursor=cursor;continue;}
-   if(j.bytes+bytes+25000000>j.daily_budget_bytes||usage+bytes+25000000>j.asset_budget_bytes)throw new Error('ASSET_STORAGE_BUDGET');
    let downloaded,probe;
    try{downloaded=await request(source,{raw:true,max:25000000,timeout:25000});probe=inspectMp3(downloaded.bytes,seconds(piece.length));}
    catch(e){if(e.message==='PROVIDER_RESPONSE_TOO_LARGE'||e.message==='PROVIDER_HTTP_404'||String(e.message).startsWith('MP3_')){progress.cursor=cursor;progress.skipped=(progress.skipped||0)+1;continue;}throw e;}
