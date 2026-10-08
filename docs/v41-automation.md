@@ -1,6 +1,6 @@
 # Manutenção e automação LX Plus
 
-Versão R12.19-V40-AUTO-20261008. Atualização na branch `lxplus-v40-completa`.
+Versão R12.20-V40-AUTO-20261008. Atualização na branch `lxplus-v40-completa`.
 
 ## Acesso e organização
 
