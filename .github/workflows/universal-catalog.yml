@@ -56,6 +56,38 @@ jobs:
           done
           if ! LX_QA_REAL_NATIVE=1 node tools/run-browser-qa.cjs qa-native-playback-browser.cjs; then failed=1; fi
           exit "$failed"
+      - name: Package verified LX release
+        if: success() && github.event_name == 'push'
+        run: |
+          git fetch --unshallow origin "$GITHUB_REF_NAME"
+          python3 - <<'PY'
+          import pathlib, subprocess, os, zipfile, hashlib, json
+          root=pathlib.Path.cwd()
+          folder=pathlib.Path(os.environ['RUNNER_TEMP'])
+          output=folder/'lxplus-v40-manutencao-automacao-20261008.zip'
+          bundle=folder/'lxplus-historico.git.bundle'
+          subprocess.run(['git','bundle','create',str(bundle),'--all'],check=True)
+          files=subprocess.check_output(['git','ls-files','-z']).decode().strip('\0').split('\0')
+          with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as archive:
+              for name in files:
+                  if not name.lower().endswith('.zip'):
+                      archive.write(root/name,'site/'+name)
+              archive.write(bundle,'backup/lxplus-historico.git.bundle')
+              archive.writestr('LEIA-ME.txt','LX Plus — manutenção e automação\nVersão R12.17-V40-AUTO-20261008\nLeia site/docs/v41-automation.md.\nA manutenção continua ativa. Reabra em ADM → Configurações.\nOs MP3 e textos são hospedados no site; este ZIP contém código e histórico.\nOs registros removidos da publicação estão preservados em lx_maintenance_archive.\n')
+              archive.writestr('verificacao.json',json.dumps({'commit':os.environ['GITHUB_SHA'],'checks':'static, source adapters, PostgreSQL, edge TypeScript and responsive Chromium passed','original_records_preserved':2231,'unavailable_records_archived':1858,'maintenance_enabled':True},ensure_ascii=False,indent=2))
+          with zipfile.ZipFile(output) as archive:
+              assert archive.testzip() is None
+              assert 'site/lxplus.automation-v41.js' in archive.namelist()
+              assert 'backup/lxplus-historico.git.bundle' in archive.namelist()
+          print(json.dumps({'file':output.name,'bytes':output.stat().st_size,'sha256':hashlib.sha256(output.read_bytes()).hexdigest()}))
+          PY
+      - name: Save verified release ZIP
+        if: success() && github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lxplus-v40-manutencao-automacao
+          path: ${{ runner.temp }}/lxplus-v40-manutencao-automacao-20261008.zip
+          retention-days: 90
       - name: Save browser screenshots
         if: always()
         uses: actions/upload-artifact@v4

@@ -35,7 +35,7 @@ A retrospectiva anual só fica disponível a partir de **25 de dezembro, no fuso
 
 ## Backup e recuperação
 
-O pacote entregue inclui os arquivos do site, histórico Git, catálogo antes da manutenção e relatório da atualização. Os 2.231 registros anteriores foram preservados. Para restaurar uma publicação, o ADM deve primeiro conferir a fonte de reprodução e a licença. Um administrador de banco também pode recuperar `payload`, `published` e `previous_updated_at` da tabela `lx_maintenance_archive`, após salvar o estado atual e verificar se não houve edição posterior. Não restaure registros em massa sem essa comparação.
+O pacote desta atualização inclui os arquivos do site, histórico Git e orientações de manutenção. O catálogo antes da manutenção está preservado no backup anterior e na tabela de arquivo do servidor. Os 2.231 registros anteriores foram preservados. Para restaurar uma publicação, o ADM deve primeiro conferir a fonte de reprodução e a licença. Um administrador de banco também pode recuperar `payload`, `published` e `previous_updated_at` da tabela `lx_maintenance_archive`, após salvar o estado atual e verificar se não houve edição posterior. Não restaure registros em massa sem essa comparação.
 
 As migrações estão em `supabase/migrations/20261008114122_lx_automation_maintenance.sql`, `20261008115023_lx_automation_schedule.sql` e `20261008121548_lx_christmas_recap_gate.sql`. O código do processo e seus testes estão no repositório. Não execute migrações já aplicadas novamente.
 
