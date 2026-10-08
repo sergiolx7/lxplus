@@ -73,8 +73,8 @@ jobs:
                   if not name.lower().endswith('.zip'):
                       archive.write(root/name,'site/'+name)
               archive.write(bundle,'backup/lxplus-historico.git.bundle')
-              archive.writestr('LEIA-ME.txt','LX Plus — manutenção e automação\nVersão R12.20-V40-AUTO-20261008\nLeia site/docs/v41-automation.md.\nA manutenção continua ativa. Reabra em ADM → Configurações.\nOs MP3 e textos são hospedados no site; este ZIP contém código e histórico.\nOs registros removidos da publicação estão preservados em lx_maintenance_archive.\n')
-              archive.writestr('verificacao.json',json.dumps({'commit':os.environ['GITHUB_SHA'],'checks':'static, source adapters, PostgreSQL, edge TypeScript and responsive Chromium passed','original_records_preserved':2231,'unavailable_records_archived':1858,'maintenance_enabled':True},ensure_ascii=False,indent=2))
+              archive.writestr('LEIA-ME.txt','LX Plus — manutenção e automação\nVersão R12.21-V40-AUTO-20261008\nLeia site/docs/v41-automation.md.\nA manutenção é configurada em ADM → Produção. Acompanhe as rotinas em ADM → Automação.\nOs MP3 e textos são hospedados no site; este ZIP contém código e histórico.\nOs registros removidos da publicação estão preservados em lx_maintenance_archive.\n')
+              archive.writestr('verificacao.json',json.dumps({'commit':os.environ['GITHUB_SHA'],'checks':'static, source adapters, PostgreSQL, edge TypeScript and responsive Chromium passed','original_records_preserved':2231,'unavailable_records_archived':1858,'maintenance_state':'configured in the cloud; check the current setting'},ensure_ascii=False,indent=2))
           with zipfile.ZipFile(output) as archive:
               assert archive.testzip() is None
               assert 'site/lxplus.automation-v41.js' in archive.namelist()

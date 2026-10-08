@@ -1,10 +1,10 @@
 # Manutenção e automação LX Plus
 
-Versão R12.20-V40-AUTO-20261008. Atualização na branch `lxplus-v40-completa`.
+Versão R12.21-V40-AUTO-20261008. Atualização na branch `lxplus-v40-completa`.
 
 ## Acesso e organização
 
-A manutenção fica ativada para visitantes e membros. Uma conta autenticada com permissão administrativa pode entrar no site. Em **ADM → Configurações**, o botão **Reabrir o site** encerra a manutenção. A tela usa iluminação azul e lilás, sem alterar as permissões de acesso do servidor.
+A reabertura do site é feita após a conferência da publicação; a manutenção pode ser ativada novamente no ADM. Uma conta autenticada com permissão administrativa pode entrar no site. Em **ADM → Configurações**, o botão **Reabrir o site** encerra a manutenção. A tela usa iluminação azul e lilás, sem alterar as permissões de acesso do servidor.
 
 Só a entrada de Assistir mantém o carrossel principal. Livros, música e demais categorias usam grades. As músicas marcadas como destaque aparecem em uma grade na entrada de Música, mantendo o botão de reprodução nativa. O catálogo público de reprodução mostra apenas itens com fonte nativa utilizável ou texto disponível. 1.858 registros indisponíveis foram retirados da publicação: 1.675 músicas, 100 filmes, 50 séries, 17 doramas e 16 animes. Seus registros originais estão preservados no ADM e em `lx_maintenance_archive`; nenhum arquivo do proprietário foi apagado.
 
@@ -12,7 +12,7 @@ O **Acervo mundial** mostra fichas de descoberta separadas do catálogo de repro
 
 ## Dois processos permanentes
 
-Os processos usam Supabase Cron e a função `lx-auto-catalog`. Continuam executando com o site em manutenção e com o navegador fechado. Em Configurações, o ADM pode consultar os resultados e solicitar uma execução elegível.
+Os processos usam Supabase Cron e a função `lx-auto-catalog`. Continuam executando com o site em manutenção e com o navegador fechado. A página **ADM → Automação** mostra o nome e o modo de cada rotina, progresso real, última execução, próxima busca prevista, últimas publicações e atividade. A tela consulta o servidor a cada 10 segundos enquanto está visível e mantém os últimos dados em falhas de conexão. Uma rotina que atingiu o limite diário aparece como concluída ou em pausa, mesmo que a última execução tenha sido bem-sucedida. O ADM pode atualizar o painel e solicitar uma execução elegível.
 
 | Processo | Frequência | Limite diário | Comportamento |
 | --- | --- | --- | --- |
@@ -46,3 +46,7 @@ As migrações estão em `supabase/migrations/20261008114122_lx_automation_maint
 - Filmes históricos e evidência individual de licença: https://archive.org/details/prelinger
 - Catálogo e autorização de Kevin MacLeod: https://incompetech.com/agent-section/
 - Agendamento do servidor: https://supabase.com/docs/guides/functions/schedule-functions
+
+## Planos e novidades
+
+A descrição do site, a entrada de autenticação e a apresentação do Premium mostram os valores que já existiam: plano gratuito, Premium mensal de R$ 9,90 e anual de R$ 90. Não foi alterada a cobrança. As faixas publicadas pelas rotinas aparecem na grade **Novidades automáticas** da entrada de Música.
