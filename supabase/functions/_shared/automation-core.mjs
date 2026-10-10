@@ -14,7 +14,8 @@ export function dailyResumeSeconds(time){
 }
 export function discoveryQuery(j,time){
  const year=Number(String(j.day||'').slice(0,4))||new Date(time).getUTCFullYear(),stamp=new Date(time).toISOString();
- const select=j.processed===0?`SELECT ?film (MAX(?date) AS ?latestRelease) WHERE { ?film wdt:P31 wd:Q11424; wdt:P577 ?date . FILTER(?date >= "${year}-01-01T00:00:00Z"^^xsd:dateTime && ?date <= "${stamp}"^^xsd:dateTime) FILTER NOT EXISTS { ?film wdt:P577 ?earlier . FILTER(?earlier < "${year}-01-01T00:00:00Z"^^xsd:dateTime) } } GROUP BY ?film ORDER BY DESC(?latestRelease) ?film LIMIT ${j.batch_size}`:`SELECT DISTINCT ?film WHERE { ?film wdt:P31 wd:Q11424 } ORDER BY ?film LIMIT ${j.batch_size} OFFSET ${j.cursor}`;
+ const type=j.kind==='series'?'Q5398426':j.kind==='music_metadata'?'Q7366':'Q11424';
+ const select=(!j.kind||j.kind==='films')&&j.processed===0?`SELECT ?film (MAX(?date) AS ?latestRelease) WHERE { ?film wdt:P31 wd:${type}; wdt:P577 ?date . FILTER(?date >= "${year}-01-01T00:00:00Z"^^xsd:dateTime && ?date <= "${stamp}"^^xsd:dateTime) FILTER NOT EXISTS { ?film wdt:P577 ?earlier . FILTER(?earlier < "${year}-01-01T00:00:00Z"^^xsd:dateTime) } } GROUP BY ?film ORDER BY DESC(?latestRelease) ?film LIMIT ${j.batch_size}`:`SELECT DISTINCT ?film WHERE { ?film wdt:P31 wd:${type} } ORDER BY ?film LIMIT ${j.batch_size} OFFSET ${j.cursor}`;
  return `SELECT ?film (SAMPLE(?pt) AS ?ptLabel) (SAMPLE(?en) AS ?enLabel) (SAMPLE(?other) AS ?label) (MIN(?date) AS ?release) (SAMPLE(?description) AS ?desc) (SAMPLE(?image) AS ?image) WHERE { { ${select} } OPTIONAL { ?film rdfs:label ?pt FILTER(LANG(?pt)="pt") } OPTIONAL { ?film rdfs:label ?en FILTER(LANG(?en)="en") } OPTIONAL { ?film rdfs:label ?other } OPTIONAL { ?film wdt:P577 ?date } OPTIONAL { ?film schema:description ?description FILTER(LANG(?description)="pt"||LANG(?description)="en") } OPTIONAL { ?film wdt:P18 ?image } } GROUP BY ?film`;
 }
 export function artwork(title,subtitle,seed='LX'){
@@ -85,15 +86,15 @@ export function createAutomation({db,fetcher=fetch,base,now=()=>Date.now()}){
   const bytes=await boundedResponse(response,max);return raw?{bytes,response}:JSON.parse(new TextDecoder().decode(bytes));
  }
  async function films(j){
-  const recent=j.processed===0,query=discoveryQuery(j,now());
+  const recent=(!j.kind||j.kind==='films')&&j.processed===0,query=discoveryQuery(j,now());
   const result=await request('https://query.wikidata.org/sparql?'+new URLSearchParams({query,format:'json'}),{headers:{accept:'application/sparql-results+json'},timeout:35000});
   const bindings=result.results?.bindings||[],ids=[...new Set(bindings.map(r=>r.film?.value?.split('/').pop()).filter(id=>/^Q\d+$/.test(id)))];
   const rows=bindings.map(r=>{const id=r.film?.value?.split('/').pop(),title=r.ptLabel?.value||r.enLabel?.value||r.label?.value;if(!/^Q\d+$/.test(id||'')||!title)return null;let file='';try{if(r.image?.value?.startsWith('http://commons.wikimedia.org/wiki/Special:FilePath/'))file=decodeURIComponent(r.image.value.split('/Special:FilePath/')[1]);}catch{}const release=Number(String(r.release?.value||'').slice(0,4));return {id,title:clean(title).slice(0,500),year:release>=1850&&release<=2100?release:null,description:clean(r.desc?.value||''),cover_url:'',artwork:{kind:'lx',commons_file:file},source_url:'https://www.wikidata.org/wiki/'+id,commonsFile:file};}).filter(Boolean);
-  const pending=check(await db.from('lx_auto_discovery').select('id,artwork').eq('cover_url','').eq('curator_locked',false).neq('artwork->>commons_file','').order('updated_at',{ascending:true}).limit(25))||[];
+  const pending=check(await db.from('lx_auto_discovery').select('id,artwork').eq('media_kind',j.kind).eq('cover_url','').eq('curator_locked',false).neq('artwork->>commons_file','').order('updated_at',{ascending:true}).limit(25))||[];
   const repairs=pending.map(r=>({...r,commonsFile:r.artwork?.commons_file||'',cover_url:''}));
   const withImages=[...rows.filter(r=>r.commonsFile).slice(0,25),...repairs].slice(0,50);
   if(withImages.length){try{const images=await request('https://commons.wikimedia.org/w/api.php?'+new URLSearchParams({action:'query',titles:[...new Set(withImages.map(r=>'File:'+r.commonsFile))].join('|'),prop:'imageinfo',iiprop:'url|extmetadata',iiextmetadatafilter:'LicenseShortName|LicenseUrl|Artist',iiurlwidth:'500',format:'json',maxlag:'5'}),{max:3000000});if(images.error)throw new Error('PROVIDER_MAXLAG');for(const page of Object.values(images.query?.pages||{})){const art=commonsArtwork(page);if(!art)continue;for(const row of withImages.filter(r=>'File:'+r.commonsFile.replaceAll('_',' ')===page.title)){row.cover_url=art.cover_url;row.artwork={...row.artwork,...art.artwork};}}}catch{ /* Keep a clearly labeled LX cover when image rights cannot be verified. */ }}
-  const values=rows.map(({commonsFile,...row})=>({...row,updated_at:new Date(now()).toISOString()}));
+  const values=rows.map(({commonsFile,...row})=>({...row,media_kind:j.kind,updated_at:new Date(now()).toISOString()}));
   const inserted=values.length?check(await db.from('lx_auto_discovery').upsert(values,{onConflict:'id',ignoreDuplicates:true}).select('id')):[];
   for(const row of [...rows.filter(r=>r.cover_url),...repairs]){
    const change={updated_at:new Date(now()).toISOString()};if(row.cover_url){change.cover_url=row.cover_url;change.artwork=row.artwork;}
@@ -152,12 +153,12 @@ export function createAutomation({db,fetcher=fetch,base,now=()=>Date.now()}){
   return {scanned,added,bytes,cursor,skipped:progress.skipped||0};
  }
  async function run(kind){
-  if(!['films','music'].includes(kind))throw new Error('INVALID_JOB');deadline=now()+108000;
+  if(!['films','series','music_metadata','music'].includes(kind))throw new Error('INVALID_JOB');deadline=now()+108000;
   const j=check(await db.rpc('lx_auto_claim',{p_kind:kind}));if(!j)return {skipped:true,kind};
   let result={scanned:0,added:0,bytes:0,cursor:j.cursor},media={added:0,cursor:j.media_cursor},error=null,retry=0;
-  if(kind==='films'){
+  if(kind!=='music'){
    try{result={...result,...await films(j)};}catch(e){error=String(e.message).slice(0,100);retry=e.retry||900;}
-   try{media=await readyFilm(j);}catch(e){error=error||'FILM_SOURCE_'+String(e.message).slice(0,70);retry=Math.max(retry,e.retry||900);}
+   try{if(kind==='films')media=await readyFilm(j);}catch(e){error=error||'FILM_SOURCE_'+String(e.message).slice(0,70);retry=Math.max(retry,e.retry||900);}
   }else{try{result=await music(j,result);}catch(e){error=String(e.message).slice(0,100);retry=e.retry||900;}}
   check(await db.rpc('lx_auto_finish',{p_kind:kind,p_lease:j.lease,p_cursor:result.cursor,p_media_cursor:media.cursor,p_scanned:result.scanned,p_added:result.added,p_playable:kind==='music'?result.added:media.added,p_bytes:result.bytes,p_error:error,p_retry_seconds:retry}));
   return {kind,scanned:result.scanned,added:result.added,playable:kind==='music'?result.added:media.added,bytes:result.bytes,error};

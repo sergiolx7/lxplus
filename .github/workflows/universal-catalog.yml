@@ -27,6 +27,7 @@ jobs:
           node tests/native-playback.mjs
           node tests/native-collection.mjs
           node tests/automation-core.mjs
+          node tests/automation-expansion.mjs
           node tests/automation-database.mjs
           node tests/universal-core.mjs
           node tests/universal-service.mjs

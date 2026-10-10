@@ -50,3 +50,11 @@ As migrações estão em `supabase/migrations/20261008114122_lx_automation_maint
 ## Planos e novidades
 
 A descrição do site, a entrada de autenticação e a apresentação do Premium mostram os valores que já existiam: plano gratuito, Premium mensal de R$ 9,90 e anual de R$ 90. Não foi alterada a cobrança. As faixas publicadas pelas rotinas aparecem na grade **Novidades automáticas** da entrada de Música.
+
+## Atualização de 10 de outubro — R12.22
+
+O acervo mundial agora separa Filmes, Séries e Músicas, com busca e paginação independentes. As fichas sem mídia ficam identificadas como Em breve; nenhum título recebe reprodução apenas por ter metadados. Duas novas rotinas consultam metadados CC0 do Wikidata: séries (até 500 registros/dia, minutos 3/18/33/48) e músicas (até 1.000 registros/dia, minutos 10/25/40/55). Os limites de filmes e transferência de MP3 continuam independentes. Todas funcionam com o navegador fechado.
+
+ADM → Automação inclui quatro cartões e um gráfico diário dos últimos 14 dias no fuso de Fortaleza. O servidor agrega todas as execuções do período, sem limitar os totais às 20 linhas recentes. O catálogo musical ganha acesso a partir da biblioteca de Música. A interface desktop recebe biblioteca lateral, superfície central escura/verde, cartões compactos e proporções responsivas; a reprodução nativa e os dados de usuário são preservados.
+
+Verificação: testes de automação original e expansão, permissões/RLS, isolamento de categorias, agregação de 50 execuções, fontes nativas, preservação de capas e contratos estáticos. Browser QA não disponível nesta sessão; a alteração visual não foi validada em navegador. Backup anterior: branch backup/pre-automation-complete-20261010. Migração aditiva: 20261010134224_lx_catalog_series_music_history.sql. A retirada da manutenção e o comunicado dependem da confirmação da publicação no domínio atual.
