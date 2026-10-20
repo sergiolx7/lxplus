@@ -6,7 +6,7 @@ const server=http.createServer((req,res)=>{
  if(file===root)file=path.join(root,'index.html');if(!file.startsWith(root+path.sep)){res.writeHead(403);return res.end();}
   fs.readFile(file,(error,data)=>{if(error){res.writeHead(404);return res.end();}
    // Existing contract fixtures run with the site open. The maintenance scenario has its own test.
-   if(path.basename(file)==='index.html'&&path.basename(process.argv[2]||'')!=='qa-automation-browser.cjs')data=Buffer.from(data.toString().replace('<head>','<head><script>window.__LX_QA_MAINTENANCE_DISABLED=true;</script>'));
+   if(path.basename(file)==='index.html'&&!['qa-automation-browser.cjs','qa-next-browser.cjs'].includes(path.basename(process.argv[2]||'')))data=Buffer.from(data.toString().replace('<head>','<head><script>window.__LX_QA_MAINTENANCE_DISABLED=true;</script>'));
    res.writeHead(200,{'content-type':mime[path.extname(file)]||'application/octet-stream'});res.end(data);});
 });
 server.listen(8765,'127.0.0.1',()=>{const child=spawn(process.execPath,[process.argv[2]||'qa-universal-browser.cjs'],{stdio:'inherit',env:process.env});child.on('exit',code=>server.close(()=>process.exit(code||0)));});

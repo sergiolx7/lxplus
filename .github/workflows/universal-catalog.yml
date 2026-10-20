@@ -1,9 +1,9 @@
 name: Verify LX Universal Catalog
 on:
   push:
-    branches: [lxplus-v40-completa]
+    branches: [lxplus-v40-completa, staging/lxplus-maintenance-20261020-e6109c6]
   pull_request:
-    branches: [main]
+    branches: [main, lxplus-v40-completa]
   workflow_dispatch:
 permissions:
   contents: read
@@ -24,6 +24,9 @@ jobs:
           LX_QA_NODE_MODULES: ${{ github.workspace }}/tools/catalog-qa/node_modules
         run: |
           node tests/static-checks.mjs
+          node tests/next-security.mjs
+          node tests/staging-release.mjs
+          node tests/artwork-fallback.mjs
           node tests/native-playback.mjs
           node tests/native-collection.mjs
           node tests/automation-core.mjs
@@ -52,13 +55,13 @@ jobs:
           LX_QA_OUTPUT: ${{ runner.temp }}/lx-universal-qa
         run: |
           failed=0
-          for qa in qa-universal-browser.cjs qa-catalog-pending-browser.cjs qa-music-priority-browser.cjs qa-session-album-plex-browser.cjs qa-loading-browser.cjs qa-open-films-browser.cjs qa-cinema-browser.cjs qa-automation-browser.cjs; do
+          for qa in qa-universal-browser.cjs qa-catalog-pending-browser.cjs qa-music-priority-browser.cjs qa-session-album-plex-browser.cjs qa-loading-browser.cjs qa-open-films-browser.cjs qa-cinema-browser.cjs qa-automation-browser.cjs qa-next-browser.cjs; do
             if ! node tools/run-browser-qa.cjs "$qa"; then failed=1; fi
           done
           if ! LX_QA_REAL_NATIVE=1 node tools/run-browser-qa.cjs qa-native-playback-browser.cjs; then failed=1; fi
           exit "$failed"
       - name: Package verified LX release
-        if: success() && github.event_name == 'push'
+        if: success() && github.event_name == 'push' && github.ref_name == 'lxplus-v40-completa'
         run: |
           git fetch --unshallow origin "$GITHUB_REF_NAME"
           python3 - <<'PY'
@@ -83,7 +86,7 @@ jobs:
           print(json.dumps({'file':output.name,'bytes':output.stat().st_size,'sha256':hashlib.sha256(output.read_bytes()).hexdigest()}))
           PY
       - name: Save verified release ZIP
-        if: success() && github.event_name == 'push'
+        if: success() && github.event_name == 'push' && github.ref_name == 'lxplus-v40-completa'
         uses: actions/upload-artifact@v4
         with:
           name: lxplus-v40-manutencao-automacao

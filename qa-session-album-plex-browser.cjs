@@ -8,7 +8,7 @@ async function fixture(context,{delay=0,seed=true}={}){
  await context.route('**/*',route=>{const url=route.request().url();if(url.includes('/qa-album.wav'))return route.fulfill({contentType:'audio/wav',body:audio});if(url.includes('/qa-owned-film.mp4'))return route.fulfill({contentType:'video/mp4',body:fs.readFileSync(path.join(__dirname,'tools/catalog-qa/owned-video.mp4'))});return url.startsWith(base)?route.continue():route.abort()});
  await context.addInitScript(({delay,seed})=>{
   const uid='00000000-0000-4000-8000-000000000001',other='00000000-0000-4000-8000-000000000002',key='sb-qa-auth-token';
-  const qaUser=id=>({id,email:id===uid?'listener@example.invalid':'second@example.invalid',user_metadata:{name:id===uid?'Sessão QA':'Outra conta QA'}});
+  const qaUser=id=>({id,email_confirmed_at:'2026-10-20T00:00:00Z',email:id===uid?'listener@example.invalid':'second@example.invalid',user_metadata:{name:id===uid?'Sessão QA':'Outra conta QA'}});
   if(seed&&!localStorage.getItem('qa-seeded')){localStorage.setItem(key,JSON.stringify({user:qaUser(uid)}));localStorage.setItem('qa-seeded','1')}
   window.qaProfileDelay=delay;window.qaHydrationStarted=false;window.qaAuthEvents=[];window.qaSignInCount=0;
   let storage,callback=()=>{};

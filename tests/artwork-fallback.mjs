@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const LX={},document={readyState:'loading',addEventListener(){}};
+vm.runInNewContext(fs.readFileSync('lxplus-artwork.js','utf8'),{window:{LX},document,URL,location:{href:'https://qa.example.invalid'}});
+let source='',writes=0;
+const image={dataset:{},complete:false,naturalWidth:0,matches:()=>true,closest:()=>null,classList:{add(){}},getAttribute:()=>source};
+Object.defineProperty(image,'src',{get:()=>source,set:value=>{source=value;writes++;}});
+const item={cover:'https://media.example.invalid/missing-cover.jpg',albumCover:'https://media.example.invalid/album.jpg'};
+LX.artwork.set(image,item);assert.equal(source,item.cover);image.onerror();assert.equal(source,item.albumCover);
+LX.artwork.set(image,item);assert.equal(image.dataset.lxArtworkIndex,'1','Hydration must preserve fallback position');assert.equal(writes,2,'Repeated rendering does not reset the image');
+image.onerror();assert.equal(source,'assets/lx-music-fallback.svg');
+LX.artwork.set(image,item);assert.equal(image.dataset.lxArtworkIndex,'2');assert.equal(writes,3);
+LX.artwork.set(image,{cover:'https://media.example.invalid/replacement.jpg'});assert.equal(image.dataset.lxArtworkIndex,'0');
+assert.equal(source,'https://media.example.invalid/replacement.jpg');
+console.log('PASS artwork: failed sources advance, repeated hydration preserves the fallback and replacement covers reset intentionally.');
