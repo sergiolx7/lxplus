@@ -1,0 +1,71 @@
+{
+  "tested_at": "2026-10-20T22:02:28.514814+00:00",
+  "engine": "Chromium 131.0.6778.0 (local compatibility runtime)",
+  "suites": [
+    {
+      "file": "qa-universal-browser.cjs",
+      "status": "passed",
+      "network": "fixtures"
+    },
+    {
+      "file": "qa-catalog-pending-browser.cjs",
+      "status": "passed",
+      "network": "fixtures"
+    },
+    {
+      "file": "qa-music-priority-browser.cjs",
+      "status": "passed",
+      "network": "fixtures"
+    },
+    {
+      "file": "qa-session-album-plex-browser.cjs",
+      "status": "passed",
+      "network": "fixtures"
+    },
+    {
+      "file": "qa-loading-browser.cjs",
+      "status": "passed",
+      "network": "fixtures"
+    },
+    {
+      "file": "qa-open-films-browser.cjs",
+      "status": "passed",
+      "network": "fixtures"
+    },
+    {
+      "file": "qa-cinema-browser.cjs",
+      "status": "passed",
+      "network": "fixtures"
+    },
+    {
+      "file": "qa-automation-browser.cjs",
+      "status": "passed",
+      "network": "fixtures"
+    },
+    {
+      "file": "qa-next-browser.cjs",
+      "status": "passed",
+      "network": "fixtures"
+    },
+    {
+      "file": "qa-native-playback-browser.cjs",
+      "status": "passed",
+      "network": "fixtures"
+    }
+  ],
+  "additional_native_media": {
+    "mp3_bytes": 12271315,
+    "book_bytes": 418230,
+    "hashes_verified_against_catalog": true,
+    "http_range_probe_status": 206,
+    "playback_and_reading": "passed using verified local QA cache",
+    "direct_browser_network": "timed out in this runtime; remains a staging release gate"
+  },
+  "limitations": [
+    "No real email was sent",
+    "MFA provider interactions use fixtures",
+    "Vault encryption is mocked in the local PostgreSQL test",
+    "No real payment was made",
+    "Safari/iOS/Android and real calls are not verified"
+  ]
+}

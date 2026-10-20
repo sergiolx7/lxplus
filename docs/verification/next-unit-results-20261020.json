@@ -1,0 +1,115 @@
+{
+  "tested_at": "2026-10-20T21:57:55.061Z",
+  "results": [
+    {
+      "suite": "tests/static-checks.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/next-security.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/staging-release.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/artwork-fallback.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/native-playback.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/native-collection.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/automation-core.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/automation-expansion.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/automation-database.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/universal-core.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/universal-service.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/universal-database.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/catalog-population.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/catalog-capacity.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/catalog-updates.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/open-film-catalog.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "tests/recent-film-catalog.mjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "qa-insights-v36.cjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "qa-audio-resolver-v36.cjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "qa-music-r4.cjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "qa-metadata-r12.cjs",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "suite": "qa-drive-albums-r12-1.cjs",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

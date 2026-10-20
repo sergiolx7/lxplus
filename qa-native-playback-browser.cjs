@@ -7,7 +7,8 @@ const bytes=Buffer.from(raw),hash=createHash('sha256').update(bytes).digest('hex
 const url='https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/qa-reader.txt';
 const videoUrl='https://archive.org/download/qa-owned/movie.mp4';
 (async()=>{
- const browser=await chromium.launch({executablePath:process.env.LX_QA_CHROMIUM,args:['--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--autoplay-policy=no-user-gesture-required'],headless:true});
+ let proxy;if(process.env.LX_QA_REAL_NATIVE==='1'&&process.env.HTTPS_PROXY){const p=new URL(process.env.HTTPS_PROXY);proxy={server:p.protocol+'//'+p.host,bypass:'127.0.0.1,localhost',...(p.username?{username:decodeURIComponent(p.username),password:decodeURIComponent(p.password)}:{})}}
+ const browser=await chromium.launch({proxy,executablePath:process.env.LX_QA_CHROMIUM,args:['--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--autoplay-policy=no-user-gesture-required'],headless:true});
  const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[],providerRequests=[];let bookRequests=0;
  page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',async route=>{
@@ -16,6 +17,10 @@ const videoUrl='https://archive.org/download/qa-owned/movie.mp4';
   if(request===url){bookRequests++;await new Promise(resolve=>setTimeout(resolve,180));return route.fulfill({contentType:'text/plain; charset=utf-8',body:bytes});}
   if(request===videoUrl)return route.fulfill({contentType:'video/mp4',body:fs.readFileSync('tools/catalog-qa/owned-video.mp4')});
   if(request.startsWith('http://127.0.0.1:8765/'))return route.continue();
+  if(process.env.LX_QA_REAL_NATIVE==='1'&&process.env.LX_QA_NATIVE_CACHE&&request.startsWith('https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/')){
+   const key=createHash('sha256').update(request).digest('hex'),file=path.join(process.env.LX_QA_NATIVE_CACHE,key+'.asset');
+   if(fs.existsSync(file))return route.fulfill({contentType:fs.readFileSync(path.join(process.env.LX_QA_NATIVE_CACHE,key+'.mime'),'utf8'),headers:{'access-control-allow-origin':'*'},body:fs.readFileSync(file)});
+  }
   if(process.env.LX_QA_REAL_NATIVE==='1'&&request.startsWith('https://ubidogquzpdvrbzbhxda.supabase.co/storage/v1/object/public/lx-assets/licensed/20261007/'))return route.continue();
   return route.abort();
  });
@@ -50,5 +55,5 @@ const videoUrl='https://archive.org/download/qa-owned/movie.mp4';
   await page.evaluate(book=>{qaNativeRows.push({id:book.id,type:'Livro',title:'Dom Casmurro',author:'Machado de Assis',cover:'assets/lxplus-icon-v34.png',published:true,...book.patch});LX.read(book.id)},book);
   await page.waitForFunction(()=>document.querySelector('.lx-reader-text')?.textContent.toUpperCase().includes('DOM CASMURRO'),{},{timeout:25000});await page.screenshot({path:path.join(output,'dom-casmurro-real.png')});
  }
- assert.deepEqual(errors,[]);await browser.close();console.log('PASS native-only availability, reader cancellation, pagination and responsive 390/820/1280'+(process.env.LX_QA_REAL_NATIVE==='1'?', actual hosted MP3 and complete book.':'.'));
+ assert.deepEqual(errors,[]);await browser.close();console.log('PASS native-only availability, reader cancellation, pagination and responsive 390/820/1280'+(process.env.LX_QA_REAL_NATIVE==='1'?(process.env.LX_QA_NATIVE_CACHE?', verified real MP3 and complete book through the QA cache.':', actual hosted MP3 and complete book.'):'.'));
 })().catch(error=>{console.error(error);process.exit(1)});

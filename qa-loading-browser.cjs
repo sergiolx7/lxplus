@@ -4,7 +4,7 @@ const {chromium}=require((process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES||proces
 const base='http://127.0.0.1:8765/';
 async function installDb(context,{stallBoot=false}={}){
  await context.addInitScript(({stallBoot})=>{
-  const user={id:'00000000-0000-4000-8000-000000000009',email:'loading@example.invalid',user_metadata:{name:'Loading QA'}};
+  const user={id:'00000000-0000-4000-8000-000000000009',email_confirmed_at:'2026-10-20T00:00:00Z',email:'loading@example.invalid',user_metadata:{name:'Loading QA'}};
   window.qaCatalogMode=stallBoot?'stall':'normal';window.qaCatalogCalls=0;window.qaPendingCatalog=[];window.qaCatalogSignals=[];
   window.qaRows=[{id:8001,payload:{type:'Música',title:'Faixa salva',artist:'LX QA',cover:'assets/lxplus-icon-v34.png',mediaKey:'spotify:track:1234567890123456789012'},published:true,updated_at:'2026-10-06T00:00:00Z'}];
   const channel={on(){return this},subscribe(){return this},topic:'lxplus-public-v256'};

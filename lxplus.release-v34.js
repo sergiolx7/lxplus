@@ -1,6 +1,6 @@
 /* LX Plus Release UI36 — canonical updater for the maintenance build. */
 (()=>{'use strict';
-  const BUILD='R12.5-UI36-MYPLAY-20261002';
+  const BUILD='R12.23-NEXT-STAGING-20261020';
   const VERSION='UI36';
   let busy=false,timer=0;
   const LX=()=>window.LX||{};

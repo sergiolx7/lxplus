@@ -5,3 +5,7 @@ supabase/.temp/
 !.env.example
 
 /node_modules
+
+/build/
+/qa-artifacts/
+/maintenance-backups/

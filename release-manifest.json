@@ -1,7 +1,7 @@
 {
   "version": "UI36",
-  "build": "R12.22-V40-AUTO-20261010",
-  "name": "LX Plus · Catálogo automático e nova LX Music",
+  "build": "R12.23-NEXT-STAGING-20261020",
+  "name": "LX Plus Next · Preparação em staging",
   "base": "UI35",
   "files": [
     "index.html",
@@ -23,7 +23,10 @@
     "lxplus.maintenance-v41.css",
     "lxplus.automation-v41.js",
     "lxplus.automation-v41.css",
-    "lxplus.music-desktop-v42.css"
+    "lxplus.music-desktop-v42.css",
+    "js/account-policy.js",
+    "lxplus.next-console.js",
+    "lxplus.next.css"
   ],
   "force": false,
   "features": [
@@ -41,6 +44,11 @@
     "Estatísticas mensais de escuta e retrospectiva anual em 25 de dezembro",
     "Fichas de filmes, séries e músicas com descoberta contínua",
     "Gráfico diário de 14 dias no ADM",
-    "LX Music com biblioteca lateral e visual desktop atualizado"
-  ]
+    "LX Music com biblioteca lateral e visual desktop atualizado",
+    "Confirmação de e-mail separada da aprovação administrativa",
+    "Configuração de pagamento protegida por MFA e Vault, com cobranças desativadas",
+    "Cadastro de interesse no retorno com consentimento"
+  ],
+  "deployment_status": "staging_candidate",
+  "production_ready": false
 }
