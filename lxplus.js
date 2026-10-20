@@ -16,7 +16,7 @@ LX.config={
     mediaBucket:'lx-media',
     assetBucket:'lx-assets'
   },
-  localDemoAdmin:{email:'',password:''},
+  localDemoAdmin:{email:null,password:null},
   rtc:{iceServers:[{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:stun2.l.google.com:19302','stun:stun3.l.google.com:19302']}]},
   features:{recommendations:true,preferenceProfile:true,premium:true,fuzzySearch:true,qualityGate:true,requests:true,ratings:true,analytics:true,tv:true,pwa:true,profileIdentity:true,appMode:true,cloudSync:true,realtime:true,cloudMedia:true,freeMediaStorage:true,conversationStreak:true,spotifyCatalog:false,adaptiveStreaming:true}
 };
