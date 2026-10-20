@@ -13,6 +13,5 @@ LX.config={
     mediaBucket:'lx-media',
     assetBucket:'lx-assets'
   },
-  localDemoAdmin:{email:'admin@lxplus.com.br',password:'Admin@1234'},
   features:{nativePlaybackOnly:true,recommendations:true,preferenceProfile:true,premium:true,fuzzySearch:true,qualityGate:true,requests:true,ratings:true,analytics:true,tv:true,pwa:true,profileIdentity:true,appMode:true,cloudSync:true,realtime:true,cloudMedia:true}
 };
