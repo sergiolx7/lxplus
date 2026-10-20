@@ -103,6 +103,7 @@ await pg.exec('reset role');
 assert.equal((await pg.query('select count(*)::int count from lx_next_private.return_interests')).rows[0].count,1,'Email normalization prevents duplicate interests');
 for(let n=0;n<19;n++)await pg.query('select lx_next_return_interest($1,true)',[`interest${n}@example.invalid`]);
 await assert.rejects(pg.query("select lx_next_return_interest('over-limit@example.invalid',true)"),/RATE_LIMITED/);
+await assert.rejects(pg.query("select lx_next_return_interest('qa@example.invalid',true)"),/RATE_LIMITED/,'Rate limiting does not reveal existing subscribers');
 assert.equal((await pg.query('select payload->>\'mediaKey\' media from lx_catalog')).rows[0].media,'cloud:original.mp4');
 await pg.close();
 console.log('PASS next security: email plus approval, self-insert escalation, revoked sessions, blocked accounts, server maintenance, MFA owner checks, masked Vault configuration, environment separation and catalog preservation. Vault encryption requires staging verification.');

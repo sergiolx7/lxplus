@@ -253,8 +253,9 @@ begin
   if length(normalized)>254 or normalized !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$'
     then raise exception 'INVALID_EMAIL'; end if;
   perform pg_advisory_xact_lock(hashtext('lx-next-return-interest'));
-  if not exists(select 1 from lx_next_private.return_interests where email=normalized)
-    and (select count(*) from lx_next_private.return_interests where created_at>now()-interval '1 minute')>=20
+  -- Apply the same response to new and existing emails at the limit so that
+  -- an anonymous caller cannot use the rate limit to enumerate subscribers.
+  if (select count(*) from lx_next_private.return_interests where created_at>now()-interval '1 minute')>=20
     then raise exception 'RATE_LIMITED'; end if;
   insert into lx_next_private.return_interests(email,consent_version)
     values(normalized,'return-notification-20261020')
