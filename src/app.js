@@ -168,7 +168,7 @@ async function toggle(item){
  try{await saveUserField(A.user.id,'list',A.stored.list);toast('Sua lista foi atualizada.')}
  catch(e){A.stored.list=before;modal(item);if(A.page==='Minha Lista')draw();toast(e.message||'Não foi possível salvar a lista.')}
 }
-async const musicDock=new MusicDock({resolve:sourceFor,onError:message=>toast(String(message||'Não foi possível tocar esta faixa.'))});
+const musicDock=new MusicDock({resolve:sourceFor,onError:message=>toast(String(message||'Não foi possível tocar esta faixa.'))});
 async function play(item){
  try{const player=await sourceFor(item);
   if(player.kind==='unavailable'){toast('Este título está em breve ou não possui fonte autorizada para reprodução.');return}
