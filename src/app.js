@@ -3,6 +3,8 @@ import {VERSION} from './config.js';
 import {classifyLink,attachPlayer} from './universal-player.js';
 import {scanDriveFolder,publishMatches} from './drive-import.js';
 import {makeDemoDriveScan,simulateDemoPublish} from './drive-import-demo.js';
+import {renderPremiumCatalog} from './premium-ui.js';
+import {studioOverview,studioSources,studioPreview} from './studio-ui.js';
 
 const root=document.querySelector('#app');
 const A={user:null,profile:null,admin:false,stored:{},items:[],extra:[],members:[],notices:[],ranking:{season:null,rows:[]},page:'Início',term:'',filter:'Todos',auth:'login',modal:null,playerCleanup:null,busy:false,loadGeneration:0,catalogStatus:'loading',drive:{folder:'',scan:null,progress:'',rightsConfirmed:false,working:false,lastResult:null}};
@@ -36,7 +38,7 @@ function navButton(name,icon,cls='nav-btn'){
 function shell(){
  const nav=pages.map(x=>navButton(...x)).join('')+(A.admin?navButton('Administração','⚙'):'');
  const mobile=pages.filter(x=>['Início','Filmes','Músicas','Minha Lista','Perfil'].includes(x[0])).map(x=>navButton(...x,'mobile-button')).join('');
- root.innerHTML='<div class="shell"><aside class="aside"><div class="brand">'+brand()+'</div><nav class="nav-group"><span class="nav-label">EXPLORAR</span>'+nav+'</nav><div class="aside-foot"><b>LX Group</b>Uma plataforma reconstruída com foco em estabilidade e privacidade.</div></aside><div class="content"><header class="topbar"><div class="top-name"><strong id="pageTitle">'+escapeHtml(A.page)+'</strong><small>'+escapeHtml(VERSION)+'</small></div><input type="search" id="search" class="search" placeholder="Buscar filmes, músicas, livros…" aria-label="Buscar no catálogo" value="'+escapeHtml(A.term)+'"><button class="avatar-button" type="button" data-page="Perfil" aria-label="Abrir perfil"><span class="avatar">'+escapeHtml(initials(A.profile?.name))+'</span></button></header><main id="pageArea" class="page"></main></div></div><nav class="mobile-nav">'+mobile+'</nav><div id="layer"></div>';
+ root.innerHTML='<div class="shell"><aside class="aside"><div class="brand">'+brand()+'</div><nav class="nav-group"><span class="nav-label">EXPLORAR</span>'+nav+'</nav><div class="aside-foot"><b>LX Group</b>Uma plataforma reconstruída com foco em estabilidade e privacidade.</div></aside><div class="content"><header class="topbar"><div class="top-name"><strong id="pageTitle">'+escapeHtml(A.page)+'</strong><small>'+escapeHtml(VERSION)+'</small></div><input type="search" id="search" class="search" placeholder="Buscar filmes, músicas, livros…" aria-label="Buscar no catálogo" value="'+escapeHtml(A.term)+'"><details class="compact-menu"><summary aria-label="Mais seções da LX Plus">☰</summary><div class="compact-menu-panel"><span class="nav-label">NAVEGAR</span>'+nav+'</div></details><button class="avatar-button" type="button" data-page="Perfil" aria-label="Abrir perfil"><span class="avatar">'+escapeHtml(initials(A.profile?.name))+'</span></button></header><main id="pageArea" class="page"></main></div></div><nav class="mobile-nav">'+mobile+'</nav><div id="layer"></div>';
 }
 function picture(item){
  const src=safeUrl(item.cover);
@@ -64,20 +66,13 @@ function hero(){
  return '<div class="hero">'+(image?'<img class="hero-image" style="object-fit:cover;right:0;width:65%;height:100%" src="'+escapeHtml(image)+'" alt="">':'')+'<div class="hero-text"><span class="eyebrow">EM DESTAQUE NA LX PLUS</span><h1>'+escapeHtml(item.title)+'</h1><p>'+escapeHtml(item.description||'Descubra filmes, livros e músicas selecionados para você.')+'</p><div class="actions"><button class="btn primary" type="button" data-item="'+escapeHtml(item.id)+'">▶ Ver detalhes</button><button class="btn" type="button" data-page="Minha Lista">♡ Minha Lista</button></div></div></div>';
 }
 function catalog(){
- if(A.catalogStatus==='loading'&&!A.items.length)return '<div class="heading"><div><span class="eyebrow">BIBLIOTECA LX</span><h1>Preparando o catálogo</h1><p>Você já está conectado. Os filmes e séries estão sendo carregados separadamente.</p></div></div><div class="panel"><p>Sincronizando os títulos publicados…</p></div>';
- if(A.catalogStatus==='error'&&!A.items.length)return '<div class="heading"><div><h1>Catálogo temporariamente indisponível</h1><p>Sua conta está conectada, mas os títulos não responderam.</p></div></div><div class="panel"><button class="btn primary" type="button" id="retryCatalog">Recarregar catálogo</button></div>';
- const list=filtered();
- const history=A.stored.history&&typeof A.stored.history==='object'?A.stored.history:{};
- const recently=Object.entries(history).map(([key,record])=>({
-  item:A.items.find(x=>id(x.id)===key),
-  when:record&&typeof record==='object'?record.updatedAt:''
- })).filter(x=>x.item).sort((a,b)=>String(b.when).localeCompare(String(a.when))).slice(0,6);
- const resume=(A.page==='Início'&&!A.term&&recently.length)?
- '<section style="margin:0 0 30px"><div class="heading"><div><span class="eyebrow">SEU HISTÓRICO</span><h2>Continue de onde parou</h2></div></div><div class="cards">'+recently.map(x=>card(x.item)).join('')+'</div></section>':'';
-
- const filters=['Todos','Filme','Série','Dorama','Anime','Música','Livro'];
- const chips=['Início','Buscar'].includes(A.page)?'<div class="filters">'+filters.map(x=>'<button type="button" class="chip '+(A.filter===x?'active':'')+'" data-filter="'+escapeHtml(x)+'">'+escapeHtml(x==='Todos'?'Todos':label(x))+'</button>').join('')+'</div>':'';
- return (A.page==='Início'&&!A.term?hero():'')+resume+'<div class="heading"><div><span class="eyebrow">BIBLIOTECA LX</span><h1>'+escapeHtml(A.term?'Busca: '+A.term:A.page==='Início'?'Descubra na LX Plus':A.page)+'</h1><p>Encontre seu próximo filme, livro ou som favorito.</p></div><small>'+list.length+' itens</small></div>'+chips+(list.length?'<div class="cards">'+list.slice(0,180).map(card).join('')+'</div>'+(list.length>180?'<p class="muted">Mostrando 180 resultados. Refine sua busca para encontrar outros títulos.</p>':''):'<div class="empty"><h2>Nada encontrado</h2><p>Tente outra pesquisa ou categoria.</p><button type="button" class="btn" id="clear">Limpar filtros</button></div>');
+ return renderPremiumCatalog({
+  items:A.page==='Início'&&!A.term?A.items:filtered(),
+  page:A.page,filter:A.filter,term:A.term,
+  history:A.stored.history||{},
+  list:Array.isArray(A.stored.list)?A.stored.list:[],
+  catalogStatus:A.catalogStatus
+ });
 }
 function otherPage(){
  if(A.page==='Perfil')return '<div class="heading"><div><span class="eyebrow">MINHA CONTA</span><h1>Meu perfil</h1><p>Sua identidade e seus dados permanecem na nuvem.</p></div><button class="btn" id="signout">Sair da conta</button></div><div class="panel-grid"><div class="panel"><span class="badge">'+(A.profile?.verified?'Verificado':'Membro LX Plus')+'</span><h2 style="margin-top:16px">'+escapeHtml(A.profile?.name||'Usuário')+'</h2><p>'+escapeHtml(A.user?.email||'')+'</p><form id="profileForm" class="form"><label class="field">Nome<input name="name" maxlength="60" required value="'+escapeHtml(A.profile?.name||'')+'"></label><label class="field">Biografia<textarea name="bio" maxlength="280">'+escapeHtml(A.profile?.bio||'')+'</textarea></label><button class="btn primary">Salvar perfil</button></form></div><div class="panel"><span class="eyebrow">MINHA LISTA</span><p class="big">'+saved().size+'</p><p>Itens salvos na sua conta.</p><button class="btn" data-page="Minha Lista">Abrir lista</button><hr style="border:0;border-top:1px solid #383747;margin:25px 0"><p>Seu histórico, preferências e assinatura continuam no banco de dados original.</p></div></div>';
@@ -105,7 +100,7 @@ function otherPage(){
    (scan.demo?'<button class="btn" type="button" id="driveDemoReset">Limpar demonstração</button>':'')+
    '</div><p class="muted">Duplicatas, episódios e correspondências incertas ficam para revisão.</p></div>':'';
   const summary=A.drive.lastResult?'<div class="panel" style="grid-column:1/-1"><h2>'+(A.drive.lastResult.demo?'Resultado da simulação · zero envios reais':'Última importação')+'</h2><p>'+A.drive.lastResult.published.length+(A.drive.lastResult.demo?' simulados · ':' publicados · ')+A.drive.lastResult.duplicates.length+' repetidos · '+A.drive.lastResult.errors.length+' com erro</p></div>':'';
-  return '<div class="heading"><div><span class="eyebrow">LX GROUP · PAINEL ADMINISTRATIVO</span><h1>Automação do catálogo</h1><p>Importe filmes de uma pasta do Google Drive e complete os dados automaticamente.</p></div></div>'+
+  return studioOverview({catalog:A.items,scan:A.drive.scan})+'<div class="heading"><div><span class="eyebrow">LX GROUP · PAINEL ADMINISTRATIVO</span><h1>Automação do catálogo</h1><p>Importe filmes de uma pasta do Google Drive e complete os dados automaticamente.</p></div></div>'+
     '<div class="panel-grid"><div class="panel"><span class="eyebrow">GOOGLE DRIVE</span><h2>Conectar uma pasta</h2><p>Informe uma pasta compartilhada. O importador procura os vídeos e tenta identificar o filme usando o título do arquivo.</p><form class="form" id="driveScanForm"><label class="field">Link da pasta<input type="url" name="folder" required placeholder="https://drive.google.com/drive/folders/..." value="'+escapeHtml(A.drive.folder)+'"></label><label class="field">Limite por verificação<input type="number" name="limit" min="1" max="300" value="100"></label><button class="btn primary" '+(A.drive.working?'disabled':'')+'>Buscar filmes e capas</button></form><div class="actions" style="margin-top:14px"><button class="btn" type="button" id="driveDemo" '+(A.drive.working?'disabled':'')+'>▶ Testar pasta fictícia</button></div><p id="driveStatus" role="status" class="muted">'+escapeHtml(A.drive.progress||'O Google Drive e TMDb precisam estar configurados no Supabase.')+'</p></div>'+
     '<div class="panel"><span class="eyebrow">ETAPAS DA AUTOMAÇÃO</span><h2>Como funciona</h2><p>1. Arquivo novo na pasta → 2. Nome e ano → 3. Capa e descrição → 4. Verificação de qualidade → 5. Publicação.</p><p>Na primeira fase, você pode verificar e publicar com um clique. A sincronização recorrente só será ativada após configurar as chaves, a pasta e os direitos de distribuição.</p><span class="badge">Publicação automática ainda não ativada</span></div>'+
     '<div class="panel"><h2>Testar link no player</h2><p>Cole um link HTTPS de vídeo ou áudio e faça uma pré-visualização. O teste não altera o catálogo.</p><form id="previewLinkForm" class="form"><label class="field">Link para testar<input type="url" name="url" required maxlength="3000" placeholder="https://drive.google.com/file/d/..."></label><button class="btn">Testar reprodução</button></form></div>'+
@@ -259,7 +254,25 @@ root.addEventListener('input',e=>{
 root.addEventListener('click',async e=>{
  const button=e.target.closest('button');if(!button)return;
  if(button.dataset.auth){A.auth=button.dataset.auth;renderAuth();return}
- if(button.dataset.page){A.page=button.dataset.page;A.term='';A.filter='Todos';A.extra=[];const search=document.querySelector('#search');if(search)search.value='';draw();window.scrollTo({top:0,behavior:'smooth'});return}
+ if(button.dataset.page){const menu=button.closest('details');if(menu)menu.open=false;A.page=button.dataset.page;A.term='';A.filter='Todos';A.extra=[];const search=document.querySelector('#search');if(search)search.value='';draw();window.scrollTo({top:0,behavior:'smooth'});return}
+ if(button.dataset.scroll){
+  const rail=document.querySelector('[data-rail="'+CSS.escape(button.dataset.scroll)+'"]');
+  if(rail){
+   const delta=(button.dataset.direction==='-1'?-1:1)*Math.max(200,rail.clientWidth*.8);
+   if(rail.scrollBy)rail.scrollBy({left:delta,behavior:'smooth'});
+   else rail.scrollLeft+=delta;
+  }
+  return;
+ }
+ if(button.dataset.studioPreview!==undefined){
+  if(!A.admin)return;
+  const index=Number(button.dataset.studioPreview);
+  const item=studioSources({catalog:A.items,scan:A.drive.scan})[index];
+  if(item){
+   document.querySelector('#layer').innerHTML='<div class="overlay"><div class="modal" role="dialog" aria-modal="true" aria-label="Prévia de arte"><div class="modal-head"><h2>Prévia de capa e banner</h2><button type="button" class="close" data-close aria-label="Fechar">✕</button></div><div class="modal-body">'+studioPreview(item)+'</div></div></div>';
+  }
+  return;
+ }
  if(button.dataset.filter){A.filter=button.dataset.filter;draw();return}
  if(button.dataset.item){const x=find(button.dataset.item);if(x)modal(x);return}
  if(button.dataset.close!==undefined){closeModal();return}
