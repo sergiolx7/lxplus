@@ -2,7 +2,7 @@ import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.57.4?bundle';
 import {BACKEND} from './config.js';
 
 export const db=createClient(BACKEND.url,BACKEND.key,{
- auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'lxplus-auth-token'}
+ auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
 });
 export const categories={'Início':null,'Filmes':['Filme'],'Séries':['Série','Dorama','Anime'],'Músicas':['Música'],'Livros':['Livro'],'Ao vivo':['Ao Vivo']};
 export const safeUrl=s=>{
