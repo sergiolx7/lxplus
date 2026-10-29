@@ -7,6 +7,7 @@ import {renderPremiumCatalog} from './premium-ui.js';
 import {studioOverview,studioSources,studioPreview} from './studio-ui.js';
 import {renderCommunity,renderSocialMembers} from './social-ui.js';
 import {loadDashboardMetrics,renderDashboardMetrics} from './admin-monitor.js';
+import {MusicDock} from './music-dock.js';
 
 const root=document.querySelector('#app');
 const A={user:null,profile:null,admin:false,stored:{},items:[],extra:[],members:[],notices:[],ranking:{season:null,rows:[]},page:'Início',term:'',filter:'Todos',auth:'login',modal:null,playerCleanup:null,busy:false,loadGeneration:0,catalogStatus:'loading',memberTerm:'',monitor:null,monitorBusy:false,drive:{folder:'',scan:null,progress:'',rightsConfirmed:false,working:false,lastResult:null}};
@@ -167,11 +168,16 @@ async function toggle(item){
  try{await saveUserField(A.user.id,'list',A.stored.list);toast('Sua lista foi atualizada.')}
  catch(e){A.stored.list=before;modal(item);if(A.page==='Minha Lista')draw();toast(e.message||'Não foi possível salvar a lista.')}
 }
+async const musicDock=new MusicDock({resolve:sourceFor,onError:message=>toast(String(message||'Não foi possível tocar esta faixa.'))});
 async function play(item){
  try{const player=await sourceFor(item);
   if(player.kind==='unavailable'){toast('Este título está em breve ou não possui fonte autorizada para reprodução.');return}
   if(player.kind==='external'){toast(player.message||'Abra o conteúdo no provedor original.');if(safeUrl(player.url))window.open(player.url,'_blank','noopener,noreferrer');return}
   if(player.kind==='invalid'||!safeUrl(player.url)){toast(player.message||'Endereço de mídia inválido.');return}
+  if(item.type==='Música'&&['audio','hls','dash'].includes(player.kind)){
+   await musicDock.open(item,player,A.items.filter(track=>track.type==='Música'));
+   return;
+  }
   modal(item,player);
  }catch(e){toast('Erro ao abrir mídia: '+(e.message||'tente novamente'))}
 }
@@ -346,6 +352,7 @@ root.addEventListener('click',async e=>{
   return;
  }
  if(button.id==='signout'){
+  musicDock.close();
   ++A.loadGeneration;
   try{await timed(db.auth.signOut(),'A saída da conta',7000)}catch(err){console.warn('LX Plus: saída demorou:',err)}
   A.user=null;A.profile=null;A.stored={};A.items=[];A.auth='login';renderAuth();return;
