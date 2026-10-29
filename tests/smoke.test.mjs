@@ -41,7 +41,7 @@ test('ranking uses read-only database data, and homepage references saved histor
  const app=read('src/app.js'),data=read('src/data.js');
  assert.match(data,/getRanking/);
  assert.match(data,/lx_rank_scores/);
- assert.match(app,/Continue de onde parou/);
+ assert.match(read('src/premium-ui.js'),/Continue assistindo/);
  assert.match(app,/A\.ranking/);
 });
 
@@ -60,7 +60,7 @@ test('session/profile startup is time-bounded; catalog loads after dashboard',()
  assert.match(app,/timed\(\s*Promise\.all\(\[getProfile/);
  assert.match(app,/draw\(\); \/\/ The member dashboard opens immediately/);
  assert.match(app,/loadCatalogInBackground\(generation\)/);
- assert.match(app,/A\.catalogStatus==='error'/);
+ assert.match(read('src/premium-ui.js'),/catalogStatus==='error'/);
 });
 test('stalled legacy auth can switch to an isolated persistent session without deleting accounts',()=>{
  const app=read('src/app.js'),data=read('src/data.js');
@@ -68,4 +68,13 @@ test('stalled legacy auth can switch to an isolated persistent session without d
  assert.match(app,/switchToRecoveryLogin\(\)/);
  assert.match(data,/storageKey:RECOVERY_KEY/);
  assert.match(data,/lxplus_next_login_recovery_v1/);
+});
+
+test('premium UI modules are wired into existing app without modifying authentication flow',()=>{
+ const app=read('src/app.js');
+ assert.match(app,/renderPremiumCatalog\(\{/);
+ assert.match(app,/studioOverview\(\{catalog:A\.items/);
+ assert.match(app,/renderCommunity\(\{members:A\.members/);
+ assert.match(app,/data-rail/);
+ assert.match(app,/compact-menu-panel/);
 });
