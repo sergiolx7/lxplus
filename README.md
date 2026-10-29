@@ -7,7 +7,7 @@ Este é um **novo aplicativo web em uma árvore isolada**, com módulos próprio
 - Layout responsivo com identidade LX Plus / LX Group, categorias, capas e busca.
 - Supabase Auth: entrar, criar conta, confirmar e-mail, solicitar recuperação de senha e manter sessão usando a chave de armazenamento de sessão padrão do projeto original.
 - Aprovação de contas e verificação de administrador pelo Supabase.
-- Catálogo publicado paginado, descoberta por pesquisa limitada, categorias filmes/séries/músicas/livros, ficha do conteúdo e indicação de indisponibilidade sem inventar reprodução.
+- Catálogo publicado paginado, descoberta por pesquisa limitada, categorias filmes/séries/músicas/livros, ficha do conteúdo e indicação de indisponibilidade sem inventar reprodução. Inclui seção de continuidade do histórico salvo e visualização de ranking mensal respeitando nomes de perfis privados.
 - Minha Lista sincronizada com `lx_user_state`, sem apagar as outras propriedades JSON; progresso básico de reprodução.
 - Perfil, avisos e visibilidade básica de membros da comunidade.
 - Botões administrativos de exclusão **deliberadamente ausentes** até revisão de segurança.
