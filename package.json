@@ -1,0 +1,9 @@
+{
+  "name": "lxplus-next",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --check src/config.js && node --check src/data.js && node --check src/app.js && node --check src/universal-player.js && node --check src/drive-import.js && node --check src/drive-import-demo.js && node --test tests/*.test.mjs"
+  }
+}

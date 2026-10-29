@@ -1,263 +1,33 @@
-# LX Plus v25.27 — Message Fix + Screen Share + ADM Save
+# LX Plus Next — reconstrução do zero
 
-Build de estabilização focada nos bugs observados em produção.
+## Situação
+Este é um **novo aplicativo web em uma árvore isolada**, com módulos próprios, sem importar os bundles de produção. Este código **ainda não foi publicado** e **não é uma versão pronta para lançamento**.
 
-## Correções principais
-- **ADM:** Salvar alterações aparece dentro da Biblioteca/Aprovações, no painel lateral e no dock flutuante. Exclusões, selo verificado e aprovações ficam pendentes até confirmar.
-- **Mensagens:** o canal Realtime foi corrigido. O remetente agora publica exatamente no canal que o destinatário escuta. Há fallback ao vivo mesmo se a tabela persistente ainda não estiver ativa.
-- **Notificações:** novo ícone de mensagens com badge, toast visual e suporte opcional a Notification API.
-- **Chamadas:** botão Encerrar tem fallback de captura global; compartilhamento de tela usa um sender de vídeo estável desde o início da chamada e restaura a câmera ao parar.
-- **Refresh:** mantém modo, categoria, rolagem e posição do filme usando o sistema de restauração já existente.
-- **Deploy:** detector de arquivos misturados mostra um aviso vermelho se index.html e JS forem de versões diferentes.
+## Recursos implementados na primeira base
+- Layout responsivo com identidade LX Plus / LX Group, categorias, capas e busca.
+- Supabase Auth: entrar, criar conta, confirmar e-mail, solicitar recuperação de senha e manter sessão usando a chave de armazenamento de sessão padrão do projeto original.
+- Aprovação de contas e verificação de administrador pelo Supabase.
+- Catálogo publicado paginado, descoberta por pesquisa limitada, categorias filmes/séries/músicas/livros, ficha do conteúdo e indicação de indisponibilidade sem inventar reprodução. Inclui seção de continuidade do histórico salvo e visualização de ranking mensal respeitando nomes de perfis privados.
+- Minha Lista sincronizada com `lx_user_state`, sem apagar as outras propriedades JSON; progresso básico de reprodução.
+- Perfil, avisos e visibilidade básica de membros da comunidade.
+- Botões administrativos de exclusão **deliberadamente ausentes** até revisão de segurança.
 
-## Banco para histórico offline de chat
-Arquivo: `supabase/v2527_persistent_chat.sql`.
-Sem essa migration, mensagens ao vivo continuam funcionando por Realtime Broadcast; o histórico offline central depende dessa tabela/RPC.
+## Integração de dados
+Projeto Supabase: `ubidogquzpdvrbzbhxda`. O frontend contém apenas a Publishable Key pública; não possui senha, token secreto ou credenciais administrativas. O banco de produção NÃO foi modificado durante esta criação.
 
-# LX Plus v25.26 — Community 3.0 + Stable ADM + Resume
+Inventário de preservação encontrado em 29/10/2026: 7 usuários, 7 perfis, 7 estados pessoais, 2.374 itens do catálogo (nem todos publicados), 68.144 registros de descoberta automática, mensagens, amizades, assinaturas, rankings e informações de escuta.
 
-- Comunidade com conversa em tempo real, áudio, emojis e stickers personalizados.
-- Chamada com encerrar imediato e compartilhamento de tela robusto.
-- Estado de navegação/filme preservado após atualizar a página.
-- Painel ADM com Salvar alterações sempre visível em Biblioteca/Aprovações e fila persistente.
-- Migração opcional `supabase/v2526_community_chat.sql` adiciona histórico persistente de chat no banco.
+Não excluir `auth.users`, `lx_profiles`, `lx_user_state`, `lx_subscriptions`, `lx_messages`, `lx_friendships`, `lx_rank_*`, conteúdo de Storage e backups anteriores. A reconstrução pode reaproveitar a autenticação e os dados sem conservar o código legado. Excluir esse conteúdo seria perda de contas e informações pessoais.
 
-# LX Plus v25.26 — Community Pro + ADM Save Fix
+## Arquitetura
+`index.html` → `assets/styles.css` + `src/app.js` → `src/data.js` → Supabase Auth/PostgREST/Storage.
+Sem Service Worker antigo ou múltiplos CSS/JS com overrides. Sem build step ou Node obrigatório para visualização.
 
-- Comunidade com visual de contatos/conversas, ícones SVG LX e chamadas com prévia local imediata.
-- Compartilhamento de tela com estado visível e restauração automática da câmera.
-- Reações LX durante chamadas usando o canal seguro de sinalização da própria chamada.
-- ADM com Aprovar/Recusar/Verificar/Excluir em modo pendente e botão flutuante Salvar alterações.
-- Cada alteração é confirmada no Supabase antes de sair da fila pendente.
+## Limitações ainda não aceitas para lançamento
+A comunidade completa, sistema de mensagens e chamadas, painel ADM completo, player HLS/DASH/Drive e controle de séries, playlists e letras de músicas não foram reimplementados ou homologados. Testes de login, permissões, persistência entre dispositivos, qualidade de streaming e performance ainda precisam ocorrer. O SMTP autenticado da LX Group ainda depende do domínio e provedor. **Não publicar como substituição do site em produção antes da lista de aceite.**
 
-# LX Plus v25.26 — Foundation Fix
+## Publicação e rollback
+A versão `main` e as branches de backup antigas são preservadas. Realizar homologação em URL isolada; depois do aceite, gerar snapshot com restauração comprovada e trocar a versão publicada uma única vez. Reverter ao commit/branch anterior em caso de incidente. O CNAME abaixo foi mantido apenas por compatibilidade; domínio final da LX Plus deve ser confirmado antes do corte.
 
-Revisão consolidada de estabilidade: Comunidade integrada, selo verificado via RPC administrativo dedicado, exclusão de catálogo confirmada pelo servidor, cache unificado e correções de sincronização de perfil.
-
-# LX Plus v25.22 — Comunidade Integrada
-
-Correção estrutural: o LX Social agora é embutido em `js/app.js`, removendo a dependência de `js/social.js` separado no deploy. O botão Comunidade continua com fallback imediato e handoff automático quando o app principal inicia.
-
-# LX Plus v25.21 — Comunidade Sempre Abre
-
-Correção estrutural do lançador da Comunidade: o clique abre uma UI de emergência imediatamente e faz handoff para o módulo social quando ele estiver pronto.
-
-# LX Plus v25.18 — Social Calls + Screen Share
-
-Nova camada LX Social com perfis públicos de contas aprovadas, solicitações de amizade, amigos, chamadas WebRTC de áudio/vídeo, compartilhamento de tela, tela cheia e privacidade social.
-
-A sinalização usa Supabase Realtime/Postgres e a mídia da chamada é peer-to-peer via WebRTC. Para máxima confiabilidade em redes corporativas/celulares restritas, configure um servidor TURN além dos STUNs padrão.
-
-# Histórico: LX Plus v25.17 — Open Catalog + Official Live
-
-Esta versão adiciona catálogo online legal, biblioteca pública, previews musicais oficiais e agenda esportiva.
-Ela **não incorpora Futmax nem streams não autorizados**.
-
-- Filmes/séries: TMDB + disponibilidade JustWatch via Edge Function (exige TMDB API Key configurada no ADM).
-- Livros: Gutendex / Project Gutenberg.
-- Música: iTunes Search API + preview oficial quando disponível.
-- Esportes: TheSportsDB; plano gratuito funciona com limites, chave própria pode ser salva no ADM.
-- Filmes/séries completos continuam usando os arquivos enviados/licenciados na LX Plus.
-
-# LX Plus v25.16 — Catalog Importer
-
-Importador de metadados para TMDB, Open Library e música; livros públicos iniciais e catálogo com capas automáticas.
-
-# LX Plus v25.15 — Music · Reader · Cinema
-
-Atualização completa dos modos Ouvir, Ler e Assistir. LX Music com biblioteca/player/fila, LX Reader com PDF/EPUB/capítulos e player de vídeo com controles nativos permanentes como fallback. Tema claro reconstruído.
-
-# LX Plus v25.14 — Foundation Update
-
-Atualização de estabilidade com Cinema Core 3.0: player global isolado do modal antigo, vídeo sempre em `contain`, Play e controles persistentes quando pausado, fallback para controles nativos, renovação automática da URL privada do Supabase, TV/PiP/tela cheia, próximo episódio e atalhos. Também atualiza o ADM, selo verificado e limpeza de cache da build.
-
-# LX Plus v25.13 — Shadow Cinema Player
-
-Player isolado em Shadow DOM para impedir que CSS legado esconda os controles.
-
-# LX Plus v25.12 — Cinema Player
-
-Player reconstruído para iniciar pausado com Play central visível, vídeo sempre ajustado à tela,
-controles em overlay e cache-busting uniforme v25.12 em todos os arquivos locais.
-
-# LX Plus v25.11 — Screen Fit Player
-
-Player corrigido para respeitar a proporção original do vídeo e caber inteiro na viewport, sem zoom/corte. Inclui limpeza de cache por build e correção do Service Worker.
-
-# LX Plus v25.10 — Player Rebuild
-
-Atualização focada na tela de assistir: player isolado em viewport própria, layout responsivo para celular/PC, pôster antes da reprodução, loading e erro amigável, controles simplificados, retomada, tela cheia, PiP e transmissão para TV quando suportada.
-
-# LX Plus v25.10 — ADM Studio + Auto Quality
-
-Correção crítica do catálogo: escrita e exclusão somente via RPC protegida (`lx_catalog_upsert_item` / `lx_catalog_delete_item`), limpeza forçada de caches/Service Workers antigos na troca de versão e JavaScript/CSS em modo network-first sem cache persistente antigo.
-
-# LX Plus v25.7 — Retry Safe Auth
-
-- Cadastro não fica mais bloqueado depois de e-mail/senha incorretos.
-- Um único envio de cadastro pode ficar em andamento por vez, evitando disparos duplicados.
-- Após cadastro pendente, há botão “Corrigir dados e tentar novamente”.
-- Erro 429 não trava o formulário; a pessoa pode corrigir os campos.
-- ADM ganhou “Excluir pendente” para remover contas com e-mail digitado errado.
-- Contas aprovadas e ADM não podem ser excluídas por essa função.
-
-# LX Plus v25.6 — Atomic Cloud Sync
-
-- Catálogo agora usa operações atômicas por item no Supabase.
-- Exclusão cria tombstone no banco: cache/navegador antigo não consegue ressuscitar conteúdo apagado.
-- Realtime + atualização automática a cada 12 segundos + sincronização ao voltar para a aba.
-- Formulário rápido: título, descrição e envio do arquivo; campos avançados ficam recolhidos.
-- Capa/banner podem ser gerados automaticamente quando não enviados.
-- Qualidade padrão do player fica em Automático; HLS adaptativo real permanece opcional em Mais opções.
-- Conteúdo só aparece para usuários quando está publicado e a mídia mínima necessária existe.
-
-# LX Plus v25.5 — Approval + Global Sync
-
-Esta versão torna o Supabase a fonte de verdade do catálogo e adiciona aprovação de contas pelo ADM.
-
-- Cadastro pode ser liberado por confirmação de e-mail ou aprovação manual do ADM.
-- Mensagem de espera: até 24 horas.
-- ADM pode Aprovar, Reaprovar ou Recusar em Comunidade & Aprovações.
-- Aprovação manual confirma a conta no Auth sem expor chaves administrativas no frontend.
-- Catálogo e mídia privada ficam disponíveis apenas para contas aprovadas.
-- Adicionar, editar, publicar, priorizar e excluir conteúdo agora aguardam confirmação da nuvem antes de atualizar a interface.
-- Realtime mantém outros navegadores/dispositivos sincronizados.
-- Credencial ADM de demonstração removida da build de produção.
-
-Versão limpa para operação oficial: sem catálogo de demonstração, sem usuários/notificações fictícias e sem posters de exemplo no splash. A estrutura, Supabase, ADM, conta verificada e recursos permanecem intactos. O ADM ganhou campos vazios para Sobre, Termos de Uso, Política de Privacidade e e-mail de suporte.
-
-# LX Plus v25.3 — Auth Rate Limit Fix
-
-- Exibe a versão na tela de autenticação para confirmar o deploy.
-- Força HTTPS nos redirects de produção.
-- Trata erro 429 do Supabase explicitamente.
-- Cache-busting em CSS/JS e Service Worker v25.3.
-- Não afirma que a conta foi criada quando o limite de e-mail bloqueia o signup.
-
-# LX Plus v25.2 — Auth UX Fix
-
-Melhora mensagens de cadastro/login, detecta conta não confirmada e rate limit, evita cliques repetidos e direciona o usuário para reenviar confirmação.
-
-# LX Plus v25.1 — Auth Redirect Fix
-
-Correção do fluxo de confirmação e recuperação do Supabase: redirects usam o domínio oficial configurado, link expirado é tratado dentro da interface e há botão para reenviar confirmação.
-
-# LX Plus v25 — Launch Complete
-
-A v25 fecha a lista de melhorias de lançamento: progresso no segundo exato, perfis editáveis, bio, formatos de avatar, molduras Premium, recomendações contextuais, mini player, WebVTT, HLS adaptativo real quando um manifesto é informado, dashboard avançado, agendamento, prioridade, prévia de rascunhos, pedidos convertidos em conteúdo e identidade visual global pelo ADM.
-
-## O que é realmente adaptativo
-
-O player usa **HLS.js**. Se o ADM informar um `master.m3u8`, a opção **Auto** deixa o HLS escolher a qualidade conforme rede/tela. Se houver apenas MP4s em resoluções diferentes, o player oferece troca manual entre as variantes cadastradas. A v25 não finge transcodificação: gerar o HLS continua sendo responsabilidade do pipeline/CDN de mídia.
-
-# LX Plus v24 — Full Experience
-
-Atualização ampla de experiência: painel do usuário modernizado, resumo de conta e sincronização, Home com faixa de experiência, player refinado com volume persistente e modo cinema, e painel ADM com Central de Lançamento e indicadores de prontidão.
-
-# LX Plus v23 — Verified Dynamic
-
-Atualização com selo verificado redesenhado em estilo inspirado nas plataformas sociais: mais visível, brilhando e acompanhando automaticamente a cor escolhida no tema.
-
-# LX Plus v22 — DM Professional
-
-Atualização DM com splash mais profissional, movimento visual refinado, menos exposição de nomes nas artes de fundo, identidade de perfil modernizada e ajustes de apresentação para lançamento.
-
-# LX Plus v21 — Launch Update
-
-Atualização com melhorias de lançamento: acesso ADM exclusivo no topo, retorno do painel ADM para a plataforma, galeria interna de fotos/avatares para perfil, ajustes visuais no logo LX Plus para evitar corte do X e refinamentos de interface.
-
-# LX Plus v20 — Cloud Sync
-
-A v20 transforma a LX Plus em uma base online multiusuário. O GitHub Pages continua servindo a interface, enquanto o Supabase passa a centralizar autenticação, catálogo, progresso, pedidos, assinaturas administrativas, notificações, analytics e storage.
-
-## O que passa a funcionar entre todos os dispositivos
-
-- Cadastro e login reais por e-mail/senha com Supabase Auth.
-- Sessão persistente e recuperação de senha.
-- Perfis e privacidade do Ranking LX.
-- Minha Lista, histórico, avaliações, preferências, aparência, Modo App e avatar sincronizados.
-- Catálogo único para todos os usuários.
-- Conteúdo criado/editado/excluído no ADM refletido globalmente.
-- Capas/banners/avatares em `lx-assets` e mídia privada em `lx-media` com URL assinada temporária.
-- Upload em lote de episódios e faixas.
-- Pedidos/problemas com votos centralizados.
-- Notificações publicadas pelo ADM.
-- Premium manual pelo ADM sincronizado em todos os dispositivos.
-- Analytics centralizado para o administrador.
-- RLS: permissões de ADM ficam no banco, não no JavaScript público.
-- Realtime para catálogo, notificações, assinatura e estado do usuário.
-
-## Migração automática da v19
-
-A v20 mantém o prefixo de armazenamento local da v19 e o IndexedDB legado `LXPlus16Media`.
-
-Na primeira entrada de uma conta cloud sem estado remoto, a v20 tenta importar automaticamente:
-
-- histórico;
-- Minha Lista;
-- avaliações;
-- preferências;
-- tema/cor/Modo App;
-- avatar/logo do perfil.
-
-No ADM > Produção & Nuvem, o botão **Enviar catálogo atual para a nuvem** também tenta migrar capas em data URI e arquivos locais de filmes/episódios/faixas para o Supabase Storage antes de publicar o catálogo.
-
-## O que você precisa configurar uma única vez
-
-Abra `GUIA-ATIVACAO-V20.md` e siga o passo a passo. Resumo:
-
-1. Criar um projeto Supabase.
-2. Executar `supabase/setup.sql` no SQL Editor.
-3. Copiar a Project URL e a **Publishable Key** para `js/config.js`.
-4. Configurar a URL oficial da LX Plus no Supabase Auth.
-5. Criar sua conta normalmente pelo site.
-6. Tornar essa conta administradora executando `supabase/ADMIN_SETUP.sql` com seu e-mail.
-7. Entrar de novo e usar ADM > Produção & Nuvem > Enviar catálogo atual para a nuvem.
-8. Subir os arquivos da v20 no repositório GitHub Pages.
-
-## Domínio já preparado
-
-O arquivo `CNAME` está configurado para:
-
-`xn--rifamilionria-deb.api.br`
-
-que corresponde ao domínio internacionalizado da LX Plus configurado no GitHub Pages.
-
-## Chaves do Supabase
-
-No navegador use somente:
-
-- Project URL;
-- Publishable Key (`sb_publishable_...`), ou a `anon` key legada quando necessário.
-
-**Nunca coloque Secret Key / Service Role Key no GitHub, HTML ou JavaScript.**
-
-## ADM da v20
-
-A senha fixa `admin@lxplus.com.br / Admin@1234` não é usada no modo cloud de produção. Isso foi removido para evitar que qualquer pessoa que veja o JavaScript consiga entrar no ADM.
-
-Na v20, você cria uma conta normal e autoriza essa conta como ADM no banco usando o SQL de configuração.
-
-## Premium
-
-O ADM pode ativar/desativar Premium manualmente e isso já fica global no banco. Isso serve para cortesia, teste ou administração.
-
-Cobrança automática ainda exige um provedor de pagamento com checkout + webhook seguro. A v20 não finge que uma cobrança aconteceu apenas pelo JavaScript do navegador.
-
-## Mídia e escala
-
-Vídeo/áudio direto pelo bucket privado `lx-media` funciona para a base do produto e testes dentro dos limites do plano usado. O player recebe URLs assinadas temporárias. Para catálogo grande e streaming em escala, a arquitetura recomendada continua sendo object storage/CDN + transcodificação HLS.
-
-Publique apenas conteúdo que você tenha direito/licença para distribuir.
-
-## Teste local
-
-Na pasta do projeto:
-
-```bash
-python -m http.server 8000
-```
-
-Abra `http://localhost:8000`.
-
-Para testar confirmação/recuperação de senha localmente, adicione também a URL local permitida no Supabase Auth.
+## E-mails
+Os modelos do trabalho anterior são incorporados na pasta `email/lxgroup/`. Os e-mails de autenticação exigem SMTP confiável, e os comunicados exigem controle de consentimento e descadastro.

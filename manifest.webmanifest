@@ -1,21 +1,15 @@
 {
   "name": "LX Plus",
   "short_name": "LX Plus",
-  "description": "Filmes, séries, música, livros e comunidade em uma experiência premium.",
-  "id": "./",
   "start_url": "./",
-  "scope": "./",
   "display": "standalone",
-  "background_color": "#020306",
-  "theme_color": "#050506",
-  "orientation": "any",
+  "background_color": "#090a10",
+  "theme_color": "#090a10",
   "icons": [
     {
-      "src": "assets/lxplus-icon-v34.svg",
-      "sizes": "any",
+      "src": "./assets/icon.svg",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "sizes": "any"
     }
-  ],
-  "version": "R12.5-UI36-MYPLAY-20261002"
+  ]
 }

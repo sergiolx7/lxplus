@@ -1,7 +1,0 @@
-LX Plus v30.6 — DEPLOY
-
-Build: 30.6
-Service Worker cache: lxplus-shell-v3060
-
-Para GitHub Pages, substitua os arquivos da raiz pelos arquivos do ZIP GitHub v30.6.
-Depois faça hard refresh/feche e reabra o atalho PWA para o novo Service Worker assumir.
