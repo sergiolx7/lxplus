@@ -91,8 +91,9 @@ export async function notices(){
  return error?[]:data;
 }
 export async function publicMembers(){
- const {data,error}=await db.from('lx_profiles').select('user_id,name,verified,bio').eq('ranking_visible',true).limit(35);
- return error?[]:data;
+ // The existing RLS policy only exposes opted-in public profiles.
+ const {data,error}=await db.from('lx_profiles').select('user_id,name,verified,bio,username,avatar_url,social_visible').eq('ranking_visible',true).eq('social_visible',true).limit(50);
+ return error?[]:(data||[]);
 }
 export async function sourceFor(item){
  return resolveItem(item,{signStorage:async key=>{
@@ -110,4 +111,47 @@ export async function getRanking(){
  const season=seasons[0];
  const {data,error}=await db.from('lx_rank_scores').select('user_id,season_key,monthly_score,lifetime_score').eq('season_key',season.season_key).order('monthly_score',{ascending:false}).limit(50);
  return{season,rows:error?[]:(data||[])};
+}
+
+export async function ownFriendships(userId){
+ const {data,error}=await db.from('lx_friendships').select('id,user_low,user_high,requested_by,status,updated_at')
+ .or('user_low.eq.'+userId+',user_high.eq.'+userId).limit(80);
+ if(error)throw error;
+ return data||[];
+}
+export async function requestFriendship(otherId){
+ const {data,error}=await db.rpc('lx_friend_request',{p_other:otherId});
+ if(error)throw error;
+ return data;
+}
+export async function respondToFriend(otherId,accept){
+ const {data,error}=await db.rpc('lx_friend_respond',{p_other:otherId,p_accept:!!accept});
+ if(error)throw error;
+ return data;
+}
+export async function getAdminDiagnostics(){
+ // Read existing logs as authorized by the database RLS. Never send secret payloads.
+ const [errors,activity]=await Promise.all([
+  db.from('lx_client_errors').select('id,error_type,page,message,created_at,device,browser').order('created_at',{ascending:false}).limit(50),
+  db.from('lx_analytics').select('id,event,created_at').order('created_at',{ascending:false}).limit(100)
+ ]);
+ return {
+  errors:errors.error?[]:(errors.data||[]),
+  activity:activity.error?[]:(activity.data||[]),
+  partial:Boolean(errors.error||activity.error),
+  errorsUnavailable:Boolean(errors.error),
+  activityUnavailable:Boolean(activity.error)
+ };
+}
+export async function getSupportTickets(){
+ const {data,error}=await db.from('lx_support_tickets').select('id,user_id,topic,status,created_at').order('created_at',{ascending:false}).limit(25);
+ if(error)throw error;
+ return data||[];
+}
+export async function openSupportTicket(userId,topic){
+ const value=String(topic||'').trim().slice(0,180);
+ if(value.length<10)throw Error('Descreva o problema com pelo menos 10 caracteres.');
+ const {data,error}=await db.from('lx_support_tickets').insert({user_id:userId,topic:value,status:'open'}).select('id').single();
+ if(error)throw error;
+ return data;
 }
