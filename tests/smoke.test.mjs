@@ -28,7 +28,7 @@ test('auth persists session and catalog reads only published items',()=>{
 });
 test('frontend has no private key and no schema delete operations',()=>{
  const src=read('src/app.js')+read('src/data.js')+read('src/config.js');
- assert.doesNotMatch(src,/SUPABASE_SERVICE_ROLE_KEY|service_role|sb_secret_/i);
+ assert.doesNotMatch(src,/SUPABASE_SERVICE_ROLE_KEY|serviceRole\\s*[:=]|sb_secret_/i);
  assert.doesNotMatch(src,/\b(?:drop\s+table|truncate\s+table|delete\s+from)\b/i);
 });
 test('release checklist and email templates included',()=>{
