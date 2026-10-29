@@ -21,9 +21,20 @@ if(typeof createClient!=='function')throw Error('Biblioteca de autenticação in
 import {BACKEND} from './config.js';
 import {resolveItem} from './universal-player.js';
 
-export const db=createClient(BACKEND.url,BACKEND.key,{
- auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
-});
+// Keep existing sessions on the original key. If a legacy browser session blocks
+// initialization, the explicit login recovery mode uses a separate persistent key.
+const RECOVERY_FLAG='lxplus_next_login_recovery_v1';
+const RECOVERY_KEY='lxplus-next-auth-v1';
+const authOptions=()=>{
+ const recovery=(()=>{try{return localStorage.getItem(RECOVERY_FLAG)==='1'}catch{return false}})();
+ return {persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,...(recovery?{storageKey:RECOVERY_KEY}:{})};
+};
+export let db=createClient(BACKEND.url,BACKEND.key,{auth:authOptions()});
+export function switchToRecoveryLogin(){
+ try{localStorage.setItem(RECOVERY_FLAG,'1')}catch{}
+ db=createClient(BACKEND.url,BACKEND.key,{auth:authOptions()});
+ return db;
+}
 export const categories={'Início':null,'Filmes':['Filme'],'Séries':['Série','Dorama','Anime'],'Músicas':['Música'],'Livros':['Livro'],'Ao vivo':['Ao Vivo']};
 export const safeUrl=s=>{
  if(typeof s!=='string'||!s.trim())return '';

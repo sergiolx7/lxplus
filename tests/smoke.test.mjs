@@ -53,3 +53,19 @@ test('startup has visible error recovery and a backup CDN',()=>{
  assert.match(data,/cdn\.jsdelivr\.net\/npm\/@supabase\/supabase-js/);
  assert.match(data,/esm\.sh\/@supabase\/supabase-js/);
 });
+
+test('session/profile startup is time-bounded; catalog loads after dashboard',()=>{
+ const app=read('src/app.js');
+ assert.match(app,/timed\(db\.auth\.getSession\(\)/);
+ assert.match(app,/timed\(\s*Promise\.all\(\[getProfile/);
+ assert.match(app,/draw\(\); \/\/ The member dashboard opens immediately/);
+ assert.match(app,/loadCatalogInBackground\(generation\)/);
+ assert.match(app,/A\.catalogStatus==='error'/);
+});
+test('stalled legacy auth can switch to an isolated persistent session without deleting accounts',()=>{
+ const app=read('src/app.js'),data=read('src/data.js');
+ assert.match(app,/id==='manualLogin'/);
+ assert.match(app,/switchToRecoveryLogin\(\)/);
+ assert.match(data,/storageKey:RECOVERY_KEY/);
+ assert.match(data,/lxplus_next_login_recovery_v1/);
+});
