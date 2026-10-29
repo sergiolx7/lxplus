@@ -3,6 +3,43 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#090a10"><meta name="description" content="LX Plus — entretenimento numa nova experiência, pela LX Group.">
 <title>LX Plus — Nova experiência</title>
-<link rel="icon" href="./assets/icon.svg" type="image/svg+xml"><link rel="stylesheet" href="./assets/styles.css">
-<script type="module" src="./src/app.js"></script>
+<link rel="icon" href="./assets/icon.svg" type="image/svg+xml"><link rel="stylesheet" href="./assets/styles.css?v=20261029-hotfix1">
+<script>
+// Boot guard is deliberately independent from the Supabase SDK: failures must never be a black spinner.
+(function(){
+  let failed=false;
+  function recovery(reason){
+    const node=document.querySelector('#app');
+    if(failed||!node||!node.querySelector('.loading'))return;
+    failed=true;
+    console.error('LX Plus boot failure:',reason);
+    node.innerHTML='<main class="full-screen"><div class="panel" style="max-width:540px;margin:auto;text-align:center"><h2>Não foi possível abrir a LX Plus</h2><p>O aplicativo não terminou de carregar. Suas contas e senhas continuam guardadas. Verifique a conexão e tente novamente.</p><p class="muted">Diagnóstico: LX-BOOT-20261029</p><button id="lxBootRetry" class="btn primary">Tentar abrir novamente</button></div></main>';
+    document.getElementById('lxBootRetry').addEventListener('click',()=>{
+      const url=new URL(location.href);
+      url.searchParams.set('lx-reload',Date.now().toString());
+      location.replace(url.href);
+    });
+  }
+  window.__lxBootFailure=recovery;
+  window.addEventListener('error',event=>{
+    if(document.querySelector('#app .loading'))recovery(event.message||'Erro ao carregar módulo.');
+  });
+  window.addEventListener('unhandledrejection',event=>{
+    if(document.querySelector('#app .loading'))recovery(event.reason||'Falha de conexão.');
+  });
+  setTimeout(()=>{
+    if(document.querySelector('#app .loading'))recovery('Tempo máximo de inicialização atingido.');
+  },22000);
+  // Old LX Plus releases used a Service Worker. Remove obsolete registrations on this origin
+  // without clearing localStorage or Supabase session tokens.
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(regs=>{
+      for(const reg of regs)reg.unregister().catch(()=>{});
+    }).catch(()=>{});
+  }
+})();
+</script>
+<script type="module">
+  import('./src/app.js?v=20261029-hotfix1').catch(error=>window.__lxBootFailure(error));
+</script>
 </head><body><div id="app"><div class="loading">Carregando LX Plus…</div></div><noscript>Ative o JavaScript para acessar a LX Plus.</noscript></body></html>
