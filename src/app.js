@@ -1,11 +1,11 @@
-import {db,categories,safeUrl,getCatalog,findDiscovery,getProfile,getUserState,isAdmin,saveUserField,saveMyProfile,notices,publicMembers,sourceFor,getRanking} from './data.js';
+import {db,categories,safeUrl,getCatalog,findDiscovery,getProfile,getUserState,isAdmin,switchToRecoveryLogin,saveUserField,saveMyProfile,notices,publicMembers,sourceFor,getRanking} from './data.js';
 import {VERSION} from './config.js';
 import {classifyLink,attachPlayer} from './universal-player.js';
 import {scanDriveFolder,publishMatches} from './drive-import.js';
 import {makeDemoDriveScan,simulateDemoPublish} from './drive-import-demo.js';
 
 const root=document.querySelector('#app');
-const A={user:null,profile:null,admin:false,stored:{},items:[],extra:[],members:[],notices:[],ranking:{season:null,rows:[]},page:'Início',term:'',filter:'Todos',auth:'login',modal:null,playerCleanup:null,busy:false,drive:{folder:'',scan:null,progress:'',rightsConfirmed:false,working:false,lastResult:null}};
+const A={user:null,profile:null,admin:false,stored:{},items:[],extra:[],members:[],notices:[],ranking:{season:null,rows:[]},page:'Início',term:'',filter:'Todos',auth:'login',modal:null,playerCleanup:null,busy:false,loadGeneration:0,catalogStatus:'loading',drive:{folder:'',scan:null,progress:'',rightsConfirmed:false,working:false,lastResult:null}};
 const pages=[['Início','⌂'],['Filmes','▣'],['Séries','▤'],['Músicas','♫'],['Livros','▥'],['Minha Lista','♡'],['Comunidade','◎'],['Ranking','★'],['Avisos','♧'],['Perfil','◉']];
 const escapeHtml=x=>String(x??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const id=x=>String(x??'');
@@ -28,7 +28,7 @@ function showGate(){
  root.innerHTML='<div class="full-screen"><div class="brand" style="justify-content:center">'+brand()+'</div><div class="panel" style="max-width:480px"><span class="badge">Aguardando aprovação</span><h2 style="margin-top:18px">Seu cadastro foi encontrado</h2><p>O acesso ao catálogo depende da aprovação da equipe LX Group. Seus dados antigos continuam preservados.</p><div class="actions" style="justify-content:center"><button class="btn primary" id="retry">Verificar novamente</button><button class="btn" id="signout">Sair</button></div></div></div>';
 }
 function showError(message){
- root.innerHTML='<div class="full-screen"><div class="brand" style="justify-content:center">'+brand()+'</div><div class="panel" style="max-width:480px"><h2>Não conseguimos carregar a LX Plus</h2><p>'+escapeHtml(message)+'</p><button class="btn primary" id="retry">Tentar novamente</button> <button class="btn" id="signout">Sair</button></div></div>';
+ root.innerHTML='<div class="full-screen"><div class="brand" style="justify-content:center">'+brand()+'</div><div class="panel" style="max-width:510px"><h2>Não foi possível concluir a conexão</h2><p>'+escapeHtml(message)+'</p><p class="muted">Se sua sessão antiga ficou bloqueada, você pode entrar novamente com o mesmo e-mail e senha. Seu cadastro não será excluído.</p><div class="actions"><button class="btn primary" id="retry">Tentar novamente</button><button class="btn" id="manualLogin">Entrar com e-mail e senha</button></div></div></div>';
 }
 function navButton(name,icon,cls='nav-btn'){
  return '<button class="'+cls+(A.page===name?' active':'')+'" type="button" data-page="'+escapeHtml(name)+'"><span class="symbol">'+icon+'</span>'+escapeHtml(name)+'</button>';
@@ -64,6 +64,8 @@ function hero(){
  return '<div class="hero">'+(image?'<img class="hero-image" style="object-fit:cover;right:0;width:65%;height:100%" src="'+escapeHtml(image)+'" alt="">':'')+'<div class="hero-text"><span class="eyebrow">EM DESTAQUE NA LX PLUS</span><h1>'+escapeHtml(item.title)+'</h1><p>'+escapeHtml(item.description||'Descubra filmes, livros e músicas selecionados para você.')+'</p><div class="actions"><button class="btn primary" type="button" data-item="'+escapeHtml(item.id)+'">▶ Ver detalhes</button><button class="btn" type="button" data-page="Minha Lista">♡ Minha Lista</button></div></div></div>';
 }
 function catalog(){
+ if(A.catalogStatus==='loading'&&!A.items.length)return '<div class="heading"><div><span class="eyebrow">BIBLIOTECA LX</span><h1>Preparando o catálogo</h1><p>Você já está conectado. Os filmes e séries estão sendo carregados separadamente.</p></div></div><div class="panel"><p>Sincronizando os títulos publicados…</p></div>';
+ if(A.catalogStatus==='error'&&!A.items.length)return '<div class="heading"><div><h1>Catálogo temporariamente indisponível</h1><p>Sua conta está conectada, mas os títulos não responderam.</p></div></div><div class="panel"><button class="btn primary" type="button" id="retryCatalog">Recarregar catálogo</button></div>';
  const list=filtered();
  const history=A.stored.history&&typeof A.stored.history==='object'?A.stored.history:{};
  const recently=Object.entries(history).map(([key,record])=>({
@@ -176,19 +178,72 @@ async function play(item){
   modal(item,player);
  }catch(e){toast('Erro ao abrir mídia: '+(e.message||'tente novamente'))}
 }
+// No remote request is allowed to hold the startup screen indefinitely.
+function timed(promise,label,ms=9000){
+ let timer;
+ return Promise.race([
+  Promise.resolve(promise),
+  new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(label+' demorou para responder. Verifique sua conexão ou use a entrada com e-mail e senha.')),ms)})
+ ]).finally(()=>clearTimeout(timer));
+}
+function loadingStage(message){
+ const node=root.querySelector('.loading');
+ if(node)node.textContent=message;
+}
+function loadCatalogInBackground(generation=A.loadGeneration){
+ A.catalogStatus='loading';
+ if(document.querySelector('.shell'))draw();
+ timed(getCatalog(),'O catálogo',24000).then(items=>{
+  if(generation!==A.loadGeneration||!A.user)return;
+  A.items=items;A.catalogStatus='ready';draw();
+ }).catch(err=>{
+  console.warn('LX Plus: falha ao sincronizar catálogo:',err);
+  if(generation!==A.loadGeneration||!A.user)return;
+  A.catalogStatus='error';draw();
+ });
+}
+function loadExtrasInBackground(generation=A.loadGeneration){
+ const jobs=[
+  timed(notices(),'Avisos',12000),
+  timed(publicMembers(),'Membros',12000),
+  timed(getRanking(),'Ranking',12000)
+ ];
+ Promise.allSettled(jobs).then(results=>{
+  if(generation!==A.loadGeneration||!A.user)return;
+  if(results[0].status==='fulfilled')A.notices=results[0].value;
+  if(results[1].status==='fulfilled')A.members=results[1].value;
+  if(results[2].status==='fulfilled')A.ranking=results[2].value;
+  if(document.querySelector('.shell'))draw();
+ });
+}
 async function initialize(){
- root.innerHTML='<div class="loading">Conectando à sua biblioteca LX Plus…</div>';
+ const generation=++A.loadGeneration;
+ root.innerHTML='<div class="loading">Verificando sua sessão da LX Plus…</div>';
  try{
-  const {data,error}=await db.auth.getSession();if(error)throw error;
+  const {data,error}=await timed(db.auth.getSession(),'A autenticação',8500);
+  if(generation!==A.loadGeneration)return;
+  if(error)throw error;
   A.user=data.session?.user||null;
   if(!A.user){renderAuth();return}
   if(A.auth==='password'){renderAuth();return}
-  const [profile,admin,st]=await Promise.all([getProfile(A.user.id),isAdmin(),getUserState(A.user.id)]);
+  loadingStage('Carregando seu perfil LX Plus…');
+  const [profile,admin,st]=await timed(
+   Promise.all([getProfile(A.user.id),isAdmin(),getUserState(A.user.id)]),
+   'Seu perfil',10000
+  );
+  if(generation!==A.loadGeneration)return;
   A.profile=profile;A.admin=admin;A.stored=st;
   if(!approved()){showGate();return}
-  [A.items,A.notices,A.members,A.ranking]=await Promise.all([getCatalog(),notices(),publicMembers(),getRanking()]);
-  draw();
- }catch(e){showError(e.message||'Não foi possível conectar ao servidor.')}
+  A.items=[];A.catalogStatus='loading';
+  A.notices=[];A.members=[];A.ranking={season:null,rows:[]};
+  draw(); // The member dashboard opens immediately. Extras cannot block access.
+  loadCatalogInBackground(generation);
+  loadExtrasInBackground(generation);
+ }catch(e){
+  if(generation!==A.loadGeneration)return;
+  console.warn('LX Plus: inicialização não concluída:',e);
+  showError(e.message||'Não foi possível conectar ao servidor.');
+ }
 }
 let searchTimer=0;
 root.addEventListener('input',e=>{
@@ -243,7 +298,21 @@ root.addEventListener('click',async e=>{
  }
  if(button.id==='clear'){A.term='';A.filter='Todos';A.extra=[];const inp=document.querySelector('#search');if(inp)inp.value='';draw();return}
  if(button.id==='retry'){await initialize();return}
- if(button.id==='signout'){await db.auth.signOut();A.user=null;A.profile=null;A.stored={};A.items=[];A.auth='login';renderAuth();return}
+ if(button.id==='retryCatalog'){loadCatalogInBackground();return}
+ if(button.id==='manualLogin'){
+  ++A.loadGeneration;
+  const client=switchToRecoveryLogin();
+  attachAuthListener(client);
+  A.user=null;A.profile=null;A.stored={};A.items=[];A.auth='login';
+  renderAuth();
+  toast('Entre com o e-mail e a senha que você já usava na LX Plus.');
+  return;
+ }
+ if(button.id==='signout'){
+  ++A.loadGeneration;
+  try{await timed(db.auth.signOut(),'A saída da conta',7000)}catch(err){console.warn('LX Plus: saída demorou:',err)}
+  A.user=null;A.profile=null;A.stored={};A.items=[];A.auth='login';renderAuth();return;
+ }
  if(button.id==='resend'){
   const email=document.querySelector('#signin input[name="email"]')?.value?.trim();
   if(!email){toast('Digite seu e-mail antes de reenviar.');return}
@@ -278,7 +347,11 @@ root.addEventListener('submit',async e=>{
    if(entry.kind==='external'){toast(entry.message);return}
    modal({id:'preview',title:'Pré-visualização '+(entry.provider||''),type:'Filme',description:'Link de teste sem gravação no catálogo.'},entry);return;
   }
-  if(f.id==='signin'){const {error}=await db.auth.signInWithPassword({email:String(data.email||'').trim(),password:String(data.password||'')});if(error)throw error;await initialize()}
+  if(f.id==='signin'){
+   const {error}=await timed(db.auth.signInWithPassword({email:String(data.email||'').trim(),password:String(data.password||'')}),'O login',12000);
+   if(error)throw error;
+   await initialize();
+  }
   if(f.id==='signup'){const {data:created,error}=await db.auth.signUp({email:String(data.email||'').trim(),password:String(data.password||''),options:{data:{name:String(data.name||'').trim()},emailRedirectTo:location.origin+location.pathname}});if(error)throw error;if(created.session)await initialize();else{A.auth='login';renderAuth();toast('Cadastro enviado. Confirme seu e-mail e aguarde a aprovação.')}}
   if(f.id==='reset'){const {error}=await db.auth.resetPasswordForEmail(String(data.email||'').trim(),{redirectTo:location.origin+location.pathname+'?recovery=1'});if(error)throw error;A.auth='login';renderAuth();toast('Se a conta existir, o e-mail de recuperação será enviado.')}
   if(f.id==='newPassword'){if(data.password!==data.confirm)throw Error('As senhas não coincidem.');const {error}=await db.auth.updateUser({password:String(data.password)});if(error)throw error;history.replaceState(null,'',location.pathname);A.auth='login';toast('Senha atualizada.');await initialize()}
@@ -287,9 +360,13 @@ root.addEventListener('submit',async e=>{
  finally{if(btn&&btn.isConnected)btn.disabled=false}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
-db.auth.onAuthStateChange((event,session)=>{
- if(event==='PASSWORD_RECOVERY'){A.user=session?.user||null;A.auth='password';renderAuth()}
- if(event==='SIGNED_OUT'){A.user=null;A.profile=null;A.stored={};A.items=[];A.auth='login';renderAuth()}
-});
+function attachAuthListener(client=db){
+ client.auth.onAuthStateChange((event,session)=>{
+  if(client!==db)return;
+  if(event==='PASSWORD_RECOVERY'){A.user=session?.user||null;A.auth='password';renderAuth()}
+  if(event==='SIGNED_OUT'){++A.loadGeneration;A.user=null;A.profile=null;A.stored={};A.items=[];A.auth='login';renderAuth()}
+ });
+}
+attachAuthListener();
 if(location.search.includes('recovery=1')||location.hash.includes('type=recovery'))A.auth='password';
 initialize();
