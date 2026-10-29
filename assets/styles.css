@@ -16,3 +16,16 @@
 .player-status{min-height:26px;color:#ffcfbd;font-weight:700;font-size:13px;padding-top:12px;line-height:1.5}
 .modal-body .btn.small{margin-top:8px}
 @media(max-width:600px){.embed-wrap{aspect-ratio:16/9}}
+
+/* Google Drive importer — scan rows and isolated demo mode */
+.drive-review{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding-top:10px}
+.drive-row{display:flex;gap:13px;align-items:center;border:1px solid #393649;border-radius:14px;padding:11px;background:#151522;min-width:0}
+.drive-thumb{width:65px;height:90px;flex:0 0 65px;border-radius:9px;background:linear-gradient(145deg,#553178,#211f44);overflow:hidden;display:grid;place-items:center}
+.drive-thumb img{height:100%;width:100%;object-fit:cover}.drive-desc{display:grid;gap:6px;min-width:0}.drive-desc strong{font:700 15px/1.4 Outfit;overflow-wrap:anywhere}.drive-desc small{font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+.drive-ok,.drive-review-needed{font-size:11px;line-height:1.35;display:inline-flex;width:fit-content;border-radius:20px;padding:5px 10px;font-weight:800}
+.drive-ok{color:#a9f3cd;background:#16392b}.drive-review-needed{color:#f3cc9d;background:#44301e}
+.drive-demo-banner{border:1px solid #8d6bdb;background:linear-gradient(135deg,#2f2250,#201d36);padding:15px;border-radius:12px;margin:22px 0 14px}
+.drive-demo-banner strong{color:#d8beff;letter-spacing:.12em;font-size:11px}.drive-demo-banner p{margin:6px 0 0;color:#e0d8ef;font-size:13px}
+.drive-confirm{display:flex;align-items:flex-start;gap:10px;line-height:1.5;font-size:13px;color:#d4c9dd;margin:24px 0 14px}.drive-confirm input{margin-top:4px}
+.drive-review+.actions,.drive-demo-banner+.actions{margin-top:15px}
+@media(max-width:640px){.drive-review{grid-template-columns:1fr}.drive-thumb{width:54px;height:76px;flex-basis:54px}}
