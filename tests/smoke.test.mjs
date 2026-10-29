@@ -36,3 +36,11 @@ test('release checklist and email templates included',()=>{
  assert.match(read('email/lxgroup/auth-confirmation.html'),/ConfirmationURL/);
  assert.match(read('email/lxgroup/auth-recovery.html'),/ConfirmationURL/);
 });
+
+test('ranking uses read-only database data, and homepage references saved history',()=>{
+ const app=read('src/app.js'),data=read('src/data.js');
+ assert.match(data,/getRanking/);
+ assert.match(data,/lx_rank_scores/);
+ assert.match(app,/Continue de onde parou/);
+ assert.match(app,/A\.ranking/);
+});
