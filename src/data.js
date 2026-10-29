@@ -1,5 +1,6 @@
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.57.4?bundle';
 import {BACKEND} from './config.js';
+import {resolveItem} from './universal-player.js';
 
 export const db=createClient(BACKEND.url,BACKEND.key,{
  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
@@ -64,26 +65,13 @@ export async function publicMembers(){
  return error?[]:data;
 }
 export async function sourceFor(item){
- if(item.type==='Livro'){
-  const u=safeUrl(item.externalReadUrl||'');
-  return u?{kind:'external',url:u}:{kind:'unavailable'};
- }
- const audio=item.type==='Música';
- const allowed=safeUrl(audio?item.authorizedAudioUrl:item.authorizedVideoUrl);
- if(allowed)return{kind:audio?'audio':'video',url:allowed};
- const native=item.nativeAsset;
- const path=typeof native==='string'?native:(native?.url||native?.path||native?.storagePath||'');
- if(safeUrl(path))return{kind:audio?'audio':'video',url:safeUrl(path)};
- if(typeof path==='string'&&path.startsWith('cloud:')){
-  const {data,error}=await db.storage.from(BACKEND.mediaBucket).createSignedUrl(path.slice(6).replace(/^\/+/,''),3600);
-  if(!error&&data?.signedUrl)return{kind:audio?'audio':'video',url:data.signedUrl};
- }
- // External links only when the record explicitly indicates authorized or public-domain origin.
- if(item.publicDomain||item.openFilm||item.sourceVerified||item.officialEmbedded||item.license?.authorized){
-  const external=safeUrl(item.sourceUrl||item.externalMusicUrl||item.spotifyUrl||'');
-  if(external)return{kind:'external',url:external};
- }
- return{kind:'unavailable'};
+ return resolveItem(item,{signStorage:async key=>{
+  if(!/^cloud:media\//.test(key))return null;
+  // A signed URL is scoped to an authenticated session; not an arbitrary proxy.
+  const {data,error}=await db.storage.from(BACKEND.mediaBucket).createSignedUrl(key.slice(6),900);
+  if(error)return null;
+  return data?.signedUrl||null;
+ }});
 }
 
 export async function getRanking(){
