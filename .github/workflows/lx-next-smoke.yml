@@ -1,0 +1,25 @@
+name: LX Plus Next — Smoke Tests
+on:
+  push:
+    branches:
+      - rebuild/lxplus-vnext-clean-20261029
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'assets/**'
+      - 'index.html'
+      - 'tests/**'
+      - 'package.json'
+      - 'email/**'
+      - 'RELEASE-CHECKLIST.md'
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm test
