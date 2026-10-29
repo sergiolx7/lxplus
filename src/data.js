@@ -85,3 +85,11 @@ export async function sourceFor(item){
  }
  return{kind:'unavailable'};
 }
+
+export async function getRanking(){
+ const {data:seasons,error:seasonError}=await db.from('lx_rank_seasons').select('season_key,prize_cents,status,starts_at,ends_at').order('starts_at',{ascending:false}).limit(1);
+ if(seasonError||!seasons?.length)return{season:null,rows:[]};
+ const season=seasons[0];
+ const {data,error}=await db.from('lx_rank_scores').select('user_id,season_key,monthly_score,lifetime_score').eq('season_key',season.season_key).order('monthly_score',{ascending:false}).limit(50);
+ return{season,rows:error?[]:(data||[])};
+}
