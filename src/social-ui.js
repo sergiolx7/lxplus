@@ -13,7 +13,7 @@ export function renderSocialMembers(members,term=''){
  return list.map(p=>{
   const handle=cleanHandle(p.username);
   const image=safePicture(p.avatar_url);
-  const letters=esc(String(p.name||'LX').trim().split(/\\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase());
+  const letters=esc(String(p.name||'LX').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase());
   return '<article class="social-person"><div class="social-person-head">'+(image?'<img class="social-face" src="'+esc(image)+'" alt="" loading="lazy">':'<div class="social-face social-initials">'+letters+'</div>')+
   '<div class="social-person-name"><strong>'+esc(p.name||'Membro LX')+(p.verified?' <span title="Perfil verificado">✓</span>':'')+'</strong><small>'+(handle?'@'+esc(handle):'Membro da comunidade')+'</small></div></div><p>'+esc(p.bio||'Aqui para descobrir filmes, músicas e novas amizades.')+'</p>'+
   (handle?'<button class="btn small social-handle-copy" type="button" data-copy-handle="'+esc(handle)+'">Copiar @'+esc(handle)+'</button>':'<span class="social-profile-note">Identificador ainda não definido</span>')+
