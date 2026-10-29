@@ -61,7 +61,7 @@ export async function findDiscovery(term){
  return error?[]:(data||[]).map(x=>({...itemFrom(x),metadataOnly:true}));
 }
 export async function getProfile(id){
- const {data,error}=await db.from('lx_profiles').select('user_id,name,approved,approval_status,verified,bio,avatar_url,ranking_visible').eq('user_id',id).maybeSingle();
+ const {data,error}=await db.from('lx_profiles').select('user_id,name,username,approved,approval_status,verified,bio,avatar_url,ranking_visible').eq('user_id',id).maybeSingle();
  if(error)throw error;
  return data;
 }
