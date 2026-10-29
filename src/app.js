@@ -1,8 +1,9 @@
 import {db,categories,safeUrl,getCatalog,findDiscovery,getProfile,getUserState,isAdmin,saveUserField,saveMyProfile,notices,publicMembers,sourceFor,getRanking} from './data.js';
 import {VERSION} from './config.js';
+import {classifyLink,attachPlayer} from './universal-player.js';
 
 const root=document.querySelector('#app');
-const A={user:null,profile:null,admin:false,stored:{},items:[],extra:[],members:[],notices:[],ranking:{season:null,rows:[]},page:'Início',term:'',filter:'Todos',auth:'login',modal:null,busy:false};
+const A={user:null,profile:null,admin:false,stored:{},items:[],extra:[],members:[],notices:[],ranking:{season:null,rows:[]},page:'Início',term:'',filter:'Todos',auth:'login',modal:null,playerCleanup:null,busy:false};
 const pages=[['Início','⌂'],['Filmes','▣'],['Séries','▤'],['Músicas','♫'],['Livros','▥'],['Minha Lista','♡'],['Comunidade','◎'],['Ranking','★'],['Avisos','♧'],['Perfil','◉']];
 const escapeHtml=x=>String(x??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const id=x=>String(x??'');
@@ -88,7 +89,9 @@ function otherPage(){
  }).join(''):'<p>Ainda não há pontuações nesta temporada.</p>';
  return '<div class="heading"><div><span class="eyebrow">RANKING LX</span><h1>Temporada '+escapeHtml(season?.season_key||'atual')+'</h1><p>Pontuação atual registrada pela plataforma.</p></div><span class="badge">Prêmio: '+escapeHtml(prize)+'</span></div><div class="panel-grid"><div class="panel"><h2>Classificação</h2>'+table+'</div><div class="panel"><h2>Informações</h2><p>Resultados e premiações são validados pela equipe LX Group. Perfis privados não têm os nomes expostos.</p><span class="badge">'+escapeHtml(season?.status||'Temporada')+'</span></div></div>';
  }
- if(A.page==='Administração')return '<div class="heading"><div><span class="eyebrow">ACESSO RESTRITO</span><h1>Administração</h1></div></div><div class="panel-grid"><div class="panel"><span class="eyebrow">ITENS DISPONÍVEIS</span><p class="big">'+A.items.length+'</p><p>Conteúdos que sua conta pode visualizar.</p></div><div class="panel"><h2>Gestão em reconstrução</h2><p>Ferramentas destrutivas e moderação só serão reativadas depois de testar regras de acesso e rotas de recuperação.</p></div></div>';
+ if(A.page==='Administração')return '<div class="heading"><div><span class="eyebrow">ACESSO RESTRITO</span><h1>Administração</h1><p>Ferramentas em homologação, sem salvar links no banco.</p></div></div>'+
+  '<div class="panel-grid"><div class="panel"><h2>Testar link no player</h2><p>Cole um link HTTPS do Google Drive, YouTube, arquivo MP4, HLS ou DASH para pré-visualizar. Nenhuma mudança será publicada.</p><form id="previewLinkForm" class="form"><label class="field">URL de teste<input name="url" type="url" required maxlength="3000" placeholder="https://drive.google.com/file/d/..."></label><button type="submit" class="btn primary">Testar reprodução</button></form><p class="muted">Links privados, protegidos ou bloqueados por CORS podem exigir acesso no provedor original.</p></div>'+
+  '<div class="panel"><span class="eyebrow">CATÁLOGO ATUAL</span><p class="big">'+A.items.length+'</p><p>Itens visíveis pela sua conta. Importação, edição e exclusão serão liberadas somente após validação das permissões e backup.</p></div></div>';
  return catalog();
 }
 function draw(){
@@ -100,16 +103,47 @@ function draw(){
 }
 function find(idValue){return [...A.items,...A.extra].find(x=>id(x.id)===id(idValue))}
 function modal(item,player=null){
+ if(A.playerCleanup){try{A.playerCleanup()}catch{}A.playerCleanup=null}
  A.modal={item,player};
  const liked=saved().has(id(item.id));
  const img=safeUrl(item.cover);
- const body=player?'<'+(player.kind==='audio'?'audio':'video')+' id="mediaPlayer" class="player" controls autoplay playsinline preload="metadata" '+(img?'poster="'+escapeHtml(img)+'" ':'')+'src="'+escapeHtml(player.url)+'"></'+(player.kind==='audio'?'audio':'video')+'><p class="muted">Fontes externas podem estar indisponíveis. Somente fontes autorizadas são abertas.</p>':'<div class="details"><div>'+(img?'<img src="'+escapeHtml(img)+'" alt="">':'<div class="cover"><div class="placeholder">LX</div></div>')+'</div><div><span class="eyebrow">'+escapeHtml(label(item.type))+' · '+escapeHtml(item.year||'')+'</span><h2>'+escapeHtml(item.title)+'</h2><p>'+escapeHtml(item.description||'Descrição indisponível.')+'</p><small>'+escapeHtml(item.artist||item.author||item.genre||'')+'</small><div class="actions" style="margin-top:20px"><button class="btn primary" data-play="'+escapeHtml(item.id)+'">▶ '+(item.type==='Música'?'Ouvir':item.type==='Livro'?'Abrir':'Assistir')+'</button><button class="btn" data-like="'+escapeHtml(item.id)+'">'+(liked?'♥ Remover da lista':'♡ Minha Lista')+'</button></div></div></div>';
+ let body='';
+ if(player){
+  const iframe=player.kind==='iframe';
+  if(iframe){
+   const origin=safeUrl(player.source||'');
+   body='<div class="embed-wrap"><iframe id="lxEmbed" class="player embed" src="'+escapeHtml(player.url)+'" title="'+escapeHtml(item.title)+'" loading="eager" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation allow-popups" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>'+
+    '<p class="muted">A reprodução depende das permissões do '+escapeHtml(player.provider||'provedor')+'. Links privados ou sem incorporação permitida podem não abrir.</p>'+
+    (origin?'<a class="btn small" href="'+escapeHtml(origin)+'" target="_blank" rel="noopener noreferrer">Abrir no serviço original ↗</a>':'');
+  }else if(['video','audio','hls','dash'].includes(player.kind)){
+   const audio=player.kind==='audio';
+   body='<'+(audio?'audio':'video')+' id="mediaPlayer" class="player" controls playsinline preload="metadata" '+(!audio&&img?'poster="'+escapeHtml(img)+'" ':'')+'></'+(audio?'audio':'video')+'>'+
+    '<div class="player-status" id="playerStatus" role="status" aria-live="polite"></div>'+
+    '<p class="muted">MP4, áudio, HLS e DASH funcionam conforme o navegador, codec e regras CORS da origem.</p>';
+  }else body='<p>Este link não fornece um formato compatível. Verifique a origem.</p>';
+ }else{
+  body='<div class="details"><div>'+(img?'<img src="'+escapeHtml(img)+'" alt="">':'<div class="cover"><div class="placeholder">LX</div></div>')+'</div><div><span class="eyebrow">'+escapeHtml(label(item.type))+' · '+escapeHtml(item.year||'')+'</span><h2>'+escapeHtml(item.title)+'</h2><p>'+escapeHtml(item.description||'Descrição indisponível.')+'</p><small>'+escapeHtml(item.artist||item.author||item.genre||'')+'</small><div class="actions" style="margin-top:20px"><button class="btn primary" data-play="'+escapeHtml(item.id)+'">▶ '+(item.type==='Música'?'Ouvir':item.type==='Livro'?'Abrir':'Assistir')+'</button><button class="btn" data-like="'+escapeHtml(item.id)+'">'+(liked?'♥ Remover da lista':'♡ Minha Lista')+'</button></div></div></div>';
+ }
  document.querySelector('#layer').innerHTML='<div class="overlay"><div class="modal" role="dialog" aria-modal="true" aria-label="'+escapeHtml(item.title)+'"><div class="modal-head"><h2>'+escapeHtml(player?'Reproduzindo '+item.title:'Detalhes')+'</h2><button type="button" class="close" data-close aria-label="Fechar">✕</button></div><div class="modal-body">'+body+'</div></div></div>';
- const media=document.querySelector('#mediaPlayer');if(media){let previous=0;media.addEventListener('timeupdate',()=>{if(media.currentTime-previous<20)return;previous=media.currentTime;saveProgress(item,media.currentTime,media.duration)});media.addEventListener('ended',()=>saveProgress(item,media.duration,media.duration))}
+ const media=document.querySelector('#mediaPlayer');
+ if(media){
+  const m=A.modal;let previous=0;
+  media.addEventListener('timeupdate',()=>{if(!A.user||media.currentTime-previous<20)return;previous=media.currentTime;saveProgress(item,media.currentTime,media.duration)});
+  media.addEventListener('ended',()=>{if(A.user)saveProgress(item,media.duration,media.duration)});
+  const onError=message=>{const box=document.querySelector('#playerStatus');if(box)box.textContent=message};
+  attachPlayer(media,player,{onError}).then(cleanup=>{
+   if(A.modal===m){A.playerCleanup=cleanup}else cleanup();
+  }).catch(error=>onError(error.message||'Falha ao iniciar reprodução.'));
+ }
 }
+
 let progressTimeout=0;
 function saveProgress(item,t,d){const old=A.stored.history&&typeof A.stored.history==='object'?A.stored.history:{};A.stored.history={...old,[id(item.id)]:{position:Math.round(t||0),duration:Math.round(d||0),updatedAt:new Date().toISOString()}};clearTimeout(progressTimeout);progressTimeout=setTimeout(()=>saveUserField(A.user.id,'history',A.stored.history).catch(()=>{}),1300)}
-function closeModal(){document.querySelector('#mediaPlayer')?.pause();A.modal=null;const l=document.querySelector('#layer');if(l)l.innerHTML=''}
+function closeModal(){
+ if(A.playerCleanup){try{A.playerCleanup()}catch{}A.playerCleanup=null}
+ document.querySelector('#mediaPlayer')?.pause();
+ A.modal=null;const l=document.querySelector('#layer');if(l)l.innerHTML='';
+}
 async function toggle(item){
  const before=A.stored.list;const s=saved();s.has(id(item.id))?s.delete(id(item.id)):s.add(id(item.id));
  A.stored.list=[...s].map(v=>/^\d+$/.test(v)?Number(v):v);
@@ -120,8 +154,8 @@ async function toggle(item){
 async function play(item){
  try{const player=await sourceFor(item);
   if(player.kind==='unavailable'){toast('Este título está em breve ou não possui fonte autorizada para reprodução.');return}
-  if(player.kind==='external'){window.open(player.url,'_blank','noopener,noreferrer');return}
-  if(!safeUrl(player.url)){toast('Endereço de mídia inválido.');return}
+  if(player.kind==='external'){toast(player.message||'Abra o conteúdo no provedor original.');if(safeUrl(player.url))window.open(player.url,'_blank','noopener,noreferrer');return}
+  if(player.kind==='invalid'||!safeUrl(player.url)){toast(player.message||'Endereço de mídia inválido.');return}
   modal(item,player);
  }catch(e){toast('Erro ao abrir mídia: '+(e.message||'tente novamente'))}
 }
@@ -173,6 +207,13 @@ root.addEventListener('submit',async e=>{
  e.preventDefault();const f=e.target;const btn=f.querySelector('button[type="submit"],button.btn.primary');if(btn)btn.disabled=true;
  const data=Object.fromEntries(new FormData(f).entries());
  try{
+  if(f.id==='previewLinkForm'){
+   if(!A.admin)throw Error('Somente administradores podem testar links.');
+   const input=String(data.url||'').trim(),entry=classifyLink(input);
+   if(entry.kind==='invalid'){toast(entry.message);return}
+   if(entry.kind==='external'){toast(entry.message);return}
+   modal({id:'preview',title:'Pré-visualização '+(entry.provider||''),type:'Filme',description:'Link de teste sem gravação no catálogo.'},entry);return;
+  }
   if(f.id==='signin'){const {error}=await db.auth.signInWithPassword({email:String(data.email||'').trim(),password:String(data.password||'')});if(error)throw error;await initialize()}
   if(f.id==='signup'){const {data:created,error}=await db.auth.signUp({email:String(data.email||'').trim(),password:String(data.password||''),options:{data:{name:String(data.name||'').trim()},emailRedirectTo:location.origin+location.pathname}});if(error)throw error;if(created.session)await initialize();else{A.auth='login';renderAuth();toast('Cadastro enviado. Confirme seu e-mail e aguarde a aprovação.')}}
   if(f.id==='reset'){const {error}=await db.auth.resetPasswordForEmail(String(data.email||'').trim(),{redirectTo:location.origin+location.pathname+'?recovery=1'});if(error)throw error;A.auth='login';renderAuth();toast('Se a conta existir, o e-mail de recuperação será enviado.')}
