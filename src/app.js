@@ -5,9 +5,10 @@ import {scanDriveFolder,publishMatches} from './drive-import.js';
 import {makeDemoDriveScan,simulateDemoPublish} from './drive-import-demo.js';
 import {renderPremiumCatalog} from './premium-ui.js';
 import {studioOverview,studioSources,studioPreview} from './studio-ui.js';
+import {renderCommunity,renderSocialMembers} from './social-ui.js';
 
 const root=document.querySelector('#app');
-const A={user:null,profile:null,admin:false,stored:{},items:[],extra:[],members:[],notices:[],ranking:{season:null,rows:[]},page:'Início',term:'',filter:'Todos',auth:'login',modal:null,playerCleanup:null,busy:false,loadGeneration:0,catalogStatus:'loading',drive:{folder:'',scan:null,progress:'',rightsConfirmed:false,working:false,lastResult:null}};
+const A={user:null,profile:null,admin:false,stored:{},items:[],extra:[],members:[],notices:[],ranking:{season:null,rows:[]},page:'Início',term:'',filter:'Todos',auth:'login',modal:null,playerCleanup:null,busy:false,loadGeneration:0,catalogStatus:'loading',memberTerm:'',drive:{folder:'',scan:null,progress:'',rightsConfirmed:false,working:false,lastResult:null}};
 const pages=[['Início','⌂'],['Filmes','▣'],['Séries','▤'],['Músicas','♫'],['Livros','▥'],['Minha Lista','♡'],['Comunidade','◎'],['Ranking','★'],['Avisos','♧'],['Perfil','◉']];
 const escapeHtml=x=>String(x??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const id=x=>String(x??'');
@@ -77,7 +78,7 @@ function catalog(){
 function otherPage(){
  if(A.page==='Perfil')return '<div class="heading"><div><span class="eyebrow">MINHA CONTA</span><h1>Meu perfil</h1><p>Sua identidade e seus dados permanecem na nuvem.</p></div><button class="btn" id="signout">Sair da conta</button></div><div class="panel-grid"><div class="panel"><span class="badge">'+(A.profile?.verified?'Verificado':'Membro LX Plus')+'</span><h2 style="margin-top:16px">'+escapeHtml(A.profile?.name||'Usuário')+'</h2><p>'+escapeHtml(A.user?.email||'')+'</p><form id="profileForm" class="form"><label class="field">Nome<input name="name" maxlength="60" required value="'+escapeHtml(A.profile?.name||'')+'"></label><label class="field">Biografia<textarea name="bio" maxlength="280">'+escapeHtml(A.profile?.bio||'')+'</textarea></label><button class="btn primary">Salvar perfil</button></form></div><div class="panel"><span class="eyebrow">MINHA LISTA</span><p class="big">'+saved().size+'</p><p>Itens salvos na sua conta.</p><button class="btn" data-page="Minha Lista">Abrir lista</button><hr style="border:0;border-top:1px solid #383747;margin:25px 0"><p>Seu histórico, preferências e assinatura continuam no banco de dados original.</p></div></div>';
  if(A.page==='Avisos')return '<div class="heading"><div><span class="eyebrow">LX GROUP</span><h1>Avisos</h1></div></div><div class="panel">'+(A.notices.length?A.notices.map(x=>'<div class="notice"><strong>'+escapeHtml(x.title)+'</strong><p>'+escapeHtml(x.message)+'</p></div>').join(''):'<p>Sem novos avisos.</p>')+'</div>';
- if(A.page==='Comunidade')return '<div class="heading"><div><span class="eyebrow">LX SOCIAL</span><h1>Comunidade</h1><p>Encontre outros membros da plataforma.</p></div></div><div class="panel-grid"><div class="panel"><h2>Membros públicos</h2>'+(A.members.length?A.members.map(x=>'<div class="notice"><strong>'+escapeHtml(x.name||'Membro')+(x.verified?' ✓':'')+'</strong><p>'+escapeHtml(x.bio||'Membro LX Plus')+'</p></div>').join(''):'<p>Nenhum membro público encontrado.</p>')+'</div><div class="panel"><span class="badge">Em preparação</span><h2 style="margin-top:18px">Chamadas e mensagens</h2><p>A comunidade completa só será liberada depois dos testes de privacidade e estabilidade. Suas conversas antigas não foram apagadas.</p></div></div>';
+ if(A.page==='Comunidade')return renderCommunity({members:A.members,profile:A.profile,term:A.memberTerm});
  if(A.page==='Ranking'){
  const season=A.ranking?.season,rows=A.ranking?.rows||[];
  const prize=season?.prize_cents?new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(season.prize_cents/100):'A definir';
@@ -242,6 +243,12 @@ async function initialize(){
 }
 let searchTimer=0;
 root.addEventListener('input',e=>{
+ if(e.target.id==='memberSearch'){
+  A.memberTerm=e.target.value;
+  const area=document.querySelector('#socialMemberList');
+  if(area)area.innerHTML=renderSocialMembers(A.members,A.memberTerm);
+  return;
+ }
  if(e.target.id!=='search')return;
  A.term=e.target.value;A.filter='Todos';clearTimeout(searchTimer);
  searchTimer=setTimeout(async()=>{
@@ -254,6 +261,12 @@ root.addEventListener('input',e=>{
 root.addEventListener('click',async e=>{
  const button=e.target.closest('button');if(!button)return;
  if(button.dataset.auth){A.auth=button.dataset.auth;renderAuth();return}
+ if(button.dataset.copyHandle!==undefined){
+  const handle='@'+button.dataset.copyHandle;
+  try{await navigator.clipboard.writeText(handle);toast('Identificador copiado: '+handle)}
+  catch{toast('Copie este identificador: '+handle)}
+  return;
+ }
  if(button.dataset.page){const menu=button.closest('details');if(menu)menu.open=false;A.page=button.dataset.page;A.term='';A.filter='Todos';A.extra=[];const search=document.querySelector('#search');if(search)search.value='';draw();window.scrollTo({top:0,behavior:'smooth'});return}
  if(button.dataset.scroll){
   const rail=document.querySelector('[data-rail="'+CSS.escape(button.dataset.scroll)+'"]');
