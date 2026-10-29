@@ -10,8 +10,8 @@ test('fresh codebase has no legacy JS bundles or service worker',()=>{
 });
 test('entrypoint loads only the new app module and CSS',()=>{
  const html=read('index.html');
- assert.match(html,/src="\.\/src\/app\.js"/);
- assert.match(html,/href="\.\/assets\/styles\.css"/);
+ assert.match(html,/import\(['"]\.\/src\/app\.js\?v=[^'"]+['"]\)/);
+ assert.match(html,/href="\.\/assets\/styles\.css\?v=/);
  assert.doesNotMatch(html,/lxplus\.bundle|lxplus\.future-ui/);
 });
 test('required new modules exist and import local files',()=>{
@@ -43,4 +43,13 @@ test('ranking uses read-only database data, and homepage references saved histor
  assert.match(data,/lx_rank_scores/);
  assert.match(app,/Continue de onde parou/);
  assert.match(app,/A\.ranking/);
+});
+
+test('startup has visible error recovery and a backup CDN',()=>{
+ const html=read('index.html'),data=read('src/data.js');
+ assert.match(html,/__lxBootFailure/);
+ assert.match(html,/lxBootRetry/);
+ assert.match(html,/serviceWorker\.getRegistrations/);
+ assert.match(data,/cdn\.jsdelivr\.net\/npm\/@supabase\/supabase-js/);
+ assert.match(data,/esm\.sh\/@supabase\/supabase-js/);
 });
