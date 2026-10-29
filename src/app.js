@@ -1,9 +1,9 @@
-import {db,categories,safeUrl,getCatalog,findDiscovery,getProfile,getUserState,isAdmin,saveUserField,saveMyProfile,notices,publicMembers,sourceFor} from './data.js';
+import {db,categories,safeUrl,getCatalog,findDiscovery,getProfile,getUserState,isAdmin,saveUserField,saveMyProfile,notices,publicMembers,sourceFor,getRanking} from './data.js';
 import {VERSION} from './config.js';
 
 const root=document.querySelector('#app');
-const A={user:null,profile:null,admin:false,stored:{},items:[],extra:[],members:[],notices:[],page:'Início',term:'',filter:'Todos',auth:'login',modal:null,busy:false};
-const pages=[['Início','⌂'],['Filmes','▣'],['Séries','▤'],['Músicas','♫'],['Livros','▥'],['Minha Lista','♡'],['Comunidade','◎'],['Avisos','♧'],['Perfil','◉']];
+const A={user:null,profile:null,admin:false,stored:{},items:[],extra:[],members:[],notices:[],ranking:{season:null,rows:[]},page:'Início',term:'',filter:'Todos',auth:'login',modal:null,busy:false};
+const pages=[['Início','⌂'],['Filmes','▣'],['Séries','▤'],['Músicas','♫'],['Livros','▥'],['Minha Lista','♡'],['Comunidade','◎'],['Ranking','★'],['Avisos','♧'],['Perfil','◉']];
 const escapeHtml=x=>String(x??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const id=x=>String(x??'');
 const saved=()=>new Set((Array.isArray(A.stored.list)?A.stored.list:[]).map(id));
@@ -62,14 +62,32 @@ function hero(){
 }
 function catalog(){
  const list=filtered();
+ const history=A.stored.history&&typeof A.stored.history==='object'?A.stored.history:{};
+ const recently=Object.entries(history).map(([key,record])=>({
+  item:A.items.find(x=>id(x.id)===key),
+  when:record&&typeof record==='object'?record.updatedAt:''
+ })).filter(x=>x.item).sort((a,b)=>String(b.when).localeCompare(String(a.when))).slice(0,6);
+ const resume=(A.page==='Início'&&!A.term&&recently.length)?
+ '<section style="margin:0 0 30px"><div class="heading"><div><span class="eyebrow">SEU HISTÓRICO</span><h2>Continue de onde parou</h2></div></div><div class="cards">'+recently.map(x=>card(x.item)).join('')+'</div></section>':'';
+
  const filters=['Todos','Filme','Série','Dorama','Anime','Música','Livro'];
  const chips=['Início','Buscar'].includes(A.page)?'<div class="filters">'+filters.map(x=>'<button type="button" class="chip '+(A.filter===x?'active':'')+'" data-filter="'+escapeHtml(x)+'">'+escapeHtml(x==='Todos'?'Todos':label(x))+'</button>').join('')+'</div>':'';
- return (A.page==='Início'&&!A.term?hero():'')+'<div class="heading"><div><span class="eyebrow">BIBLIOTECA LX</span><h1>'+escapeHtml(A.term?'Busca: '+A.term:A.page==='Início'?'Descubra na LX Plus':A.page)+'</h1><p>Encontre seu próximo filme, livro ou som favorito.</p></div><small>'+list.length+' itens</small></div>'+chips+(list.length?'<div class="cards">'+list.slice(0,180).map(card).join('')+'</div>'+(list.length>180?'<p class="muted">Mostrando 180 resultados. Refine sua busca para encontrar outros títulos.</p>':''):'<div class="empty"><h2>Nada encontrado</h2><p>Tente outra pesquisa ou categoria.</p><button type="button" class="btn" id="clear">Limpar filtros</button></div>');
+ return (A.page==='Início'&&!A.term?hero():'')+resume+'<div class="heading"><div><span class="eyebrow">BIBLIOTECA LX</span><h1>'+escapeHtml(A.term?'Busca: '+A.term:A.page==='Início'?'Descubra na LX Plus':A.page)+'</h1><p>Encontre seu próximo filme, livro ou som favorito.</p></div><small>'+list.length+' itens</small></div>'+chips+(list.length?'<div class="cards">'+list.slice(0,180).map(card).join('')+'</div>'+(list.length>180?'<p class="muted">Mostrando 180 resultados. Refine sua busca para encontrar outros títulos.</p>':''):'<div class="empty"><h2>Nada encontrado</h2><p>Tente outra pesquisa ou categoria.</p><button type="button" class="btn" id="clear">Limpar filtros</button></div>');
 }
 function otherPage(){
  if(A.page==='Perfil')return '<div class="heading"><div><span class="eyebrow">MINHA CONTA</span><h1>Meu perfil</h1><p>Sua identidade e seus dados permanecem na nuvem.</p></div><button class="btn" id="signout">Sair da conta</button></div><div class="panel-grid"><div class="panel"><span class="badge">'+(A.profile?.verified?'Verificado':'Membro LX Plus')+'</span><h2 style="margin-top:16px">'+escapeHtml(A.profile?.name||'Usuário')+'</h2><p>'+escapeHtml(A.user?.email||'')+'</p><form id="profileForm" class="form"><label class="field">Nome<input name="name" maxlength="60" required value="'+escapeHtml(A.profile?.name||'')+'"></label><label class="field">Biografia<textarea name="bio" maxlength="280">'+escapeHtml(A.profile?.bio||'')+'</textarea></label><button class="btn primary">Salvar perfil</button></form></div><div class="panel"><span class="eyebrow">MINHA LISTA</span><p class="big">'+saved().size+'</p><p>Itens salvos na sua conta.</p><button class="btn" data-page="Minha Lista">Abrir lista</button><hr style="border:0;border-top:1px solid #383747;margin:25px 0"><p>Seu histórico, preferências e assinatura continuam no banco de dados original.</p></div></div>';
  if(A.page==='Avisos')return '<div class="heading"><div><span class="eyebrow">LX GROUP</span><h1>Avisos</h1></div></div><div class="panel">'+(A.notices.length?A.notices.map(x=>'<div class="notice"><strong>'+escapeHtml(x.title)+'</strong><p>'+escapeHtml(x.message)+'</p></div>').join(''):'<p>Sem novos avisos.</p>')+'</div>';
  if(A.page==='Comunidade')return '<div class="heading"><div><span class="eyebrow">LX SOCIAL</span><h1>Comunidade</h1><p>Encontre outros membros da plataforma.</p></div></div><div class="panel-grid"><div class="panel"><h2>Membros públicos</h2>'+(A.members.length?A.members.map(x=>'<div class="notice"><strong>'+escapeHtml(x.name||'Membro')+(x.verified?' ✓':'')+'</strong><p>'+escapeHtml(x.bio||'Membro LX Plus')+'</p></div>').join(''):'<p>Nenhum membro público encontrado.</p>')+'</div><div class="panel"><span class="badge">Em preparação</span><h2 style="margin-top:18px">Chamadas e mensagens</h2><p>A comunidade completa só será liberada depois dos testes de privacidade e estabilidade. Suas conversas antigas não foram apagadas.</p></div></div>';
+ if(A.page==='Ranking'){
+ const season=A.ranking?.season,rows=A.ranking?.rows||[];
+ const prize=season?.prize_cents?new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(season.prize_cents/100):'A definir';
+ const table=rows.length?rows.map((row,i)=>{
+  const p=A.members.find(m=>m.user_id===row.user_id);
+  const name=p?.name||(row.user_id===A.user?.id?A.profile?.name:'Participante com perfil privado');
+  return '<div class="notice" style="display:flex;align-items:center;gap:14px"><span class="badge">'+(i+1)+'º</span><div style="flex:1"><strong>'+escapeHtml(name)+'</strong><p>'+escapeHtml(season?.season_key||'')+'</p></div><strong>'+Number(row.monthly_score||0).toLocaleString('pt-BR')+' pts</strong></div>';
+ }).join(''):'<p>Ainda não há pontuações nesta temporada.</p>';
+ return '<div class="heading"><div><span class="eyebrow">RANKING LX</span><h1>Temporada '+escapeHtml(season?.season_key||'atual')+'</h1><p>Pontuação atual registrada pela plataforma.</p></div><span class="badge">Prêmio: '+escapeHtml(prize)+'</span></div><div class="panel-grid"><div class="panel"><h2>Classificação</h2>'+table+'</div><div class="panel"><h2>Informações</h2><p>Resultados e premiações são validados pela equipe LX Group. Perfis privados não têm os nomes expostos.</p><span class="badge">'+escapeHtml(season?.status||'Temporada')+'</span></div></div>';
+ }
  if(A.page==='Administração')return '<div class="heading"><div><span class="eyebrow">ACESSO RESTRITO</span><h1>Administração</h1></div></div><div class="panel-grid"><div class="panel"><span class="eyebrow">ITENS DISPONÍVEIS</span><p class="big">'+A.items.length+'</p><p>Conteúdos que sua conta pode visualizar.</p></div><div class="panel"><h2>Gestão em reconstrução</h2><p>Ferramentas destrutivas e moderação só serão reativadas depois de testar regras de acesso e rotas de recuperação.</p></div></div>';
  return catalog();
 }
@@ -117,7 +135,7 @@ async function initialize(){
   const [profile,admin,st]=await Promise.all([getProfile(A.user.id),isAdmin(),getUserState(A.user.id)]);
   A.profile=profile;A.admin=admin;A.stored=st;
   if(!approved()){showGate();return}
-  [A.items,A.notices,A.members]=await Promise.all([getCatalog(),notices(),publicMembers()]);
+  [A.items,A.notices,A.members,A.ranking]=await Promise.all([getCatalog(),notices(),publicMembers(),getRanking()]);
   draw();
  }catch(e){showError(e.message||'Não foi possível conectar ao servidor.')}
 }
