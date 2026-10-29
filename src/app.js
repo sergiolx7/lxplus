@@ -1,9 +1,10 @@
 import {db,categories,safeUrl,getCatalog,findDiscovery,getProfile,getUserState,isAdmin,saveUserField,saveMyProfile,notices,publicMembers,sourceFor,getRanking} from './data.js';
 import {VERSION} from './config.js';
 import {classifyLink,attachPlayer} from './universal-player.js';
+import {scanDriveFolder,publishMatches} from './drive-import.js';
 
 const root=document.querySelector('#app');
-const A={user:null,profile:null,admin:false,stored:{},items:[],extra:[],members:[],notices:[],ranking:{season:null,rows:[]},page:'Início',term:'',filter:'Todos',auth:'login',modal:null,playerCleanup:null,busy:false};
+const A={user:null,profile:null,admin:false,stored:{},items:[],extra:[],members:[],notices:[],ranking:{season:null,rows:[]},page:'Início',term:'',filter:'Todos',auth:'login',modal:null,playerCleanup:null,busy:false,drive:{folder:'',scan:null,progress:'',rightsConfirmed:false,working:false,lastResult:null}};
 const pages=[['Início','⌂'],['Filmes','▣'],['Séries','▤'],['Músicas','♫'],['Livros','▥'],['Minha Lista','♡'],['Comunidade','◎'],['Ranking','★'],['Avisos','♧'],['Perfil','◉']];
 const escapeHtml=x=>String(x??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const id=x=>String(x??'');
@@ -89,9 +90,20 @@ function otherPage(){
  }).join(''):'<p>Ainda não há pontuações nesta temporada.</p>';
  return '<div class="heading"><div><span class="eyebrow">RANKING LX</span><h1>Temporada '+escapeHtml(season?.season_key||'atual')+'</h1><p>Pontuação atual registrada pela plataforma.</p></div><span class="badge">Prêmio: '+escapeHtml(prize)+'</span></div><div class="panel-grid"><div class="panel"><h2>Classificação</h2>'+table+'</div><div class="panel"><h2>Informações</h2><p>Resultados e premiações são validados pela equipe LX Group. Perfis privados não têm os nomes expostos.</p><span class="badge">'+escapeHtml(season?.status||'Temporada')+'</span></div></div>';
  }
- if(A.page==='Administração')return '<div class="heading"><div><span class="eyebrow">ACESSO RESTRITO</span><h1>Administração</h1><p>Ferramentas em homologação, sem salvar links no banco.</p></div></div>'+
-  '<div class="panel-grid"><div class="panel"><h2>Testar link no player</h2><p>Cole um link HTTPS do Google Drive, YouTube, arquivo MP4, HLS ou DASH para pré-visualizar. Nenhuma mudança será publicada.</p><form id="previewLinkForm" class="form"><label class="field">URL de teste<input name="url" type="url" required maxlength="3000" placeholder="https://drive.google.com/file/d/..."></label><button type="submit" class="btn primary">Testar reprodução</button></form><p class="muted">Links privados, protegidos ou bloqueados por CORS podem exigir acesso no provedor original.</p></div>'+
-  '<div class="panel"><span class="eyebrow">CATÁLOGO ATUAL</span><p class="big">'+A.items.length+'</p><p>Itens visíveis pela sua conta. Importação, edição e exclusão serão liberadas somente após validação das permissões e backup.</p></div></div>';
+ if(A.page==='Administração'){
+  const scan=A.drive.scan,rows=scan?.files||[];
+  const ready=rows.filter(x=>x.qualifies),needsReview=rows.filter(x=>!x.qualifies);
+  const preview=scan?'<div class="panel" style="grid-column:1/-1"><div class="heading"><div><h2>Resultado da verificação</h2><p>'+rows.length+' arquivos · '+ready.length+' prontos · '+needsReview.length+' para revisão</p></div></div><div class="drive-review">'+rows.slice(0,120).map(row=>{
+    const cover=safeUrl(row.match?.cover),title=row.match?.title||row.parsed?.title||row.name||'Sem título';
+    return '<div class="drive-row"><div class="drive-thumb">'+(cover?'<img loading="lazy" src="'+escapeHtml(cover)+'" alt="">':'<span>▶</span>')+'</div><div class="drive-desc"><strong>'+escapeHtml(title)+'</strong><small>'+escapeHtml(row.name)+' · '+(Number(row.confidence||0)*100).toFixed(0)+'% de correspondência</small><span class="'+(row.qualifies?'drive-ok':'drive-review-needed')+'">'+escapeHtml(row.reason)+'</span></div></div>';
+   }).join('')+'</div><label class="drive-confirm"><input type="checkbox" id="driveRights" '+(A.drive.rightsConfirmed?'checked':'')+'> Confirmo que possuo autorização para distribuir esses vídeos na LX Plus.</label><div class="actions"><button class="btn primary" type="button" id="drivePublish" '+(!ready.length||A.drive.working?'disabled':'')+'>Publicar '+ready.length+' filmes identificados</button></div><p class="muted">Filmes com correspondência duvidosa, episódios e arquivos repetidos não são publicados automaticamente.</p></div>':'';
+  const summary=A.drive.lastResult?'<div class="panel" style="grid-column:1/-1"><h2>Última importação</h2><p>'+A.drive.lastResult.published.length+' publicados · '+A.drive.lastResult.duplicates.length+' repetidos · '+A.drive.lastResult.errors.length+' com erro</p></div>':'';
+  return '<div class="heading"><div><span class="eyebrow">LX GROUP · PAINEL ADMINISTRATIVO</span><h1>Automação do catálogo</h1><p>Importe filmes de uma pasta do Google Drive e complete os dados automaticamente.</p></div></div>'+
+    '<div class="panel-grid"><div class="panel"><span class="eyebrow">GOOGLE DRIVE</span><h2>Conectar uma pasta</h2><p>Informe uma pasta compartilhada. O importador procura os vídeos e tenta identificar o filme usando o título do arquivo.</p><form class="form" id="driveScanForm"><label class="field">Link da pasta<input type="url" name="folder" required placeholder="https://drive.google.com/drive/folders/..." value="'+escapeHtml(A.drive.folder)+'"></label><label class="field">Limite por verificação<input type="number" name="limit" min="1" max="300" value="100"></label><button class="btn primary" '+(A.drive.working?'disabled':'')+'>Buscar filmes e capas</button></form><p id="driveStatus" role="status" class="muted">'+escapeHtml(A.drive.progress||'O Google Drive e TMDb precisam estar configurados no Supabase.')+'</p></div>'+
+    '<div class="panel"><span class="eyebrow">ETAPAS DA AUTOMAÇÃO</span><h2>Como funciona</h2><p>1. Arquivo novo na pasta → 2. Nome e ano → 3. Capa e descrição → 4. Verificação de qualidade → 5. Publicação.</p><p>Na primeira fase, você pode verificar e publicar com um clique. A sincronização recorrente só será ativada após configurar as chaves, a pasta e os direitos de distribuição.</p><span class="badge">Publicação automática ainda não ativada</span></div>'+
+    '<div class="panel"><h2>Testar link no player</h2><p>Cole um link HTTPS de vídeo ou áudio e faça uma pré-visualização. O teste não altera o catálogo.</p><form id="previewLinkForm" class="form"><label class="field">Link para testar<input type="url" name="url" required maxlength="3000" placeholder="https://drive.google.com/file/d/..."></label><button class="btn">Testar reprodução</button></form></div>'+
+    '<div class="panel"><span class="eyebrow">CATÁLOGO ATUAL</span><p class="big">'+A.items.length+'</p><p>Itens publicados visíveis pela sua conta. O catálogo original não será apagado.</p></div>'+summary+preview+'</div>';
+ }
  return catalog();
 }
 function draw(){
@@ -193,6 +205,23 @@ root.addEventListener('click',async e=>{
  if(button.dataset.close!==undefined){closeModal();return}
  if(button.dataset.like){const x=find(button.dataset.like);if(x)await toggle(x);return}
  if(button.dataset.play){const x=find(button.dataset.play);if(x)await play(x);return}
+ if(button.id==='drivePublish'){
+  if(!A.admin||A.drive.working||!A.drive.scan)return;
+  const confirmed=document.querySelector('#driveRights')?.checked===true;
+  if(!confirmed){toast('Confirme que você tem direito de distribuir os arquivos antes de publicar.');return}
+  A.drive.rightsConfirmed=true;A.drive.working=true;
+  try{
+   const results=await publishMatches(db,A.drive.scan.files,{rightsConfirmed:true,onProgress:message=>{
+    A.drive.progress=message;const status=document.querySelector('#driveStatus');if(status)status.textContent=message;
+   }});
+   A.drive.lastResult=results;
+   toast('Publicados: '+results.published.length+' · Repetidos: '+results.duplicates.length+' · Erros: '+results.errors.length);
+   A.items=await getCatalog();
+   A.drive.scan.files=A.drive.scan.files.map(r=>results.published.some(x=>x.id&&r.driveId)?r:r);
+  }catch(e){toast(e.message||'Erro ao importar arquivos.')}
+  finally{A.drive.working=false;draw()}
+  return;
+ }
  if(button.id==='clear'){A.term='';A.filter='Todos';A.extra=[];const inp=document.querySelector('#search');if(inp)inp.value='';draw();return}
  if(button.id==='retry'){await initialize();return}
  if(button.id==='signout'){await db.auth.signOut();A.user=null;A.profile=null;A.stored={};A.items=[];A.auth='login';renderAuth();return}
@@ -207,6 +236,22 @@ root.addEventListener('submit',async e=>{
  e.preventDefault();const f=e.target;const btn=f.querySelector('button[type="submit"],button.btn.primary');if(btn)btn.disabled=true;
  const data=Object.fromEntries(new FormData(f).entries());
  try{
+  if(f.id==='driveScanForm'){
+   if(!A.admin)throw Error('Esta operação exige acesso administrativo.');
+   if(A.drive.working)return;
+   A.drive.working=true;A.drive.scan=null;A.drive.lastResult=null;A.drive.rightsConfirmed=false;
+   A.drive.folder=String(data.folder||'').trim();
+   const status=document.querySelector('#driveStatus');
+   try{
+    const outcome=await scanDriveFolder(db,A.drive.folder,{limit:Number(data.limit||100),onProgress:message=>{
+     A.drive.progress=message;if(status)status.textContent=message;
+    }});
+    A.drive.scan=outcome;A.drive.progress='Análise concluída: '+outcome.files.length+' arquivos.';
+    toast('Encontrei '+outcome.files.length+' vídeos. Confira as capas antes de publicar.');
+   }catch(e){A.drive.progress=String(e.message||e);toast(A.drive.progress)}
+   finally{A.drive.working=false;draw()}
+   return;
+  }
   if(f.id==='previewLinkForm'){
    if(!A.admin)throw Error('Somente administradores podem testar links.');
    const input=String(data.url||'').trim(),entry=classifyLink(input);
