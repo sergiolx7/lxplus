@@ -1,4 +1,23 @@
-import {createClient} from 'https://esm.sh/@supabase/supabase-js@2.57.4?bundle';
+// LX Plus startup: two independent CDNs and a network timeout prevent an endless black loader.
+// Both URLs point to the same pinned version of the official Supabase JS SDK.
+async function loadSupabaseModule(url,timeoutMs=6500){
+  let timer;
+  try{
+    return await Promise.race([
+      import(url),
+      new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Tempo limite ao carregar a biblioteca de autenticação.')),timeoutMs)})
+    ]);
+  }finally{clearTimeout(timer)}
+}
+let supabaseModule;
+try{
+  supabaseModule=await loadSupabaseModule('https://esm.sh/@supabase/supabase-js@2.57.4?bundle');
+}catch(firstFailure){
+  console.warn('LX Plus: primeiro CDN indisponível; usando fonte alternativa.',firstFailure);
+  supabaseModule=await loadSupabaseModule('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/+esm',9000);
+}
+const {createClient}=supabaseModule;
+if(typeof createClient!=='function')throw Error('Biblioteca de autenticação indisponível.');
 import {BACKEND} from './config.js';
 import {resolveItem} from './universal-player.js';
 
