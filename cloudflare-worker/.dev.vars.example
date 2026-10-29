@@ -1,3 +1,0 @@
-# Exemplo para teste LOCAL. Nunca versionar o arquivo real .dev.vars.
-GOOGLE_CLIENT_EMAIL="sua-conta-de-servico@seu-projeto.iam.gserviceaccount.com"
-GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nCOLE_AQUI_SOMENTE_LOCALMENTE\n-----END PRIVATE KEY-----\n"
