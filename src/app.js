@@ -6,9 +6,10 @@ import {makeDemoDriveScan,simulateDemoPublish} from './drive-import-demo.js';
 import {renderPremiumCatalog} from './premium-ui.js';
 import {studioOverview,studioSources,studioPreview} from './studio-ui.js';
 import {renderCommunity,renderSocialMembers} from './social-ui.js';
+import {loadDashboardMetrics,renderDashboardMetrics} from './admin-monitor.js';
 
 const root=document.querySelector('#app');
-const A={user:null,profile:null,admin:false,stored:{},items:[],extra:[],members:[],notices:[],ranking:{season:null,rows:[]},page:'Início',term:'',filter:'Todos',auth:'login',modal:null,playerCleanup:null,busy:false,loadGeneration:0,catalogStatus:'loading',memberTerm:'',drive:{folder:'',scan:null,progress:'',rightsConfirmed:false,working:false,lastResult:null}};
+const A={user:null,profile:null,admin:false,stored:{},items:[],extra:[],members:[],notices:[],ranking:{season:null,rows:[]},page:'Início',term:'',filter:'Todos',auth:'login',modal:null,playerCleanup:null,busy:false,loadGeneration:0,catalogStatus:'loading',memberTerm:'',monitor:null,monitorBusy:false,drive:{folder:'',scan:null,progress:'',rightsConfirmed:false,working:false,lastResult:null}};
 const pages=[['Início','⌂'],['Filmes','▣'],['Séries','▤'],['Músicas','♫'],['Livros','▥'],['Minha Lista','♡'],['Comunidade','◎'],['Ranking','★'],['Avisos','♧'],['Perfil','◉']];
 const escapeHtml=x=>String(x??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const id=x=>String(x??'');
@@ -101,7 +102,7 @@ function otherPage(){
    (scan.demo?'<button class="btn" type="button" id="driveDemoReset">Limpar demonstração</button>':'')+
    '</div><p class="muted">Duplicatas, episódios e correspondências incertas ficam para revisão.</p></div>':'';
   const summary=A.drive.lastResult?'<div class="panel" style="grid-column:1/-1"><h2>'+(A.drive.lastResult.demo?'Resultado da simulação · zero envios reais':'Última importação')+'</h2><p>'+A.drive.lastResult.published.length+(A.drive.lastResult.demo?' simulados · ':' publicados · ')+A.drive.lastResult.duplicates.length+' repetidos · '+A.drive.lastResult.errors.length+' com erro</p></div>':'';
-  return studioOverview({catalog:A.items,scan:A.drive.scan})+'<div class="heading"><div><span class="eyebrow">LX GROUP · PAINEL ADMINISTRATIVO</span><h1>Automação do catálogo</h1><p>Importe filmes de uma pasta do Google Drive e complete os dados automaticamente.</p></div></div>'+
+  return studioOverview({catalog:A.items,scan:A.drive.scan})+renderDashboardMetrics(A.monitor)+'<div class="heading"><div><span class="eyebrow">LX GROUP · PAINEL ADMINISTRATIVO</span><h1>Automação do catálogo</h1><p>Importe filmes de uma pasta do Google Drive e complete os dados automaticamente.</p></div></div>'+
     '<div class="panel-grid"><div class="panel"><span class="eyebrow">GOOGLE DRIVE</span><h2>Conectar uma pasta</h2><p>Informe uma pasta compartilhada. O importador procura os vídeos e tenta identificar o filme usando o título do arquivo.</p><form class="form" id="driveScanForm"><label class="field">Link da pasta<input type="url" name="folder" required placeholder="https://drive.google.com/drive/folders/..." value="'+escapeHtml(A.drive.folder)+'"></label><label class="field">Limite por verificação<input type="number" name="limit" min="1" max="300" value="100"></label><button class="btn primary" '+(A.drive.working?'disabled':'')+'>Buscar filmes e capas</button></form><div class="actions" style="margin-top:14px"><button class="btn" type="button" id="driveDemo" '+(A.drive.working?'disabled':'')+'>▶ Testar pasta fictícia</button></div><p id="driveStatus" role="status" class="muted">'+escapeHtml(A.drive.progress||'O Google Drive e TMDb precisam estar configurados no Supabase.')+'</p></div>'+
     '<div class="panel"><span class="eyebrow">ETAPAS DA AUTOMAÇÃO</span><h2>Como funciona</h2><p>1. Arquivo novo na pasta → 2. Nome e ano → 3. Capa e descrição → 4. Verificação de qualidade → 5. Publicação.</p><p>Na primeira fase, você pode verificar e publicar com um clique. A sincronização recorrente só será ativada após configurar as chaves, a pasta e os direitos de distribuição.</p><span class="badge">Publicação automática ainda não ativada</span></div>'+
     '<div class="panel"><h2>Testar link no player</h2><p>Cole um link HTTPS de vídeo ou áudio e faça uma pré-visualização. O teste não altera o catálogo.</p><form id="previewLinkForm" class="form"><label class="field">Link para testar<input type="url" name="url" required maxlength="3000" placeholder="https://drive.google.com/file/d/..."></label><button class="btn">Testar reprodução</button></form></div>'+
@@ -291,6 +292,16 @@ root.addEventListener('click',async e=>{
  if(button.dataset.close!==undefined){closeModal();return}
  if(button.dataset.like){const x=find(button.dataset.like);if(x)await toggle(x);return}
  if(button.dataset.play){const x=find(button.dataset.play);if(x)await play(x);return}
+ if(button.id==='monitorRefresh'){
+  if(!A.admin||A.monitorBusy)return;
+  A.monitorBusy=true;button.disabled=true;button.textContent='Consultando métricas…';
+  try{
+   A.monitor=await timed(loadDashboardMetrics(db),'Painel de diagnóstico',15000);
+   if(A.page==='Administração')draw();
+  }catch(error){toast(error.message||'Não foi possível carregar os diagnósticos.')}
+  finally{A.monitorBusy=false;if(button.isConnected){button.disabled=false;button.textContent='Atualizar'}}
+  return;
+ }
  if(button.id==='driveDemo'){
   if(!A.admin||A.drive.working)return;
   A.drive={folder:'',scan:makeDemoDriveScan(),progress:'Simulação pronta: seis arquivos fictícios encontrados.',rightsConfirmed:false,working:false,lastResult:null};
