@@ -12,6 +12,11 @@
 - Cor de identidade, cartões, contraste, estados de foco, acessibilidade e CSS responsivo; sem introduzir bibliotecas de front-end pesadas.
 - Testes estáticos e unitários para HTML escapado, visualização responsiva, estados do catálogo e preservação da autenticação.
 
+## Segunda etapa implementada na mesma atualização
+- LX Music mini player para fontes de áudio autorizadas e compatíveis; mantém áudio ativo durante a navegação, permite faixa anterior/próxima e usa Media Session quando suportada.
+- ADM: consulta sob demanda a erros registrados, eventos de atividade, automações e chamados, com amostras limitadas e políticas RLS. O indicador de 24h **não é contagem de usuários online**.
+- Testes automatizados para painel ADM, erro apresentado com escape HTML, experiência Premium e módulos novos; a publicação não deve ocorrer sem CI verde.
+
 ## Pendências para próximas entregas (não declarar como prontas)
 - Feed e posts reais, mensagens, amizade, identificador universal pesquisável e chamadas com consentimento.
 - Monitoramento de erros e usuários ativos com permissões adequadas e painel de métricas de produção.
@@ -22,9 +27,12 @@
 
 ## Critérios antes da publicação
 1. CI verde no GitHub.
-2. Login de conta existente funcionando no ambiente de teste.
+2. Login de conta existente funcionando no ambiente de teste (não houve alteração nas credenciais nem nas contas).
 3. Telas de catálogo e ADM revisadas em 360px, 768px e desktop.
 4. Dados, perfil e listas preservados; sem alteração destrutiva no banco.
 5. Validação do proprietário para atualizar a página principal e plano de reversão imediato.
 
 Não há promessa de zero bugs. A publicação permanece isolada até estes critérios.
+
+## Nota de publicação
+Publicar apenas após testes estáticos aprovados e backup do commit `main`. Login e reprodução com contas e mídias reais não podem ser garantidos pelos testes automatizados deste pacote; validar com usuário após deploy. Manter um plano de rollback para o commit anterior.
