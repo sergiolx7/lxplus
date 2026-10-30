@@ -5,6 +5,7 @@ import {MusicDock} from './music-dock.js';
 import {Calls} from './calls.js';
 import {createTelemetry,socialDirectory} from './services.js';
 import {uuid,esc,https,avatar,empty,icon,duration} from './ui.js';
+import {showAuthError} from './auth-feedback.js';
 
 const root=document.querySelector('#app');
 const A={user:null,profile:null,admin:false,stored:{},items:[],members:[],page:'Início',term:'',auth:'login',catalogStatus:'loading',generation:0,routeGeneration:0,routeKey:'',controller:null,modal:null,playerCleanup:null,unread:0,presence:0,activity:null,telemetry:null,calls:null,noticeChannel:null,heartbeatTimer:null,initializing:false};
@@ -147,13 +148,13 @@ root.addEventListener('click',async event=>{
 });
 root.addEventListener('click',event=>{if(event.target.classList.contains('overlay'))closeModal()});
 root.addEventListener('submit',async event=>{
- if(event.defaultPrevented)return;const form=event.target;if(!['signin','signup','reset','newPassword'].includes(form.id))return;event.preventDefault();const button=form.querySelector('button.btn');button.disabled=true;const data=Object.fromEntries(new FormData(form));
+ if(event.defaultPrevented)return;const form=event.target;if(!['signin','signup','reset','newPassword'].includes(form.id))return;event.preventDefault();const button=form.querySelector('button.btn');if(button.disabled)return;const originalLabel=button.innerHTML;button.disabled=true;button.textContent='Aguarde…';form.setAttribute('aria-busy','true');form.querySelector('[data-auth-error]')?.remove();const data=Object.fromEntries(new FormData(form));
  try{
   if(form.id==='signin'){const {error}=await timed(db.auth.signInWithPassword({email:String(data.email).trim(),password:String(data.password)}),'O login',12000);if(error)throw error;await initialize()}
   if(form.id==='signup'){const {data:created,error}=await timed(db.auth.signUp({email:String(data.email).trim(),password:String(data.password),options:{data:{name:String(data.name).trim()},emailRedirectTo:location.origin+location.pathname}}),'O cadastro');if(error)throw error;if(created.session)await initialize();else{A.auth='login';renderAuth();toast('Cadastro enviado. Confirme seu e-mail para continuar.')}}
   if(form.id==='reset'){const {error}=await timed(db.auth.resetPasswordForEmail(String(data.email).trim(),{redirectTo:location.origin+location.pathname+'?recovery=1'}),'A recuperação');if(error)throw error;A.auth='login';renderAuth();toast('Se a conta existir, você receberá as instruções por e-mail.')}
   if(form.id==='newPassword'){if(data.password!==data.confirm)throw Error('As senhas não coincidem.');const {error}=await timed(db.auth.updateUser({password:String(data.password)}),'A alteração');if(error)throw error;history.replaceState(null,'',location.pathname);A.auth='login';toast('Senha atualizada.');await initialize()}
- }catch(error){toast(error.message||'Não foi possível realizar essa ação.')}finally{if(button.isConnected)button.disabled=false}
+ }catch(error){if(form.isConnected)showAuthError(form,error);else toast(error.message||'Não foi possível realizar essa ação.')}finally{if(button.isConnected){button.disabled=false;button.innerHTML=originalLabel;form.removeAttribute('aria-busy')}}
 });
 async function signout(){++A.generation;clearMemberServices();try{await timed(db.auth.signOut({scope:'local'}),'A saída',7000)}catch(error){toast(error.message)}A.user=null;A.profile=null;A.stored={};A.items=[];A.auth='login';renderAuth()}
 function attachAuthListener(client=db){client.auth.onAuthStateChange((event,session)=>{
