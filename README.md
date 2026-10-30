@@ -37,6 +37,6 @@ Os 223 filmes e 1.846 registros musicais anteriores foram arquivados e retirados
 
 ## Estado da entrega
 
-Leia [o relatório de implementação e validação](docs/RELEASE-20261030.md). Há funcionalidades implementadas que ainda exigem homologação com contas e dispositivos reais. Chamadas em grupo, servidor TURN, integração OAuth do Drive, painel completo de prêmios, métricas de infraestrutura e testes em Android/iOS reais continuam pendentes. Esta entrega não declara a conclusão integral desses recursos.
+Leia [o relatório de implementação](docs/RELEASE-20261030.md) e a [validação adicional](docs/VALIDATION-20261030.md), com 37 testes de código, 10 verificações HTTP e reprodução local com MP4/HLS/DASH reais. Há funcionalidades implementadas que ainda exigem homologação com contas e dispositivos reais. Chamadas em grupo, servidor TURN, integração OAuth do Drive, painel completo de prêmios, métricas de infraestrutura e testes em Android/iOS reais continuam pendentes. Esta entrega não declara a conclusão integral desses recursos.
 
 Os modelos de e-mail anteriores continuam em `email/lxgroup/`. SMTP e entrega de e-mail dependem da configuração do provedor; nenhuma credencial foi alterada.

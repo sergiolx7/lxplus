@@ -1,0 +1,94 @@
+{
+  "scope": "Local browser using production media/signaling modules; no signed-in production user or real two-device call.",
+  "first": [
+    {
+      "test": "MP4",
+      "status": "pass",
+      "source": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+      "duration": 5.055,
+      "qualities": [],
+      "manualQuality": null,
+      "position": 2.72,
+      "speed": 1.5,
+      "readyState": 4
+    },
+    {
+      "test": "HLS",
+      "status": "pass",
+      "source": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+      "duration": 634.634,
+      "qualities": [],
+      "manualQuality": null,
+      "position": 21.04,
+      "speed": 1.5,
+      "readyState": 4
+    },
+    {
+      "test": "DASH",
+      "status": "pass",
+      "source": "https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd",
+      "duration": 634.566,
+      "qualities": [
+        "180p",
+        "180p",
+        "270p",
+        "360p",
+        "360p",
+        "432p",
+        "576p",
+        "720p",
+        "1080p",
+        "2160p"
+      ],
+      "manualQuality": "2160p",
+      "position": 21.07,
+      "speed": 1.5,
+      "readyState": 4
+    },
+    {
+      "test": "WebRTC local com Calls.receive",
+      "status": "fail",
+      "error": "Tempo limite do teste."
+    }
+  ],
+  "additional": [
+    {
+      "test": "HLS por MSE (fallback hls.js)",
+      "status": "pass",
+      "source": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+      "duration": 634.567,
+      "qualities": [
+        "184p",
+        "288p",
+        "480p",
+        "720p",
+        "1080p"
+      ],
+      "manualQuality": "1080p",
+      "position": 21.04,
+      "speed": 1.5,
+      "readyState": 4,
+      "videoWidth": 1920,
+      "decodedFrames": 424
+    },
+    {
+      "test": "WebRTC local com Calls.receive",
+      "status": "fail",
+      "candidatesA": 0,
+      "candidatesB": 0,
+      "error": "Tempo limite do teste.",
+      "states": {
+        "caller": "new",
+        "callee": "new",
+        "callerIce": "new",
+        "calleeIce": "new",
+        "callerSignaling": "stable",
+        "calleeSignaling": "stable",
+        "callerGathering": "complete",
+        "calleeGathering": "complete",
+        "queuedIceA": 0,
+        "queuedIceB": 0
+      }
+    }
+  ]
+}

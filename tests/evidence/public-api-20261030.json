@@ -1,0 +1,57 @@
+[
+  {
+    "test": "auth settings",
+    "http": 200,
+    "status": "pass",
+    "email_confirmation_required": true,
+    "email_enabled": true
+  },
+  {
+    "test": "private messages hidden",
+    "http": 200,
+    "status": "pass",
+    "visible_rows": 0
+  },
+  {
+    "test": "private profiles hidden",
+    "http": 401,
+    "status": "pass"
+  },
+  {
+    "test": "import review hidden",
+    "http": 200,
+    "status": "pass",
+    "visible_rows": 0
+  },
+  {
+    "test": "admin mutation denied",
+    "http": 401,
+    "status": "pass"
+  },
+  {
+    "test": "Drive status requires login",
+    "http": 401,
+    "status": "pass"
+  },
+  {
+    "test": "Drive invalid token denied",
+    "http": 401,
+    "status": "pass"
+  },
+  {
+    "test": "Drive scheduler protected",
+    "http": 401,
+    "status": "pass"
+  },
+  {
+    "test": "Drive GET rejected",
+    "http": 405,
+    "status": "pass"
+  },
+  {
+    "test": "Drive preflight",
+    "http": 200,
+    "status": "pass",
+    "allowed_methods": "POST,OPTIONS"
+  }
+]
