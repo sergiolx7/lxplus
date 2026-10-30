@@ -1,0 +1,23 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {MusicQueue} from '../src/music-queue.js';
+import {parseCsv,parseImportText} from '../src/import-text.js';
+import {esc,https,uuid} from '../src/ui.js';
+import {MusicDock} from '../src/music-dock.js';
+const tracks=[{id:1,title:'A'},{id:2,title:'B'},{id:3,title:'C'}];
+
+test('queue finishes instead of looping when repeat is off',()=>{const q=new MusicQueue();q.set(tracks,tracks[0]);assert.equal(q.next().id,2);assert.equal(q.next().id,3);assert.equal(q.next(),null)});
+test('repeat-one applies to ended tracks while manual next advances',()=>{const q=new MusicQueue();q.set(tracks,tracks[0]);q.repeat='one';assert.equal(q.next({ended:true}).id,1);assert.equal(q.next().id,2)});
+test('repeat-all returns to the first item and previous follows actual playback',()=>{const q=new MusicQueue();q.set(tracks,tracks[2]);q.repeat='all';assert.equal(q.next().id,1);assert.equal(q.back().id,3)});
+test('shuffle does not repeat a track before the queue is exhausted',()=>{const q=new MusicQueue();q.set(tracks,tracks[0]);q.shuffle=true;const played=[1,q.next({random:()=>0}).id,q.next({random:()=>0}).id];assert.equal(new Set(played).size,3);assert.equal(q.next(),null)});
+test('queue deduplicates IDs and accepts a selected track outside the initial page',()=>{const q=new MusicQueue();q.set([tracks[0],tracks[0],tracks[1]],tracks[2]);assert.equal(q.items.length,3);assert.equal(q.items[q.index].id,3);q.add(tracks[1]);assert.equal(q.items.length,3)});
+test('music controller constructor does not access media or request browser permissions',()=>{const dock=new MusicDock({resolve:async()=>({kind:'unavailable'})});assert.deepEqual(dock.tracks,[]);assert.equal(dock.index,-1)});
+test('CSV parser preserves quoted separators, escaped quotes and multiline descriptions',()=>{const rows=parseCsv('title,type,desc\r\n"Filme, um",Filme,"Ela disse ""oi""\nna cena"');assert.equal(rows[0].title,'Filme, um');assert.equal(rows[0].desc,'Ela disse "oi"\nna cena')});
+test('CSV accepts UTF-8 BOM and the Excel semicolon format',()=>{assert.equal(parseCsv('\ufefftitle;year;type\nTítulo;2026;Filme')[0].year,'2026')});
+test('CSV rejects unterminated quotes',()=>assert.throws(()=>parseCsv('title,desc\n"Não terminou'),/aspas/));
+test('imported IDs, administrator fields and published flags cannot overwrite existing catalog records',()=>{const [r]=parseImportText('[{"id":1,"title":"Teste","published":true,"service_role":"bad","license":{"authorized":true}}]');assert.equal(r.item.id,undefined);assert.equal(r.item.service_role,undefined);assert.equal(r.item.license,undefined);assert.equal(r.item.published,false)});
+test('duplicate sources in one import require review',()=>{const rows=parseImportText('[{"title":"Um","sourceUrl":"https://example.org/one.mp4"},{"title":"Dois","sourceUrl":"https://example.org/one.mp4"}]');assert.equal(rows[0].valid,true);assert.equal(rows[1].valid,false);assert.match(rows[1].errors.join(' '),/Duplicado/)});
+test('untrusted media URLs and embedded credentials are rejected before saving a draft',()=>{for(const sourceUrl of ['javascript:alert(1)','http://evil.test/a.mp4','https://user:pass@example.org/a.mp4'])assert.equal(parseImportText(JSON.stringify([{title:'Teste',sourceUrl}]))[0].valid,false)});
+test('empty and excessive imports fail with an actionable error',()=>{assert.throws(()=>parseImportText('{}'),/lista/);assert.throws(()=>parseImportText(JSON.stringify(Array.from({length:2001},()=>({title:'A'})))),/2.000/)});
+test('HTML and image URL helpers reject script injection and credential-bearing URLs',()=>{assert.equal(https('javascript:alert(1)'), '');assert.equal(https('https://user:pass@example.org/a.jpg'),'');assert.doesNotMatch(esc('<img src=x onerror="bad">'),/<img/)});
+test('cryptographically generated IDs have UUID v4 format and do not collide in a sample',()=>{const values=Array.from({length:100},()=>uuid());assert.equal(new Set(values).size,100);assert.ok(values.every(x=>/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(x)))});

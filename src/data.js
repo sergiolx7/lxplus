@@ -11,10 +11,11 @@ async function loadSupabaseModule(url,timeoutMs=6500){
 }
 let supabaseModule;
 try{
-  supabaseModule=await loadSupabaseModule('https://esm.sh/@supabase/supabase-js@2.57.4?bundle');
-}catch(firstFailure){
-  console.warn('LX Plus: primeiro CDN indisponível; usando fonte alternativa.',firstFailure);
-  supabaseModule=await loadSupabaseModule('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/+esm',9000);
+  supabaseModule=await loadSupabaseModule('../assets/supabase-2.117.2.mjs',6500);
+}catch(localFailure){
+  console.warn('LX Plus: biblioteca local indisponível; tentando fonte oficial alternativa.',localFailure);
+  try{supabaseModule=await loadSupabaseModule('https://esm.sh/@supabase/supabase-js@2.117.2?bundle',6500)}
+  catch{supabaseModule=await loadSupabaseModule('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/+esm',6500)}
 }
 const {createClient}=supabaseModule;
 if(typeof createClient!=='function')throw Error('Biblioteca de autenticação indisponível.');
@@ -42,17 +43,14 @@ export const safeUrl=s=>{
 };
 export const itemFrom=r=>{
  const p=r?.payload||r||{};
- return {...p,id:r.id??p.id,title:String(p.title||'Sem título'),type:String(p.type||p.media_kind||'Conteúdo'),cover:safeUrl(p.cover||p.cover_url||''),banner:safeUrl(p.banner||p.heroArt||''),description:String(p.desc||p.description||'')};
+ return {...p,id:r.id??p.id,title:String(p.title||'Sem título'),type:String(p.type||p.media_kind||'Conteúdo'),cover:safeUrl(p.cover||p.cover_url||''),banner:safeUrl(p.bannerDesktop||p.banner||p.heroArt||''),bannerMobile:safeUrl(p.bannerMobile||''),description:String(p.desc||p.description||''),updatedAt:r.updated_at||p.importedAt||''};
 };
 export async function getCatalog(){
- const all=[],limit=150;
- for(let n=0;n<18;n++){
-  const {data,error}=await db.from('lx_catalog').select('id,payload,published,updated_at').eq('published',true).order('updated_at',{ascending:false}).order('id',{ascending:false}).range(n*limit,(n+1)*limit-1);
-  if(error)throw error;
-  all.push(...(data||[]).map(itemFrom));
-  if((data||[]).length<limit)break;
- }
- return all;
+ const groups=await Promise.all(['Filme','Série','Dorama','Anime','Música','Livro','Ao Vivo'].map(async type=>{
+  const {data,error}=await db.from('lx_catalog').select('id,payload,published,updated_at').eq('published',true).eq('payload->>type',type).order('updated_at',{ascending:false}).order('id',{ascending:false}).limit(24);
+  if(error)throw error;return (data||[]).map(itemFrom);
+ }));
+ return groups.flat().sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
 }
 export async function findDiscovery(term){
  const q=String(term||'').trim().replace(/[%,_]/g,'').slice(0,60);
@@ -61,7 +59,7 @@ export async function findDiscovery(term){
  return error?[]:(data||[]).map(x=>({...itemFrom(x),metadataOnly:true}));
 }
 export async function getProfile(id){
- const {data,error}=await db.from('lx_profiles').select('user_id,name,username,approved,approval_status,verified,bio,avatar_url,ranking_visible').eq('user_id',id).maybeSingle();
+ const {data,error}=await db.from('lx_profiles').select('user_id,name,username,approved,approval_status,verified,bio,avatar_url,banner_url,ranking_visible,social_visible,calls_enabled,activity_visible,favorites_visible,status_text').eq('user_id',id).maybeSingle();
  if(error)throw error;
  return data;
 }
@@ -74,13 +72,11 @@ export async function isAdmin(){
  const {data,error}=await db.rpc('lx_am_i_admin');return !error&&data===true;
 }
 export async function saveUserField(id,key,value){
- // Read and merge: never replace unrelated fields, including old history/preference formats.
- const {data,error}=await db.from('lx_user_state').select('data').eq('user_id',id).maybeSingle();
+ const {data:session}=await db.auth.getSession();
+ if(session.session?.user?.id!==id)throw Error('Sessão inválida para alterar suas preferências.');
+ const {data,error}=await db.rpc('lx_set_user_field',{p_key:key,p_value:value});
  if(error)throw error;
- const combined={...(data?.data||{}),[key]:value};
- const result=await db.from('lx_user_state').upsert({user_id:id,data:combined,updated_at:new Date().toISOString()},{onConflict:'user_id'});
- if(result.error)throw result.error;
- return combined;
+ return data;
 }
 export async function saveMyProfile(id,name,bio){
  const {error}=await db.from('lx_profiles').update({name:String(name).slice(0,60),bio:String(bio).slice(0,280)}).eq('user_id',id);

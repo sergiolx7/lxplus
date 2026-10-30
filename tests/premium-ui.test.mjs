@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {renderPremiumCatalog} from '../src/premium-ui.js';
+globalThis.location={origin:'https://lxplus.example'};
+const movie={id:1,title:'Um filme',type:'Filme',cover:'https://example.org/a.jpg',banner:'https://example.org/b.jpg',bannerMobile:'https://example.org/mobile.jpg',genre:'Aventura',updatedAt:'2026-10-30'};
+test('home uses separate mobile artwork and an actionable watch button',()=>{const html=renderPremiumCatalog({page:'Início',items:[movie]});assert.match(html,/<source media="\(max-width:600px\)"/);assert.match(html,/data-play="1"/)});
+test('watching history excludes completed titles and nonvideo content',()=>{const rendered=renderPremiumCatalog({page:'Início',items:[movie,{id:2,type:'Música',title:'Faixa'}],history:{1:{position:100,duration:200},2:{position:100,duration:200}}});assert.match(rendered,/Continue assistindo/);const completed=renderPremiumCatalog({page:'Início',items:[movie],history:{1:{position:199,duration:200}}});assert.doesNotMatch(completed,/Continue assistindo/)});
+test('empty catalog has real navigation and no invented movie',()=>{const html=renderPremiumCatalog({page:'Início',items:[]});assert.match(html,/data-page="Comunidade"/);assert.doesNotMatch(html,/data-play=/)});
+test('titles and searches are escaped before rendering',()=>{const html=renderPremiumCatalog({page:'Buscar',term:'<script>',items:[{...movie,title:'<img src=x onerror=alert(1)>'}]});assert.doesNotMatch(html,/<script>|<img src=x/);assert.match(html,/&lt;script&gt;/)});
+test('failed catalog has a retry action and pending catalog has a loading state',()=>{assert.match(renderPremiumCatalog({page:'Início',items:[],catalogStatus:'error'}),/retryCatalog/);assert.match(renderPremiumCatalog({page:'Início',items:[],catalogStatus:'loading'}),/premium-skeleton/)});

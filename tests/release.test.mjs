@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync,readdirSync,existsSync} from 'node:fs';
+import path from 'node:path';
+const read=p=>readFileSync(p,'utf8');
+const walk=dir=>readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(dir,e.name)):[path.join(dir,e.name)]);
+test('every static local module dependency resolves to a real file',()=>{for(const file of walk('src').filter(p=>p.endsWith('.js'))){for(const match of read(file).matchAll(/from\s+['"](\.{1,2}\/[^'"]+)['"]/g)){const target=path.resolve(path.dirname(file),match[1].split('?')[0]);assert.ok(existsSync(target),file+' -> '+match[1])}}});
+test('frontend includes no secret API keys or destructive database statements',()=>{const source=walk('src').filter(p=>p.endsWith('.js')).map(read).join('\n');assert.doesNotMatch(source,/sb_secret_[A-Za-z0-9_-]{12,}/);assert.doesNotMatch(source,/SUPABASE_SERVICE_ROLE_KEY/);assert.doesNotMatch(source,/\b(?:truncate table|drop table|delete from)\b/i)});
+test('local QA code cannot enter the publication package',()=>{const build=read('scripts/build.mjs');assert.doesNotMatch(build,/cpSync\(['"](?:tests|ops|private-backup)/);assert.match(read('scripts/dev.mjs'),/const qa=pathname\.startsWith\('\/qa\/'\)/)});
+test('auth retains session persistence and a bounded boot recovery',()=>{const data=read('src/data.js'),html=read('index.html');assert.match(data,/persistSession:true/);assert.match(data,/autoRefreshToken:true/);assert.match(data,/RECOVERY_KEY/);assert.match(html,/__lxBootFailure/);assert.match(html,/lxBootRetry/);assert.ok(existsSync('assets/supabase-2.117.2.mjs'))});
