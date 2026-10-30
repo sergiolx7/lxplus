@@ -17,7 +17,7 @@ const safe=(input)=>{
  }catch{return null}
 };
 const unavailable=(message='Formato ou plataforma não reproduzível diretamente.')=>({kind:'external',provider:'Outro serviço',message});
-export function classifyLink(input,{audio=false}={}){
+export function classifyLink(input,{audio=false,kind:hint='auto'}={}){
  const u=safe(input);
  if(!u)return {kind:'invalid',provider:'Link inválido',message:'Use um endereço HTTPS completo, sem usuário ou senha na URL.'};
  const h=u.hostname.toLowerCase(),parts=u.pathname.split('/').filter(Boolean);
@@ -56,6 +56,7 @@ export function classifyLink(input,{audio=false}={}){
   const type=u.searchParams.get('format')?.toLowerCase();
   if(type==='m3u8')kind='hls';if(type==='mpd')kind='dash';
  }
+ if(!kind&&['video','audio','hls','dash'].includes(hint))kind=hint;
  if(kind)return{kind,provider:kind==='hls'?'HLS':kind==='dash'?'MPEG-DASH':'Arquivo direto',url:u.href,source:u.href};
  return {...unavailable('Link reconhecido, mas sem formato incorporável. Abra na origem ou use MP4, HLS, DASH ou uma prévia pública do Drive/YouTube.'),url:u.href};
 }
@@ -74,7 +75,7 @@ export async function resolveItem(item,{signStorage}={}){
  const authorized=Boolean(item.publicDomain||item.sourceVerified||item.openFilm||item.officialEmbedded||
    item.license?.authorized||item.license?.status==='approved');
  if(direct){
-  const result=classifyLink(String(direct),{audio});
+  const result=classifyLink(String(direct),{audio,kind:item.sourceKind});
   if(result.kind!=='invalid')return result;
  }
  const native=item.nativeAsset||item.mediaKey||item.sourceMediaKey;
@@ -85,15 +86,18 @@ export async function resolveItem(item,{signStorage}={}){
  if(typeof path==='string'&&path.startsWith('cloud:')&&signStorage){
   const result=await signStorage(path);if(result)return classifyLink(result,{audio});
  }
- if(typeof path==='string'&&path.startsWith('https:'))return classifyLink(path,{audio});
+ if(typeof path==='string'&&path.startsWith('https:'))return classifyLink(path,{audio,kind:item.sourceKind});
  if(authorized){
+  let external=null;
   for(const key of preferred){
     const url=item[key];
     if(typeof url==='string'&&url){
-      const result=classifyLink(url,{audio});
+      const result=classifyLink(url,{audio,kind:item.sourceKind});
       if(result.kind!=='invalid'&&result.kind!=='external')return result;
+      if(result.kind==='external')external=result;
     }
   }
+  if(external)return external;
  }
  return {kind:'unavailable',provider:'LX Plus',message:'Este item está em breve ou não tem uma fonte autorizada compatível.'};
 }

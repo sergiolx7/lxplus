@@ -59,10 +59,10 @@ export async function writeStudio(item,published){
 export async function personalNotices(){return await checked(db.from('lx_user_notifications').select('id,kind,title,message,data,read_at,created_at').order('created_at',{ascending:false}).limit(60))||[]}
 
 export function createTelemetry(userId){
- let last=0,active=true;const pending=[];
+ const recent=new Map();let active=true;const pending=[];
  const clean=s=>String(s||'').replace(/https?:\/\/[^\s)]+/g,'[endereço omitido]').replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/ig,'[e-mail omitido]').replace(/(?:Bearer\s+|sb_secret_)[\w.-]+/ig,'[credencial omitida]').slice(0,450);
  async function record(category,feature,message='',durationMs=null){
-  if(!active||Date.now()-last<1000)return;last=Date.now();
+  const key=category+':'+String(feature).slice(0,80),now=Date.now();if(!active||now-(recent.get(key)||0)<1000)return;recent.set(key,now);if(recent.size>100)recent.delete(recent.keys().next().value);
   const entry={user_id:userId,category,feature:String(feature).slice(0,80),message:clean(message),duration_ms:durationMs===null?null:Math.max(0,Math.min(600000,Math.round(durationMs)))};
   pending.push(entry);if(pending.length>20)pending.shift();
   try{await checked(db.from('lx_telemetry').insert(entry))}catch{/* Monitoring must never block the application. */}

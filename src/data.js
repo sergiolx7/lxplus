@@ -45,9 +45,9 @@ export const itemFrom=r=>{
  const p=r?.payload||r||{};
  return {...p,id:r.id??p.id,title:String(p.title||'Sem título'),type:String(p.type||p.media_kind||'Conteúdo'),cover:safeUrl(p.cover||p.cover_url||''),banner:safeUrl(p.bannerDesktop||p.banner||p.heroArt||''),bannerMobile:safeUrl(p.bannerMobile||''),description:String(p.desc||p.description||''),updatedAt:r.updated_at||p.importedAt||''};
 };
-export async function getCatalog(){
- const groups=await Promise.all(['Filme','Série','Dorama','Anime','Música','Livro','Ao Vivo'].map(async type=>{
-  const {data,error}=await db.from('lx_catalog').select('id,payload,published,updated_at').eq('published',true).eq('payload->>type',type).order('updated_at',{ascending:false}).order('id',{ascending:false}).limit(24);
+export async function getCatalog({light=false}={}){
+ const groups=await Promise.all(['Filme','Série','Dorama','Anime'].map(async type=>{
+  const {data,error}=await db.from('lx_catalog').select('id,payload,published,updated_at').eq('published',true).eq('payload->>type',type).order('updated_at',{ascending:false}).order('id',{ascending:false}).limit(light?12:24);
   if(error)throw error;return (data||[]).map(itemFrom);
  }));
  return groups.flat().sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
