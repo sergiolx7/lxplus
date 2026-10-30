@@ -21,11 +21,11 @@ function row(title,subtitle,items,key,variant='poster'){
  '<div class="premium-rail" data-rail="'+html(key)+'">'+picks.map(x=>premiumCard(x,variant)).join('')+'</div></section>';
 }
 function feature(item){
- if(!item)return '<div class="premium-welcome"><div class="premium-overline">LX PLUS · NOVA EXPERIÊNCIA</div><h1>Seu universo. Seu ritmo.</h1><p>Filmes, séries, música e comunidade, em um só lugar.</p></div>';
- const url=mediaUrl(item.banner||item.cover);
- return '<section class="premium-feature"><div class="premium-feature-image">'+(url?'<img src="'+html(url)+'" alt="" fetchpriority="high" referrerpolicy="no-referrer">':'')+'</div><div class="premium-feature-grad"></div>'+
+ if(!item)return '<div class="premium-welcome"><div class="premium-overline">SEU UNIVERSO LX PLUS</div><h1>Histórias que ficam.<br>Conexões que importam.</h1><p>Descubra novas histórias, organize sua biblioteca e encontre sua comunidade.</p><div class="actions"><button class="btn primary" data-page="Séries">Explorar histórias ↗</button><button class="btn" data-page="Comunidade">Conhecer a comunidade</button></div></div>';
+ const url=mediaUrl(item.banner||item.cover),mobile=mediaUrl(item.bannerMobile),position=Math.max(0,Math.min(100,Number(item.focalX)||50));
+ return '<section class="premium-feature"><div class="premium-feature-image">'+(url?'<picture>'+(mobile?'<source media="(max-width:600px)" srcset="'+html(mobile)+'">':'')+'<img src="'+html(url)+'" style="object-position:'+position+'% center" alt="" fetchpriority="high" referrerpolicy="no-referrer"></picture>':'')+'</div><div class="premium-feature-grad"></div>'+
  '<div class="premium-feature-text"><span class="premium-overline">✦ ESCOLHA LX PLUS</span><h1>'+safeTitle(item)+'</h1><p>'+html((item.description||item.desc||'Descubra uma nova história na LX Plus.').slice(0,230))+'</p><div class="premium-meta"><span>'+html(item.year||'Destaque')+'</span><span>'+html(fmtKind(item.type))+'</span><span>Na LX Plus</span></div>'+
- '<div class="premium-feature-actions"><button class="btn primary" data-item="'+setItem(item)+'">▶ Ver detalhes</button><button class="btn premium-secondary" data-page="Minha Lista">♡ Minha lista</button></div></div><span class="premium-feature-bottom">LX ORIGINAL EXPERIENCE</span></section>';
+ '<div class="premium-feature-actions"><button class="btn primary" data-play="'+setItem(item)+'">▶ Assistir agora</button><button class="btn premium-secondary" data-item="'+setItem(item)+'">+ Ver detalhes</button></div></div><span class="premium-feature-bottom">DESENVOLVIDO PELA LX GROUP</span></section>';
 }
 function categoryStats(items){
  const labels=[['Filmes','Filme','▣'],['Séries','Série','▤'],['Músicas','Música','♫'],['Livros','Livro','▥']];
@@ -37,15 +37,19 @@ function categoryStats(items){
 function home({items,history,list}){
  const current=(items||[]),withArt=current.filter(x=>x.banner||x.cover);
  const fav=new Set((list||[]).map(String));
- const seen=Object.entries(history||{}).sort((a,b)=>String(b[1]?.updatedAt||'').localeCompare(String(a[1]?.updatedAt||'')))
- .map(([k])=>current.find(x=>String(x.id)===k)).filter(Boolean).slice(0,10);
- const featured=withArt.find(x=>x.featured&&x.banner)||withArt.find(x=>x.banner)||withArt[0]||current[0];
- const recent=[...current].sort((a,b)=>String(b.year||'').localeCompare(String(a.year||''))).filter(x=>x.cover||x.banner).slice(0,22);
+ const seen=Object.entries(history||{}).filter(([,h])=>h?.position>0&&(!h.duration||h.position<h.duration-15)).sort((a,b)=>String(b[1]?.updatedAt||'').localeCompare(String(a[1]?.updatedAt||'')))
+ .map(([k])=>current.find(x=>String(x.id)===k&&['Filme','Série','Dorama','Anime'].includes(x.type))).filter(Boolean).slice(0,10);
+ const cinema=withArt.filter(x=>['Filme','Série','Dorama','Anime'].includes(x.type));
+ const featured=cinema.find(x=>x.featured&&x.banner)||cinema.find(x=>x.banner)||cinema[0];
+ const recent=[...current].sort((a,b)=>String(b.updatedAt||b.importedAt||'').localeCompare(String(a.updatedAt||a.importedAt||''))).filter(x=>x.cover||x.banner).slice(0,22);
  const movies=current.filter(x=>x.type==='Filme'), shows=current.filter(x=>['Série','Dorama','Anime'].includes(x.type));
  const audio=current.filter(x=>x.type==='Música'),books=current.filter(x=>x.type==='Livro');
  const favorites=current.filter(x=>fav.has(String(x.id)));
+ const preferredGenres=new Set(current.filter(x=>history[String(x.id)]).map(x=>x.genre).filter(Boolean));
+ const recommendations=current.filter(x=>preferredGenres.has(x.genre)&&!history[String(x.id)]).slice(0,16);
  return feature(featured)+categoryStats(current)+
  row('Continue assistindo','RETOME DE ONDE PAROU',seen,'continue','landscape')+
+ row('Recomendados para você','COM BASE NAS SUAS DESCOBERTAS',recommendations,'recommended')+
  row('Novidades do catálogo','SELEÇÃO DA LX PLUS',recent,'recent','landscape')+
  row('Sua lista','SALVOS PARA VOCÊ',favorites,'saved')+
  row('Filmes para explorar','CINEMA',movies,'movies')+

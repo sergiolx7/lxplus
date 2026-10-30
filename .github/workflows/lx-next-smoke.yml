@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - rebuild/lxplus-vnext-clean-20261029
+      - 'rebuild/**'
   pull_request:
     paths:
       - 'src/**'
@@ -11,6 +12,8 @@ on:
       - 'index.html'
       - 'tests/**'
       - 'package.json'
+      - 'scripts/**'
+      - '.github/workflows/**'
       - 'email/**'
       - 'RELEASE-CHECKLIST.md'
 jobs:
@@ -24,3 +27,4 @@ jobs:
         with:
           node-version: '22'
       - run: npm test
+      - run: npm run build

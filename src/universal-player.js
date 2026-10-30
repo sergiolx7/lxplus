@@ -21,6 +21,11 @@ export function classifyLink(input,{audio=false}={}){
  const u=safe(input);
  if(!u)return {kind:'invalid',provider:'Link inválido',message:'Use um endereço HTTPS completo, sem usuário ou senha na URL.'};
  const h=u.hostname.toLowerCase(),parts=u.pathname.split('/').filter(Boolean);
+ if(h==='open.spotify.com'){
+  const type=parts[0]==='embed'?parts[1]:parts[0],id=parts[0]==='embed'?parts[2]:parts[1];
+  if(['track','album','playlist','episode','show'].includes(type)&&/^[A-Za-z0-9]{22}$/.test(id||''))return{kind:'iframe',provider:'Spotify',url:'https://open.spotify.com/embed/'+type+'/'+id,source:u.href,message:'Reprodução pelos controles oficiais do Spotify; disponibilidade e duração dependem da conta e da plataforma.'};
+  return {...unavailable('Este endereço Spotify não contém um item incorporável.'),url:u.href};
+ }
  if(ytHosts.has(h)){
   let id='';
   if(h.includes('youtu.be'))id=parts[0]||'';
@@ -72,8 +77,11 @@ export async function resolveItem(item,{signStorage}={}){
   const result=classifyLink(String(direct),{audio});
   if(result.kind!=='invalid')return result;
  }
- const native=item.nativeAsset;
+ const native=item.nativeAsset||item.mediaKey||item.sourceMediaKey;
  const path=typeof native==='string'?native:(native?.url||native?.path||native?.storagePath||'');
+ if(typeof path==='string'&&/^gdrive:[\w-]{10,256}$/.test(path))return classifyLink('https://drive.google.com/file/d/'+path.slice(7)+'/view');
+ if(typeof path==='string'&&/^youtube:[\w-]{11}$/.test(path))return classifyLink('https://www.youtube.com/watch?v='+path.slice(8));
+ if(typeof path==='string'&&/^spotify:(track|album|playlist):[A-Za-z0-9]{22}$/.test(path)){const [,kind,id]=path.split(':');return classifyLink('https://open.spotify.com/'+kind+'/'+id)}
  if(typeof path==='string'&&path.startsWith('cloud:')&&signStorage){
   const result=await signStorage(path);if(result)return classifyLink(result,{audio});
  }
@@ -91,13 +99,14 @@ export async function resolveItem(item,{signStorage}={}){
 }
 
 // External scripts are pinned to known versions; they are loaded only when needed.
-const hlsEsm='https://esm.sh/hls.js@1.7.3?bundle';
-const dashEsm='https://esm.sh/dashjs@5.2.1?bundle';
+ const hlsEsm='../assets/hls-1.7.3.mjs';
+ const dashEsm='../assets/dash-5.2.1.mjs';
+ async function loadLibrary(url){let timer;try{return await Promise.race([import(url),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('A biblioteca de reprodução demorou para carregar. Tente novamente.')),9000)})])}finally{clearTimeout(timer)}}
 const tryPlay=media=>media.play?.().catch(()=>{});
-export async function attachPlayer(media,source,{onError=()=>{}}={}){
+export async function attachPlayer(media,source,{onError=()=>{},onQualities=()=>{}}={}){
  if(!(media instanceof HTMLMediaElement))throw Error('Elemento de mídia não encontrado.');
  if(!source||!['video','audio','hls','dash'].includes(source.kind))throw Error('Formato de mídia inválido.');
- const url=safe(source.url);
+ const url=safe(source.url)||(()=>{try{const candidate=new URL(source.url);return candidate.protocol==='blob:'&&candidate.origin===globalThis.location?.origin?candidate:null}catch{return null}})();
  if(!url)throw Error('URL HTTPS inválida.');
  let library=null,closed=false;
  media.preload='metadata';
@@ -106,18 +115,26 @@ export async function attachPlayer(media,source,{onError=()=>{}}={}){
   if(media.canPlayType('application/vnd.apple.mpegurl')){
     media.src=url.href;tryPlay(media);
   }else{
-    const mod=await import(hlsEsm),Hls=mod.default||mod.Hls;
+    const mod=await loadLibrary(hlsEsm),Hls=mod.default||mod.Hls;
     if(!Hls?.isSupported?.())throw Error('Este navegador não oferece suporte para HLS.');
     library=new Hls({enableWorker:true,lowLatencyMode:true});
     library.on(Hls.Events.ERROR,(_,details)=>{if(details.fatal&&!closed)onError('Fluxo HLS indisponível: '+(details.details||'verifique origem/CORS.'));});
     library.loadSource(url.href);library.attachMedia(media);
-    library.on(Hls.Events.MANIFEST_PARSED,()=>{if(!closed)tryPlay(media)});
+    library.on(Hls.Events.MANIFEST_PARSED,()=>{if(!closed){onQualities(library.levels.map((level,id)=>({id,label:level.height?level.height+'p':Math.round(level.bitrate/1000)+' kbps'})),id=>{if(id>=-1&&id<library.levels.length)library.currentLevel=id});tryPlay(media)}});
   }
  }else if(source.kind==='dash'){
-  const mod=await import(dashEsm);
+  const mod=await loadLibrary(dashEsm);
   const dashjs=mod.default?.MediaPlayer?mod.default:mod;
   if(!dashjs?.MediaPlayer)throw Error('Biblioteca MPEG-DASH indisponível.');
   library=dashjs.MediaPlayer().create();
+  library.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED,()=>{
+   if(closed)return;
+   const options=library.getRepresentationsByType('video')||[];
+   onQualities(options.map((r,id)=>({id,label:r.height?r.height+'p':Math.round(r.bandwidth/1000)+' kbps'})),id=>{
+    library.updateSettings({streaming:{abr:{autoSwitchBitrate:{video:id<0}}}});
+    if(id>=0&&id<options.length)library.setRepresentationForTypeByIndex('video',options[id].absoluteIndex??id,true);
+   });
+  });
   library.initialize(media,url.href,true);
   if(library.on&&dashjs.MediaPlayer.events?.ERROR)library.on(dashjs.MediaPlayer.events.ERROR,()=>{if(!closed)onError('Fluxo DASH indisponível ou bloqueado pela origem.')});
  }else{
@@ -129,5 +146,6 @@ export async function attachPlayer(media,source,{onError=()=>{}}={}){
   try{library?.destroy?.()}catch{}
   try{library?.reset?.()}catch{}
   media.removeAttribute('src');media.load();
+  if(source.revokeOnCleanup&&url.protocol==='blob:')URL.revokeObjectURL(url.href);
  };
 }
