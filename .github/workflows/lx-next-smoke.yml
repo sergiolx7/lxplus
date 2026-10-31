@@ -12,6 +12,8 @@ on:
       - 'index.html'
       - 'tests/**'
       - 'package.json'
+      - 'package-lock.json'
+      - 'supabase/migrations/**'
       - 'scripts/**'
       - '.github/workflows/**'
       - 'email/**'
@@ -26,5 +28,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: npm ci --ignore-scripts
       - run: npm test
       - run: npm run build

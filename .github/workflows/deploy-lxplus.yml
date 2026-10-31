@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: '22'
       - name: Validate source and behavior
-        run: npm test
+        run: npm ci --ignore-scripts && npm test
       - name: Prepare public frontend
         run: npm run build
       - name: Configure Pages

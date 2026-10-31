@@ -107,19 +107,31 @@ export async function resolveItem(item,{signStorage}={}){
  const dashEsm='../assets/dash-5.2.1.mjs';
  async function loadLibrary(url){let timer;try{return await Promise.race([import(url),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('A biblioteca de reprodução demorou para carregar. Tente novamente.')),9000)})])}finally{clearTimeout(timer)}}
 const tryPlay=media=>media.play?.().catch(()=>{});
-export async function attachPlayer(media,source,{onError=()=>{},onQualities=()=>{}}={}){
+export async function attachPlayer(media,source,{onError=()=>{},onQualities=()=>{},signal}={}){
  if(!(media instanceof HTMLMediaElement))throw Error('Elemento de mídia não encontrado.');
  if(!source||!['video','audio','hls','dash'].includes(source.kind))throw Error('Formato de mídia inválido.');
  const url=safe(source.url)||(()=>{try{const candidate=new URL(source.url);return candidate.protocol==='blob:'&&candidate.origin===globalThis.location?.origin?candidate:null}catch{return null}})();
  if(!url)throw Error('URL HTTPS inválida.');
  let library=null,closed=false;
+ const assertOpen=()=>{if(closed||signal?.aborted)throw new DOMException('Reprodução cancelada.','AbortError')};
+ assertOpen();
+ const mediaError=()=>{if(!closed)onError('O navegador não conseguiu reproduzir este arquivo. Confira o link, formato, permissões e suporte a CORS.')};
+ const cleanup=()=>{
+  if(closed)return;closed=true;signal?.removeEventListener('abort',cleanup);media.removeEventListener('error',mediaError);
+  media.pause();try{library?.destroy?.()}catch{}try{library?.reset?.()}catch{}
+  media.removeAttribute('src');media.load();
+  if(source.revokeOnCleanup&&url.protocol==='blob:')URL.revokeObjectURL(url.href);
+ };
+ signal?.addEventListener('abort',cleanup,{once:true});
  media.preload='metadata';
- media.addEventListener('error',()=>{if(!closed)onError('O navegador não conseguiu reproduzir este arquivo. Confira o link, formato, permissões e suporte a CORS.')},{once:true});
+ media.addEventListener('error',mediaError);
+ try{
  if(source.kind==='hls'){
   if(media.canPlayType('application/vnd.apple.mpegurl')){
     media.src=url.href;tryPlay(media);
   }else{
     const mod=await loadLibrary(hlsEsm),Hls=mod.default||mod.Hls;
+    assertOpen();
     if(!Hls?.isSupported?.())throw Error('Este navegador não oferece suporte para HLS.');
     library=new Hls({enableWorker:true,lowLatencyMode:true});
     library.on(Hls.Events.ERROR,(_,details)=>{if(details.fatal&&!closed)onError('Fluxo HLS indisponível: '+(details.details||'verifique origem/CORS.'));});
@@ -128,6 +140,7 @@ export async function attachPlayer(media,source,{onError=()=>{},onQualities=()=>
   }
  }else if(source.kind==='dash'){
   const mod=await loadLibrary(dashEsm);
+  assertOpen();
   const dashjs=mod.default?.MediaPlayer?mod.default:mod;
   if(!dashjs?.MediaPlayer)throw Error('Biblioteca MPEG-DASH indisponível.');
   library=dashjs.MediaPlayer().create();
@@ -144,12 +157,6 @@ export async function attachPlayer(media,source,{onError=()=>{},onQualities=()=>
  }else{
   media.src=url.href;tryPlay(media);
  }
- return ()=>{
-  closed=true;
-  media.pause();
-  try{library?.destroy?.()}catch{}
-  try{library?.reset?.()}catch{}
-  media.removeAttribute('src');media.load();
-  if(source.revokeOnCleanup&&url.protocol==='blob:')URL.revokeObjectURL(url.href);
- };
+ assertOpen();return cleanup;
+ }catch(error){cleanup();throw error}
 }

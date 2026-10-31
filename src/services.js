@@ -1,12 +1,13 @@
 import {db,itemFrom} from './data.js';
 import {uuid,checked,https} from './ui.js';
+import {catalogFilter,searchTerm} from './catalog-search.js';
 
 export async function catalogPage({types=[],term='',offset=0,limit=48,admin=false}={}){
  let query=db.from('lx_catalog').select('id,payload,published,updated_at',{count:'exact'}).order('updated_at',{ascending:false}).order('id',{ascending:false});
  if(!admin)query=query.eq('published',true);
  if(types.length)query=query.in('payload->>type',types);
- const clean=String(term).trim().replace(/[%,_()]/g,' ').slice(0,90);
- if(clean)query=query.ilike('payload->>title','%'+clean+'%');
+ const clean=searchTerm(term);
+ if(clean)query=query.or(catalogFilter(clean));
  const result=await query.range(offset,offset+Math.min(60,limit)-1);
  if(result.error)throw result.error;
  return {items:(result.data||[]).map(row=>({...itemFrom(row),published:row.published})),total:result.count||0};
