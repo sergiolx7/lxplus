@@ -28,7 +28,7 @@ test('provider discovery uses official API queries and handles missing keys with
 });
 test('provider HTTP errors are sanitized and never leak secret API credentials',async()=>{
  const result=await providerDiscovery({query:'music',limit:10,youtubeKey:'DO_NOT_LEAK',fetcher:async()=>new Response('',{status:429})});
- assert.equal(result.items.length,0);assert.deepEqual(result.errors,['YOUTUBE_RATE_LIMIT']);assert.ok(!JSON.stringify(result).includes('DO_NOT_LEAK'));
+ assert.equal(result.items.length,0);assert.deepEqual(result.errors,['YOUTUBE_429']);assert.ok(!JSON.stringify(result).includes('DO_NOT_LEAK'));
 });
 test('statistics and chart use actual run logs, never invented daily values',()=>{
  const history=[
@@ -80,4 +80,22 @@ test('browser invocation handles OPTIONS and every response has CORS headers',()
  assert.match(studio,/robotRunning=false/);
  assert.match(studio,/AbortSignal\.timeout\(35000\)/);
  assert.match(studio,/robotMessage/);
+});
+
+test('Spotify API rejection does not halve the YouTube results or leak credentials',async()=>{
+ let youtubeSize=0;
+ const data=await providerDiscovery({query:'música oficial',limit:40,youtubeKey:'GOOGLE_SECRET',spotifyId:'0123456789abcdef0123456789abcdef',spotifySecret:'PRIVATE_SPOTIFY_SECRET',fetcher:async(url)=>{
+  const target=String(url);
+  if(target.startsWith('https://accounts.spotify.com/api/token'))return new Response('',{status:403});
+  if(target.startsWith('https://www.googleapis.com/youtube/v3/search?')){
+   youtubeSize=Number(new URL(target).searchParams.get('maxResults'));
+   return new Response(JSON.stringify({items:Array.from({length:40},(_,i)=>({id:{videoId:('video'+String(i).padStart(6,'0')).slice(0,11)},snippet:{title:'Faixa '+i}}))}),{status:200});
+  }
+  throw Error('Unexpected host');
+ }});
+ assert.equal(youtubeSize,40);
+ assert.equal(data.items.length,40);
+ assert.deepEqual(data.errors,['SPOTIFY_AUTH_403']);
+ assert.equal(data.items.every(item=>item.provider==='YouTube'),true);
+ assert.doesNotMatch(JSON.stringify(data),/GOOGLE_SECRET|PRIVATE_SPOTIFY_SECRET/);
 });
