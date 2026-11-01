@@ -1,0 +1,13 @@
+const choices={preset:['nova','aurora','ember','ocean','rose','eclipse'],decoration:['none','orbit','halo','crown','wings','electric','bloom'],effect:['none','aurora','stars','meteors','embers','prism'],nameStyle:['solid','gradient','glow','shimmer'],avatarShape:['circle','rounded'],chatTheme:['midnight','aurora','rose','ocean'],entrance:['none','sparkle','chime','pulse']};
+export const premiumChoices=choices;
+export const premiumPresets=[
+ {id:'nova',name:'Supernova',color:'#b69cff',secondColor:'#6ce5f5',background:'#171325',decoration:'orbit',effect:'stars'},
+ {id:'aurora',name:'Aurora',color:'#62f6c8',secondColor:'#a18bff',background:'#0c2526',decoration:'halo',effect:'aurora'},
+ {id:'ember',name:'Inferno',color:'#ff995b',secondColor:'#ff4b86',background:'#2a1520',decoration:'electric',effect:'embers'},
+ {id:'ocean',name:'Abissal',color:'#60cfff',secondColor:'#5275ff',background:'#101c33',decoration:'wings',effect:'prism'},
+ {id:'rose',name:'Sakura',color:'#ffade2',secondColor:'#cda5ff',background:'#2b182d',decoration:'bloom',effect:'stars'},
+ {id:'eclipse',name:'Eclipse',color:'#efd59d',secondColor:'#b09bff',background:'#201c28',decoration:'crown',effect:'meteors'}
+];
+export function normalizePremiumProfile(value={}){value=value&&typeof value==='object'?value:{};const option=(key,fallback)=>choices[key].includes(value[key])?value[key]:fallback,color=(key,fallback)=>/^#[0-9a-f]{6}$/i.test(value[key]||'')?value[key].toLowerCase():fallback;return {preset:option('preset','nova'),decoration:option('decoration','none'),effect:option('effect','none'),nameStyle:option('nameStyle','solid'),avatarShape:option('avatarShape','circle'),chatTheme:option('chatTheme','midnight'),entrance:option('entrance','none'),background:color('background','#171325'),accent:color('accent','#b69cff'),bannerPosition:Math.min(100,Math.max(0,Number.isFinite(Number(value.bannerPosition))?Math.round(Number(value.bannerPosition)):50))}}
+export function premiumAvatarAttributes(person){const active=person?.is_premium===true,p=normalizePremiumProfile(active?person.premium_profile:{}),color=active&&/^#[0-9a-f]{6}$/i.test(person?.profile_style?.color||'')?person.profile_style.color:p.accent;return 'data-avatar-decoration="'+p.decoration+'" data-avatar-shape="'+p.avatarShape+'" style="--avatar-accent:'+color+'"'}
+export function premiumCaptureQuality(value,premium){const presets={'1080-30':{width:1920,height:1080,fps:30,bitrate:5000000},'1080-60':{width:1920,height:1080,fps:60,bitrate:8500000},'1440-60':{width:2560,height:1440,fps:60,bitrate:12000000},'2160-60':{width:3840,height:2160,fps:60,bitrate:18000000}};return presets[premium&&presets[value]?value:'1080-30']}

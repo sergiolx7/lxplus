@@ -1,0 +1,4 @@
+import {esc} from './ui.js';
+const idPattern=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+export function expressionToken(id){return idPattern.test(String(id))?'[[lx:'+id+']]':''}
+export function renderExpressions(text,assets=[]){const map=new Map(assets.filter(a=>idPattern.test(a.id)&&['emoji','sticker'].includes(a.kind)).map(a=>[a.id.toLowerCase(),a]));return esc(text).replace(/\[\[lx:([a-f0-9-]{36})\]\]/gi,(token,id)=>{const asset=map.get(id.toLowerCase());if(!asset)return token;let url;try{url=new URL(asset.url);if(url.username||url.password||url.protocol!=='https:'&&!(url.protocol==='http:'&&url.origin===globalThis.location?.origin))return token}catch{return token}return '<img class="premium-expression '+asset.kind+'" src="'+esc(url.href)+'" alt=":'+esc(asset.label)+':" title="'+esc(asset.label)+'" loading="lazy" referrerpolicy="no-referrer">'})}
