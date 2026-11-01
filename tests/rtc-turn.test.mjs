@@ -42,7 +42,7 @@ test('TURN admin: only authenticated owner can register real keys; status never 
   return {data:true};
  }};
  const serviceClient={from:()=>({
-  select:()=>({in:async()=>({data:[...secrets].map(([key,secret])=>({key,secret}))]})}),
+  select:()=>({in:async()=>({data:[...secrets].map(([key,secret])=>({key,secret}))})}),
   upsert:async(rows)=>{for(const row of rows)secrets.set(row.key,row.secret);saved++;return {error:null}}
  })};
  const deps={env:key=>({SUPABASE_URL:'url',SUPABASE_ANON_KEY:'anon',SUPABASE_SERVICE_ROLE_KEY:'server-only'})[key]||'',createClient:(_url,key)=>key==='server-only'?serviceClient:userClient,fetcher:async()=>new Response(JSON.stringify({iceServers:demo}),{status:201})};
