@@ -5,7 +5,7 @@ import {MusicQueue} from './music-queue.js';
 import {esc,https,icon,duration} from './ui.js';
 import {AudioEffects,normalizeAudioEffects,eqPresets,eqBands,supportsAudioEffects} from './audio-effects.js';
 export class MusicDock {
- constructor({resolve,onError=()=>{},onTrack=()=>{},onListening=()=>{},getPreferences=()=>({}),onPreferences=()=>{},getEffects=()=>({}),onEffects=()=>{},onMore=async()=>[]}){this.getEffects=getEffects;this.onEffects=onEffects;this.effects=normalizeAudioEffects(getEffects());this.effectsEngine=null;this.effectsAvailable=false;this.getPreferences=getPreferences;this.onPreferences=onPreferences;this.onMore=onMore;this.flow=false;this.abort=null;this.resolve=resolve;this.onError=onError;this.onTrack=onTrack;this.onListening=onListening;this.queue=new MusicQueue();this.element=null;this.cleanup=null;this.request=0;this.operation=0;this.timer=null;this.current=null}
+ constructor({resolve,onError=()=>{},onTrack=()=>{},onPlayback=()=>{},onListening=()=>{},getPreferences=()=>({}),onPreferences=()=>{},getEffects=()=>({}),onEffects=()=>{},onMore=async()=>[]}){this.getEffects=getEffects;this.onEffects=onEffects;this.effects=normalizeAudioEffects(getEffects());this.effectsEngine=null;this.effectsAvailable=false;this.getPreferences=getPreferences;this.onPreferences=onPreferences;this.onMore=onMore;this.flow=false;this.abort=null;this.resolve=resolve;this.onError=onError;this.onTrack=onTrack;this.onPlayback=onPlayback;this.onListening=onListening;this.queue=new MusicQueue();this.element=null;this.cleanup=null;this.request=0;this.operation=0;this.timer=null;this.current=null}
  get tracks(){return this.queue.items}get index(){return this.queue.index}
  ensure(){
   if(this.element?.isConnected)return this.element;
@@ -51,7 +51,7 @@ export class MusicDock {
  async open(item,source,queue=[],{flow=false}={}){if(!['audio','hls','dash','iframe'].includes(source?.kind))throw Error(source?.message||'Fonte musical indisponível.');++this.operation;this.flow=flow;this.queue.set(queue.filter(x=>x?.type==='Música'),item);await this.load(item,source)}
  async load(item,source,{resumeAt=0}={}){
   if(!['audio','hls','dash','iframe'].includes(source?.kind))throw Error(source?.message||'Esta faixa precisa de uma fonte de áudio ou incorporação oficial.');
-  const request=++this.request,el=this.ensure();this.abort?.abort();this.abort=new AbortController();el.querySelector('[data-music-action="flow"]').setAttribute('aria-pressed',String(this.flow));clearTimeout(this.timer);if(this.cleanup){this.cleanup();this.cleanup=null}
+  if(this.current)this.onPlayback(this.current,false);const request=++this.request,el=this.ensure();this.abort?.abort();this.abort=new AbortController();el.querySelector('[data-music-action="flow"]').setAttribute('aria-pressed',String(this.flow));clearTimeout(this.timer);if(this.cleanup){this.cleanup();this.cleanup=null}
   this.effectsEngine?.detach();this.effectsAvailable=false;this.effectsUnavailable=false;this.embedded=source.kind==='iframe';el.classList.toggle('has-official-embed',this.embedded);el.querySelector('.dock-playback').hidden=this.embedded;for(const node of el.querySelectorAll('[data-music-action="mute"],#lxDockVolume'))node.hidden=this.embedded;
   this.current=item;el.querySelector('#lxDockTitle').textContent=item.title||'LX Music';el.querySelector('#lxDockArtist').textContent=item.artist||item.album||'LX Music';
   const cover=https(item.cover);el.querySelector('#lxDockCover').innerHTML=cover?'<img src="'+esc(cover)+'" alt="">':'LX';
@@ -74,10 +74,12 @@ export class MusicDock {
   const setStatus=message=>{if(request===this.request)status.textContent=message};
   const fail=message=>{if(request!==this.request)return;if(this.effectsAvailable&&audio.error&&this.effectsBlockedTrack!==String(item.id)){this.effectsBlockedTrack=String(item.id);this.effectsUnavailable=true;this.select(this.index,{resumeAt:audio.currentTime||resumeAt}).catch(error=>this.onError(error.message));return}clearTimeout(this.timer);setStatus(message);this.onError(message)};
   audio.addEventListener('loadedmetadata',()=>{if(resumeAt>0&&resumeAt<audio.duration-1)audio.currentTime=resumeAt;setStatus('')});
-  audio.addEventListener('playing',()=>{started=true;lastTick=performance.now();clearTimeout(this.timer);setStatus('')});
+  audio.addEventListener('playing',()=>{started=true;lastTick=performance.now();clearTimeout(this.timer);setStatus('');if(request===this.request)this.onPlayback(item,true)});
+  audio.addEventListener('pause',()=>{if(request===this.request)this.onPlayback(item,false)});
+  audio.addEventListener('error',()=>{if(request===this.request)this.onPlayback(item,false)});
   audio.addEventListener('waiting',()=>{setStatus('Aguardando a conexão…');clearTimeout(this.timer);this.timer=setTimeout(()=>{audio.pause();fail('O áudio demorou para responder. Tente outra faixa ou verifique a origem.')},20000)});
   audio.addEventListener('timeupdate',()=>{const now=performance.now();if(started&&!audio.paused&&!audio.seeking)listened+=Math.min(2,(now-lastTick)/1000);lastTick=now;if(listened-lastReport>=15){lastReport=listened;this.onListening(item,Math.floor(listened))}});
-  audio.addEventListener('ended',()=>{flush();this.step(1,{ended:true}).catch(e=>this.onError(e.message))});
+  audio.addEventListener('ended',()=>{if(request===this.request)this.onPlayback(item,false);flush();this.step(1,{ended:true}).catch(e=>this.onError(e.message))});
   this.timer=setTimeout(()=>{audio.pause();fail('Não foi possível iniciar este áudio em 20 segundos. Confira o arquivo e as permissões.')},20000);
   try{
    const cleanup=await attachPlayer(audio,source,{signal:this.abort.signal,onError:fail});
@@ -94,5 +96,5 @@ export class MusicDock {
   if(!item){const status=this.element?.querySelector('#lxDockStatus');if(status)status.textContent='Fim da fila. Escolha outra faixa para continuar.';return}
   const source=await this.resolvePending(item,operation);if(!source)return;if(!['audio','hls','dash','iframe'].includes(source.kind))throw Error(source.message||'Fonte musical indisponível.');if(!replaced)for(const added of this.tracks)staged.add(added);staged.shuffle=this.queue.shuffle;staged.repeat=this.queue.repeat;this.queue=staged;await this.load(item,source);
  }
- close(){this.cancelPending();this.abort=null;clearTimeout(this.timer);if(this.cleanup){this.cleanup();this.cleanup=null}this.effectsEngine?.destroy();this.effectsEngine=null;this.element?.remove();this.element=null;this.current=null;document.body.classList.remove('has-music-dock');if('mediaSession' in navigator){try{navigator.mediaSession.metadata=null;for(const a of ['play','pause','nexttrack','previoustrack'])navigator.mediaSession.setActionHandler(a,null)}catch{}}}
+ close(){if(this.current)this.onPlayback(this.current,false);this.cancelPending();this.abort=null;clearTimeout(this.timer);if(this.cleanup){this.cleanup();this.cleanup=null}this.effectsEngine?.destroy();this.effectsEngine=null;this.element?.remove();this.element=null;this.current=null;document.body.classList.remove('has-music-dock');if('mediaSession' in navigator){try{navigator.mediaSession.metadata=null;for(const a of ['play','pause','nexttrack','previoustrack'])navigator.mediaSession.setActionHandler(a,null)}catch{}}}
 }
