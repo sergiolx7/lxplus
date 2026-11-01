@@ -16,3 +16,5 @@
 .expression-pagination{flex-basis:100%;display:flex;gap:12px;align-items:center;justify-content:center}.expression-pagination small{font-size:10px}.call-control-actions i{font-style:normal}
 
 .call-titlebar>div:first-child{min-width:0;flex:1}.call-titlebar>.actions{flex:0 0 auto}.call-titlebar small{overflow-wrap:anywhere}.call-soundboard>button{width:100%;font-size:9px;margin-top:8px;padding:8px}
+
+.call-surface.lx-call.minimized [data-call-diagnostics]{font-size:0;padding:7px}.call-surface.lx-call.minimized [data-call-diagnostics]::before{content:'⌁';font-size:16px}.call-titlebar>.actions{flex-wrap:wrap}
