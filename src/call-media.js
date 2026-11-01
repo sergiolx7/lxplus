@@ -22,3 +22,11 @@ export function isolateDisplayAudio(stream,withAudio=false){
  if(keep){try{keep.contentHint='music'}catch{/* Optional browser hint. */}}
  return {track:keep||null,surface,unavailable:withAudio&&!keep};
 }
+
+// Browser autoplay policy can block a late-arriving remote audio track.
+// Return a distinct result so the UI offers an explicit user-gesture unlock.
+export async function activateReceivedAudio(element){
+ if(!element?.srcObject)return 'not-ready';
+ element.muted=false;
+ try{await element.play();return 'playing'}catch{return 'blocked'}
+}
