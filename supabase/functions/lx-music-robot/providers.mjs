@@ -38,9 +38,15 @@ export async function providerDiscovery({query,limit=40,youtubeKey='',spotifyId=
    if(!oauth?.access_token)throw Error('PROVIDER_401');
    phase='SEARCH';
    const n=both?Math.floor(size/2):size;
-   const url='https://api.spotify.com/v1/search?'+new URLSearchParams({q:query,type:'track',market:'BR',limit:String(n)});
-   const data=await getJSON(fetcher,url,{headers:{Authorization:'Bearer '+oauth.access_token}});
-   const spotifyItems=spotifyCandidates(data.tracks?.items).slice(0,n);
+   // Spotify's February 2026 API restricts GET /search to at most 10 results
+   // per page. Paginate within the configured batch limit, without fetching audio.
+   const pages=Array.from({length:Math.ceil(n/10)},(_,page)=>{
+    const offset=page*10,amount=Math.min(10,n-offset);
+    const url='https://api.spotify.com/v1/search?'+new URLSearchParams({q:query,type:'track',market:'BR',limit:String(amount),offset:String(offset)});
+    return getJSON(fetcher,url,{headers:{Authorization:'Bearer '+oauth.access_token}});
+   });
+   const results=await Promise.all(pages);
+   const spotifyItems=spotifyCandidates(results.flatMap(data=>data.tracks?.items||[])).slice(0,n);
    spotifyFound=spotifyItems.length;found.push(...spotifyItems);
   }catch(e){
    spotifyFailed=true;
