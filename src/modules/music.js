@@ -1,10 +1,13 @@
 import {musicMix} from '../music-discovery.js';
-import {db,itemFrom,sourceFor,saveUserField} from '../data.js';
+import {referenceMusicPage,completeMusicGroup,musicSuggestions} from '../music-library.js';
+import {musicViewControls} from '../display-preferences.js';
+import {catalogFilter,fold} from '../catalog-search.js';
+import {db,itemFrom,saveUserField} from '../data.js';
 import {catalogPage,readPlaylists,playlistItems} from '../services.js';
-import {esc,https,duration,empty,checked,debounce,icon} from '../ui.js';
+import {esc,https,duration,empty,checked,icon} from '../ui.js';
 
 export async function mount(host,ctx){
- let alive=true,tab=ctx.page==='Playlists'?'Playlists':'Início',items=[],total=0,playlists=[],selected=null,term='',loading=false,liked=new Set((ctx.state().musicLikes||[]).map(String)),generation=0,referenceOffset=0,recap=null,month=new Date().toLocaleDateString('sv-SE').slice(0,7),loadError='';
+ let alive=true,tab=ctx.page==='Playlists'?'Playlists':'Início',items=[],total=0,playlists=[],selected=null,term='',loading=false,liked=new Set((ctx.state().musicLikes||[]).map(String)),generation=0,referenceOffset=0,recap=null,month=new Date().toLocaleDateString('sv-SE').slice(0,7),loadError='',searchTimer=null,groupGeneration=0;
  const nowItems=()=>items;
  function header(){return '<section class="music-hero"><div><span class="premium-overline">LX MUSIC</span><h1>Seu ritmo.<br><em>Sua trilha.</em></h1><p>O que você gosta de ouvir, em um lugar só.</p><div class="actions"><button class="btn music-primary" data-music-play-all>'+icon('play')+' Reproduzir seleção</button><button class="btn" data-new-playlist>+ Criar playlist</button></div></div><div class="music-art"><div class="vinyl-record"><span>LX<span>MUSIC</span></span></div><div class="music-wave">♫</div></div></section>'}
  function quickTracks(){const history=ctx.state().musicHistory||{},rows=[...items].sort((a,b)=>String(history[b.id]||'').localeCompare(String(history[a.id]||''))).slice(0,6);return rows.length?'<div class="music-quick-grid" aria-label="Sua biblioteca em um toque">'+rows.map(row=>'<button class="music-quick-track" data-track="'+esc(row.id)+'">'+(https(row.cover)?'<img src="'+esc(row.cover)+'" alt="" loading="lazy">':'<span>'+icon('music')+'</span>')+'<span><strong>'+esc(row.title)+'</strong><small>'+esc(row.artist||'LX Music')+'</small></span></button>').join('')+'</div>':''}
@@ -17,26 +20,39 @@ export async function mount(host,ctx){
   if(tab==='Curtidas')visible=items.filter(x=>liked.has(String(x.id)));
   if(tab==='Recentes'){const history=ctx.state().musicHistory||{};visible=[...items].filter(x=>history[String(x.id)]).sort((a,b)=>String(history[b.id]).localeCompare(String(history[a.id])))}
   let body='';
+  if(term&&selected)visible=visible.filter(x=>fold([x.title,x.artist,x.album,x.genre].join(' ')).includes(fold(term)));
   if(tab==='Mix')visible=musicMix(items,{likes:[...liked],history:ctx.state().musicHistory||{}});
   if(tab==='Retrospectiva'){body=recap&&!recap.private?'<section class="panel"><label class="field">Mês<input type="month" id="recapMonth" value="'+esc(month)+'"></label><div class="insight-grid">'+[[Math.floor((Number(recap.seconds)||0)/60),'minutos ouvidos'],[Number(recap.tracks)||0,'faixas diferentes'],[Number(recap.artists)||0,'artistas'],[Number(recap.days)||0,'dias com música']].map(([n,label])=>'<div><strong>'+n.toLocaleString('pt-BR')+'</strong><small>'+label+'</small></div>').join('')+'</div><h2>Seu top de músicas</h2>'+(recap.top_tracks||[]).map((t,i)=>'<p><strong>'+(i+1)+'. '+esc(t.title)+'</strong> · '+esc(t.artist)+' · '+Math.floor(t.seconds/60)+' min</p>').join('')+'<h2>Artistas mais ouvidos</h2>'+(recap.top_artists||[]).map(t=>'<p>'+esc(t.artist)+' · '+Math.floor(t.seconds/60)+' min</p>').join('')+'<p class="muted">Só o tempo registrado pela LX Plus aparece aqui. Incorporações de outros serviços não informam o tempo de reprodução.</p></section>':empty(loading?'Carregando retrospectiva…':'Retrospectiva indisponível','Não foi possível consultar suas estatísticas. Tente novamente.','<button class="btn" data-music-retry>Tentar novamente</button>')}
-  else if(tab==='Playlists'&&!selected){body='<div class="collection-grid">'+playlists.map(p=>'<button class="collection-card" data-playlist="'+esc(p.id)+'"><span class="collection-cover">'+icon('music')+'</span><strong>'+esc(p.name)+'</strong><small>'+p.tracks.length+' faixas · '+(p.visibility==='private'?'Privada':'Pública')+'</small></button>').join('')+'</div>';if(!playlists.length)body=empty('Sua próxima playlist começa aqui','Crie uma seleção com suas músicas favoritas.','<button class="btn music-primary" data-new-playlist>Criar playlist</button>')}
+  else if(tab==='Playlists'&&!selected){body='<div class="collection-grid">'+playlists.filter(p=>!term||fold(p.name).includes(fold(term))).map(p=>'<button class="collection-card" data-playlist="'+esc(p.id)+'"><span class="collection-cover">'+icon('music')+'</span><strong>'+esc(p.name)+'</strong><small>'+p.tracks.length+' faixas · '+(p.visibility==='private'?'Privada':'Pública')+'</small></button>').join('')+'</div>';if(!playlists.length)body=empty('Sua próxima playlist começa aqui','Crie uma seleção com suas músicas favoritas.','<button class="btn music-primary" data-new-playlist>Criar playlist</button>')}
   else if(tab==='Álbuns'||tab==='Artistas'){
    const key=tab==='Álbuns'?'album':'artist',groups=[...new Set(items.map(t=>t[key]).filter(Boolean))];
    body='<div class="collection-grid">'+groups.map(name=>{const rows=items.filter(x=>x[key]===name),cover=https(rows.find(x=>x.cover)?.cover);return '<button class="collection-card" data-music-group="'+esc(name)+'" data-group-key="'+key+'"><span class="collection-cover '+(key==='artist'?'round':'')+'">'+(cover?'<img src="'+esc(cover)+'" alt="" loading="lazy">':icon('music'))+'</span><strong>'+esc(name)+'</strong><small>'+rows.length+' faixas nesta seleção</small></button>'}).join('')+'</div>';
    if(!groups.length)body=empty('Ainda não há '+tab.toLowerCase()+' nesta seleção','Eles aparecem conforme os metadados das músicas são cadastrados.');
   }else body=visible.length?'<div class="track-table"><div class="track-table-head"><span>#</span><span>FAIXA / ARTISTA</span><span>ÁLBUM</span><span>TEMPO</span></div>'+visible.map(track).join('')+'</div>':empty(loading?'Buscando suas músicas…':'Sem músicas por aqui',loading?'A biblioteca está sincronizando.':'Quando músicas forem publicadas, você poderá ouvi-las e organizar suas playlists.');
-  host.innerHTML=(tab==='Início'?header()+quickTracks()+'<div class="music-discovery-actions"><button class="btn" data-music-tab="Mix">✦ Seu LX Mix</button><button class="btn" data-music-flow>∞ Descoberta contínua</button><button class="btn" data-music-tab="Retrospectiva">Sua retrospectiva</button></div>':'<div class="module-heading"><span class="premium-overline">SUA BIBLIOTECA · LX MUSIC</span><h1>'+esc(selected?.name||tab)+'</h1></div>')+'<div class="section-tabs">'+tabs.map(t=>'<button class="'+(tab===t?'active':'')+'" data-music-tab="'+t+'">'+t+'</button>').join('')+'</div><div class="module-toolbar"><div><h2>'+esc(selected?.name||({Início:'Descubra seu próximo som',Recentes:'Ouvidas recentemente'}[tab]||tab))+'</h2><small>'+total+' faixas na consulta'+(selected?' · Playlist '+(selected.visibility==='private'?'privada':'pública'):'')+'</small></div><input id="musicSearch" class="search" placeholder="Faixa, artista, álbum ou gênero" aria-label="Pesquisar músicas" value="'+esc(term)+'"></div>'+body+((tab==='Curtidas'||tab==='Recentes'?total>referenceOffset:total>items.length)&&!selected&&['Início','Mix','Álbuns','Artistas','Curtidas','Recentes'].includes(tab)?'<button class="btn load-more" data-more-tracks '+(loading?'disabled':'')+'>Carregar mais músicas</button>':'')+'<div id="musicDialog"></div>';
+  host.innerHTML=(tab==='Início'&&!term?header()+quickTracks()+'<div class="music-discovery-actions"><button class="btn" data-music-tab="Mix">✦ Seu LX Mix</button><button class="btn" data-music-flow>∞ Descoberta contínua</button><button class="btn" data-music-tab="Retrospectiva">Sua retrospectiva</button></div>':'<div class="module-heading"><span class="premium-overline">SUA BIBLIOTECA · LX MUSIC</span><h1>'+esc(selected?.name||(term?'Sua busca musical':tab))+'</h1></div>')+'<div class="section-tabs">'+tabs.map(t=>'<button class="'+(tab===t?'active':'')+'" data-music-tab="'+t+'">'+t+'</button>').join('')+'</div><div class="module-toolbar"><div><h2>'+esc(selected?.name||({Início:'Descubra seu próximo som',Recentes:'Ouvidas recentemente'}[tab]||tab))+'</h2><small>'+total+' faixas na consulta'+(selected?' · Playlist '+(selected.visibility==='private'?'privada':'pública'):'')+'</small></div><div class="music-search-tools"><input id="musicSearch" type="search" class="search" placeholder="Faixa, artista, álbum ou gênero" aria-label="Pesquisar músicas" value="'+esc(term)+'">'+musicViewControls()+'</div></div>'+(musicSuggestions(term,items).length?'<div class="music-suggestions" aria-label="Sugestões de pesquisa">'+musicSuggestions(term,items).map(q=>'<button type="button" data-music-suggestion="'+esc(q)+'">'+esc(q)+'</button>').join('')+'</div>':'')+(loadError?'<div class="panel" role="alert"><p>'+esc(loadError)+'</p><button class="btn" data-music-retry>Tentar novamente</button></div>':'')+body+((tab==='Curtidas'||tab==='Recentes'?total>referenceOffset:total>items.length)&&!selected&&['Início','Mix','Álbuns','Artistas','Curtidas','Recentes'].includes(tab)?'<button class="btn load-more" data-more-tracks '+(loading?'disabled':'')+'>Carregar mais músicas</button>':'')+'<div id="musicDialog"></div>';
   if(focused){const input=host.querySelector('#musicSearch');input?.focus();try{input?.setSelectionRange(selection,selection)}catch{}}
  }
  async function load(append=false){
-  if(append&&loading)return;loading=true;loadError='';const token=++generation,requestedTab=tab;
-  try{if(requestedTab==='Retrospectiva'){const result=await checked(db.rpc('lx_music_recap',{p_user:ctx.user.id,p_month:month+'-01'}));if(alive&&token===generation)recap=result;return}let result;if(['Curtidas','Recentes'].includes(requestedTab)){const history=ctx.state().musicHistory||{},ids=tab==='Curtidas'?[...liked]:Object.keys(history).sort((a,b)=>String(history[b]).localeCompare(String(history[a]))),start=append?referenceOffset:0,rows=ids.length?await checked(db.from('lx_catalog').select('id,payload,published').in('id',ids.slice(start,start+60)).eq('published',true).eq('payload->>type','Música')):[],order=new Map(ids.map((id,i)=>[String(id),i]));referenceOffset=start+60;result={items:(rows||[]).map(itemFrom).filter(x=>!term||[x.title,x.artist].join(' ').toLowerCase().includes(term.toLowerCase())).sort((a,b)=>order.get(String(a.id))-order.get(String(b.id))),total:ids.length}}else result=await catalogPage({types:['Música'],term,offset:append?items.length:0,limit:60});if(!alive||token!==generation)return;items=append?[...items,...result.items]:result.items;total=result.total;draw()}
-  catch(e){if(alive&&token===generation)loadError='Não foi possível carregar sua biblioteca. Verifique a conexão e tente novamente.'}finally{if(alive&&token===generation){loading=false;draw()}}
+  if(append&&loading)return;
+  loading=true;loadError='';const token=++generation,requestedTab=tab,requestedTerm=term;draw();
+  try{
+   if(requestedTab==='Retrospectiva'){const result=await checked(db.rpc('lx_music_recap',{p_user:ctx.user.id,p_month:month+'-01'}));if(alive&&token===generation)recap=result;return}
+   if(requestedTab==='Playlists'&&!selected)return;
+   let result;
+   if(['Curtidas','Recentes'].includes(requestedTab)){
+    const history=ctx.state().musicHistory||{},ids=requestedTab==='Curtidas'?[...liked]:Object.keys(history).sort((a,b)=>String(history[b]).localeCompare(String(history[a]))),start=append?referenceOffset:0;
+    result=await referenceMusicPage({ids,term:requestedTerm,offset:start,fetchRows:async(ids,term)=>{let q=db.from('lx_catalog').select('id,payload,published').in('id',ids).eq('published',true).eq('payload->>type','Música');if(term)q=q.or(catalogFilter(term));return (await checked(q)||[]).map(itemFrom)}});
+    if(alive&&token===generation)referenceOffset=start+60;
+   }else result=await catalogPage({types:['Música'],term:requestedTerm,offset:append?items.length:0,limit:60});
+   if(!alive||token!==generation)return;
+   const rows=append?[...items,...result.items]:result.items;items=[...new Map(rows.map(x=>[String(x.id),x])).values()];total=result.total;
+  }catch(e){if(alive&&token===generation)loadError='Não foi possível carregar sua biblioteca. Verifique a conexão e tente novamente.'}
+  finally{if(alive&&token===generation){loading=false;draw()}}
  }
  async function syncLists(){playlists=await readPlaylists(ctx.user.id)}
  function dialog(title,content){host.querySelector('#musicDialog').innerHTML='<div class="inline-dialog" role="dialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="panel"><div class="heading"><h2>'+esc(title)+'</h2><button class="close" data-music-dialog-close aria-label="Fechar">×</button></div>'+content+'</div></div>';host.querySelector('#musicDialog input,#musicDialog select')?.focus()}
  async function play(item,queue=items,flow=false){if(!item)return;try{await ctx.music.play(item,queue,{flow})}catch(e){ctx.toast(e.message||'A fonte desta faixa não está disponível.')}}
- const search=debounce(value=>{term=value;selected=null;load()},300);
+ const search=value=>{term=value;++generation;++groupGeneration;clearTimeout(searchTimer);searchTimer=setTimeout(()=>{if(!alive)return;if(selected)draw();else load()},300)};
  host.addEventListener('change',e=>{if(e.target.id==='recapMonth'&&/^\d{4}-\d{2}$/.test(e.target.value)){month=e.target.value;recap=null;load()}});
  host.addEventListener('input',e=>{if(e.target.id==='musicSearch')search(e.target.value)});
  host.addEventListener('click',async e=>{
@@ -44,11 +60,12 @@ export async function mount(host,ctx){
   try{
    if(b.hasAttribute('data-music-retry')){await load();return}
    if(b.hasAttribute('data-music-flow')){const queue=musicMix(items,{likes:[...liked],history:ctx.state().musicHistory||{}});await play(queue[0],queue,true);return}
-   if(b.dataset.musicTab){tab=b.dataset.musicTab;selected=null;await load();draw();return}
+   if(b.dataset.musicTab){++groupGeneration;clearTimeout(searchTimer);tab=b.dataset.musicTab;selected=null;items=[];total=0;await load();draw();return}
    if(b.hasAttribute('data-more-tracks')){await load(true);return}
    if(b.dataset.track){await play(items.find(x=>String(x.id)===b.dataset.track));return}
    if(b.hasAttribute('data-music-play-all')){const queue=tab==='Mix'?musicMix(items,{likes:[...liked],history:ctx.state().musicHistory||{}}):items;await play(queue[0],queue);return}
-   if(b.dataset.musicGroup){const group=items.filter(x=>x[b.dataset.groupKey]===b.dataset.musicGroup);await play(group[0],group);return}
+   if(b.dataset.musicSuggestion){clearTimeout(searchTimer);term=b.dataset.musicSuggestion;selected=null;await load();return}
+   if(b.dataset.musicGroup){const token=++groupGeneration;b.disabled=true;try{const group=await completeMusicGroup({field:b.dataset.groupKey,value:b.dataset.musicGroup,page:catalogPage,isCurrent:()=>alive&&token===groupGeneration});if(alive&&token===groupGeneration)await play(group[0],group)}finally{if(b.isConnected)b.disabled=false}return}
    if(b.dataset.playlist){const token=++generation,list=playlists.find(p=>p.id===b.dataset.playlist);if(!list)return;const rows=await playlistItems(list.id);if(!alive||token!==generation)return;selected=list;loading=false;items=rows;total=items.length;draw();return}
    if(b.dataset.musicLike){const before=new Set(liked),key=b.dataset.musicLike;liked.has(key)?liked.delete(key):liked.add(key);draw();try{const state=await saveUserField(ctx.user.id,'musicLikes',[...liked]);ctx.setState(state,['musicLikes'])}catch(e){liked=before;draw();throw e}return}
    if(b.dataset.enqueue){const item=items.find(x=>String(x.id)===b.dataset.enqueue);if(!ctx.music.current){await play(item,[item])}else{ctx.music.queue.add(item);ctx.music.renderQueue();ctx.toast('Música adicionada à fila.')}return}
@@ -64,5 +81,5 @@ export async function mount(host,ctx){
   catch(error){ctx.toast(error.message||'Não foi possível salvar.');b.disabled=false}
  });
  draw();await Promise.all([load(),syncLists().catch(e=>ctx.toast(e.message))]);draw();
- return {refresh:()=>load(),destroy(){alive=false;++generation;search.cancel()}};
+ return {refresh:()=>load(),destroy(){alive=false;++generation;++groupGeneration;clearTimeout(searchTimer)}};
 }

@@ -1,0 +1,58 @@
+{
+  "date": "2026-11-01",
+  "status": "review_only_not_deployed",
+  "base_commit": "8637812879aad5988e923dccd1ac3313628a9d35",
+  "branch": "feature/lx-ambient-2-20261101",
+  "unit_and_database_tests": 98,
+  "test_failures": 0,
+  "public_build_release": "1914a3b25183",
+  "qa_data": "fictitious only; no production login or writes",
+  "browser_observed": [
+    "48x48 search artwork",
+    "44x44 compact track rows",
+    "list/grid switch",
+    "45-second synthetic audio plays",
+    "audio survives navigation",
+    "music-reactive LED signal",
+    "light performance hides LEDs while audio continues",
+    "reduced motion stops LED animation",
+    "feed draft and audience survive a like",
+    "conversation draft survives tab changes",
+    "local assistant settings help",
+    "assistant recommendations rechecked in catalog",
+    "optional local assistant history restored",
+    "sidebar collapsed with accessible navigation names",
+    "responsive iframes 360/390/768/1024; document has no horizontal overflow; content uses available width"
+  ],
+  "read_only_production_counts_before_and_after": {
+    "profiles": 8,
+    "user_state": 8,
+    "catalog": 2374,
+    "published_catalog": 280,
+    "messages": 51,
+    "posts": 0
+  },
+  "preference_rpc": {
+    "security_invoker": true,
+    "anon_execute": false,
+    "authenticated_execute": true,
+    "write_policy": "auth.uid() = user_id"
+  },
+  "existing_advisories": {
+    "rls_without_policy_info": 12,
+    "authenticated_definer_warn": 56,
+    "leaked_password_protection_disabled_warn": 1
+  },
+  "not_validated": [
+    "physical Android/iOS",
+    "all media origins",
+    "calls across networks",
+    "live online AI provider"
+  ],
+  "not_implemented": [
+    "Rooms/Party/group calls/TURN",
+    "complete annual music retrospective",
+    "complete semantic catalog recommendations",
+    "full remaining Ambient roadmap; see report"
+  ]
+}

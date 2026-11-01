@@ -1,11 +1,13 @@
+import {VERSION} from './config.js';
 import {db,itemFrom} from './data.js';
 import {uuid,checked,https} from './ui.js';
 import {catalogFilter,searchTerm} from './catalog-search.js';
 
-export async function catalogPage({types=[],term='',offset=0,limit=48,admin=false}={}){
+export async function catalogPage({types=[],term='',offset=0,limit=48,admin=false,match={}}={}){
  let query=db.from('lx_catalog').select('id,payload,published,updated_at',{count:'exact'}).order('updated_at',{ascending:false}).order('id',{ascending:false});
  if(!admin)query=query.eq('published',true);
  if(types.length)query=query.in('payload->>type',types);
+ for(const field of ['artist','album','genre'])if(typeof match[field]==='string')query=query.eq('payload->>'+field,match[field]);
  const clean=searchTerm(term);
  if(clean)query=query.or(catalogFilter(clean));
  const result=await query.range(offset,offset+Math.min(60,limit)-1);
@@ -71,5 +73,5 @@ export function createTelemetry(userId){
  const error=e=>record('error','browser',e.message||'Erro no navegador');
  const rejection=e=>record('error','promise',e.reason?.message||'Operação interrompida');
  window.addEventListener('error',error);window.addEventListener('unhandledrejection',rejection);
- return {record,diagnostics:()=>({release:'2026.10.30',path:location.pathname,screen:{width:innerWidth,height:innerHeight},online:navigator.onLine,recent:pending.slice(-10)}),destroy(){active=false;window.removeEventListener('error',error);window.removeEventListener('unhandledrejection',rejection)}};
+ return {record,diagnostics:()=>({release:VERSION,path:location.pathname,screen:{width:innerWidth,height:innerHeight},online:navigator.onLine,recent:pending.slice(-10)}),destroy(){active=false;window.removeEventListener('error',error);window.removeEventListener('unhandledrejection',rejection)}};
 }

@@ -1,0 +1,18 @@
+const fold=value=>String(value||'').normalize('NFD').replace(/\p{M}/gu,'').toLowerCase();
+export function assistantHelp(message){
+ const q=fold(message),help=/como|onde|ajuda|configur|alter|mudar|personaliz|ativ|deslig/.test(q);
+ if(!help)return null;
+ if(/led|ilumin|luz ambiente/.test(q))return {text:'Abra Perfil → Aparência → LX LED Studio. Escolha as laterais, a intensidade e o efeito. Você pode usar a cor do tema ou uma cor independente. No modo leve, a iluminação fica pausada; com movimento reduzido, ela fica fixa. A reação musical exige uma fonte de áudio compatível.',page:'Perfil',label:'Abrir configurações'};
+ if(/equaliz|graves|agudos|som/.test(q))return {text:'Reproduza uma música e abra o botão de ajustes do mini player. O equalizador oferece presets e cinco bandas. A análise depende da permissão da origem; serviços com player próprio mantêm os seus controles de áudio.',page:'Músicas',label:'Abrir LX Music'};
+ if(/capa|pesquis|busca/.test(q))return {text:'Use a busca no cabeçalho para procurar por título, artista, álbum, autor ou gênero. Em LX Music você pode alternar entre lista e grade. No Perfil, a categoria Aparência permite ajustar o tamanho e o enquadramento das capas.',page:'Músicas',label:'Explorar músicas'};
+ if(/privacidade|invisivel|presenca|visto|atividade/.test(q))return {text:'Abra Perfil → Privacidade e comunidade. Você escolhe sua presença, quem vê sua atividade e se deseja aparecer na pesquisa e no ranking. O modo Invisível mantém sua atividade privada.',page:'Perfil',label:'Revisar privacidade'};
+ if(/perfil|avatar|tema|cor|fonte|texto|contraste|movimento/.test(q))return {text:'Abra Perfil. Em Aparência ficam os temas e a iluminação. Em Conta e perfil você altera nome, foto, capa e biografia. Em Acessibilidade você pode aumentar os textos, reforçar o contraste e reduzir movimentos.',page:'Perfil',label:'Abrir seu perfil'};
+ if(/erro|falha|trava|carrega|suporte/.test(q))return {text:'Tente novamente na seção que apresentou a falha. Se continuar, abra a Central de suporte e informe a página e a ação que tentou realizar. Compartilhar um diagnóstico é opcional.',page:'Suporte',label:'Abrir suporte'};
+ return null;
+}
+export function assistantError(code){return {AI_RATE_LIMIT:'Seu limite de IA online foi atingido. Aguarde e tente novamente, ou desative a IA online para consultar o catálogo.',ONLINE_NOT_CONFIGURED:'A IA online ainda não está configurada. Você pode consultar o catálogo com a opção online desativada.',APPROVAL_REQUIRED:'Seu acesso precisa ser aprovado antes de consultar o catálogo.',AUTH_REQUIRED:'Sua sessão precisa ser renovada. Entre novamente para continuar.',CATALOG_UNAVAILABLE:'O catálogo não respondeu. Tente novamente em instantes.',AI_RESPONSE_INVALID:'A IA não retornou uma resposta válida. Tente reformular o pedido.'}[code]||'Não foi possível concluir o pedido. Seu texto foi mantido para tentar novamente.'}
+export function assistantHistory(userId,{storage=globalThis.localStorage}={}){
+ const key='lx-ai-history-v1:'+userId;
+ const clean=messages=>(Array.isArray(messages)?messages:[]).filter(m=>['user','assistant'].includes(m?.role)&&typeof m.text==='string').slice(-12).map(m=>({role:m.role,text:m.text.slice(0,5000)}));
+ return {read(){try{const p=JSON.parse(storage?.getItem(key)||'null');return p?.consent===true?{consent:true,messages:clean(p.messages)}:{consent:false,messages:[]}}catch{return {consent:false,messages:[]}}},save(consent,messages){try{if(consent)storage?.setItem(key,JSON.stringify({consent:true,messages:clean(messages)}));else storage?.removeItem(key)}catch{}},clear(){try{storage?.removeItem(key)}catch{}}};
+}

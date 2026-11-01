@@ -61,6 +61,7 @@ export async function findDiscovery(term){
 export async function getProfile(id){
  const {data,error}=await db.from('lx_profiles').select('user_id,name,username,approved,approval_status,verified,bio,avatar_url,banner_url,ranking_visible,social_visible,calls_enabled,activity_visible,favorites_visible,status_text').eq('user_id',id).maybeSingle();
  if(error)throw error;
+ if(data){try{const result=await db.rpc('lx_profile_cosmetics',{p_user:id});if(!result.error&&result.data)return {...data,...result.data}}catch{}}
  return data;
 }
 export async function getUserState(id){

@@ -19,10 +19,10 @@ test('editorial Top 10 uses at most ten real available entries without inventing
  const one=renderPremiumCatalog({page:'Início',items:[movie]});assert.equal((one.match(/class="top-ten-number"/g)||[]).length,1);
 });
 test('display settings persist on the device and tolerate unavailable storage',()=>{
- let stored=null;const storage={getItem:()=>stored,setItem:(_key,value)=>stored=value};
+ const stored=new Map(),storage={getItem:key=>stored.get(key),setItem:(key,value)=>stored.set(key,value)};
  const saved=writeDisplay({performance:'light',coverSize:'large',posterFit:'contain',leds:false},storage);assert.deepEqual(readDisplay(storage),saved);
  assert.equal(readDisplay({getItem:()=>{throw Error('blocked')}}).performance,'light');
- assert.deepEqual(normalizeDisplay({performance:'evil',coverSize:'huge',posterFit:'fill'}),{performance:'normal',coverSize:'medium',posterFit:'cover',leds:true,theme:'violet',customColor:'#b8a2ff',surface:'midnight'});
+ assert.deepEqual(normalizeDisplay({performance:'evil',coverSize:'huge',posterFit:'fill'}),normalizeDisplay());
 });
 test('greetings cover midnight, morning, afternoon and night boundaries',()=>{
  for(const [hour,text] of [[0,'Boa madrugada'],[5,'Boa madrugada'],[6,'Bom dia'],[11,'Bom dia'],[12,'Boa tarde'],[17,'Boa tarde'],[18,'Boa noite'],[23,'Boa noite']])assert.equal(greetingForHour(hour),text);

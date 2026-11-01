@@ -12,6 +12,12 @@ Consulte [o registro de publicação](docs/PUBLICACAO-PREMIUM2-20261031.md) para
 
 Player próprio com equalização para fontes compatíveis, cores por conta, Social renovado com presença, selos e avatares corrigidos, gestão de equipe e moderação vinculada a denúncias. Veja [a entrega e os limites de validação](docs/REFORMA-20261101.md).
 
+## Ambient 2.0 · versão em revisão
+
+A evolução da interface corrige as miniaturas musicais da busca, acrescenta lista/grade, LX LED Studio, central de configurações, ordem da Home e ajustes de acessibilidade. Rascunhos da comunidade são preservados; a LX IA recebe ajuda contextual e histórico local opcional. A aparência mantém mudanças feitas sem conexão até a próxima sincronização.
+
+Esta etapa fica em uma branch de atualização, sem publicação automática na produção. Consulte [a entrega, a auditoria do escopo e os bloqueios](docs/AMBIENT2-20261101.md) antes de integrar.
+
 ## Executar e publicar
 
 Requer Node.js 22 ou superior. Instale as dependências de teste fixadas no lockfile com `npm ci --ignore-scripts`. Elas não são incluídas no site.
