@@ -1,0 +1,42 @@
+/* LX Music Robot — ADM Studio. Scoped dashboard with real recorded metrics. */
+.lx-music-robot-page{display:grid;gap:16px;min-width:0;padding-bottom:25px}
+.lx-robot-hero{position:relative;overflow:hidden;padding:26px;border-radius:22px;border:1px solid #bca5ec54;background:radial-gradient(ellipse at right top,#9e68e440,transparent 65%),linear-gradient(120deg,#282039,#11151e 70%);box-shadow:0 18px 65px #0005}
+.lx-robot-hero h2{font-size:clamp(26px,3vw,36px);margin:12px 0;line-height:1.2;letter-spacing:-.04em}
+.lx-robot-hero p{color:#d4cadb;max-width:640px;font-size:12px;line-height:1.7}
+.lx-robot-icon{display:inline-grid;place-items:center;width:40px;height:40px;background:#c4a6fe24;border-radius:13px;color:#f4ddff}
+.lx-robot-status{margin-top:16px;display:grid;gap:4px}
+.lx-robot-status strong{color:#dbc6ff;font-size:12px}
+.lx-robot-status small{font-size:10px;color:#a9a2b6}
+.lx-robot-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.lx-robot-metrics article{min-width:0;background:linear-gradient(160deg,#292536,#181a23);border:1px solid #ffffff1e;border-radius:15px;padding:18px}
+.lx-robot-metrics article small{font-size:9px;letter-spacing:.08em;color:#b2abc0;line-height:1.5}
+.lx-robot-metrics article strong{display:block;font-size:clamp(20px,2.4vw,29px);margin-top:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lx-robot-progress{height:11px;margin:15px 0;background:#14161e;border:1px solid #ffffff15;border-radius:20px;overflow:hidden}
+.lx-robot-progress i{display:block;height:100%;background:linear-gradient(90deg,#b59afb,#72d0a1);transition:width .3s ease}
+.lx-robot-columns{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:13px;align-items:stretch}
+.lx-robot-columns .panel{min-width:0}
+.lx-robot-provider{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #ffffff13;font-size:12px}
+.lx-robot-provider span{color:#b0a3c6;font-size:11px;text-align:right}
+.lx-robot-legend{display:flex;flex-wrap:wrap;gap:13px;font-size:10px;color:#bbb5cb;margin:12px 0}
+.lx-robot-legend span:first-child{color:#9cb5ff}
+.lx-robot-legend span:nth-child(2){color:#a7efc0}
+.lx-robot-legend span:nth-child(3){color:#cba6fd}
+.lx-robot-chart{height:180px;display:flex;align-items:stretch;gap:11px;overflow-x:auto;margin:15px 0;scrollbar-width:thin}
+.lx-robot-day{min-width:30px;flex:1;display:flex;flex-direction:column;justify-content:end;gap:7px}
+.lx-robot-day>small{font-size:9px;color:#b4acbb;text-align:center}
+.lx-robot-bars{display:flex;gap:3px;align-items:end;justify-content:center;height:145px;min-width:0}
+.lx-robot-bars i{display:block;width:8px;max-width:26%;border-radius:4px 4px 0 0}
+.lx-robot-bars [data-robot-bar=scan]{background:#8cacf4}
+.lx-robot-bars [data-robot-bar=added]{background:#83ddb0}
+.lx-robot-bars [data-robot-bar=duplicates]{background:#ba90eb}
+.lx-music-robot-page .form{display:grid;gap:14px}
+.lx-music-robot-page input[type=password],.lx-music-robot-page input[type=number],.lx-music-robot-page textarea{width:100%;min-height:41px;border-radius:10px}
+.lx-music-robot-page textarea{line-height:1.7;min-height:105px}
+.lx-robot-history{display:grid;gap:6px}
+.lx-robot-history>div{display:grid;grid-template-columns:minmax(95px,125px) minmax(90px,1fr) 75px minmax(160px,1.4fr);gap:9px;align-items:center;padding:11px 8px;border-bottom:1px solid #ffffff14}
+.lx-robot-history>div small{font-size:10px;color:#b2aec0;line-height:1.5}
+.lx-robot-history>div strong{font-size:12px}
+.lx-music-robot-page .status-pill{width:max-content;max-width:100%;font-size:10px}
+@media(max-width:920px){.lx-robot-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.lx-robot-columns{grid-template-columns:1fr}.lx-robot-history>div{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.lx-robot-hero{padding:17px}.lx-robot-metrics{gap:8px}.lx-robot-metrics article{padding:12px}.lx-robot-metrics article strong{font-size:20px}.lx-robot-chart{gap:6px}.lx-robot-history>div{grid-template-columns:1fr;gap:5px}.lx-music-robot-page .form-columns{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.lx-robot-progress i{transition:none}}
