@@ -1,6 +1,6 @@
 # LX Plus Premium 2.0 — revisão e publicação · 31/10/2026
 
-Estado deste registro antes da integração: **revisão aprovada; frontend aguardando conclusão do GitHub Pages**. As evidências finais de publicação serão acrescentadas depois do deploy.
+Estado confirmado: **PUBLICADO E CONFERIDO NO DOMÍNIO REAL**. O PR 29 foi integrado, o GitHub Pages concluiu o deploy e a entrada do aplicativo terminou de carregar com a versão nova.
 
 O usuário autorizou a revisão e a publicação nesta continuação. O PR 29 é um conjunto de melhorias sobre o projeto existente. O escopo integral Premium 2.0 continua com pendências; as respostas anteriores que o descreviam como inteiramente concluído não refletem a matriz técnica.
 
@@ -55,3 +55,19 @@ O ponto de recuperação do frontend continua em `backup/pre-premium2-20261031`,
 LX Party, LX Rooms/chamadas de grupo na nova interface, TURN validado em redes distintas, push/Service Worker recuperado, metas/estantes de leitura, índice fuzzy completo, álbuns maiores que a seleção carregada, painel integral de prêmios, proteção completa contra pontos artificiais e parte da auditoria do ADM continuam pendentes. Drive/TMDB e OAuth privado exigem configuração e homologação próprias.
 
 Os relatórios `PREMIUM2-*` anteriores foram mantidos como registros históricos da candidata. Esta publicação entrega as melhorias implementadas e revisadas, preservando as limitações acima. Nenhum anúncio coletivo de conclusão integral foi enviado.
+
+## Evidência da publicação concluída
+
+- PR integrado: https://github.com/sergiolx7/lxplus/pull/29
+- Commit publicado: `b7f213d09aedcfd9ad2e939972fd620311e13a86`.
+- Revisão final do código: `e08f4fb06811634681237d2fd0f71d2398bf8a7a`.
+- Deploy Pages aprovado: https://github.com/sergiolx7/lxplus/actions/runs/41264768811
+- Smoke da main aprovado: https://github.com/sergiolx7/lxplus/actions/runs/41264768922
+- Domínio conferido: https://xn--rifamilionria-deb.api.br/
+- Versão do frontend em `build.json`, HTML e CSS carregado no navegador: `174f102ab02b`.
+- Nove verificações de publicação aprovadas: entrada, versão e módulos públicos acessíveis; fixtures, documentação interna e SQL não expostos pelo site.
+- Navegador real após recarga: formulário de entrada renderizado e indicador de carregamento encerrado. Não foi usado login de usuário nesta rodada.
+
+A integração auxiliar `Workers Builds: lxplus` apresentou falha, que também existe na versão anterior `6df38f8`. O Pages e os testes da main concluíram com sucesso. A configuração/logs internos desse serviço auxiliar da Cloudflare não foram alterados. Esse erro permanece como pendência separada da publicação confirmada acima.
+
+Este registro posterior altera apenas documentação/evidências; o commit usa skip CI para manter a publicação do código já validado. A correção de permissões e a LX IA versão 5 permanecem implantadas no Supabase.

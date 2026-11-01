@@ -1,0 +1,66 @@
+{
+  "client_date": "2026-10-31",
+  "pr": 29,
+  "published_commit": "b7f213d09aedcfd9ad2e939972fd620311e13a86",
+  "review_commit": "e08f4fb06811634681237d2fd0f71d2398bf8a7a",
+  "frontend_release": "174f102ab02b",
+  "pages_run": 41264768811,
+  "pages_result": "success",
+  "smoke_run": 41264768922,
+  "smoke_result": "success",
+  "browser_entry_ready": true,
+  "real_user_login_tested": false,
+  "code_tests": 83,
+  "browser_scenarios": 5,
+  "api_checks": 14,
+  "publication_checks": [
+    {
+      "path": "/build.json",
+      "status": 200,
+      "passed": true,
+      "release": "174f102ab02b"
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "path": "/src/route-lifecycle.js?v=174f102ab02b",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "path": "/src/book-reader.js?v=174f102ab02b",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "path": "/src/modules/assistant.js?v=174f102ab02b",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "path": "/assets/pdfjs/pdf.worker-6.4.299.mjs",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "path": "/tests/fixtures/premium2.html",
+      "status": 404,
+      "passed": true
+    },
+    {
+      "path": "/supabase/migrations/20261101020959_lx_premium2_ai_budget.sql",
+      "status": 404,
+      "passed": true
+    },
+    {
+      "path": "/docs/PREMIUM2-SEGURANCA-20261031.md",
+      "status": 404,
+      "passed": true
+    }
+  ],
+  "auxiliary_cloudflare_build": "pre-existing failure",
+  "full_premium_scope_completed": false
+}
