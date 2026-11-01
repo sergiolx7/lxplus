@@ -2,7 +2,7 @@ import {playCallSound} from './call-sounds.js';
 import {callView} from './call-view.js';
 import {premiumCaptureQuality} from './premium-style.js';
 import {rtcConfig} from './rtc-config.js';
-import {displayCaptureOptions,isolateDisplayAudio,captureAudioMessage} from './call-media.js';
+import {displayCaptureOptions,isolateDisplayAudio,captureAudioMessage,activateReceivedAudio} from './call-media.js';
 import {db} from './data.js';
 import {checked,esc,avatar} from './ui.js';
 
@@ -61,7 +61,7 @@ export class Calls {
  async applyShareQuality(){if(!this.screen)return;const value=premiumCaptureQuality(this.surface.querySelector('[data-call-quality]').value,this.profile()?.is_premium===true),track=this.screen.getVideoTracks()[0];await track.applyConstraints({width:{ideal:value.width},height:{ideal:value.height},frameRate:{ideal:value.fps,max:value.fps}});try{const params=this.screenSender.getParameters();if(params.encodings?.length){params.encodings[0].maxBitrate=value.bitrate;params.encodings[0].maxFramerate=value.fps;await this.screenSender.setParameters(params)}}catch{}const actual=track.getSettings();this.surface.querySelector('[data-call-resolution]').textContent=actual.width&&actual.height?actual.width+' × '+actual.height+(actual.frameRate?' · '+Math.round(actual.frameRate)+' FPS':''):'Qualidade adaptada à sua conexão';}
  status(value){const el=this.surface?.querySelector('#callStatus');if(el)el.textContent=value}
  audioNotice(value){const node=this.surface?.querySelector('[data-call-audio-notice]');if(node)node.textContent=value||''}
- async playRemoteAudio(element){if(!element?.srcObject)return;element.muted=false;try{await element.play()}catch{if(this.surface&&element.isConnected){const button=this.surface.querySelector('[data-call-unlock]');if(button)button.hidden=false;this.audioNotice('Som bloqueado pelo navegador: clique em Ativar som na barra da chamada.')}}}
+ async playRemoteAudio(element){const state=await activateReceivedAudio(element);if(state==='blocked'&&this.surface&&element.isConnected){const button=this.surface.querySelector('[data-call-unlock]');if(button)button.hidden=false;this.audioNotice('Som bloqueado pelo navegador: clique em Ativar som na barra da chamada.')}}
  async preparePeer(caller){
   this.cursor=0;this.ice=[];this.attempts=0;this.seen.clear();const id=this.call.id,config=await rtcConfig('call',id);if(this.closed||this.call?.id!==id)return;this.turnConfigured=config.turnConfigured;const pc=new RTCPeerConnection({iceServers:config.iceServers,iceCandidatePoolSize:0});this.pc=pc;this.remote=new MediaStream();
   const remoteVideo=this.surface.querySelector('#callRemote');remoteVideo.srcObject=this.remote;
