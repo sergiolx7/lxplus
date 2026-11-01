@@ -85,3 +85,6 @@
 @media(max-width:760px){.lx-music-studio{display:block}.lx-music-nav{position:relative;top:auto;display:block;max-height:none;padding:12px;margin-bottom:14px;border-radius:14px}.lx-music-nav-brand,.lx-music-nav-lists,.lx-music-nav-label{display:none}.lx-music-nav nav{display:flex;overflow-x:auto;gap:7px;scrollbar-width:none}.lx-music-nav nav button{flex:none;width:auto;min-height:36px;white-space:nowrap;padding:8px 11px}.lx-music-nav nav button svg{width:15px;height:15px}.lx-music-main .music-hero{min-height:225px}.lx-music-group-intro{align-items:center;gap:14px}.lx-music-group-art{width:100px;height:100px}.lx-music-group-intro h1{font-size:24px}.lx-music-album-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lx-music-mini-grid{grid-template-columns:1fr 1fr}.lx-music-mini-track>img,.lx-music-mini-track>.lx-music-art-fallback{width:52px;height:60px}}
 @media(max-width:420px){.lx-music-mini-grid{grid-template-columns:1fr}.lx-music-main .music-hero h1{font-size:31px}.lx-music-main .track-table{padding:3px 8px}.lx-music-group-intro h1{font-size:21px}}
 @media(prefers-reduced-motion:reduce){.lx-listening-eq i{animation:none}.lx-music-album-tile{transition:none}}
+
+/* Desktop and mobile use the dedicated LX Music library navigation instead of a duplicate tab row. */
+.lx-music-main .section-tabs{display:none!important}
