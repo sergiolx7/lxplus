@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {displayCaptureOptions,isolateDisplayAudio,captureAudioMessage} from '../src/call-media.js';
+import {displayCaptureOptions,isolateDisplayAudio,captureAudioMessage,activateReceivedAudio} from '../src/call-media.js';
 
 test('screen sharing never requests system audio and keeps the microphone separate',()=>{
  for(const enabled of [false,true]){
@@ -30,4 +30,12 @@ test('tab capture status clearly distinguishes missing native audio permission f
  assert.match(missing,/não disponibilizou/);
  assert.match(captureAudioMessage({surface:'window',track:null,unavailable:true},true),/Esta janela não enviou áudio/);
  assert.match(captureAudioMessage({surface:'monitor',track:null,unavailable:true},true),/tela inteira não envia áudio isolado/);
+});
+
+test('remote shared audio starts on incoming track and exposes autoplay blocks safely',async()=>{
+ const audio={muted:true,srcObject:{},playCalls:0,async play(){this.playCalls++}};
+ assert.equal(await activateReceivedAudio(audio),'playing');assert.equal(audio.muted,false);assert.equal(audio.playCalls,1);
+ audio.muted=true;audio.play=async()=>{throw Error('NotAllowedError')};
+ assert.equal(await activateReceivedAudio(audio),'blocked');assert.equal(audio.muted,false);
+ assert.equal(await activateReceivedAudio({muted:true}),'not-ready');
 });
