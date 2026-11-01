@@ -1,4 +1,4 @@
-import {syncProfileBanners} from './profile-premium.js';
+import {profileName,syncProfileBanners,observePremiumMedia} from './profile-premium.js';
 import {WatchParty} from './watch-party.js';
 import {mountRoute} from './route-lifecycle.js';
 import {bindAmbientLight} from './ambient-light.js';
@@ -51,7 +51,7 @@ const musicDock=new MusicDock({resolve:sourceFor,getPreferences:()=>A.stored.pla
  listeningTrack=String(item.id);listeningSession=uuid();
  if(A.user){const current={...(A.stored.musicHistory||{}),[item.id]:new Date().toISOString()};A.stored.musicHistory=current;accountPreferences.write('musicHistory',current)}
 },onListening(item,total){if(A.user&&listeningSession&&total>0)db.rpc('lx_record_listening',{p_session:listeningSession,p_track:String(item.id),p_title:String(item.title).slice(0,200),p_artist:String(item.artist||'').slice(0,200),p_total:total}).then(r=>{if(r.error)console.warn('Histórico musical temporariamente indisponível.')})}});
-function context(){const ownerId=A.user.id;return {user:A.user,admin:A.admin,page:A.page,term:A.term,state:()=>A.stored,setState:(value,keys)=>{if(A.user?.id!==ownerId)return;if(keys)for(const key of keys)A.stored[key]=value[key];else A.stored=value},profile:()=>A.profile,setProfile:p=>{if(A.user?.id!==ownerId)return;A.profile=p;const node=document.querySelector('#sidebarProfileName');if(node)node.innerHTML='<span class="profile-name-text">'+esc(p.name)+'</span>'+verifiedBadge(p)},directory:()=>A.members,setDirectory:rows=>{if(A.user?.id===ownerId)A.members=rows},music:musicDock,savePreferences:(key,value)=>{A.stored[key]=value;return accountPreferences.write(key,value)},calls:A.calls,toast,navigate,openItem:modal,play,refreshCatalog:()=>loadCatalog(),refreshNotifications,heartbeat,diagnostics:()=>A.telemetry?.diagnostics()||{}}}
+function context(){const ownerId=A.user.id;return {user:A.user,admin:A.admin,page:A.page,term:A.term,state:()=>A.stored,setState:(value,keys)=>{if(A.user?.id!==ownerId)return;if(keys)for(const key of keys)A.stored[key]=value[key];else A.stored=value},profile:()=>A.profile,setProfile:p=>{if(A.user?.id!==ownerId)return;A.profile=p;document.querySelectorAll('[data-avatar-user="'+CSS.escape(p.user_id||A.user.id)+'"]').forEach(node=>{if(!node.closest('[data-premium-live-preview]'))node.outerHTML=avatar(p,node.dataset.avatarClass||'member-avatar')});const node=document.querySelector('#sidebarProfileName');if(node)node.innerHTML='<span class="profile-name-text">'+profileName(p)+'</span>'+verifiedBadge(p)},directory:()=>A.members,setDirectory:rows=>{if(A.user?.id===ownerId)A.members=rows},music:musicDock,savePreferences:(key,value)=>{A.stored[key]=value;return accountPreferences.write(key,value)},calls:A.calls,toast,navigate,openItem:modal,play,refreshCatalog:()=>loadCatalog(),refreshNotifications,heartbeat,diagnostics:()=>A.telemetry?.diagnostics()||{}}}
 function disposeRoute(){A.controller?.destroy?.();A.controller=null;A.routeKey='';++A.routeGeneration}
 async function draw(){
  if(!A.user){renderAuth();return}if(!approved()){showGate();return}if(!document.querySelector('.shell'))shell();
@@ -78,7 +78,7 @@ async function heartbeat(){
 }
 function startMemberServices(){
  A.telemetry?.destroy();A.telemetry=createTelemetry(A.user.id);A.telemetry.record('performance','app_ready','',performance.now());A.telemetry.record('page',A.page);
- A.calls?.destroy();A.calls=new Calls({userId:A.user.id,toast,directory:()=>A.members});
+ A.calls?.destroy();A.calls=new Calls({userId:A.user.id,toast,directory:()=>A.members,profile:()=>A.profile});
  A.party?.destroy();A.party=new WatchParty({userId:A.user.id,directory:()=>A.members,toast,calls:()=>A.calls,validate:async(item,index)=>{const ep=episodes(item)[index],source=await sourceFor(ep?{...item,...ep,id:item.id,type:item.type,license:item.license}:item);if(!['video','hls','dash'].includes(source.kind))throw Error('Assistir juntos está disponível para vídeos diretos, HLS e DASH autorizados. Este player externo não permite sincronizar os controles.');if(source.revokeOnCleanup&&source.url?.startsWith('blob:'))URL.revokeObjectURL(source.url)},onOpen:async room=>{const r=await db.from('lx_catalog').select('id,payload,published').eq('id',room.content_id).eq('published',true).maybeSingle();if(r.error||!r.data)throw Error('Este conteúdo não está disponível para sua conta.');const item=itemFrom(r.data);await play(item,episodes(item).length?room.episode_index:null);if(!document.querySelector('#mediaPlayer')||String(A.modal?.item.id)!==String(room.content_id))throw Error('Não foi possível abrir uma fonte compatível. A sessão permanece em espera.')}});clearInterval(A.heartbeatTimer);A.heartbeatTimer=setInterval(()=>heartbeat().catch(()=>{}),25000);heartbeat().catch(()=>{});
  if(A.noticeChannel)db.removeChannel(A.noticeChannel);A.noticeChannel=db.channel('lx-notice-badge-'+A.user.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'lx_user_notifications',filter:'user_id=eq.'+A.user.id},()=>refreshNotifications().catch(()=>{})).subscribe();refreshNotifications().catch(()=>{});
  socialDirectory().then(rows=>{if(A.user)A.members=rows}).catch(()=>{});
@@ -191,7 +191,7 @@ document.addEventListener('visibilitychange',()=>heartbeat().catch(()=>{}));
 window.addEventListener('popstate',event=>{const page=event.state?.page||decodeURIComponent(location.hash.slice(1))||'Início';navigate(page,{term:event.state?.term||'',push:false})});
 window.addEventListener('pagehide',()=>{if(A.user)db.from('lx_presence').update({status:'offline',updated_at:new Date().toISOString()}).eq('user_id',A.user.id).then(()=>{});A.playerCleanup?.()});
 bindDisplayControls(value=>{if(A.user){A.stored.displayPreferences=value;accountPreferences.write('displayPreferences',value)}if(A.page==='Início'){A.routeKey='';draw()}});
-document.addEventListener('lx-display-change',()=>syncProfileBanners());
+document.addEventListener('lx-display-change',()=>syncProfileBanners());observePremiumMedia();
 bindAmbientLight({sample:()=>{const audio=musicDock.element?.querySelector('audio');return audio&&!audio.paused&&!audio.muted?musicDock.effectsEngine?.level()??null:null}});
 setInterval(()=>{const greeting=document.querySelector('#headerGreeting');if(greeting)greeting.textContent=greetingForHour(new Date().getHours())+', '+(A.profile?.name||'Membro LX').split(' ')[0]+'.'},60000);
 attachAuthListener();

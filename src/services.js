@@ -16,10 +16,10 @@ export async function catalogPage({types=[],term='',offset=0,limit=48,admin=fals
 }
 export async function profileMap(ids){
 const unique=[...new Set(ids)].filter(Boolean).slice(0,100);if(!unique.length)return new Map();
- const people=await checked(db.rpc('lx_plus_directory'));
+ const people=await socialDirectory();
  return new Map((people||[]).filter(p=>unique.includes(p.user_id)).map(p=>[p.user_id,p]));
 }
-export async function socialDirectory(){return await checked(db.rpc('lx_plus_directory'))||[]}
+export async function socialDirectory(){const people=await checked(db.rpc('lx_plus_directory'))||[];try{const cosmetics=await db.rpc('lx_profile_cosmetics_many',{p_users:people.map(p=>p.user_id).slice(0,60)});if(!cosmetics.error&&Array.isArray(cosmetics.data)){const map=new Map(cosmetics.data.map(p=>[p.user_id,p]));return people.map(p=>({...p,...map.get(p.user_id)}))}}catch{}return people}
 export async function uploadSocial(file,{userId,kind,target}){
  const accepted=/^(image\/(jpeg|png|webp)|video\/(mp4|webm)|audio\/(webm|ogg|mpeg|mp4|wav)|application\/(pdf|zip)|text\/plain)$/;
  const mime=String(file?.type||'').split(';')[0];
