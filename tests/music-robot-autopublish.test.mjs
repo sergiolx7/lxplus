@@ -17,7 +17,7 @@ test('automatic publication is explicit, provider-scoped and keeps official stre
  assert.match(sql,/publish_now,now\(\)/);
  assert.match(sql,/music-robot-auto/);
  assert.match(sql,/music-robot-draft/);
- assert.match(sql,/and c\.published=false/);
+ assert.match(sql,/where c\.published=false/);
  assert.match(sql,/not exists\(select 1 from public\.lx_catalog other/);
  assert.match(sql,/importMethod'='music-robot-draft'/);
  assert.doesNotMatch(sql,/\bdelete\s+from\b/i);
