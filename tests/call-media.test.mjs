@@ -1,12 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {displayCaptureOptions,isolateDisplayAudio,captureAudioMessage,activateReceivedAudio} from '../src/call-media.js';
+import {displayCaptureOptions,isolateDisplayAudio,captureAudioMessage,activateReceivedAudio,audioSharingState,setRemoteScreenAudio} from '../src/call-media.js';
 
 test('screen sharing never requests system audio and keeps the microphone separate',()=>{
  for(const enabled of [false,true]){
   const value=displayCaptureOptions(enabled);
-  assert.equal(enabled?typeof value.audio==='object':value.audio===false,true);assert.equal(value.systemAudio,'exclude');
-  if(enabled){assert.equal(value.audio.echoCancellation,false);assert.equal(value.audio.noiseSuppression,false);assert.equal(value.audio.autoGainControl,false);assert.equal(value.audio.suppressLocalAudioPlayback,false);assert.equal(value.audio.restrictOwnAudio,true)}
+  assert.equal(value.audio,enabled);assert.equal(value.systemAudio,'exclude');
   assert.equal(value.windowAudio,'exclude');assert.equal(value.monitorTypeSurfaces,'exclude');
   assert.equal(value.video.displaySurface,'browser');assert.equal(value.selfBrowserSurface,'exclude');assert.equal(value.preferCurrentTab,false);
   assert.equal(value.surfaceSwitching,'exclude');assert.equal(value.video.frameRate.max,30);
@@ -39,4 +38,28 @@ test('remote shared audio starts on incoming track and exposes autoplay blocks s
  audio.muted=true;audio.play=async()=>{throw Error('NotAllowedError')};
  assert.equal(await activateReceivedAudio(audio),'blocked');assert.equal(audio.muted,false);
  assert.equal(await activateReceivedAudio({muted:true}),'not-ready');
+});
+
+test('send and receive audio controls are independently enabled without mixing the system',()=>{
+ const capture=displayCaptureOptions(true);
+ assert.equal(capture.audio,true);
+ assert.equal(capture.systemAudio,'exclude');assert.equal(capture.windowAudio,'exclude');
+ const element={srcObject:{},muted:true};
+ assert.equal(setRemoteScreenAudio(element,true),true);assert.equal(element.muted,false);
+ assert.equal(setRemoteScreenAudio(element,false),false);assert.equal(element.muted,true);
+ assert.equal(audioSharingState({requested:true,surface:'browser',track:{readyState:'live',muted:false},listenerEnabled:false}).kind,'muted');
+ assert.equal(audioSharingState({requested:true,surface:'browser',track:{readyState:'live',muted:false},listenerEnabled:true}).kind,'ready');
+ assert.equal(audioSharingState({requested:true,surface:'browser',track:null}).kind,'missing');
+ assert.equal(audioSharingState({requested:true,surface:'window',track:{readyState:'live',muted:false}}).kind,'not-tab');
+});
+
+test('call UI exposes both transmitter and receiver controls enabled by default',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const view=readFileSync(new URL('../src/call-view.js',import.meta.url),'utf8');
+ const calls=readFileSync(new URL('../src/calls.js',import.meta.url),'utf8');
+ assert.match(view,/data-call-screen-audio checked/);
+ assert.match(view,/data-call-listen-screen checked/);
+ assert.match(calls,/this\.listenScreenAudio=e\.target\.checked/);
+ assert.match(calls,/this\.remoteScreenAudioDeclared=media\.screenAudio/);
+ assert.match(calls,/this\.shareAudioSender\.replaceTrack\(audio\.track\)/);
 });
