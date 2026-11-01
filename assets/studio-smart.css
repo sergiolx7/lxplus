@@ -1,0 +1,39 @@
+/* ADM Studio · typed content editor. Scoped to avoid touching profile and call layouts. */
+.studio-dialog:has(.studio-smart-editor)>.panel{width:min(900px,100%);max-height:min(92dvh,1080px);overflow-y:auto;border:1px solid #8276ae5c;border-radius:24px;background:linear-gradient(160deg,#181a25,#11141c 65%);box-shadow:0 35px 110px #000a}
+.studio-dialog:has(.studio-smart-editor) .heading{padding:2px 0 15px;position:relative;z-index:2}
+.studio-smart-editor{display:grid;gap:16px;max-width:none}
+.studio-smart-lead{padding:18px 20px;border-radius:18px;background:radial-gradient(ellipse at 0% 0%,#8065b229,transparent 70%),linear-gradient(120deg,#262131,#171921);border:1px solid #b59cef30}
+.studio-smart-lead h3{font-size:clamp(19px,3vw,25px);margin:8px 0;line-height:1.2}
+.studio-smart-lead p{color:#c0b9d2;font-size:12px;line-height:1.65;margin:0}
+.studio-smart-editor .studio-type-picker{font-weight:650;font-size:13px;max-width:none}
+.studio-type-picker select{min-height:45px;border:1px solid #a990e46b!important;background:#171827!important;border-radius:13px!important;font-size:14px}
+.studio-editor-group{display:grid;gap:15px;min-width:0;padding:19px 21px;border:1px solid #ffffff19;background:linear-gradient(125deg,#1c1d27e8,#13151eeb);border-radius:18px}
+.studio-editor-group[data-editor-types][hidden],.studio-editor-group [data-editor-types][hidden]{display:none!important}
+.studio-editor-group-head{display:flex;align-items:center;gap:12px;min-width:0}
+.studio-editor-group-head>span{display:grid;place-items:center;flex:0 0 37px;width:37px;height:37px;border:1px solid #b29cfa45;background:#8f7de41d;color:#ddd0ff;border-radius:12px;font-size:17px}
+.studio-editor-group-head strong{display:block;font-size:14px;line-height:1.35}
+.studio-editor-group-head small{display:block;margin-top:3px;color:#a8a9b8;font-size:11px;line-height:1.5}
+.studio-smart-editor .field{min-width:0;display:grid;gap:6px;font-size:11px}
+.studio-smart-editor .field input:not([type=file]):not([type=range]),.studio-smart-editor .field select,.studio-smart-editor .field textarea{min-height:41px;width:100%;border-radius:10px}
+.studio-smart-editor input[type=file]{width:100%;min-width:0;max-width:100%;padding:11px;cursor:pointer;border:1px dashed #a68dd15c;border-radius:10px;background:#0f121c}
+.studio-smart-editor textarea{resize:vertical;min-height:86px;line-height:1.6}
+.studio-smart-editor .field small,.studio-smart-editor .muted{font-size:11px;line-height:1.7;color:#acacba}
+.studio-smart-editor .form-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.studio-smart-editor .link-inspector{font-size:11px;line-height:1.6}
+.studio-smart-editor .editor-art-preview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;min-width:0}
+.studio-smart-editor .editor-art-preview>div{min-width:0;overflow:hidden}
+.studio-smart-editor .editor-art-preview img{width:100%;max-height:135px;object-fit:contain;border-radius:9px}
+.studio-smart-editor[data-studio-type="Música"] .editor-art-preview>div:not(:first-child),
+.studio-smart-editor[data-studio-type="Livro"] .editor-art-preview>div:not(:first-child){display:none}
+.studio-smart-editor[data-studio-type="Música"] .editor-art-preview,.studio-smart-editor[data-studio-type="Livro"] .editor-art-preview{grid-template-columns:minmax(0,190px)}
+.studio-smart-editor[data-studio-type="Música"] .editor-art-preview img{aspect-ratio:1;object-fit:cover;max-height:none}
+.studio-smart-editor .btn.primary[type=submit]{width:100%;max-width:440px;min-height:45px;border-radius:12px;font-weight:700}
+.studio-smart-editor .setting-toggle{font-size:11px;line-height:1.6}
+@media(max-width:650px){
+ .studio-dialog:has(.studio-smart-editor){padding:10px}
+ .studio-dialog:has(.studio-smart-editor)>.panel{width:100%;max-height:calc(100dvh - 20px);padding:15px;border-radius:17px}
+ .studio-editor-group{padding:15px 13px;border-radius:14px;gap:12px}
+ .studio-smart-editor .form-columns{grid-template-columns:1fr;gap:12px}
+ .studio-smart-lead{padding:15px}
+ .studio-smart-editor .editor-art-preview{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
