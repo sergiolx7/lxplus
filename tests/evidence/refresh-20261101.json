@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-01",
+  "unit_and_database_tests": 88,
+  "test_failures": 0,
+  "qa_data": "fictitious only",
+  "browser_observed": [
+    "custom audio controls with native controls disabled",
+    "playback progresses with bass preset enabled",
+    "account theme mint and graphite applied",
+    "online friend shown in cards and chat",
+    "owner role dialog protects owners",
+    "moderator has no user-management tab",
+    "reported-post preview and hide confirmed on QA",
+    "390x844 layout has clientWidth equal to scrollWidth"
+  ],
+  "database": {
+    "migration": "20261101031610_lx_refresh_report_moderation",
+    "profiles": 8,
+    "verified": 5,
+    "owners": 2,
+    "anonymous_rpc_execution": false
+  },
+  "physical_devices_tested": false,
+  "published": false
+}

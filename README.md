@@ -8,6 +8,10 @@ A revisão do PR 29 recupera controles de reprodução, preferências por conta,
 
 Consulte [o registro de publicação](docs/PUBLICACAO-PREMIUM2-20261031.md) para validação, mudanças no servidor e limitações. O escopo completo ainda inclui pendências como LX Party, Rooms, TURN, push e homologação em aparelhos reais; a existência do PR não significava que esses itens estavam prontos.
 
+## Reforma de interface · 01/11/2026
+
+Player próprio com equalização para fontes compatíveis, cores por conta, Social renovado com presença, selos e avatares corrigidos, gestão de equipe e moderação vinculada a denúncias. Veja [a entrega e os limites de validação](docs/REFORMA-20261101.md).
+
 ## Executar e publicar
 
 Requer Node.js 22 ou superior. Instale as dependências de teste fixadas no lockfile com `npm ci --ignore-scripts`. Elas não são incluídas no site.
