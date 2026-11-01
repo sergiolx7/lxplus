@@ -28,7 +28,7 @@ test('provider discovery uses official API queries and handles missing keys with
 });
 test('provider HTTP errors are sanitized and never leak secret API credentials',async()=>{
  const result=await providerDiscovery({query:'music',limit:10,youtubeKey:'DO_NOT_LEAK',fetcher:async()=>new Response('',{status:429})});
- assert.equal(result.items.length,0);assert.deepEqual(result.errors,['YOUTUBE_RATE_LIMIT']);assert.ok(!JSON.stringify(result).includes('DO_NOT_LEAK'));
+ assert.equal(result.items.length,0);assert.deepEqual(result.errors,['YOUTUBE_429']);assert.ok(!JSON.stringify(result).includes('DO_NOT_LEAK'));
 });
 test('statistics and chart use actual run logs, never invented daily values',()=>{
  const history=[
@@ -55,4 +55,63 @@ test('SQL script schedules safely and blocks public reads and automated publicat
  assert.match(studio,/lx-music-robot/);
  const index=readFileSync(new URL('../index.html',import.meta.url),'utf8');
  assert.match(index,/music-robot\.css/);
+});
+
+test('manual execute button remains available when background schedule is paused',()=>{
+ const html=renderMusicRobotAdmin({enabled:false,daily_limit:300,keys:{youtube:true,spotify:true},runs:[],queries:['música oficial']},'owner');
+ assert.match(html,/data-music-robot-run/);
+ assert.doesNotMatch(html,/data-music-robot-run disabled/);
+ const running=renderMusicRobotAdmin({enabled:true,daily_limit:300,keys:{youtube:true,spotify:true},runs:[]},'owner',{running:true,message:'Conectando'});
+ assert.match(running,/data-music-robot-run disabled/);
+ assert.match(running,/Buscando músicas/);
+ assert.match(running,/Conectando/);
+});
+test('browser invocation handles OPTIONS and every response has CORS headers',()=>{
+ const edge=readFileSync(new URL('../supabase/functions/lx-music-robot/index.ts',import.meta.url),'utf8');
+ const studio=readFileSync(new URL('../src/modules/studio.js',import.meta.url),'utf8');
+ const sql=readFileSync(new URL('../supabase/sql/lx-music-robot-manual-claim.sql',import.meta.url),'utf8');
+ assert.match(edge,/req\.method==='OPTIONS'/);
+ assert.match(edge,/Access-Control-Allow-Headers/);
+ assert.match(edge,/headers:\{\.\.\.cors/);
+ assert.match(edge,/const actor=await authorized\(req\)/);
+ assert.match(edge,/p_manual:actor==='admin'/);
+ assert.match(sql,/not cfg\.enabled and not p_manual/);
+ assert.match(sql,/revoke all on function public\.lx_music_robot_claim\(boolean\) from public,anon,authenticated/);
+ assert.match(studio,/robotRunning=false/);
+ assert.match(studio,/AbortSignal\.timeout\(35000\)/);
+ assert.match(studio,/robotMessage/);
+});
+
+test('Spotify API rejection does not halve the YouTube results or leak credentials',async()=>{
+ let youtubeSize=0;
+ const data=await providerDiscovery({query:'música oficial',limit:40,youtubeKey:'GOOGLE_SECRET',spotifyId:'0123456789abcdef0123456789abcdef',spotifySecret:'PRIVATE_SPOTIFY_SECRET',fetcher:async(url)=>{
+  const target=String(url);
+  if(target.startsWith('https://accounts.spotify.com/api/token'))return new Response('',{status:403});
+  if(target.startsWith('https://www.googleapis.com/youtube/v3/search?')){
+   youtubeSize=Number(new URL(target).searchParams.get('maxResults'));
+   return new Response(JSON.stringify({items:Array.from({length:40},(_,i)=>({id:{videoId:('video'+String(i).padStart(6,'0')).slice(0,11)},snippet:{title:'Faixa '+i}}))}),{status:200});
+  }
+  throw Error('Unexpected host');
+ }});
+ assert.equal(youtubeSize,40);
+ assert.equal(data.items.length,40);
+ assert.deepEqual(data.errors,['SPOTIFY_AUTH_403']);
+ assert.equal(data.items.every(item=>item.provider==='YouTube'),true);
+ assert.doesNotMatch(JSON.stringify(data),/GOOGLE_SECRET|PRIVATE_SPOTIFY_SECRET/);
+});
+
+test('Spotify February 2026 search paginates with at most ten items per request',async()=>{
+ const offsets=[],limits=[];
+ const found=await providerDiscovery({query:'official music',limit:20,spotifyId:'0123456789abcdef0123456789abcdef',spotifySecret:'private-secret',fetcher:async(url)=>{
+  if(String(url).startsWith('https://accounts.spotify.com/api/token'))return new Response(JSON.stringify({access_token:'TEST_ONLY',token_type:'Bearer'}),{status:200});
+  const u=new URL(url);assert.equal(u.hostname,'api.spotify.com');
+  const limit=Number(u.searchParams.get('limit')),offset=Number(u.searchParams.get('offset'));
+  offsets.push(offset);limits.push(limit);assert.ok(limit<=10);
+  return new Response(JSON.stringify({tracks:{items:Array.from({length:limit},(_,j)=>({id:String(offset+j).padStart(22,'0'),name:'Faixa '+(offset+j),artists:[{name:'Cantora'}],album:{name:'Álbum verificado',release_date:'2025-05-04'}}))}}),{status:200});
+ }});
+ assert.deepEqual(offsets.sort((a,b)=>a-b),[0,10]);
+ assert.deepEqual(limits.sort((a,b)=>a-b),[10,10]);
+ assert.equal(found.items.length,20);
+ assert.equal(found.errors.length,0);
+ assert.equal(found.items.every(x=>x.album==='Álbum verificado'),true);
 });
