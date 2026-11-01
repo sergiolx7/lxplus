@@ -1,0 +1,64 @@
+import {db} from './data.js';
+import {esc,checked,uuid,duration} from './ui.js';
+import {WatchClock,watchTarget,watchCorrection,newerWatch} from './watch-sync.js';
+import {WatchLink} from './watch-link.js';
+export class WatchParty{
+ constructor({userId,directory=()=>[],toast,onOpen,validate,calls}){Object.assign(this,{userId,directory,toast,onOpen,validate,calls});this.clock=new WatchClock();this.room=null;this.closed=false;this.busy=false;this.failures=0;this.inboxTimer=setInterval(()=>this.poll().catch(()=>{}),2500);this.poll().catch(()=>{})}
+ async rpc(id,action,data={}){const sent=Date.now(),value=await checked(db.rpc('lx_watch_action',{p_id:id,p_action:action,p_data:data}));this.clock.observe(sent,Date.now(),value.server_now);return value}
+ async poll(){
+  if(this.closed||this.polling)return;this.polling=true;
+  try{
+   if(this.room){const value=await this.rpc(this.room.id,'snapshot');this.failures=0;this.ingest(value);if(this.room&&this.media?.readyState>=3&&this.panel?.querySelector('[data-party-unlock]')?.hidden)await this.ready(true)}
+   else{const rows=await checked(db.from('lx_watch_sessions').select('*').eq('guest_id',this.userId).eq('status','invited').gt('expires_at',new Date().toISOString()).order('created_at',{ascending:false}).limit(1));if(rows?.[0]&&!this.invite)this.showInvite(rows[0]);if(!rows?.length)this.clearInvite()}
+  }catch{if(this.room){this.media?.pause();this.message('Reconectando a sessão…');if(++this.failures>=3)this.message('A sessão não respondeu. Retome a conexão ou encerre para sair.')}}finally{this.polling=false}
+ }
+ async inviteFriend(item,index=0,position=0){
+  if(this.room)throw Error('Encerre sua sessão atual antes de enviar outro convite.');
+  await this.validate(item,index);
+  const friends=this.directory().filter(p=>p.user_id!==this.userId&&p.relation==='accepted');
+  const dialog=document.createElement('div');dialog.className='party-picker';dialog.innerHTML='<section class="panel" role="dialog" aria-modal="true" aria-label="Convidar para assistir juntos"><div class="heading"><div><span class="premium-overline">LX PARTY</span><h2>Uma história. Duas pessoas.</h2></div><button class="close" data-party-close aria-label="Fechar convite">×</button></div><p>'+esc(item.title)+'</p><p class="muted">Cada um reproduz o conteúdo com seu próprio acesso. Play, pausa e posição serão compartilhados após aceitar.</p><div class="party-friends">'+friends.map(p=>'<button class="btn" data-party-friend="'+esc(p.user_id)+'">Convidar '+esc(p.name)+'</button>').join('')+'</div>'+(!friends.length?'<p>Adicione um amigo na comunidade para convidá-lo.</p>':'')+'<p data-party-error role="alert"></p></section>';
+  document.body.appendChild(dialog);this.picker=dialog;dialog.querySelector('button')?.focus();
+  dialog.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;if(b.hasAttribute('data-party-close')){dialog.remove();return}if(!b.dataset.partyFriend||this.busy)return;this.busy=true;b.disabled=true;try{const sent=Date.now(),room=await checked(db.rpc('lx_watch_create',{p_other:b.dataset.partyFriend,p_content:Number(item.id),p_episode:Number(index)||0,p_position:Math.max(0,Number(position)||0)}));this.clock.observe(sent,Date.now(),room.server_now);if(this.closed)return;dialog.remove();await this.enter(room)}catch(error){dialog.querySelector('[data-party-error]').textContent=String(error.message||'').includes('lx_watch')?'A atualização das sessões ainda precisa ser publicada no servidor.':error.message||'Não foi possível convidar seu amigo.'}finally{this.busy=false;if(b.isConnected)b.disabled=false}});
+ }
+ showInvite(room){
+  this.invite=room;const person=this.directory().find(p=>p.user_id===room.host_id);
+  const node=document.createElement('section');node.className='party-invitation';node.setAttribute('aria-label','Convite para assistir juntos');node.innerHTML='<div><span class="premium-overline">LX PARTY</span><strong>'+esc(person?.name||'Seu amigo')+' convidou você para assistir juntos.</strong><small>Ao aceitar, os controles de reprodução serão compartilhados.</small></div><button class="btn primary" data-party-accept>Aceitar</button><button class="btn" data-party-decline>Recusar</button>';document.body.appendChild(node);this.inviteSurface=node;
+  node.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;b.disabled=true;try{const value=await this.rpc(room.id,b.hasAttribute('data-party-accept')?'accept':'decline');this.clearInvite();if(value.status==='active')await this.enter(value)}catch(error){this.toast(error.message||'Convite indisponível.');b.disabled=false}});
+ }
+ clearInvite(){this.invite=null;this.inviteSurface?.remove();this.inviteSurface=null}
+ async enter(room){
+  this.clearInvite();this.room=room;this.ensurePanel();this.channel=db.channel('lx-watch-room-'+room.id+'-'+uuid()).on('postgres_changes',{event:'UPDATE',schema:'public',table:'lx_watch_sessions',filter:'id=eq.'+room.id},e=>this.ingest(e.new)).subscribe();this.render();if(room.status==='active')this.startLink();
+  try{await this.onOpen(room)}catch(error){this.message(error.message||'Não foi possível abrir o conteúdo.');await this.ready(false)}
+ }
+ startLink(){if(this.link||!this.room)return;this.link=new WatchLink(this.room,this.userId,value=>this.ingest(value));this.link.start().catch(()=>{})}
+ ingest(value){
+  if(!this.room||!newerWatch(this.room,value))return;
+  const previous=this.room;this.room=value;if(this.link)this.link.room=value;
+  if(['ended','declined'].includes(value.status)){this.toast(value.status==='declined'?'Seu amigo recusou o convite.':'A sessão de assistir juntos foi encerrada.');this.cleanup();return}
+  if(value.status==='active')this.startLink();
+  if(previous.episode_index!==value.episode_index){this.detach?.();this.onOpen(value).catch(error=>this.message(error.message))}
+  this.render();this.correct?.();
+ }
+ ensurePanel(){if(this.panel)return;const node=document.createElement('section');node.className='party-panel';node.setAttribute('aria-label','Sessão assistir juntos');node.innerHTML='<div class="party-panel-head"><span class="premium-overline">LX PARTY · ASSISTIR JUNTOS</span><button class="link" data-party-mini>Minimizar</button></div><strong data-party-title></strong><p data-party-status role="status"></p><div class="party-transport"><button class="btn primary" data-party-toggle>Reproduzir juntos</button><input type="range" min="0" max="1000" value="0" data-party-seek aria-label="Posição compartilhada"><select data-party-rate aria-label="Velocidade compartilhada"><option value="1">1×</option><option value="1.25">1,25×</option><option value="1.5">1,5×</option><option value="2">2×</option></select></div><div class="actions"><button class="btn small" data-party-unlock hidden>Ativar reprodução</button><button class="btn small" data-party-open>Retomar vídeo</button><button class="btn small" data-party-call>Chamada de voz</button><button class="btn small" data-party-leave>Encerrar sessão</button></div><small data-party-drift></small>';document.body.appendChild(node);this.panel=node;
+  node.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;try{if(b.hasAttribute('data-party-mini')){node.classList.toggle('minimized');b.textContent=node.classList.contains('minimized')?'Ampliar':'Minimizar'}if(b.hasAttribute('data-party-toggle'))await this.control({paused:!this.room.paused});if(b.hasAttribute('data-party-leave'))await this.leave();if(b.hasAttribute('data-party-open'))await this.onOpen(this.room);if(b.hasAttribute('data-party-call')){const other=this.room.host_id===this.userId?this.room.guest_id:this.room.host_id,person=this.directory().find(p=>p.user_id===other);if(person)await this.calls()?.start(person,'audio');else throw Error('Abra a comunidade para atualizar seus amigos.')}if(b.hasAttribute('data-party-unlock')){await this.media?.play();b.hidden=true;await this.ready(true)}}catch(error){this.toast(error.message||'Não foi possível atualizar a sessão.')}});
+  node.addEventListener('change',e=>{if(e.target.hasAttribute('data-party-seek')){if(Number.isFinite(this.media?.duration))this.control({position:Number(e.target.value)/1000*this.media.duration}).catch(error=>this.toast(error.message))}if(e.target.hasAttribute('data-party-rate'))this.control({rate:Number(e.target.value)}).catch(error=>this.toast(error.message))});
+ }
+ message(text){const node=this.panel?.querySelector('[data-party-status]');if(node)node.textContent=text}
+ render(){const p=this.panel,c=this.room;if(!p||!c)return;p.querySelector('[data-party-title]').textContent='Você + '+(this.directory().find(x=>x.user_id===(c.host_id===this.userId?c.guest_id:c.host_id))?.name||'seu amigo');p.querySelector('[data-party-toggle]').textContent=c.paused?'Reproduzir juntos':'Pausar juntos';p.querySelector('[data-party-toggle]').disabled=c.status!=='active';p.querySelector('[data-party-rate]').value=String(c.rate);this.message(c.status==='invited'?'Convite enviado. Aguardando seu amigo aceitar.':!c.host_ready||!c.guest_ready?'Aguardando os dois vídeos ficarem prontos…':c.paused?'Sessão pausada para os dois.':'Reprodução sincronizada.');}
+ async control(patch){if(!this.room)return;const t=watchTarget(this.room,this.clock.now()),value=await this.rpc(this.room.id,'control',{position:patch.position??t.position,paused:patch.paused??this.room.paused,rate:patch.rate??this.room.rate});this.ingest(value);this.link?.send(value)}
+ async ready(value){if(!this.room||this.closed)return;const field=this.room.host_id===this.userId?'host_ready':'guest_ready';if(this.room[field]===value)return;const room=await this.rpc(this.room.id,'ready',{ready:value});this.ingest(room);this.link?.send(room)}
+ async changeEpisode(index){if(!this.room)return;this.ingest(await this.rpc(this.room.id,'episode',{episode:index}))}
+ attach(media){
+  this.detach?.();const id=this.room?.id;if(!id)return()=>{};
+  this.media=media;const abort=new AbortController(),nativeControls=media.controls;media.controls=false;let waitingTimer=null,playPending=false,ending=false,closed=false;
+  const listen=(name,fn)=>media.addEventListener(name,fn,{signal:abort.signal});
+  const report=value=>this.ready(value).catch(()=>{media.pause();this.message('Aguardando reconexão para sincronizar os dois vídeos.');});
+  listen('canplay',()=>{clearTimeout(waitingTimer);report(true)});listen('waiting',()=>{clearTimeout(waitingTimer);waitingTimer=setTimeout(()=>report(false),300)});listen('stalled',()=>{waitingTimer=setTimeout(()=>report(false),500)});listen('error',()=>report(false));
+  const correct=()=>{if(closed||this.room?.id!==id||media.readyState<1)return;const state=watchCorrection(media,this.room,this.clock.now());if(!this.room.paused&&Number.isFinite(media.duration)&&state.position>=media.duration){media.pause();if(!ending){ending=true;this.control({position:media.duration,paused:true}).catch(()=>this.message('Reconectando ao finalizar o vídeo…')).finally(()=>ending=false)}return}if(state.seek&&!media.seeking)media.currentTime=Math.min(state.position,Number.isFinite(media.duration)?Math.max(0,media.duration-.05):state.position);if(Math.abs(media.playbackRate-state.playbackRate)>.001)media.playbackRate=state.playbackRate;if(state.paused)media.pause();else if(media.paused&&!playPending){playPending=true;media.play().catch(()=>{if(closed)return;this.panel.querySelector('[data-party-unlock]').hidden=false;report(false)}).finally(()=>playPending=false)}const slider=this.panel?.querySelector('[data-party-seek]');if(slider){slider.disabled=!Number.isFinite(media.duration);if(!slider.matches(':focus'))slider.value=Number.isFinite(media.duration)?Math.round(media.currentTime/media.duration*1000):0}const note=this.panel?.querySelector('[data-party-drift]');if(note)note.textContent=duration(media.currentTime)+' · diferença estimada '+Math.round(Math.abs(state.drift)*1000)+' ms';};
+  this.correct=correct;const timer=setInterval(correct,250);if(media.readyState>=3)report(true);correct();
+  const stop=()=>{if(closed)return;closed=true;abort.abort();clearInterval(timer);clearTimeout(waitingTimer);media.controls=nativeControls;if(this.media===media){this.media=null;this.correct=null}if(this.room?.id===id)this.ready(false).catch(()=>{});if(this.detach===stop)this.detach=null};this.detach=stop;return stop;
+ }
+ async leave(){const id=this.room?.id;if(id){const value=await this.rpc(id,'end');this.link?.send(value)}this.cleanup()}
+ cleanup(){this.media?.pause();this.room=null;this.detach?.();this.link?.destroy();this.link=null;if(this.channel)db.removeChannel(this.channel);this.channel=null;this.panel?.remove();this.panel=null}
+ destroy(){this.closed=true;clearInterval(this.inboxTimer);const id=this.room?.id;this.cleanup();this.clearInvite();this.picker?.remove();if(id)db.rpc('lx_watch_action',{p_id:id,p_action:'end',p_data:{}}).catch(()=>{})}
+}
