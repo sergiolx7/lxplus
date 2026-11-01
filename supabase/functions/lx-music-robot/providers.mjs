@@ -20,7 +20,7 @@ export function spotifyCandidates(data=[]){
 export const searchTerms=(queries,index)=>String(queries?.[index%Math.max(1,queries?.length||1)]||'música oficial').slice(0,70);
 async function getJSON(fetcher,url,options={},timeoutMs=8000){
  const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),timeoutMs);
- try{const response=await fetcher(url,{...options,signal:ctrl.signal});if(response.status===429)throw Error('PROVIDER_RATE_LIMIT');if(!response.ok)throw Error('PROVIDER_'+response.status);return await response.json()}finally{clearTimeout(timer)}
+ try{const response=await fetcher(url,{...options,signal:ctrl.signal});if(response.status===429)throw Error('PROVIDER_429');if(!response.ok)throw Error('PROVIDER_'+response.status);return await response.json()}finally{clearTimeout(timer)}
 }
 export async function providerDiscovery({query,limit=40,youtubeKey='',spotifyId='',spotifySecret='',fetcher=fetch}){
  const errors=[],found=[];let providers=0;
