@@ -1,5 +1,4 @@
 import {renderRanking} from '../ranking-ui.js';
-import {socialDirectory} from '../services.js';
 import {db,itemFrom,getRanking} from '../data.js';
 import {esc,empty,checked,https} from '../ui.js';
 import {displaySizeControls} from '../display-preferences.js';
@@ -11,11 +10,12 @@ export async function mount(host,ctx){
  host.addEventListener('click',e=>{const b=e.target.closest('[data-library-item]');if(b)ctx.openItem(items.find(i=>String(i.id)===b.dataset.libraryItem))});return{destroy(){alive=false}};
 }
 export async function mountRanking(host,ctx){
- let alive=true;const ranking=await getRanking(),names=ctx.directory().length?ctx.directory():await socialDirectory().catch(()=>[]),season=ranking.season,rows=ranking.rows||[],mine=rows.find(r=>r.user_id===ctx.user.id);
- const person=id=>id===ctx.user.id?ctx.profile():names.find(p=>p.user_id===id),prize=season?.prize_cents?new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(season.prize_cents/100):'A definir';
+ let alive=true;const ranking=await getRanking(),season=ranking.season,rows=ranking.rows||[],mine=rows.find(r=>r.user_id===ctx.user.id);
  let own=mine,position=mine?rows.indexOf(mine)+1:null;
  if(!own&&season){own=await checked(db.from('lx_rank_scores').select('user_id,monthly_score').eq('season_key',season.season_key).eq('user_id',ctx.user.id).maybeSingle());if(own){const r=await db.from('lx_rank_scores').select('user_id',{head:true,count:'exact'}).eq('season_key',season.season_key).gt('monthly_score',own.monthly_score);position=(r.count||0)+1}}
  const past=await checked(db.from('lx_rank_seasons').select('season_key,prize_cents,status,winner_user_id,winner_score,winner_confirmed').eq('status','closed').order('starts_at',{ascending:false}).limit(12)).catch(()=>[]);
+ const ids=[...new Set([...rows.map(r=>r.user_id),...past.map(s=>s.winner_user_id).filter(Boolean)])];
+ const names=ids.length?await checked(db.from('lx_profiles').select('user_id,name,username,avatar_url,verified,ranking_visible').in('user_id',ids).eq('ranking_visible',true)).catch(()=>[]):[];
  if(alive)host.innerHTML=renderRanking({season,rows,people:[...names.filter(p=>p.user_id!==ctx.user.id),ctx.profile()],userId:ctx.user.id,own,position,past});
  return{destroy(){alive=false}};
 }
