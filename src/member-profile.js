@@ -1,0 +1,34 @@
+import {esc,avatar,verifiedBadge} from './ui.js';
+import {profileCover,profileLedAttributes,profileName,premiumBadge} from './profile-premium.js';
+import {renderExpressions} from './premium-expressions.js';
+
+// Public, viewer-authorized profile fields only. Never invent interests, badges,
+// activity, or expose the raw internal user UUID as a public "profile code".
+export function memberProfileCard(profile,{viewerId='',presence='',assets=[]}={}){
+ const p=profile&&typeof profile==='object'?profile:{},id=esc(p.user_id||''),self=p.user_id===viewerId;
+ const username=String(p.username||'').trim(),label=username?'@'+username:'Identificador não definido';
+ const bio=String(p.bio||'').trim(),status=String(p.status_text||'').trim();
+ const owned=Array.isArray(assets)?assets.filter(asset=>asset?.user_id===p.user_id):[];
+ const verified=p.verified===true;
+ let actions='';
+ if(!self){
+  if(p.relation==='accepted')actions='<button class="btn primary" data-chat-peer="'+id+'">Enviar mensagem</button>'+(p.calls_enabled===true?'<button class="btn" data-voice-peer="'+id+'">Chamada de voz</button>':'');
+  else if(p.relation==='pending'&&p.direction==='incoming')actions='<button class="btn primary" data-friend-accept="'+id+'">Aceitar amizade</button><button class="btn" data-friend-reject="'+id+'">Recusar</button>';
+  else if(p.relation==='pending')actions='<span class="lx-member-pending">Solicitação de amizade enviada</span>';
+  else actions='<button class="btn primary" data-friend-request="'+id+'">Adicionar amigo</button>';
+ }
+ return '<article class="profile-summary lx-member-profile-card" '+profileLedAttributes(p)+'>'
+   +profileCover(p)
+  +'<div class="lx-member-profile-body">'
+  +'<div class="lx-member-avatar-row">'+avatar(p,'profile-avatar lx-member-avatar')+'</div>'
+  +'<div class="lx-member-identity"><h2>'+profileName(p)+verifiedBadge(p)+'</h2>'
+  +'<p class="lx-member-handle">'+esc(label)+'</p></div>'
+  +'<div class="lx-member-tags">'+premiumBadge(p)+(verified?'<span class="lx-member-verified">✓ Perfil verificado</span>':'')+(p.relation==='accepted'?'<span class="lx-member-friend-label">Amigo LX</span>':'')+'</div>'
+  +'<div class="lx-member-presence">'+presence+'</div>'
+  +(status?'<div class="lx-member-about"><span>STATUS</span><p>'+esc(status)+'</p></div>':'')
+  +'<div class="lx-member-about"><span>SOBRE MIM</span><p>'+ (bio?renderExpressions(bio,owned):'A pessoa ainda não escreveu uma biografia.') +'</p></div>'
+  +(username?'<div class="lx-member-public-id"><span>IDENTIFICADOR PÚBLICO</span><div><code>'+esc('@'+username)+'</code><button class="link" data-copy-member="'+esc('@'+username)+'">Copiar @</button></div></div>':'')
+  +(actions?'<div class="lx-member-actions">'+actions+'</div>':'')
+  +(self?'<p class="lx-member-self-note">Este é seu perfil público na comunidade.</p>':'<div class="lx-member-report"><button class="link" data-report-profile="'+id+'">Denunciar perfil</button></div>')
+  +'</div></article>';
+}
