@@ -11,6 +11,10 @@ config = Path('src/config.js').read_text()
 base = re.search(r"url:'([^']+)'", config).group(1)
 key = re.search(r"key:'(sb_publishable_[^']+)'", config).group(1)
 cases = [
+    ('AI requires login', 'POST', '/functions/v1/lx-ai', {'message': 'validation'}, (401,), False, {}),
+    ('AI invalid token denied', 'POST', '/functions/v1/lx-ai', {'message': 'validation'}, (401,), False, {'Authorization': 'Bearer invalid-validation-token'}),
+    ('AI GET protected', 'GET', '/functions/v1/lx-ai', None, (401, 405), False, {}),
+    ('AI budget server-only', 'POST', '/rest/v1/rpc/lx_ai_reserve', {'p_user': '00000000-0000-4000-8000-000000000000'}, (401, 403), False, {}),
     ('auth settings', 'GET', '/auth/v1/settings', None, (200,), False, {}),
     ('private messages hidden', 'GET', '/rest/v1/lx_messages?select=id&limit=1', None, (200, 401, 403), True, {}),
     ('private profiles hidden', 'GET', '/rest/v1/lx_profiles?select=user_id&limit=1', None, (200, 401, 403), True, {}),

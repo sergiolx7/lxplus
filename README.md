@@ -2,11 +2,18 @@
 
 Plataforma da LX Group com frontend modular estático e Supabase para autenticação, dados, arquivos, presença e comunicação. A atualização de 30/10/2026 substitui a interface anterior e preserva as contas existentes.
 
+## Premium 2.0 · revisão e publicação de 31/10/2026
+
+A revisão do PR 29 recupera controles de reprodução, preferências por conta, leitura PDF/EPUB, busca por metadados, Mix/Flow, retrospectiva e LX IA. A correção de papéis administrativos já foi aplicada; a quota e o handler seguro da LX IA também foram implantados. A revisão adicional corrige respostas musicais fora de ordem, estado de preferências e módulos que terminam após tempo limite.
+
+Consulte [o registro de publicação](docs/PUBLICACAO-PREMIUM2-20261031.md) para validação, mudanças no servidor e limitações. O escopo completo ainda inclui pendências como LX Party, Rooms, TURN, push e homologação em aparelhos reais; a existência do PR não significava que esses itens estavam prontos.
+
 ## Executar e publicar
 
-Requer Node.js 22 ou superior. Não há instalação de dependências de desenvolvimento.
+Requer Node.js 22 ou superior. Instale as dependências de teste fixadas no lockfile com `npm ci --ignore-scripts`. Elas não são incluídas no site.
 
 ```sh
+npm ci --ignore-scripts
 npm test
 npm run build
 npm run dev -- --port 3000
@@ -33,7 +40,7 @@ O caminho local `/qa/` usa exclusivamente dados fictícios e não se conecta ao 
 
 O projeto utiliza a chave pública publishable do Supabase. Permissões administrativas são verificadas no banco. As chaves do Google Drive e TMDB devem ser configuradas no ADM Studio; ficam no servidor. A importação real está pendente dessa configuração e de teste com uma pasta autorizada. Pastas privadas com OAuth ainda não estão implementadas.
 
-Os 223 filmes e 1.846 registros musicais anteriores foram arquivados e retirados do catálogo público de forma reversível. Séries, livros, outros conteúdos, contas, senhas e dados pessoais foram preservados. O backup privado está separado do código e não deve ser enviado ao GitHub.
+Os 223 filmes e 1.788 registros musicais continuam arquivados. Os 58 arquivos musicais próprios, verificados e restaurados em 30/10, continuam publicados. Séries, livros, outros conteúdos, contas, senhas e dados pessoais foram preservados. O backup privado está separado do código e não deve ser enviado ao GitHub.
 
 ## Estado da entrega
 

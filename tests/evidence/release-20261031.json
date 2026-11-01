@@ -1,0 +1,19 @@
+{
+  "client_date": "2026-10-31",
+  "pr": 29,
+  "base": "9b92cf9cc255ba60a7ce2ab9147ffe528c798e69",
+  "code_tests": 83,
+  "browser_scenarios": 5,
+  "public_api_checks": 14,
+  "all_passed": true,
+  "physical_devices_tested": false,
+  "real_login_this_round": false,
+  "paid_ai_requests": 0,
+  "server": {
+    "admin_guard": "20261031214002",
+    "ai_budget": "20261101020959",
+    "ai_version": 5,
+    "quota_verified_in_production_with_rollback": true
+  },
+  "release_scope_complete": false
+}

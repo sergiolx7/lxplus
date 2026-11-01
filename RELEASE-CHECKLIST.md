@@ -26,3 +26,15 @@ Estado da atualização de 30/10/2026. Veja também a [validação adicional](do
 - [ ] Métricas de infraestrutura, alertas externos e benchmark de carga.
 
 Esta checklist registra uma atualização publicada com pendências identificadas; não declara homologação integral.
+
+## Candidato de 31/10/2026
+
+- [x] Branch de recuperação criada antes das edições.
+- [x] 77 testes de código/PostgreSQL e 5 cenários de navegador local aprovados.
+- [x] 10 verificações HTTP do serviço real aprovadas; contas e contagens preservadas.
+- [x] Matriz de preservação, auditoria e procedimento de recuperação documentados.
+- [ ] Autorizar e aplicar correção crítica de papéis administrativos.
+- [ ] Autorizar quota e deploy da LX IA; homologar modo online e sessão real.
+- [ ] E2E entre aparelhos, TURN, e-mail, Drive/TMDB e fontes do catálogo.
+- [ ] Concluir funcionalidades pendentes da matriz Premium 2.0.
+- [ ] Autorizar integração/publicação do frontend.

@@ -22,7 +22,7 @@ export async function mount(host,ctx){
    }else{
     const fields=['social_visible','ranking_visible','calls_enabled','activity_visible','favorites_visible'],update=Object.fromEntries(fields.map(k=>[k,data.get(k)==='on']));
     await checked(db.from('lx_profiles').update(update).eq('user_id',me));
-    const state=await saveUserField(me,'preferences',{...(ctx.state().preferences||{}),presenceStatus:data.get('presenceStatus'),presencePrivacy:data.get('presencePrivacy')});ctx.setState(state);ctx.setProfile({...profile(),...update});await ctx.heartbeat?.();draw();ctx.toast('Preferências de privacidade salvas.');
+    const state=await saveUserField(me,'preferences',{...(ctx.state().preferences||{}),presenceStatus:data.get('presenceStatus'),presencePrivacy:data.get('presencePrivacy')});ctx.setState(state,['preferences']);ctx.setProfile({...profile(),...update});await ctx.heartbeat?.();draw();ctx.toast('Preferências de privacidade salvas.');
    }
   }catch(error){ctx.toast(error.message||'Não foi possível atualizar seu perfil.')}finally{if(b.isConnected)b.disabled=false}
  });

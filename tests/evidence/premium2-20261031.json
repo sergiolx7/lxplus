@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-31",
+  "base": "9b92cf9cc255ba60a7ce2ab9147ffe528c798e69",
+  "branch": "rebuild/lxplus-premium2-20261031",
+  "local_code_tests": {
+    "passed": 77,
+    "failed": 0
+  },
+  "local_browser_tests": {
+    "passed": 5,
+    "failed": 0,
+    "browser": "Chromium 153",
+    "viewports": [
+      "1440x1000",
+      "390x844"
+    ],
+    "physical_devices": false,
+    "production_login": false
+  },
+  "public_http_checks": {
+    "passed": 10,
+    "failed": 0
+  },
+  "production_writes": false,
+  "production_inventory": {
+    "users": 8,
+    "messages": 51,
+    "friendships": 5,
+    "playlists": 0,
+    "catalog": 2374,
+    "published": 280,
+    "admin_roles": 2
+  },
+  "security_fixes_applied_to_production": false,
+  "paid_ai_requests": 0
+}

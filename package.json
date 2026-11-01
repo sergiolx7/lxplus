@@ -6,6 +6,11 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "build": "node scripts/build.mjs",
-    "test": "node scripts/check.mjs && node --test tests/*.test.mjs"
+    "test": "node scripts/check.mjs && node --test tests/*.test.mjs",
+    "test:browser": "node --test tests/premium2.browser.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.14",
+    "playwright": "1.62.1"
   }
 }
