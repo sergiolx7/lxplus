@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {displayCaptureOptions,isolateDisplayAudio} from '../src/call-media.js';
+import {displayCaptureOptions,isolateDisplayAudio,captureAudioMessage} from '../src/call-media.js';
 
 test('screen sharing never requests system audio and keeps the microphone separate',()=>{
  for(const enabled of [false,true]){
   const value=displayCaptureOptions(enabled);
-  assert.equal(value.audio,enabled);assert.equal(value.systemAudio,'exclude');
+  assert.equal(enabled?typeof value.audio==='object':value.audio===false,true);assert.equal(value.systemAudio,'exclude');
+  if(enabled){assert.equal(value.audio.echoCancellation,false);assert.equal(value.audio.noiseSuppression,false);assert.equal(value.audio.autoGainControl,false);assert.equal(value.audio.suppressLocalAudioPlayback,false)}
   assert.equal(value.windowAudio,enabled?'window':'exclude');assert.equal(value.monitorTypeSurfaces,'exclude');
   assert.equal(value.surfaceSwitching,'exclude');assert.equal(value.video.frameRate.max,30);
  }
@@ -18,5 +19,15 @@ test('only the selected tab audio is forwarded; unverified window and screen aud
   assert.equal(result.track,allowed?audio[0]:null);assert.equal(audio[0].stopped,!allowed);
   assert.equal(audio[1].stopped,true);assert.equal(removed.length,allowed?1:2);
   assert.equal(result.unavailable,enabled&&!allowed);
+  if(enabled&&surface!=='browser')assert.match(captureAudioMessage(result,enabled),/aba|guia/i);
  }
+});
+
+test('tab capture status clearly distinguishes missing native audio permission from a working track',()=>{
+ const withTrack=captureAudioMessage({surface:'browser',track:{kind:'audio'},unavailable:false},true);
+ const missing=captureAudioMessage({surface:'browser',track:null,unavailable:true},true);
+ assert.match(withTrack,/Som da aba selecionada habilitado/);
+ assert.match(missing,/não disponibilizou/);
+ assert.match(captureAudioMessage({surface:'window',track:null,unavailable:true},true),/Esta janela não enviou áudio/);
+ assert.match(captureAudioMessage({surface:'monitor',track:null,unavailable:true},true),/tela inteira não envia áudio isolado/);
 });
