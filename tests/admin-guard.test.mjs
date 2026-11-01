@@ -5,7 +5,7 @@ import {PGlite} from '@electric-sql/pglite';
 const db=new PGlite();
 const id=n=>'10000000-0000-4000-8000-'+String(n).padStart(12,'0');
 const call=(target=5,isAdmin=true,role='owner')=>db.query('select public.lx_admin_set_admin_role($1,$2,$3) as ok',[id(target),isAdmin,role]);
-before(async()=>{await db.exec(await readFile(new URL('./fixtures/admin-schema.sql',import.meta.url),'utf8'));const migration=await readFile(new URL('../supabase/migrations/20261031210235_lx_premium2_admin_guard.sql',import.meta.url),'utf8');await db.exec(migration);await db.exec(migration)});
+before(async()=>{await db.exec(await readFile(new URL('./fixtures/admin-schema.sql',import.meta.url),'utf8'));const migration=await readFile(new URL('../supabase/migrations/20261031214002_lx_premium2_admin_guard.sql',import.meta.url),'utf8');await db.exec(migration);await db.exec(migration)});
 after(()=>db.close());
 async function actor(n,fn,role='authenticated'){
  await db.exec('begin');

@@ -1,5 +1,6 @@
 # LX Plus Premium 2.0 — entrega candidata de 31/10/2026
 
+> Registro histórico da versão candidata. O estado posterior de revisão, servidor e publicação está em [PUBLICACAO-PREMIUM2-20261031.md](docs/PUBLICACAO-PREMIUM2-20261031.md).
 Esta versão amplia o projeto existente e preserva a produção. Ainda não representa a conclusão de todo o escopo Premium 2.0.
 
 - [Diagnóstico, alterações, testes, integrações e recuperação](docs/PREMIUM2-20261031.md)

@@ -6,7 +6,7 @@ export function preferenceSync({save,onSaved=()=>{},onError=()=>{}}){
   while(pending.size){
    const [key,job]=pending.entries().next().value;pending.delete(key);
    try{const result=await save(job.owner,job.key,job.value);if(job.epoch===epoch&&!pending.has(job.key))onSaved(job.key,job.value,result)}
-   catch(error){if(job.epoch===epoch)onError(error)}
+   catch(error){if(job.epoch===epoch)onError(error,job.key)}
   }
  }
  return {
@@ -14,9 +14,10 @@ export function preferenceSync({save,onSaved=()=>{},onError=()=>{}}){
   write(key,value){
    if(!owner)return Promise.resolve();
    pending.set(key,{owner,epoch,key,value:structuredClone(value)});
-   if(!running)running=drain().finally(()=>{running=null});
+   if(!running)running=drain().finally(()=>{running=null;if(pending.size)start()});
    return running;
   },
-  flush(){return running||Promise.resolve()}
+  async flush(){while(running||pending.size)await (running||start())}
  };
+ function start(){if(!running)running=drain().finally(()=>{running=null;if(pending.size)start()});return running}
 }

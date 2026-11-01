@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {PGlite} from '@electric-sql/pglite';
 const db=new PGlite(),id='20000000-0000-4000-8000-000000000001';
-before(async()=>{await db.exec("create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key);insert into auth.users values('"+id+"');");const sql=await readFile(new URL('../supabase/migrations/20261031211552_lx_premium2_ai_budget.sql',import.meta.url),'utf8');await db.exec(sql);await db.exec(sql)});
+before(async()=>{await db.exec("create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key);insert into auth.users values('"+id+"');");const sql=await readFile(new URL('../supabase/migrations/20261101020959_lx_premium2_ai_budget.sql',import.meta.url),'utf8');await db.exec(sql);await db.exec(sql)});
 after(()=>db.close());
 async function asService(fn){await db.exec('begin;set local role service_role');try{await fn()}finally{await db.exec('rollback')}}
 const reserve=async()=>(await db.query('select public.lx_ai_reserve($1) as ok',[id])).rows[0].ok;

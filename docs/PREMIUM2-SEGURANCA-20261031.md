@@ -1,5 +1,6 @@
 # LX Plus Premium 2.0 — revisão de segurança · 31/10/2026
 
+> Registro histórico da versão candidata. O estado posterior de revisão, servidor e publicação está em [PUBLICACAO-PREMIUM2-20261031.md](PUBLICACAO-PREMIUM2-20261031.md).
 **As correções deste documento estão em código de desenvolvimento. O banco e as Edge Functions de produção permanecem sem essas alterações.**
 
 ## Falhas confirmadas e correções preparadas

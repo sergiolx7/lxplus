@@ -34,7 +34,7 @@ export async function mount(host,ctx){
  }
  async function syncLists(){playlists=await readPlaylists(ctx.user.id)}
  function dialog(title,content){host.querySelector('#musicDialog').innerHTML='<div class="inline-dialog" role="dialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="panel"><div class="heading"><h2>'+esc(title)+'</h2><button class="close" data-music-dialog-close aria-label="Fechar">×</button></div>'+content+'</div></div>';host.querySelector('#musicDialog input,#musicDialog select')?.focus()}
- async function play(item,queue=items,flow=false){if(!item)return;try{const source=await sourceFor(item);await ctx.music.open(item,source,queue,{flow})}catch(e){ctx.toast(e.message||'A fonte desta faixa não está disponível.')}}
+ async function play(item,queue=items,flow=false){if(!item)return;try{await ctx.music.play(item,queue,{flow})}catch(e){ctx.toast(e.message||'A fonte desta faixa não está disponível.')}}
  const search=debounce(value=>{term=value;selected=null;load()},300);
  host.addEventListener('change',e=>{if(e.target.id==='recapMonth'&&/^\d{4}-\d{2}$/.test(e.target.value)){month=e.target.value;recap=null;load()}});
  host.addEventListener('input',e=>{if(e.target.id==='musicSearch')search(e.target.value)});
@@ -48,8 +48,8 @@ export async function mount(host,ctx){
    if(b.dataset.track){await play(items.find(x=>String(x.id)===b.dataset.track));return}
    if(b.hasAttribute('data-music-play-all')){const queue=tab==='Mix'?musicMix(items,{likes:[...liked],history:ctx.state().musicHistory||{}}):items;await play(queue[0],queue);return}
    if(b.dataset.musicGroup){const group=items.filter(x=>x[b.dataset.groupKey]===b.dataset.musicGroup);await play(group[0],group);return}
-   if(b.dataset.playlist){selected=playlists.find(p=>p.id===b.dataset.playlist);items=await playlistItems(selected.id);total=items.length;draw();return}
-   if(b.dataset.musicLike){const before=new Set(liked),key=b.dataset.musicLike;liked.has(key)?liked.delete(key):liked.add(key);draw();try{const state=await saveUserField(ctx.user.id,'musicLikes',[...liked]);ctx.setState(state)}catch(e){liked=before;draw();throw e}return}
+   if(b.dataset.playlist){const token=++generation,list=playlists.find(p=>p.id===b.dataset.playlist);if(!list)return;const rows=await playlistItems(list.id);if(!alive||token!==generation)return;selected=list;loading=false;items=rows;total=items.length;draw();return}
+   if(b.dataset.musicLike){const before=new Set(liked),key=b.dataset.musicLike;liked.has(key)?liked.delete(key):liked.add(key);draw();try{const state=await saveUserField(ctx.user.id,'musicLikes',[...liked]);ctx.setState(state,['musicLikes'])}catch(e){liked=before;draw();throw e}return}
    if(b.dataset.enqueue){const item=items.find(x=>String(x.id)===b.dataset.enqueue);if(!ctx.music.current){await play(item,[item])}else{ctx.music.queue.add(item);ctx.music.renderQueue();ctx.toast('Música adicionada à fila.')}return}
    if(b.hasAttribute('data-new-playlist')){dialog('Criar playlist','<form id="newPlaylist" class="form"><label class="field">Nome<input name="name" maxlength="100" required></label><label class="field">Descrição<textarea name="description" maxlength="500"></textarea></label><label class="field">Visibilidade<select name="visibility"><option value="private">Só eu</option><option value="public">Membros da LX Plus</option></select></label><button class="btn music-primary">Criar playlist</button></form>');return}
    if(b.dataset.addPlaylist){if(!playlists.length){ctx.toast('Crie uma playlist primeiro.');return}dialog('Adicionar à playlist','<form id="addPlaylist" class="form"><input type="hidden" name="track" value="'+esc(b.dataset.addPlaylist)+'"><label class="field">Playlist<select name="playlist">'+playlists.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name)+'</option>').join('')+'</select></label><button class="btn music-primary">Adicionar música</button></form>');return}

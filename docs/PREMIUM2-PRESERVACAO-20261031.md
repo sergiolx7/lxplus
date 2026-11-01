@@ -1,5 +1,6 @@
 # LX Plus — matriz de preservação · 31/10/2026
 
+> Registro histórico da versão candidata. O estado posterior de revisão, servidor e publicação está em [PUBLICACAO-PREMIUM2-20261031.md](PUBLICACAO-PREMIUM2-20261031.md).
 Comparação entre `lxplus-v40-completa` (`e6109c6`) e a `main` (`9b92cf9`), seguida do candidato `rebuild/lxplus-premium2-20261031`. A versão de referência utiliza bundles e extensões globais; a atual utiliza módulos. A diferença compreende 537 arquivos, incluindo arquivos duplicados e saídas antigas. Copiar todos esses scripts para a nova interface não comprovaria recuperação funcional.
 
 As cinco classes solicitadas são **preservada**, **parcial**, **regressão**, **reconstruir** e **nova**. O estado abaixo se refere ao código e à evidência indicada. A aprovação em QA local não certifica um recurso no serviço publicado. Os relatórios de 30/10 são evidência histórica e estão identificados dessa forma.

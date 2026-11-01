@@ -2,9 +2,11 @@
 
 Plataforma da LX Group com frontend modular estático e Supabase para autenticação, dados, arquivos, presença e comunicação. A atualização de 30/10/2026 substitui a interface anterior e preserva as contas existentes.
 
-## Candidato Premium 2.0 · 31/10/2026
+## Premium 2.0 · revisão e publicação de 31/10/2026
 
-Veja [a entrega candidata](ENTREGA_PREMIUM2.md): recuperação de controles de reprodução e aparência, leitura PDF/EPUB, busca por metadados, Mix/Flow, retrospectiva e LX IA com propostas de segurança. Validado localmente com 77 testes, 5 cenários de navegador e 10 verificações HTTP. Ainda não foi integrado/publicado e não conclui todo o escopo Premium 2.0.
+A revisão do PR 29 recupera controles de reprodução, preferências por conta, leitura PDF/EPUB, busca por metadados, Mix/Flow, retrospectiva e LX IA. A correção de papéis administrativos já foi aplicada; a quota e o handler seguro da LX IA também foram implantados. A revisão adicional corrige respostas musicais fora de ordem, estado de preferências e módulos que terminam após tempo limite.
+
+Consulte [o registro de publicação](docs/PUBLICACAO-PREMIUM2-20261031.md) para validação, mudanças no servidor e limitações. O escopo completo ainda inclui pendências como LX Party, Rooms, TURN, push e homologação em aparelhos reais; a existência do PR não significava que esses itens estavam prontos.
 
 ## Executar e publicar
 
