@@ -4,11 +4,14 @@ const base=Deno.env.get('SUPABASE_URL')||'';
 const service=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
 const anon=Deno.env.get('SUPABASE_ANON_KEY')||'';
 const db=createClient(base,service,{auth:{persistSession:false,autoRefreshToken:false}});
-const json=(v,status=200)=>new Response(JSON.stringify(v),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});
+// Calls arrive from the LX Plus browser and from the trusted Supabase cron.
+// CORS preflight is not an authorization bypass: all POST calls verify staff JWT or cron token.
+const cors={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Allow-Headers':'authorization,apikey,x-client-info,x-lx-job-token,content-type','Access-Control-Max-Age':'600'};
+const json=(v,status=200)=>new Response(JSON.stringify(v),{status,headers:{...cors,'Content-Type':'application/json','Cache-Control':'no-store'}});
 async function authorized(req){
  const scheduled=req.headers.get('x-lx-job-token')||'';
  if(/^[a-f0-9]{64}$/.test(scheduled)){
-  const r=await db.rpc('lx_auto_authorize',{p_token:scheduled});if(!r.error&&r.data===true)return true;
+  const r=await db.rpc('lx_auto_authorize',{p_token:scheduled});if(!r.error&&r.data===true)return 'cron';
  }
  const jwt=(req.headers.get('Authorization')||'').match(/^Bearer (\S+)$/i)?.[1];
  if(!jwt||!anon)return false;
@@ -16,15 +19,16 @@ async function authorized(req){
  const user=await userDb.auth.getUser(jwt);
  if(user.error||!user.data?.user)return false;
  const role=await userDb.rpc('lx_admin_role');
- return !role.error&&['owner','administrator','editor'].includes(role.data);
+ return !role.error&&['owner','administrator','editor'].includes(role.data)?'admin':false;
 }
 Deno.serve(async req=>{
+ if(req.method==='OPTIONS')return new Response(null,{status:204,headers:cors});
  if(req.method!=='POST')return json({error:'METHOD_NOT_ALLOWED'},405);
  if(Number(req.headers.get('content-length')||0)>2000)return json({error:'REQUEST_TOO_LARGE'},413);
  try{
-  if(!await authorized(req))return json({error:'UNAUTHORIZED'},401);
+  const actor=await authorized(req);if(!actor)return json({error:'UNAUTHORIZED'},401);
   const input=await req.text();if(input.length>2000||JSON.parse(input||'{}').action!=='run')return json({error:'INVALID_ACTION'},400);
-  const claim=await db.rpc('lx_music_robot_claim');if(claim.error)throw Error('CLAIM_FAILED');
+  const claim=await db.rpc('lx_music_robot_claim',{p_manual:actor==='admin'});if(claim.error)throw Error('CLAIM_FAILED');
   const job=claim.data;if(!job)return json({status:'idle',reason:'disabled, daily limit reached, or another run in progress'});
   const run=job.run_id;let scanned=0,added=0,duplicates=0,status='error',error=null;
   try{
