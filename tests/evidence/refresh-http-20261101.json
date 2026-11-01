@@ -1,0 +1,45 @@
+[
+  {
+    "path": "build.json",
+    "status": 200,
+    "bytes": 32,
+    "url": "https://xn--rifamilionria-deb.api.br/build.json",
+    "build": {
+      "release": "caf74a25169a"
+    }
+  },
+  {
+    "path": "index.html",
+    "status": 200,
+    "bytes": 2793,
+    "url": "https://xn--rifamilionria-deb.api.br/index.html",
+    "refresh_css": true,
+    "app_version": true
+  },
+  {
+    "path": "assets/refresh.css",
+    "status": 200,
+    "bytes": 28475,
+    "url": "https://xn--rifamilionria-deb.api.br/assets/refresh.css"
+  },
+  {
+    "path": "src/audio-effects.js",
+    "status": 200,
+    "bytes": 3283,
+    "url": "https://xn--rifamilionria-deb.api.br/src/audio-effects.js"
+  },
+  {
+    "path": "src/social-presence.js",
+    "status": 200,
+    "bytes": 1156,
+    "url": "https://xn--rifamilionria-deb.api.br/src/social-presence.js"
+  },
+  {
+    "path": "tests/fixtures/mock-data.js",
+    "error": "HTTP Error 404: Not Found"
+  },
+  {
+    "path": "docs/REFORMA-20261101.md",
+    "error": "HTTP Error 404: Not Found"
+  }
+]

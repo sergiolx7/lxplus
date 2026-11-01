@@ -21,5 +21,12 @@
     "anonymous_rpc_execution": false
   },
   "physical_devices_tested": false,
-  "published": false
+  "published": true,
+  "release": "caf74a25169a",
+  "code_commit": "414c3114f9fe76064722fed923d29dd0ce312c65",
+  "review_commit": "e04c2cf5193f71ac32a4b8d1e6da2f60c7a14642",
+  "pages_run_id": 41268960416,
+  "main_smoke_run_id": 41268960470,
+  "public_browser_boot": "login form rendered, no login attempted",
+  "auxiliary_workers_build": "historical failure remains"
 }
