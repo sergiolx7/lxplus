@@ -56,3 +56,28 @@ test('SQL script schedules safely and blocks public reads and automated publicat
  const index=readFileSync(new URL('../index.html',import.meta.url),'utf8');
  assert.match(index,/music-robot\.css/);
 });
+
+test('manual execute button remains available when background schedule is paused',()=>{
+ const html=renderMusicRobotAdmin({enabled:false,daily_limit:300,keys:{youtube:true,spotify:true},runs:[],queries:['música oficial']},'owner');
+ assert.match(html,/data-music-robot-run/);
+ assert.doesNotMatch(html,/data-music-robot-run disabled/);
+ const running=renderMusicRobotAdmin({enabled:true,daily_limit:300,keys:{youtube:true,spotify:true},runs:[]},'owner',{running:true,message:'Conectando'});
+ assert.match(running,/data-music-robot-run disabled/);
+ assert.match(running,/Buscando músicas/);
+ assert.match(running,/Conectando/);
+});
+test('browser invocation handles OPTIONS and every response has CORS headers',()=>{
+ const edge=readFileSync(new URL('../supabase/functions/lx-music-robot/index.ts',import.meta.url),'utf8');
+ const studio=readFileSync(new URL('../src/modules/studio.js',import.meta.url),'utf8');
+ const sql=readFileSync(new URL('../supabase/sql/lx-music-robot-manual-claim.sql',import.meta.url),'utf8');
+ assert.match(edge,/req\.method==='OPTIONS'/);
+ assert.match(edge,/Access-Control-Allow-Headers/);
+ assert.match(edge,/headers:\{\.\.\.cors/);
+ assert.match(edge,/const actor=await authorized\(req\)/);
+ assert.match(edge,/p_manual:actor==='admin'/);
+ assert.match(sql,/not cfg\.enabled and not p_manual/);
+ assert.match(sql,/revoke all on function public\.lx_music_robot_claim\(boolean\) from public,anon,authenticated/);
+ assert.match(studio,/robotRunning=false/);
+ assert.match(studio,/AbortSignal\.timeout\(35000\)/);
+ assert.match(studio,/robotMessage/);
+});
