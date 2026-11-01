@@ -99,3 +99,19 @@ test('Spotify API rejection does not halve the YouTube results or leak credentia
  assert.equal(data.items.every(item=>item.provider==='YouTube'),true);
  assert.doesNotMatch(JSON.stringify(data),/GOOGLE_SECRET|PRIVATE_SPOTIFY_SECRET/);
 });
+
+test('Spotify February 2026 search paginates with at most ten items per request',async()=>{
+ const offsets=[],limits=[];
+ const found=await providerDiscovery({query:'official music',limit:20,spotifyId:'0123456789abcdef0123456789abcdef',spotifySecret:'private-secret',fetcher:async(url)=>{
+  if(String(url).startsWith('https://accounts.spotify.com/api/token'))return new Response(JSON.stringify({access_token:'TEST_ONLY',token_type:'Bearer'}),{status:200});
+  const u=new URL(url);assert.equal(u.hostname,'api.spotify.com');
+  const limit=Number(u.searchParams.get('limit')),offset=Number(u.searchParams.get('offset'));
+  offsets.push(offset);limits.push(limit);assert.ok(limit<=10);
+  return new Response(JSON.stringify({tracks:{items:Array.from({length:limit},(_,j)=>({id:String(offset+j).padStart(22,'0'),name:'Faixa '+(offset+j),artists:[{name:'Cantora'}],album:{name:'Álbum verificado',release_date:'2025-05-04'}}))}}),{status:200});
+ }});
+ assert.deepEqual(offsets.sort((a,b)=>a-b),[0,10]);
+ assert.deepEqual(limits.sort((a,b)=>a-b),[10,10]);
+ assert.equal(found.items.length,20);
+ assert.equal(found.errors.length,0);
+ assert.equal(found.items.every(x=>x.album==='Álbum verificado'),true);
+});
