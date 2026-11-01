@@ -15,6 +15,10 @@ function poster(x,variant='poster'){
  '<div class="premium-image-shade"></div><span class="premium-play">▶</span></div>';
 }
 export function premiumCard(x,variant='poster'){
+ if(x?.type==='Música'){
+  const url=mediaUrl(x.cover);
+  return '<button class="premium-card music-result" type="button" data-item="'+setItem(x)+'" aria-label="Abrir '+safeTitle(x)+'"><span class="music-result-cover">'+(url?'<img width="48" height="48" loading="lazy" decoding="async" src="'+html(url)+'" alt="">':'<span aria-hidden="true">♫</span>')+'</span><span class="music-result-copy"><strong>'+safeTitle(x)+'</strong><small>'+html(x.artist||'Artista não informado')+'</small><small class="music-result-album">'+html(x.album||x.genre||'Música')+'</small></span><span class="music-result-play" aria-hidden="true">▶</span></button>';
+ }
  return '<button class="premium-card '+(variant==='landscape'?'wide':'')+'" type="button" data-item="'+setItem(x)+'" aria-label="Abrir '+safeTitle(x)+'">'+poster(x,variant)+
  '<div class="premium-card-copy"><strong>'+safeTitle(x)+'</strong><small>'+html([x.year,x.genre||x.type].filter(Boolean).join(' · '))+'</small></div></button>';
 }
@@ -53,14 +57,13 @@ function home({items,history,list}){
  const recommendations=(personalized.length?personalized:unseen).slice(0,16);
  const selected=current.filter(x=>x.topRank||x.featured||x.trending).sort((a,b)=>(Number(a.topRank)||99)-(Number(b.topRank)||99)||Number(b.priority||0)-Number(a.priority||0));
  const top=[...selected,...current.filter(x=>!selected.includes(x))].slice(0,10);
- return '<div class="home-display-toolbar">'+displaySizeControls()+'</div>'+feature(featured)+categoryStats(current)+
- row('Continue assistindo','RETOME DE ONDE PAROU',seen,'continue','landscape')+
- row('Recomendados para você','COM BASE NAS SUAS DESCOBERTAS',recommendations,'recommended')+
- topTen(top)+
- row('Novidades do catálogo','SELEÇÃO DA LX PLUS',recent,'recent','landscape')+
- row('Sua lista','SALVOS PARA VOCÊ',favorites,'saved')+
- row('Filmes para explorar','CINEMA',movies,'movies')+
- row('Séries e doramas','TEMPORADAS E HISTÓRIAS',shows,'series');
+ const sections={
+ continue:row('Continue assistindo','RETOME DE ONDE PAROU',seen,'continue','landscape'),
+ recommended:row('Recomendados para você','COM BASE NAS SUAS DESCOBERTAS',recommendations,'recommended'),
+ top:topTen(top),recent:row('Novidades do catálogo','SELEÇÃO DA LX PLUS',recent,'recent','landscape'),
+ saved:row('Sua lista','SALVOS PARA VOCÊ',favorites,'saved'),movies:row('Filmes para explorar','CINEMA',movies,'movies'),series:row('Séries e doramas','TEMPORADAS E HISTÓRIAS',shows,'series')
+ };
+ return '<div class="home-display-toolbar">'+displaySizeControls()+'</div>'+feature(featured)+categoryStats(current)+readDisplay().homeOrder.map(id=>sections[id]).join('');
 }
 
 function topTen(items){
