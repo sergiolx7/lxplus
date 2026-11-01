@@ -18,7 +18,7 @@ export function memberProfileCard(profile,{viewerId='',presence='',assets=[]}={}
   else actions='<button class="btn primary" data-friend-request="'+id+'">Adicionar amigo</button>';
  }
  return '<article class="profile-summary lx-member-profile-card" '+profileLedAttributes(p)+'>'
-  +'<div class="lx-member-banner">'+profileCover(p)+'</div>'
+   +profileCover(p)
   +'<div class="lx-member-profile-body">'
   +'<div class="lx-member-avatar-row">'+avatar(p,'profile-avatar lx-member-avatar')+'</div>'
   +'<div class="lx-member-identity"><h2>'+profileName(p)+verifiedBadge(p)+'</h2>'
