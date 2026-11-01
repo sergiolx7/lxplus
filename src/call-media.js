@@ -12,7 +12,8 @@ export function displayCaptureOptions(withAudio=false,quality={width:1920,height
 }
 export function captureAudioMessage({surface,track,unavailable},requested=false){
  if(!requested)return 'Compartilhando apenas a imagem. Marque áudio antes de iniciar para transmitir o som da aba.';
- if(track)return 'Transmitindo somente o áudio da aba selecionada, separado do microfone. A pessoa pode precisar clicar em Ativar som. Não escolha outra aba da LX Plus para evitar eco.';
+ if(track&&track.readyState!=='ended'&&track.muted)return 'Faixa de áudio capturada, mas silenciada pelo navegador. Reproduza som na aba escolhida e confira o botão Compartilhar áudio da guia.';
+ if(track&&track.readyState!=='ended')return 'Transmitindo somente o áudio da aba selecionada, separado do microfone. A outra pessoa pode precisar clicar em Ativar som.';
  if(surface==='window')return 'Esta janela não enviou áudio. Para ouvir a transmissão, pare e compartilhe uma ABA do navegador, ativando Compartilhar áudio da guia.';
  if(surface==='monitor')return 'A tela inteira não envia áudio isolado nesta chamada. Selecione uma ABA do navegador e ative Compartilhar áudio.';
  return 'O navegador não disponibilizou o som da aba. Pare, selecione uma aba e ative Compartilhar áudio da guia na janela de seleção.';
