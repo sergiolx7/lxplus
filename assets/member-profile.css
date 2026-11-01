@@ -1,0 +1,49 @@
+/* LX Social · expanded member profile. Keep the same identity system used by My Profile. */
+.lx-member-profile-overlay{z-index:155;display:grid;place-items:center;padding:16px;overflow-y:auto;overscroll-behavior:contain;background:rgba(3,4,9,.82);backdrop-filter:blur(16px)}
+.lx-member-profile-shell{position:relative;isolation:isolate;width:min(416px,100%);max-width:calc(100vw - 24px);max-height:calc(100dvh - 32px);min-width:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;border-radius:25px;box-shadow:0 34px 105px rgba(0,0,0,.76);scrollbar-width:thin;scrollbar-color:#6b577e transparent}
+.lx-member-profile-card{position:relative;display:block;width:100%;min-width:0;min-height:560px;margin:0;border-radius:25px!important;overflow:hidden;background:#0e1017!important;color:#f3f1f8}
+.lx-member-profile-card[data-premium-profile=true]{background:linear-gradient(180deg,color-mix(in srgb,var(--profile-surface,#13121b) 82%,#0c0d13),#0b0d14 80%)!important}
+.lx-member-profile-card>.profile-banner{height:185px;width:100%;position:relative;overflow:hidden;background-color:#211629}
+.lx-member-profile-card>.profile-banner img,.lx-member-profile-card>.profile-banner canvas{width:100%;height:100%;object-fit:cover}
+.lx-member-profile-card>.profile-banner:after{content:"";position:absolute;inset:auto 0 0;height:50%;background:linear-gradient(0deg,rgba(9,10,16,.55),transparent);pointer-events:none}
+.lx-member-profile-card .lx-member-profile-body{position:relative;z-index:3;display:flex;flex-direction:column;align-items:stretch;padding:0 27px 25px;min-height:360px}
+.lx-member-profile-card .lx-member-avatar-row{height:57px;display:flex;align-items:flex-start;justify-content:flex-start;margin-bottom:9px}
+.lx-member-profile-card .lx-member-avatar{display:inline-grid;width:96px!important;height:96px!important;min-width:96px;min-height:96px;margin:-49px 0 0!important;flex:none;border:5px solid #11121a;border-radius:29%;box-shadow:0 11px 30px #0008,0 0 0 1px #dfd0ff35;font-size:27px;z-index:4}
+.lx-member-profile-card .lx-member-avatar[data-avatar-shape=circle]{border-radius:50%}
+.lx-member-profile-card .lx-member-avatar[data-avatar-shape=rounded]{border-radius:27%}
+.lx-member-profile-card .lx-member-identity{min-width:0}
+.lx-member-profile-card .lx-member-identity h2{display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:0;margin:0 0 5px;font-size:clamp(21px,5vw,27px);line-height:1.23;font-weight:700;letter-spacing:-.04em;overflow-wrap:anywhere}
+.lx-member-profile-card .lx-member-identity h2 .premium-display-name{max-width:100%;overflow-wrap:anywhere}
+.lx-member-profile-card .lx-member-handle{margin:0!important;color:#aeb1c1;font-size:13px!important}
+.lx-member-profile-card .lx-member-tags{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:13px;min-height:25px}
+.lx-member-profile-card .premium-member-badge,.lx-member-verified,.lx-member-friend-label{display:inline-flex;align-items:center;gap:5px;border:1px solid #d9b6ff58;background:#b18cff1c;border-radius:99px;padding:6px 9px;font-size:10px;line-height:1.1;color:#f0e5ff}
+.lx-member-profile-card .lx-member-verified{border-color:#65b9ff54;background:#4a9fff14;color:#9fd1ff}
+.lx-member-profile-card .lx-member-friend-label{border-color:#7ee0b154;background:#3ec08f14;color:#b8efce}
+.lx-member-profile-card .lx-member-presence{margin:12px 0 3px;font-size:11px;min-height:16px;color:#a4bba9}
+.lx-member-profile-card .lx-member-about{padding:17px 0 18px;border-bottom:1px solid rgba(188,157,225,.18);min-width:0}
+.lx-member-profile-card .lx-member-about>span,.lx-member-profile-card .lx-member-public-id>span{display:block;color:#a8a2b8;font-size:9px;font-weight:650;letter-spacing:.17em}
+.lx-member-profile-card .lx-member-about p{margin:9px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;font-size:13px;color:#e3ddeb}
+.lx-member-profile-card .lx-member-about .premium-expression{max-height:44px;width:auto;max-width:100%;vertical-align:middle}
+.lx-member-profile-card .lx-member-public-id{padding:17px 0;border-bottom:1px solid rgba(188,157,225,.18)}
+.lx-member-profile-card .lx-member-public-id>div{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:9px}
+.lx-member-profile-card .lx-member-public-id code{color:#d3b9ff;font:500 12px ui-monospace,monospace;overflow-wrap:anywhere;min-width:0}
+.lx-member-profile-card .lx-member-public-id .link{font-size:11px;white-space:nowrap;flex-shrink:0}
+.lx-member-profile-card .lx-member-actions{display:flex;flex-direction:column;gap:9px;margin-top:20px}
+.lx-member-profile-card .lx-member-actions>.btn{width:100%;min-height:42px;border-radius:999px;font-size:12px;font-weight:600;text-align:center}
+.lx-member-profile-card .lx-member-pending,.lx-member-profile-card .lx-member-self-note{font-size:12px;color:#c7bed2;line-height:1.6}
+.lx-member-profile-card .lx-member-report{display:flex;justify-content:center;padding:17px 0 0}
+.lx-member-profile-card .lx-member-report>.link{font-size:11px;color:#bdabbf}
+.lx-member-profile-close{position:sticky;top:10px;float:right;margin:10px 11px -48px 0;width:36px;height:36px;border:1px solid #fff4;border-radius:50%;display:grid;place-items:center;background:#101117de;color:white;font-size:23px;line-height:1;z-index:15;backdrop-filter:blur(9px);box-shadow:0 5px 16px #0007}
+.lx-member-profile-close:focus-visible,.lx-member-profile-card button:focus-visible{outline:2px solid #d6c3ff;outline-offset:3px}
+@media(max-width:480px){
+ .lx-member-profile-overlay{padding:10px;align-items:center}
+ .lx-member-profile-shell{width:min(410px,calc(100vw - 20px));max-width:calc(100vw - 20px);max-height:calc(100dvh - 20px);border-radius:22px}
+ .lx-member-profile-card{border-radius:22px!important;min-height:0}
+ .lx-member-profile-card>.profile-banner{height:160px}
+ .lx-member-profile-card .lx-member-profile-body{padding:0 20px 23px}
+ .lx-member-profile-card .lx-member-avatar{width:88px!important;height:88px!important;min-width:88px;min-height:88px;margin-top:-45px!important}
+ .lx-member-profile-card .lx-member-avatar-row{height:50px}
+ .lx-member-profile-card .lx-member-about{padding:14px 0 15px}
+}
+@media(max-height:620px){.lx-member-profile-overlay{align-items:start}.lx-member-profile-shell{max-height:calc(100dvh - 20px)}.lx-member-profile-card>.profile-banner{height:130px}}
+@media(prefers-reduced-motion:reduce){.lx-member-profile-overlay,.lx-member-profile-shell{scroll-behavior:auto}}
