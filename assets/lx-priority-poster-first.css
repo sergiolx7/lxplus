@@ -1,0 +1,26 @@
+/* LX Studio: poster-first editorial queue. All cards accessible with keyboard and touch. */
+.lx-priority-cinema{display:grid;gap:12px;min-width:0}
+.lx-priority-cinema .heading{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.lx-priority-cinema .heading h3{font-size:clamp(19px,2.4vw,27px);margin:4px 0}
+.lx-priority-cinema>p{line-height:1.65;margin:0;color:#d0c8d9}
+.lx-priority-stats{display:flex;gap:7px;flex-wrap:wrap}
+.lx-priority-stats span{padding:7px 10px;border-radius:999px;background:rgba(157,119,212,.16);border:1px solid rgba(174,146,211,.27);font-size:12px}
+.lx-priority-queue{max-height:min(74vh,800px);overflow:auto;display:grid;gap:9px;overscroll-behavior:contain;padding:3px}
+.lx-priority-entry{min-width:0;border:1px solid #ffffff22;border-radius:15px;background:linear-gradient(105deg,#8d65b710,#15121a);overflow:clip}
+.lx-priority-entry[open]{border-color:#af89d266}
+.lx-priority-entry summary{display:flex;align-items:center;gap:12px;padding:12px 14px;min-height:52px;cursor:pointer;list-style:none}
+.lx-priority-entry summary::-webkit-details-marker{display:none}
+.lx-priority-entry summary:focus-visible{outline:2px solid #bb93ef;outline-offset:-3px}
+.lx-priority-entry .lx-priority-rank{display:grid;place-items:center;flex:none;width:39px;min-height:39px;border-radius:11px;background:#8b59ad30;color:#e7ceff;font:800 19px Outfit,sans-serif;font-variant-numeric:tabular-nums}
+.lx-priority-entry .lx-priority-title{display:grid;gap:3px;flex:1;min-width:0}
+.lx-priority-entry .lx-priority-title b{font-size:14px;overflow-wrap:anywhere}
+.lx-priority-entry .lx-priority-title small{font-size:12px;color:#bbaecc}
+.lx-priority-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:16px;border-top:1px solid #ffffff16}
+.lx-priority-form label{display:grid;gap:5px;font-size:12px;color:#d8ccdf;min-width:0}
+.lx-priority-form label:has(textarea){grid-column:1/-1}
+.lx-priority-form input[type=text],.lx-priority-form input[type=file],.lx-priority-form textarea{width:100%;min-width:0;border:1px solid #ffffff32;background:#0d0e16;color:inherit;border-radius:10px;padding:10px;font-size:13px}
+.lx-priority-form textarea{resize:vertical;min-height:67px}
+.lx-priority-form .lx-priority-checkbox{grid-column:1/-1;display:flex;align-items:start;gap:10px;line-height:1.5}
+.lx-priority-form .lx-priority-checkbox input{margin-top:3px;flex:none}
+.lx-priority-form button{grid-column:1/-1;justify-self:start;min-height:42px}
+@media(max-width:610px){.lx-priority-form{grid-template-columns:minmax(0,1fr);padding:12px}.lx-priority-form label:has(textarea){grid-column:auto}.lx-priority-form button{grid-column:auto;width:100%}}
