@@ -8,6 +8,7 @@ import {bindVideoSession,videoControls} from './video-session.js';
 import {preferenceSync} from './preference-sync.js';
 import {musicMix} from './music-discovery.js';
 import {MusicDock} from './music-dock.js';
+import {createLeagueSession,eligibleLeaguePlayback,playbackThreshold} from './league-activity.js';
 import {Calls} from './calls.js';
 import {createTelemetry,socialDirectory,catalogPage} from './services.js';
 import {uuid,esc,https,avatar,verifiedBadge,empty,icon,duration} from './ui.js';
@@ -45,13 +46,14 @@ function shell(){
 }
 function refreshBadges(){const n=document.querySelector('#noticeBadge');if(n){n.hidden=!A.unread;n.textContent=A.unread>99?'99+':String(A.unread)}const presence=document.querySelector('#headerPresence');if(presence)presence.textContent=A.presence?A.presence+' na comunidade':''}
 async function refreshNotifications(){if(!A.user)return;const r=await db.from('lx_user_notifications').select('id',{count:'exact',head:true}).eq('user_id',A.user.id).is('read_at',null);if(!r.error){A.unread=r.count||0;refreshBadges()}}
-let listeningSession=null,listeningTrack=null,activeMusicId=null,musicActivityTimer=null;
+let listeningSession=null,listeningTrack=null,leagueMusicTracker=null,activeMusicId=null,musicActivityTimer=null;
+async function grantVerifiedPoints({kind,session,id,duration,position}){const {data,error}=await db.rpc('lx_rank_record_event',{p_event_type:kind,p_ref_key:(kind==='music_valid'?'music:':'watch:')+session,p_metadata:{content_id:String(id),duration,position}});if(error)throw error;return data;}
 function broadcastMusicActivity(item,playing){if(!A.user||!item)return;const id=String(item.id);if(playing){activeMusicId=id;A.activity={activity_type:'music',activity_title:String(item.title||'').slice(0,180),activity_subtitle:String(item.artist||'').slice(0,180),activity_cover:item.cover||''}}else{if(activeMusicId!==id)return;activeMusicId=null;if(A.activity?.activity_type==='music')A.activity=null}clearTimeout(musicActivityTimer);musicActivityTimer=setTimeout(()=>{if(A.user)heartbeat().catch(()=>{})},220)}
-const musicDock=new MusicDock({resolve:sourceFor,getPreferences:()=>A.stored.playbackPreferences||{},onPreferences:savePlaybackPreferences,getEffects:()=>A.stored.audioEffects||{},onEffects:value=>{A.stored.audioEffects=value;accountPreferences.write('audioEffects',value)},onMore:async(current,recent)=>{const selection=await catalogPage({types:['Música'],term:current?.genre||current?.artist||'',limit:60});return musicMix(selection.items,{current,likes:A.stored.musicLikes||[],history:A.stored.musicHistory||{},exclude:recent})},onError:message=>{toast(message);A.telemetry?.record('playback','music',message)},onPlayback(item,playing){broadcastMusicActivity(item,playing)},onTrack(item,{embedded}){
+const musicDock=new MusicDock({resolve:sourceFor,getPreferences:()=>A.stored.playbackPreferences||{},onPreferences:savePlaybackPreferences,getEffects:()=>A.stored.audioEffects||{},onEffects:value=>{A.stored.audioEffects=value;accountPreferences.write('audioEffects',value)},onMore:async(current,recent)=>{const selection=await catalogPage({types:['Música'],term:current?.genre||current?.artist||'',limit:60});return musicMix(selection.items,{current,likes:A.stored.musicLikes||[],history:A.stored.musicHistory||{},exclude:recent})},onError:message=>{toast(message);A.telemetry?.record('playback','music',message)},onPlayback(item,playing){broadcastMusicActivity(item,playing)},onTrack(item,{embedded,source}){
  if(embedded&&activeMusicId){activeMusicId=null;if(A.activity?.activity_type==='music')A.activity=null;clearTimeout(musicActivityTimer);musicActivityTimer=setTimeout(()=>heartbeat().catch(()=>{}),220)}
- listeningTrack=String(item.id);listeningSession=uuid();
+ listeningTrack=String(item.id);listeningSession=uuid();leagueMusicTracker=eligibleLeaguePlayback(item,source)?createLeagueSession({kind:'music_valid',id:String(item.id),session:listeningSession,report:async total=>{const r=await db.rpc('lx_record_listening',{p_session:listeningSession,p_track:String(item.id),p_title:String(item.title).slice(0,200),p_artist:String(item.artist||'').slice(0,200),p_total:total});if(r.error)throw r.error},award:grantVerifiedPoints,onMessage:toast}):null;
  if(A.user){const current={...(A.stored.musicHistory||{}),[item.id]:new Date().toISOString()};A.stored.musicHistory=current;accountPreferences.write('musicHistory',current)}
-},onListening(item,total){if(A.user&&listeningSession&&total>0)db.rpc('lx_record_listening',{p_session:listeningSession,p_track:String(item.id),p_title:String(item.title).slice(0,200),p_artist:String(item.artist||'').slice(0,200),p_total:total}).then(r=>{if(r.error)console.warn('Histórico musical temporariamente indisponível.')})}});
+},onListening(item,total,info={}){if(!A.user||!listeningSession||String(item.id)!==listeningTrack||total<=0)return;if(leagueMusicTracker){leagueMusicTracker({total,duration:info.duration}).catch(()=>{})}else db.rpc('lx_record_listening',{p_session:listeningSession,p_track:String(item.id),p_title:String(item.title).slice(0,200),p_artist:String(item.artist||'').slice(0,200),p_total:total}).then(r=>{if(r.error)console.warn('Histórico musical temporariamente indisponível.')})}});
 function context(){const ownerId=A.user.id;return {user:A.user,admin:A.admin,page:A.page,term:A.term,state:()=>A.stored,setState:(value,keys)=>{if(A.user?.id!==ownerId)return;if(keys)for(const key of keys)A.stored[key]=value[key];else A.stored=value},profile:()=>A.profile,setProfile:p=>{if(A.user?.id!==ownerId)return;A.profile=p;document.querySelectorAll('[data-avatar-user="'+CSS.escape(p.user_id||A.user.id)+'"]').forEach(node=>{if(!node.closest('[data-premium-live-preview]'))node.outerHTML=avatar(p,node.dataset.avatarClass||'member-avatar')});const node=document.querySelector('#sidebarProfileName');if(node)node.innerHTML='<span class="profile-name-text">'+profileName(p)+'</span>'+verifiedBadge(p)},directory:()=>A.members,setDirectory:rows=>{if(A.user?.id===ownerId)A.members=rows},music:musicDock,savePreferences:(key,value)=>{A.stored[key]=value;return accountPreferences.write(key,value)},calls:A.calls,toast,navigate,openItem:modal,play,refreshCatalog:()=>loadCatalog(),refreshNotifications,heartbeat,diagnostics:()=>A.telemetry?.diagnostics()||{}}}
 function disposeRoute(){A.controller?.destroy?.();A.controller=null;A.routeKey='';++A.routeGeneration}
 async function draw(){
@@ -85,7 +87,7 @@ function startMemberServices(){
  socialDirectory().then(rows=>{if(A.user)A.members=rows}).catch(()=>{});
 }
 function clearMemberServices(){
- A.party?.destroy();A.party=null;disposeRoute();closeModal();musicDock.close();clearTimeout(musicActivityTimer);musicActivityTimer=null;activeMusicId=null;A.activity=null;accountPreferences.bind(null);bindDisplayAccount(null);A.calls?.destroy();A.calls=null;A.telemetry?.destroy();A.telemetry=null;clearInterval(A.heartbeatTimer);A.heartbeatTimer=null;if(A.noticeChannel){db.removeChannel(A.noticeChannel);A.noticeChannel=null}
+ A.party?.destroy();A.party=null;disposeRoute();closeModal();leagueMusicTracker=null;musicDock.close();clearTimeout(musicActivityTimer);musicActivityTimer=null;activeMusicId=null;A.activity=null;accountPreferences.bind(null);bindDisplayAccount(null);A.calls?.destroy();A.calls=null;A.telemetry?.destroy();A.telemetry=null;clearInterval(A.heartbeatTimer);A.heartbeatTimer=null;if(A.noticeChannel){db.removeChannel(A.noticeChannel);A.noticeChannel=null}
 }
 async function initialize(){
  const generation=++A.generation;A.initializing=true;root.innerHTML='<div class="loading"><span class="loading-orbit"></span>Preparando seu universo LX…</div>';
@@ -140,9 +142,15 @@ function showVideo(item,entry,source,list,index){
  document.body.classList.add('modal-open');layer.querySelector('[data-close]').focus();
  A.activity={activity_type:['Série','Dorama','Anime'].includes(item.type)?'series':'movie',activity_title:item.title,activity_subtitle:index!==null?'Temporada '+(entry.season||1)+' · Episódio '+(entry.episode||index+1):'',activity_cover:item.cover||''};heartbeat().catch(()=>{});
  const media=layer.querySelector('#mediaPlayer');if(!media)return;
+  const rankVideoSession=uuid(),rankContentKey=String(item.id)+(index!==null?':episode:'+String(index):'');
+  const leagueWatchTracker=eligibleLeaguePlayback(entry,source)?createLeagueSession({
+   kind:'watch_valid',id:rankContentKey,session:rankVideoSession,
+   report:async total=>{const r=await db.rpc('lx_record_viewing',{p_session:rankVideoSession,p_content:rankContentKey,p_total:total});if(r.error)throw r.error},
+   award:grantVerifiedPoints,onMessage:toast
+  }):null;
  const error=message=>{if(A.modal!==token)return;layer.querySelector('#playerStatus').textContent=message;A.telemetry?.record('playback','video',message)};
  musicDock.element?.querySelector('audio')?.pause();
- const stopVideo=bindVideoSession(media,source,{host:layer,autoplay:!together,progress:together?null:A.stored.history?.[item.id],index,hasNext:!together&&index!==null&&!!list[index+1],onNext:()=>play(item,index+1),preferences:A.stored.playbackPreferences||{},savePreferences:savePlaybackPreferences,onError:error,saveProgress:async progress=>{
+ const stopVideo=bindVideoSession(media,source,{host:layer,autoplay:!together,progress:together?null:A.stored.history?.[item.id],index,hasNext:!together&&index!==null&&!!list[index+1],onNext:()=>play(item,index+1),preferences:A.stored.playbackPreferences||{},savePreferences:savePlaybackPreferences,onError:error,onActiveSeconds:info=>leagueWatchTracker?.(info),saveProgress:async progress=>{
   if(!A.user||String(item.id)==='preview')return;A.stored.history={...(A.stored.history||{}),[item.id]:progress};
   const {error}=await db.rpc('lx_save_watch_progress',{p_content:Number(item.id),p_progress:progress});if(error)throw error;
  }});
