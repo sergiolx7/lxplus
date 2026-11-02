@@ -1,0 +1,32 @@
+/* LX Cinema Robot Premium 4.0 — admin-only workflow and honest catalogue placeholders. */
+.lx-cinema-robot{display:grid;gap:16px;min-width:0}
+.lx-cinema-robot-hero{background:radial-gradient(ellipse at 90% 0,rgba(var(--accent-rgb),.18),transparent 65%),var(--surface,#14141a)}
+.lx-cinema-robot-hero h2{font-size:clamp(25px,3vw,38px)}
+.lx-cinema-robot-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0}
+.lx-cinema-robot-kpis>div{padding:14px;border:1px solid #a6a2b633;border-radius:15px;min-width:0;background:#ffffff08}
+.lx-cinema-robot-kpis strong{display:block;font-size:clamp(22px,2.5vw,35px);font-variant-numeric:tabular-nums;color:#cbb8ff}
+.lx-cinema-robot-kpis small{display:block;font-size:12px;line-height:1.45;color:#bfbac8}
+.lx-cinema-robot-jobs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.lx-cinema-robot-jobs .panel{min-width:0;display:grid;gap:12px}
+.lx-cinema-robot-jobs .heading{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap}
+.lx-cinema-robot-jobs .field{min-width:0}
+.lx-cinema-robot-jobs input[type=number]{max-width:100%;min-height:42px}
+.lx-cinema-robot-search{display:grid;grid-template-columns:minmax(110px,.7fr) minmax(160px,1.5fr) auto;align-items:end;gap:10px;margin:14px 0}
+.lx-cinema-robot-search label,.lx-cinema-review-info form>label{display:grid;gap:5px;font-size:12px}
+.lx-cinema-robot-search input,.lx-cinema-robot-search select,.lx-cinema-review-info select{width:100%;min-width:0;min-height:40px;border-radius:10px;background:#13131d;border:1px solid #ffffff2b;color:inherit;padding:8px 10px}
+.lx-cinema-robot-search button{min-height:40px}
+.lx-cinema-review-list{display:grid;gap:12px}
+.lx-cinema-review-item{display:grid;grid-template-columns:105px minmax(0,1fr);gap:15px;padding:15px;border:1px solid #ffffff20;border-radius:16px;min-width:0;background:#ffffff05}
+.lx-cinema-review-item>img,.lx-cinema-review-placeholder{width:105px;aspect-ratio:2/3;object-fit:cover;border-radius:11px;background:linear-gradient(130deg,#372052,#10121a);display:grid;place-content:center;text-align:center;color:#c9adff;font-weight:800;letter-spacing:.15em}
+.lx-cinema-review-info{min-width:0}.lx-cinema-review-info h4{font-size:16px;margin:0 0 6px;overflow-wrap:anywhere}
+.lx-cinema-review-info p,.lx-cinema-review-info small{font-size:12px;line-height:1.6;color:#b6b2c4;overflow-wrap:anywhere}
+.lx-cinema-review-info>a{font-size:12px;display:inline-block;margin:6px 0;color:#cdb1ff}
+.lx-cinema-review-info form{display:flex;align-items:flex-start;flex-wrap:wrap;gap:11px;margin-top:13px}
+.lx-cinema-review-info form>.lx-cinema-check{display:flex;align-items:flex-start;gap:6px;max-width:310px}
+.lx-cinema-review-info form>.lx-cinema-check input{margin-top:3px;flex:none}
+.lx-cinema-review-info form .btn{align-self:end}
+.lx-cinema-runs{display:grid;gap:8px}.lx-cinema-runs p{margin:0;padding:7px 0;font-size:12px;border-bottom:1px solid #ffffff12}
+.lx-cinema-coming-badge{position:absolute;left:9px;bottom:9px;border-radius:9px;background:#17131fe8;border:1px solid rgba(var(--accent-rgb),.6);padding:7px 10px;color:#e3cbff;font:bold 11px Outfit,sans-serif;letter-spacing:.12em;z-index:2}
+.lx-cinema-modal-coming{display:inline-flex;align-items:center;padding:12px 15px;border:1px solid #ad90cf55;border-radius:12px;color:#e4d0ff;font-size:13px;max-width:440px;line-height:1.5}
+@media(max-width:700px){.lx-cinema-robot-jobs{grid-template-columns:1fr}.lx-cinema-robot-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.lx-cinema-robot-search{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.lx-cinema-robot-search button{grid-column:1/-1}.lx-cinema-review-item{grid-template-columns:80px minmax(0,1fr);padding:10px;gap:10px}.lx-cinema-review-item>img,.lx-cinema-review-placeholder{width:80px}}
+@media(max-width:420px){.lx-cinema-robot-kpis{grid-template-columns:1fr}.lx-cinema-robot-search{grid-template-columns:1fr}.lx-cinema-review-item{grid-template-columns:1fr}.lx-cinema-review-item>img,.lx-cinema-review-placeholder{width:100px}.lx-cinema-review-info form{display:grid}}
