@@ -8,8 +8,8 @@ const file=name=>readFileSync(new URL('../'+name,import.meta.url),'utf8');
 const social=file('src/modules/social.js'),sql=file('supabase/sql/lx-social-real-followers.sql');
 
 test('100 saved simulated likes are actually assigned from the fourth RPC result',()=>{
- assert.match(social,/let likes=\[\],comments=\[\],promoted=\[\],demoRows=\[\]/);
- assert.match(social,/if\(ids\.length\)\[likes,comments,promoted,demoRows\]=await Promise\.all/);
+ assert.match(social,/let likes=\[\],comments=\[\],promoted=\[\],demoRows=\[\],publicDemoRows=\[\]/);
+ assert.match(social,/if\(ids\.length\)\[likes,comments,promoted,demoRows,publicDemoRows\]=await Promise\.all/);
  assert.match(social,/demoRows\.filter\(x=>x\.kind==='post'\)/);
  assert.match(social,/demoPostCounts\.get\(post\.id\)/);
  assert.match(social,/lx_demo_social_visible/);
