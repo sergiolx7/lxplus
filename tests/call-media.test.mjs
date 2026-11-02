@@ -19,7 +19,7 @@ test('only the selected tab audio is forwarded; unverified window and screen aud
   assert.equal(result.track,allowed?audio[0]:null);assert.equal(audio[0].stopped,!allowed);
   assert.equal(audio[1].stopped,true);assert.equal(removed.length,allowed?1:2);
   assert.equal(result.unavailable,enabled&&!allowed);
-  if(enabled&&surface!=='browser')assert.match(captureAudioMessage(result,enabled),/aba|guia/i);
+  if(enabled&&surface!=='browser')assert.match(captureAudioMessage(result,enabled),/janela|tela inteira/i);
  }
 });
 
