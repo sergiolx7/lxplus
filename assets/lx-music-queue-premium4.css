@@ -1,0 +1,10 @@
+/* LX Music Premium 4.0: reorderable queue, desktop and touch-friendly. */
+#lxDockQueue .lx-queue-entry{display:flex;align-items:stretch;gap:6px;margin:0;border-bottom:1px solid rgba(170,170,170,.12);min-width:0}
+#lxDockQueue .lx-queue-play{display:flex;align-items:center;flex-direction:row;flex:1;min-width:0;margin:0;gap:10px;border:0;border-radius:8px;padding:9px;text-align:left}
+#lxDockQueue .lx-queue-play>span:last-child{display:flex;min-width:0;flex-direction:column;gap:4px;align-items:start}
+#lxDockQueue .lx-queue-play strong,#lxDockQueue .lx-queue-play small{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#lxDockQueue .lx-queue-move-controls{display:flex;gap:3px;flex:none;align-items:center}
+#lxDockQueue .lx-queue-move-controls button{display:grid;place-items:center;width:34px;min-width:34px;min-height:40px;border:1px solid rgba(190,166,226,.2);border-radius:9px;padding:0;font-size:18px;line-height:1;cursor:pointer}
+#lxDockQueue .lx-queue-move-controls button:hover:not(:disabled),#lxDockQueue .lx-queue-move-controls button:focus-visible{border-color:#ae8cde;background:#6d4c8a60}
+#lxDockQueue .lx-queue-move-controls button:disabled{opacity:.25;cursor:not-allowed}
+@media(max-width:420px){#lxDockQueue .lx-queue-entry{gap:2px}#lxDockQueue .lx-queue-move-controls button{width:30px;min-width:30px}}
