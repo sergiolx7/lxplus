@@ -1,0 +1,21 @@
+/* LX Lab — honest, visibly labeled interaction test counters. */
+.lx-demo-controls{background:radial-gradient(ellipse at 95% 0,#8664d62d,transparent 53%),linear-gradient(150deg,#242133,#15171f)!important;border:1px solid #a58cce50!important;border-radius:18px;padding:24px}
+.lx-demo-controls h2{font-size:22px;letter-spacing:-.025em;margin:10px 0}
+.lx-demo-controls>p{font-size:12px;color:#b8b0c7;line-height:1.7}
+.lx-demo-controls .form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:18px}
+.lx-demo-controls .form .field:nth-child(2){grid-column:1/-1}
+.lx-demo-controls input,.lx-demo-controls select{min-height:42px;border-radius:11px}
+.lx-demo-controls .form .actions,.lx-demo-controls .form>small{grid-column:1/-1}
+.lx-demo-controls .form>small{font-size:11px;color:#a9a4b6}
+.lx-demo-rows{display:grid;gap:8px;margin-top:15px}
+.lx-demo-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:12px;border:1px solid #ffffff15;background:#ffffff04;border-radius:12px;padding:13px}
+.lx-demo-row>div:first-child{display:grid;gap:5px;min-width:0;overflow-wrap:anywhere}
+.lx-demo-row strong{font-size:12px}.lx-demo-row small{font-size:10px;color:#a99fb9;display:block}
+.lx-demo-row>div:nth-child(2){text-align:center}.lx-demo-row>div:nth-child(2) b{font-size:17px;color:#ceb8ff}
+.lx-demo-metric,.lx-demo-profile-count{display:inline-flex;align-items:center;flex-wrap:wrap;gap:5px;color:#c9b5e8!important;background:#825bbd25;border:1px dashed #ba9cda75;border-radius:9px;padding:5px 8px;font-size:10px;line-height:1.4;white-space:normal}
+.lx-demo-metric b,.lx-demo-profile-count strong{font-size:9px;letter-spacing:.06em;color:#f4d1a2}
+.feed-post footer .lx-demo-metric{margin:2px 3px}
+.lx-post-id-button{font-size:10px;white-space:nowrap}
+.people-card>.lx-demo-metric{margin:8px 0 10px;justify-content:center}
+.lx-member-profile-card .lx-demo-profile-count{margin:8px 0}
+@media(max-width:650px){.lx-demo-controls{padding:17px}.lx-demo-controls .form{grid-template-columns:1fr}.lx-demo-controls .form .field:nth-child(2){grid-column:auto}.lx-demo-row{grid-template-columns:minmax(0,1fr) auto}.lx-demo-row button{grid-column:1/-1;justify-self:start}}
