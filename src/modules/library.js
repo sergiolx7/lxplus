@@ -10,7 +10,7 @@ export async function mount(host,ctx){
  host.addEventListener('click',e=>{const b=e.target.closest('[data-library-item]');if(b)ctx.openItem(items.find(i=>String(i.id)===b.dataset.libraryItem))});return{destroy(){alive=false}};
 }
 export async function mountRanking(host,ctx){
- let alive=true;const ranking=await getRanking(),season=ranking.season,rows=ranking.rows||[],mine=rows.find(r=>r.user_id===ctx.user.id);
+ let alive=true;const rollover=await db.rpc('lx_rank_rollover_if_needed');if(rollover.error)ctx.toast('Não foi possível conferir a temporada atual do ranking.');const ranking=await getRanking(),season=ranking.season,rows=ranking.rows||[],mine=rows.find(r=>r.user_id===ctx.user.id);
  let own=mine,position=mine?rows.indexOf(mine)+1:null;
  if(!own&&season){own=await checked(db.from('lx_rank_scores').select('user_id,monthly_score').eq('season_key',season.season_key).eq('user_id',ctx.user.id).maybeSingle());if(own){const r=await db.from('lx_rank_scores').select('user_id',{head:true,count:'exact'}).eq('season_key',season.season_key).gt('monthly_score',own.monthly_score);position=(r.count||0)+1}}
  const past=await checked(db.from('lx_rank_seasons').select('season_key,prize_cents,status,winner_user_id,winner_score,winner_confirmed').eq('status','closed').order('starts_at',{ascending:false}).limit(12)).catch(()=>[]);
