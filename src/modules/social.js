@@ -18,7 +18,7 @@ export async function mount(host,ctx){
  const drafts=socialDrafts(me),outbox=messageOutbox(uuid),openComments=new Set();
  const threadKey=target=>target?target.kind+':'+target.id:'';
  let postDraft=drafts.get('post'),postFile=null,postSending=false,loadingThread='';
- let presence=new Map(),feedSearch='',feedSearchTimer=null,feedFilter='all',sponsoredPostIds=new Set(),demoPostCounts=new Map(),demoProfileCounts=new Map(),publicDemoPostCounts=new Map(),publicDemoProfileCounts=new Map(),followStats=new Map(),labMode=false,founderIds=new Set();
+ let presence=new Map(),feedSearch='',feedSearchTimer=null,feedFilter='all',sponsoredPostIds=new Set(),savedPostIds=new Set(),demoPostCounts=new Map(),demoProfileCounts=new Map(),publicDemoPostCounts=new Map(),publicDemoProfileCounts=new Map(),followStats=new Map(),labMode=false,founderIds=new Set();
  let draft='',sharedPost=/^#post=([-a-f0-9]{36})$/i.exec(location.hash)?.[1]||null,profileReturnFocus=null;
  function dialog(title,body,mode='standard'){const root=host.querySelector('#socialDialog');if(mode==='member'){profileReturnFocus=document.activeElement;root.innerHTML='<div class="inline-dialog lx-member-profile-overlay" role="dialog" aria-modal="true" aria-label="Perfil de '+esc(title)+'"><div class="lx-member-profile-shell"><button class="lx-member-profile-close" data-social-close aria-label="Fechar perfil">×</button>'+body+'</div></div>';root.querySelector('[data-social-close]')?.focus();return}root.innerHTML='<div class="inline-dialog" role="dialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="panel"><div class="heading"><h2>'+esc(title)+'</h2><button class="close" data-social-close aria-label="Fechar">×</button></div>'+body+'</div></div>';root.querySelector('input,textarea,[data-social-close]')?.focus()}
  async function showMemberProfile(id){
@@ -40,7 +40,7 @@ export async function mount(host,ctx){
  async function loadPresence(){try{const rows=await checked(db.rpc('lx_presence_for_viewer'));if(!alive)return;presence=new Map((rows||[]).map(p=>[p.user_id,p]));host.querySelectorAll('[data-social-presence]').forEach(node=>node.innerHTML=presenceMarkup(presenceOf(node.dataset.socialPresence)));host.querySelectorAll('[data-social-now-playing]').forEach(node=>node.innerHTML=listeningMarkup(presenceOf(node.dataset.socialNowPlaying)));const circle=host.querySelector('#socialOnlineFriends');if(circle)circle.innerHTML=onlineFriends()}catch{/* Keep previous permitted presence when offline. */}}
  function feedToolbar(){
   const my=followStats.get(me)||{followers:0,following_count:0};
-  const filters=[['all','Para você'],['following','Seguindo'],['friends','Amigos'],['popular','Em alta']];
+  const filters=[['all','Para você'],['following','Seguindo'],['friends','Amigos'],['popular','Em alta'],['saved','Salvos']];
   return '<div class="feed-toolbar lx-social-v3-toolbar">'+
    '<div class="lx-feed-toolbar-top"><div><span class="premium-overline">SEU ESPAÇO LX</span><h2>Descubra e compartilhe</h2><p class="lx-social-follow-summary"><strong>'+compactSocialCount(Number(my.followers||0)+Number(demoProfileCounts.get(me)||0))+'</strong> seguidores · <strong>'+compactSocialCount(my.following_count||0)+'</strong> seguindo</p>'+(!labMode?publicDemoLabel(publicDemoProfileCounts.get(me),'profile'):'')+'</div>'+
    '<button type="button" class="lx-feed-compose-jump" data-jump-compose>'+icon('plus')+' Criar publicação</button></div>'+
@@ -54,12 +54,12 @@ export async function mount(host,ctx){
   if(!candidates.length)return '<p class="muted">Explore perfis para encontrar novas conexões na comunidade.</p>';
   return candidates.map(p=>'<div class="lx-social-suggestion">'+avatar(p,'member-avatar')+'<div class="lx-suggestion-detail"><strong>'+profileName(p)+verifiedBadge(p)+founderBadge(p)+'</strong><small>'+esc(p.username?'@'+p.username:'Membro LX')+'</small></div><button type="button" data-person="'+esc(p.user_id)+'" aria-label="Ver perfil de '+esc(p.name||'membro')+'">'+icon('arrow')+'</button></div>').join('');
  }
- function visiblePosts(){return communityFeed(posts.map(p=>({...p,author_name:person(p.author_id)?.name,author_username:person(p.author_id)?.username})),{filter:feedFilter,search:feedSearch,viewerId:me,friends:friends().map(p=>p.user_id),following:people.filter(p=>followStats.get(p.user_id)?.is_following).map(p=>p.user_id),sponsored:[...sponsoredPostIds]})}
- function feedList(){const items=visiblePosts();return items.length?items.map(feedPost).join(''):empty('Nada encontrado por aqui',feedFilter==='following'?'Siga alguns perfis em Pessoas para acompanhar as publicações deles.':feedSearch?'Tente outro termo de busca ou limpe o filtro.':'Compartilhe uma história para começar a conversa.')}
- function updateFeedResults(){const node=host.querySelector('#feedPosts');if(!node)return;node.innerHTML=feedList();hydrateMedia(node);host.querySelectorAll('[data-feed-filter]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.feedFilter===feedFilter)));const count=host.querySelector('#lxFeedShowing');if(count)count.textContent=visiblePosts().length+(feedFilter==='popular'?' publicações · em alta entre os posts carregados':' publicações nos resultados')}
+ function visiblePosts(){return communityFeed((feedFilter==='saved'?posts.filter(p=>savedPostIds.has(p.id)):posts).map(p=>({...p,author_name:person(p.author_id)?.name,author_username:person(p.author_id)?.username})),{filter:feedFilter==='saved'?'all':feedFilter,search:feedSearch,viewerId:me,friends:friends().map(p=>p.user_id),following:people.filter(p=>followStats.get(p.user_id)?.is_following).map(p=>p.user_id),sponsored:[...sponsoredPostIds]})}
+ function feedList(){const items=visiblePosts();return items.length?items.map(feedPost).join(''):empty('Nada encontrado por aqui',feedFilter==='saved'?'Publicações que você salvar aparecerão aqui, respeitando a privacidade dos autores.':feedFilter==='following'?'Siga alguns perfis em Pessoas para acompanhar as publicações deles.':feedSearch?'Tente outro termo de busca ou limpe o filtro.':'Compartilhe uma história para começar a conversa.')}
+ function updateFeedResults(){const node=host.querySelector('#feedPosts');if(!node)return;node.innerHTML=feedList();hydrateMedia(node);host.querySelectorAll('[data-feed-filter]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.feedFilter===feedFilter)));const count=host.querySelector('#lxFeedShowing');if(count)count.textContent=visiblePosts().length+(feedFilter==='saved'?' publicações salvas disponíveis':feedFilter==='popular'?' publicações · em alta entre os posts carregados':' publicações nos resultados')}
  function feedPost(post){
   const author=person(post.author_id),mine=post.author_id===me,canOpenProfile=mine||people.some(p=>p.user_id===post.author_id),like=post.likes?.some(x=>x.user_id===me),count=post.likes?.length||0,sponsored=post.visibility==='public'&&sponsoredPostIds.has(post.id);
-  return '<article class="feed-post '+(sponsored?'lx-sponsored-post':'')+'" id="post-'+esc(post.id)+'">'+(sponsored?'<div class="lx-sponsored-label">'+icon('megaphone')+' Divulgação patrocinada · LX Plus</div>':'')+'<header>'+(canOpenProfile?'<button type="button" class="lx-feed-author-avatar" data-person="'+esc(post.author_id)+'" aria-label="Abrir perfil de '+esc(author.name||'membro')+'">'+avatar(author)+'</button>':avatar(author))+'<div>'+(canOpenProfile?'<button type="button" class="lx-feed-author-name" data-person="'+esc(post.author_id)+'">'+profileName(author)+verifiedBadge(author)+founderBadge(author)+'</button>':'<strong>'+profileName(author)+verifiedBadge(author)+founderBadge(author)+'</strong>')+'<small>'+esc(author.username?'@'+author.username:'Membro LX')+' · '+dateTime(post.created_at)+' · '+({public:'Comunidade',friends:'Amigos',private:'Só eu'}[post.visibility])+'</small></div><button class="icon-button" data-report-post="'+esc(post.id)+'" aria-label="Denunciar publicação">•••</button></header><p class="post-body">'+esc(post.body)+'</p>'+(post.media_path?(post.media_type==='video'?'<video class="post-media" controls playsinline preload="metadata" data-social-media="'+esc(post.media_path)+'"></video>':'<img class="post-media" loading="lazy" alt="Imagem da publicação" data-social-media="'+esc(post.media_path)+'">'):'')+'<footer><button class="'+(like?'active':'')+'" data-post-like="'+esc(post.id)+'" aria-label="'+(like?'Descurtir':'Curtir')+' publicação">♡ '+engagementPreview(count,demoPostCounts.get(post.id))+'</button>'+(!labMode?publicDemoLabel(publicDemoPostCounts.get(post.id),'post'):'')+'<button data-post-comments="'+esc(post.id)+'">'+icon('chat')+' '+(post.comments?.length||0)+'</button><button data-share-post="'+esc(post.id)+'">↗ Compartilhar</button>'+(mine||ctx.admin?'<button class="lx-post-id-button" data-copy-post-id="'+esc(post.id)+'" title="Copiar ID da publicação">'+icon('copy')+' ID</button>':'')+(mine?'<button data-edit-post="'+esc(post.id)+'">Editar</button><button data-delete-post="'+esc(post.id)+'">Excluir</button>':'')+'</footer><div class="post-comments" id="comments-'+esc(post.id)+'" '+(openComments.has(post.id)?'':'hidden')+'>'+((post.comments||[]).map(c=>'<p><strong>'+esc(person(c.user_id).name)+':</strong> '+esc(c.body)+'</p>').join(''))+'<form class="comment-form" data-comment-post="'+esc(post.id)+'"><input name="body" value="'+esc(drafts.get('comment:'+post.id).text)+'" maxlength="1500" placeholder="Escreva um comentário" aria-label="Comentário" required><button class="btn small">Enviar</button></form></div></article>';
+  return '<article class="feed-post '+(sponsored?'lx-sponsored-post':'')+'" id="post-'+esc(post.id)+'">'+(sponsored?'<div class="lx-sponsored-label">'+icon('megaphone')+' Divulgação patrocinada · LX Plus</div>':'')+'<header>'+(canOpenProfile?'<button type="button" class="lx-feed-author-avatar" data-person="'+esc(post.author_id)+'" aria-label="Abrir perfil de '+esc(author.name||'membro')+'">'+avatar(author)+'</button>':avatar(author))+'<div>'+(canOpenProfile?'<button type="button" class="lx-feed-author-name" data-person="'+esc(post.author_id)+'">'+profileName(author)+verifiedBadge(author)+founderBadge(author)+'</button>':'<strong>'+profileName(author)+verifiedBadge(author)+founderBadge(author)+'</strong>')+'<small>'+esc(author.username?'@'+author.username:'Membro LX')+' · '+dateTime(post.created_at)+' · '+({public:'Comunidade',friends:'Amigos',private:'Só eu'}[post.visibility])+'</small></div><button class="icon-button" data-report-post="'+esc(post.id)+'" aria-label="Denunciar publicação">•••</button></header><p class="post-body">'+esc(post.body)+'</p>'+(post.media_path?(post.media_type==='video'?'<video class="post-media" controls playsinline preload="metadata" data-social-media="'+esc(post.media_path)+'"></video>':'<img class="post-media" loading="lazy" alt="Imagem da publicação" data-social-media="'+esc(post.media_path)+'">'):'')+'<footer><button class="'+(like?'active':'')+'" data-post-like="'+esc(post.id)+'" aria-label="'+(like?'Descurtir':'Curtir')+' publicação">♡ '+engagementPreview(count,demoPostCounts.get(post.id))+'</button>'+(!labMode?publicDemoLabel(publicDemoPostCounts.get(post.id),'post'):'')+'<button data-post-comments="'+esc(post.id)+'">'+icon('chat')+' '+(post.comments?.length||0)+'</button><button data-share-post="'+esc(post.id)+'">↗ Compartilhar</button><button type="button" class="'+(savedPostIds.has(post.id)?'active':'')+'" data-post-bookmark="'+esc(post.id)+'" aria-pressed="'+(savedPostIds.has(post.id)?'true':'false')+'" aria-label="'+(savedPostIds.has(post.id)?'Remover dos salvos':'Salvar publicação')+'">'+(savedPostIds.has(post.id)?'✓ Salvo':'☆ Salvar')+'</button>'+(mine||ctx.admin?'<button class="lx-post-id-button" data-copy-post-id="'+esc(post.id)+'" title="Copiar ID da publicação">'+icon('copy')+' ID</button>':'')+(mine?'<button data-edit-post="'+esc(post.id)+'">Editar</button><button data-delete-post="'+esc(post.id)+'">Excluir</button>':'')+'</footer><div class="post-comments" id="comments-'+esc(post.id)+'" '+(openComments.has(post.id)?'':'hidden')+'>'+((post.comments||[]).map(c=>'<p><strong>'+esc(person(c.user_id).name)+':</strong> '+esc(c.body)+'</p>').join(''))+'<form class="comment-form" data-comment-post="'+esc(post.id)+'"><input name="body" value="'+esc(drafts.get('comment:'+post.id).text)+'" maxlength="1500" placeholder="Escreva um comentário" aria-label="Comentário" required><button class="btn small">Enviar</button></form></div></article>';
  }
  function memberCard(p){const stats=followStats.get(p.user_id)||{followers:0,following_count:0,is_following:false};
   let actions='';
@@ -89,19 +89,52 @@ export async function mount(host,ctx){
  async function loadPeople(){const rows=await socialDirectory();if(alive){const permission=await db.rpc('lx_demo_social_view_access');labMode=permission.error?false:permission.data===true;const ids=[...new Set([me,...rows.map(p=>p.user_id)])].slice(0,50);const [demos,publicDemos,follows,founders]=await Promise.all([db.rpc('lx_demo_social_visible',{p_posts:[],p_profiles:ids}),db.rpc('lx_demo_social_public',{p_posts:[],p_profiles:ids}),db.rpc('lx_social_follow_stats',{p_users:ids}),db.rpc('lx_official_founder_profiles',{p_users:ids})]);if(!demos.error)demoProfileCounts=new Map((demos.data||[]).filter(x=>x.kind==='profile').map(x=>[x.id,x.demo_count]));if(!publicDemos.error)publicDemoProfileCounts=new Map((publicDemos.data||[]).filter(x=>x.kind==='profile').map(x=>[x.id,x.demo_count]));if(!follows.error)followStats=new Map((follows.data||[]).map(x=>[x.user_id,x]));if(!founders.error)founderIds=new Set(founders.data||[]);people=rows.map(p=>({...p,is_founder:founderIds.has(p.user_id)})).sort((a,b)=>Number(b.is_founder)-Number(a.is_founder));ctx.setDirectory?.(people);try{const result=await db.rpc('lx_premium_assets',{p_users:[...new Set([me,...rows.map(p=>p.user_id)])].slice(0,60)});if(!result.error)expressionAssets=result.data||[]}catch{}}}
  async function loadGroups(){const rows=await checked(db.rpc('lx_group_list'));if(alive)groups=rows||[]}
  async function loadPosts(append=false){
-  const token=++feedGeneration;let q=db.from('lx_posts').select('id,author_id,body,media_path,media_type,visibility,status,created_at').eq('status','published').order('created_at',{ascending:false}).order('id',{ascending:false}).limit(20);if(sharedPost)q=q.eq('id',sharedPost);else if(append&&feedBefore)q=q.lt('created_at',feedBefore);
-  const pageRows=await checked(q);if(!alive||token!==feedGeneration)return;
-   let rows=pageRows;
-   if(!append&&!sharedPost){
-    const featured=await db.rpc('lx_featured_sponsored_posts');
-    if(!featured.error&&Array.isArray(featured.data)&&featured.data.length){
-     const special=await db.from('lx_posts').select('id,author_id,body,media_path,media_type,visibility,status,created_at').in('id',featured.data).eq('status','published').eq('visibility','public').limit(5);
-     if(!special.error)rows=[...(special.data||[]),...pageRows].filter((post,i,all)=>all.findIndex(other=>other.id===post.id)===i);
-    }
+  const token=++feedGeneration,savedMode=feedFilter==='saved'&&!sharedPost;
+  const selection='id,author_id,body,media_path,media_type,visibility,status,created_at';
+  let pageRows=[],bookmarkPage=[];
+  if(savedMode){
+   let q=db.from('lx_post_bookmarks').select('post_id,created_at').eq('user_id',me).order('created_at',{ascending:false}).order('post_id',{ascending:false}).limit(20);
+   if(append&&feedBefore)q=q.lt('created_at',feedBefore);
+   bookmarkPage=await checked(q);
+   if(!alive||token!==feedGeneration)return;
+   const ids=(bookmarkPage||[]).map(row=>row.post_id);
+   if(ids.length){
+    pageRows=await checked(db.from('lx_posts').select(selection).in('id',ids).eq('status','published'));
+    pageRows.sort((a,b)=>ids.indexOf(a.id)-ids.indexOf(b.id));
    }
-   if(!alive||token!==feedGeneration)return;const ids=(rows||[]).map(p=>p.id);let likes=[],comments=[],promoted=[],demoRows=[],publicDemoRows=[];
-  if(ids.length)[likes,comments,promoted,demoRows,publicDemoRows]=await Promise.all([checked(db.from('lx_post_likes').select('post_id,user_id').in('post_id',ids).limit(1000)),checked(db.from('lx_post_comments').select('id,post_id,user_id,body,created_at').in('post_id',ids).order('created_at').limit(1000)),db.rpc('lx_visible_sponsored_posts',{p_post_ids:ids}).then(result=>result.error?[]:result.data||[]).catch(()=>[]),db.rpc('lx_demo_social_visible',{p_posts:ids,p_profiles:[]}).then(result=>result.error?[]:result.data||[]).catch(()=>[]),db.rpc('lx_demo_social_public',{p_posts:ids,p_profiles:[]}).then(result=>result.error?[]:result.data||[]).catch(()=>[])]);
-  if(!alive||token!==feedGeneration)return;const loaded=(rows||[]).map(p=>({...p,likes:(likes||[]).filter(l=>l.post_id===p.id),comments:(comments||[]).filter(c=>c.post_id===p.id)}));demoPostCounts=append?new Map([...demoPostCounts,...demoRows.filter(x=>x.kind==='post').map(x=>[x.id,x.demo_count])]):new Map(demoRows.filter(x=>x.kind==='post').map(x=>[x.id,x.demo_count]));publicDemoPostCounts=append?new Map([...publicDemoPostCounts,...publicDemoRows.filter(x=>x.kind==='post').map(x=>[x.id,x.demo_count])]):new Map(publicDemoRows.filter(x=>x.kind==='post').map(x=>[x.id,x.demo_count]));sponsoredPostIds=append?new Set([...sponsoredPostIds,...promoted]):new Set(promoted);posts=[...new Map((append?[...posts,...loaded]:loaded).map(p=>[p.id,p])).values()];feedBefore=pageRows?.length===20?pageRows.at(-1).created_at:null;
+  }else{
+   let q=db.from('lx_posts').select(selection).eq('status','published').order('created_at',{ascending:false}).order('id',{ascending:false}).limit(20);
+   if(sharedPost)q=q.eq('id',sharedPost);else if(append&&feedBefore)q=q.lt('created_at',feedBefore);
+   pageRows=await checked(q);
+  }
+  if(!alive||token!==feedGeneration)return;
+  let rows=pageRows;
+  if(!savedMode&&!append&&!sharedPost){
+   const featured=await db.rpc('lx_featured_sponsored_posts');
+   if(!featured.error&&Array.isArray(featured.data)&&featured.data.length){
+    const special=await db.from('lx_posts').select(selection).in('id',featured.data).eq('status','published').eq('visibility','public').limit(5);
+    if(!special.error)rows=[...(special.data||[]),...pageRows].filter((post,i,all)=>all.findIndex(other=>other.id===post.id)===i);
+   }
+  }
+  if(!alive||token!==feedGeneration)return;
+  const ids=(rows||[]).map(p=>p.id);let likes=[],comments=[],promoted=[],demoRows=[],publicDemoRows=[],bookmarks=[];
+  if(ids.length)[likes,comments,promoted,demoRows,publicDemoRows,bookmarks]=await Promise.all([
+   checked(db.from('lx_post_likes').select('post_id,user_id').in('post_id',ids).limit(1000)),
+   checked(db.from('lx_post_comments').select('id,post_id,user_id,body,created_at').in('post_id',ids).order('created_at').limit(1000)),
+   db.rpc('lx_visible_sponsored_posts',{p_post_ids:ids}).then(result=>result.error?[]:result.data||[]).catch(()=>[]),
+   db.rpc('lx_demo_social_visible',{p_posts:ids,p_profiles:[]}).then(result=>result.error?[]:result.data||[]).catch(()=>[]),
+   db.rpc('lx_demo_social_public',{p_posts:ids,p_profiles:[]}).then(result=>result.error?[]:result.data||[]).catch(()=>[]),
+   checked(db.from('lx_post_bookmarks').select('post_id').eq('user_id',me).in('post_id',ids))
+  ]);
+  if(!alive||token!==feedGeneration)return;
+  savedPostIds=append?new Set([...savedPostIds,...bookmarks.map(row=>row.post_id)]):new Set(bookmarks.map(row=>row.post_id));
+  const loaded=(rows||[]).map(p=>({...p,likes:(likes||[]).filter(l=>l.post_id===p.id),comments:(comments||[]).filter(c=>c.post_id===p.id)}));
+  demoPostCounts=append?new Map([...demoPostCounts,...demoRows.filter(x=>x.kind==='post').map(x=>[x.id,x.demo_count])]):new Map(demoRows.filter(x=>x.kind==='post').map(x=>[x.id,x.demo_count]));
+  publicDemoPostCounts=append?new Map([...publicDemoPostCounts,...publicDemoRows.filter(x=>x.kind==='post').map(x=>[x.id,x.demo_count])]):new Map(publicDemoRows.filter(x=>x.kind==='post').map(x=>[x.id,x.demo_count]));
+  sponsoredPostIds=append?new Set([...sponsoredPostIds,...promoted]):new Set(promoted);
+  posts=[...new Map((append?[...posts,...loaded]:loaded).map(p=>[p.id,p])).values()];
+  const pagination=savedMode?bookmarkPage:pageRows;
+  feedBefore=pagination?.length===20?pagination.at(-1).created_at:null;
   if(tab==='Feed'){const scroll=window.scrollY;draw();window.scrollTo({top:scroll})}
  }
  async function loadMessages(older=false){
@@ -153,7 +186,7 @@ export async function mount(host,ctx){
  host.addEventListener('click',async e=>{
   if(e.target.classList.contains('lx-member-profile-overlay')){closeDialog();return}const b=e.target.closest('button');if(!b)return;if(b.dataset.expressionPage){expressionPage=Math.max(0,Math.min(Math.ceil(expressionAssets.length/24)-1,expressionPage+Number(b.dataset.expressionPage)));draw();renderMessages(false);return}if(b.hasAttribute('data-expression-picker')){expressionOpen=!expressionOpen;draw();renderMessages(false);return}if(b.dataset.insertExpression){const token=expressionToken(b.dataset.insertExpression);if(!token||ctx.profile()?.is_premium!==true)return;const input=host.querySelector('#chatDraft');if(input.value.length-(input.selectionEnd-input.selectionStart)+token.length>4000){ctx.toast('A mensagem chegou ao limite de 4.000 caracteres.');return}input.setRangeText(token,input.selectionStart,input.selectionEnd,'end');draft=input.value;drafts.set(threadKey(selected),{text:draft});input.focus();return}
   try{
-   if(b.dataset.feedFilter){feedFilter=b.dataset.feedFilter;updateFeedResults();return}
+   if(b.dataset.feedFilter){const crossingSaved=(feedFilter==='saved')!==(b.dataset.feedFilter==='saved');feedFilter=b.dataset.feedFilter;if(crossingSaved)await loadPosts();else updateFeedResults();return}
     if(b.hasAttribute('data-jump-compose')){const area=host.querySelector('#postForm textarea');area?.scrollIntoView({block:'center',behavior:'smooth'});area?.focus();return}
     if(b.dataset.postIdea){const idea=socialComposerIdeas().find(x=>x.id===b.dataset.postIdea);const area=host.querySelector('#postForm textarea');if(!idea||!area)return;area.value=socialComposerDraft(area.value,idea.prefix);postDraft.text=area.value;drafts.set('post',postDraft);const counter=host.querySelector('#lxComposeCount');if(counter)counter.textContent=area.value.length+' / 4.000';area.focus();area.setSelectionRange(area.value.length,area.value.length);return}
    if(b.dataset.socialTab){stopRecording();tab=b.dataset.socialTab;if(tab==='Feed')sharedPost=null;draw();if(tab==='Feed')await loadPosts();return}
@@ -172,6 +205,17 @@ export async function mount(host,ctx){
    if(b.dataset.jumpMessage){const message=host.querySelector('#message-'+CSS.escape(b.dataset.jumpMessage));if(message)message.scrollIntoView({block:'center',behavior:'smooth'});else ctx.toast('Carregue as mensagens anteriores para abrir esta mensagem fixada.');return}
    if(b.dataset.deleteMessage){if(b.dataset.confirm!=='yes'){b.dataset.confirm='yes';b.textContent='Confirmar exclusão';return}await checked(db.rpc('lx_delete_message_for_all',{p_client_id:b.dataset.deleteMessage}));await loadMessages();return}
    if(b.dataset.copyPostId){const post=posts.find(p=>p.id===b.dataset.copyPostId);if(!post||!(post.author_id===me||ctx.admin))throw Error('Sem acesso ao ID desta publicação.');await navigator.clipboard.writeText(post.id);ctx.toast('ID da publicação copiado para usar no ADM.');return}
+    if(b.dataset.postBookmark){
+     const post=posts.find(p=>p.id===b.dataset.postBookmark&&p.status==='published');
+     if(!post)throw Error('Publicação indisponível para salvar.');
+     const had=savedPostIds.has(post.id);b.disabled=true;
+     if(had)await checked(db.from('lx_post_bookmarks').delete().eq('user_id',me).eq('post_id',post.id));
+     else await checked(db.from('lx_post_bookmarks').insert({user_id:me,post_id:post.id}));
+     if(had)savedPostIds.delete(post.id);else savedPostIds.add(post.id);
+     if(feedFilter==='saved')await loadPosts();else updateFeedResults();
+     ctx.toast(had?'Publicação removida dos salvos.':'Publicação salva na sua conta.');
+     return;
+    }
     if(b.dataset.postLike){const post=posts.find(p=>p.id===b.dataset.postLike),liked=post.likes.some(l=>l.user_id===me);await checked(liked?db.from('lx_post_likes').delete().eq('post_id',post.id).eq('user_id',me):db.from('lx_post_likes').insert({post_id:post.id,user_id:me}));if(liked)post.likes=post.likes.filter(l=>l.user_id!==me);else post.likes.push({post_id:post.id,user_id:me});draw();return}
    if(b.dataset.postComments){const node=host.querySelector('#comments-'+CSS.escape(b.dataset.postComments));node.hidden=!node.hidden;if(node.hidden)openComments.delete(b.dataset.postComments);else openComments.add(b.dataset.postComments);node.querySelector('input')?.focus();return}
    if(b.dataset.sharePost){const url=location.origin+location.pathname+'#post='+encodeURIComponent(b.dataset.sharePost);if(navigator.share)await navigator.share({title:'Publicação na LX Plus',url});else{await navigator.clipboard.writeText(url);ctx.toast('Link copiado. A visibilidade da publicação continua protegida.')}return}
