@@ -101,5 +101,8 @@ test('native player has LX controls; third-party providers retain their official
  assert.match(dock,/data-music-action="toggle"/);
  assert.match(css,/lx-native-now-controls/);
  assert.match(dock,/source\.kind==='iframe'/);
- assert.match(dock,/document\.createElement\('iframe'\)/);
+ const official=file('src/official-music-controller.js');
+ assert.match(official,/document\\.createElement\\('iframe'\\)/);
+ assert.match(official,/YT\\.PlayerState\\.ENDED/);
+ assert.match(official,/controller\\.togglePlay\\(\\)/);
 });
