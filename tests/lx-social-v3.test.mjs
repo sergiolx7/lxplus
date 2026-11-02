@@ -49,8 +49,8 @@ test('filters and search are wired to the actual community feed, not only decora
  assert.match(social,/import \{communityFeed,socialComposerIdeas,socialComposerDraft,communityStats\}/);
  assert.match(social,/function visiblePosts\(\)\{return communityFeed\(/);
  assert.match(social,/data-feed-filter=".*feedFilter===/);
- assert.match(social,/filter:feedFilter,search:feedSearch/);
- assert.match(social,/feedFilter=b\.dataset\.feedFilter;updateFeedResults\(\)/);
+ assert.match(social,/filter:feedFilter==='saved'\?'all':feedFilter,search:feedSearch/);
+ assert.match(social,/feedFilter=b\.dataset\.feedFilter;if\(crossingSaved\)await loadPosts\(\);else updateFeedResults\(\)/);
  assert.match(social,/if\(e\.target\.id==='feedSearch'\)/);
  assert.match(social,/setTimeout\(\(\)=>\{if\(alive&&tab==='Feed'\)updateFeedResults\(\)\},140\)/);
  assert.match(social,/clearTimeout\(feedSearchTimer\)/);
