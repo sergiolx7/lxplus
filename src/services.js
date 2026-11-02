@@ -7,7 +7,7 @@ export async function catalogPage({types=[],term='',offset=0,limit=48,admin=fals
  let query=db.from('lx_catalog').select('id,payload,published,updated_at',{count:'exact'}).order('updated_at',{ascending:false}).order('id',{ascending:false});
  if(!admin)query=query.eq('published',true);
  if(types.length)query=query.in('payload->>type',types);
- for(const field of ['artist','album','genre'])if(typeof match[field]==='string')query=query.eq('payload->>'+field,match[field]);
+ for(const field of ['artist','album','genre','country','year'])if(typeof match[field]==='string'&&match[field].trim())query=query.eq('payload->>'+field,match[field]);
  const clean=searchTerm(term);
  if(clean)query=query.or(catalogFilter(clean));
  const result=await query.range(offset,offset+Math.min(60,limit)-1);
