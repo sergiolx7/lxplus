@@ -32,3 +32,17 @@
 .lx-engagement-preview small{font-size:8px;letter-spacing:.04em;color:#f2d1a7;border:1px solid #d8b18583;border-radius:6px;padding:2px 4px}
 .feed-post footer .lx-demo-metric{font-variant-numeric:tabular-nums}
 @media(max-width:450px){.lx-follow-stats,.lx-social-follow-summary{font-size:10px;gap:7px}.lx-member-follow-stats{gap:11px;padding:9px}}
+
+/* Private LX Lab: counters look like regular social metrics, with one honest
+   top-level environment notice visible only to permitted preview viewers. */
+.lx-lab-private-banner{margin:8px 0 16px;padding:10px 15px;border:1px solid #997ac858;border-left:3px solid #b99dff;background:#a487cb15;border-radius:11px;color:#c9b9dd;font-size:11px;line-height:1.65;letter-spacing:.01em}
+.lx-lab-access{padding:22px;border:1px solid #9376be48!important;background:linear-gradient(155deg,#232139,#15171e)!important;border-radius:16px}
+.lx-lab-access h3{margin:9px 0;font-size:18px;color:#f2e7ff}
+.lx-lab-access p{font-size:12px;color:#bdb5cb;line-height:1.65}
+.lx-lab-access .form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end;margin:18px 0}
+.lx-lab-access .form input{width:100%;min-height:43px;border-radius:10px}
+.lx-lab-viewers{display:grid;gap:8px}
+.lx-lab-viewer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #ffffff12;background:#ffffff05;border-radius:11px}
+.lx-lab-viewer>span{display:grid;gap:5px;min-width:0;overflow-wrap:anywhere}
+.lx-lab-viewer strong{font-size:12px}.lx-lab-viewer small{font-size:10px;color:#aba1bf}
+@media(max-width:590px){.lx-lab-access .form{grid-template-columns:1fr}.lx-lab-viewer{flex-wrap:wrap}}
