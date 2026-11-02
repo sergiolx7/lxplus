@@ -36,7 +36,21 @@ const genreRules=[
  ['classica',/\b(classica|classical|orquestral)\b/]
 ];
 const plain=value=>fold(value).replace(/[^a-z0-9]+/g,' ').trim();
-const artistName=item=>plain(item?.artist||'').split(/\s+(?:feat|ft|part|com)\s+/)[0].trim();
+const knownArtists=[...brazilianTrapArtists,...brazilianSertanejoArtists];
+const hasFullWord=(text,name)=>(' '+text+' ').includes(' '+name+' ');
+export function identifiedArtist(item){
+ const raw=plain(item?.artist||'').split(/\s+(?:feat|ft|part|com)\s+/)[0].trim();
+ const title=plain(item?.title||''),channel=plain(item?.channelTitle||'');
+ // The title/channel are metadata provided by the platform, not an audio or voice fingerprint.
+ const titleHits=knownArtists.filter(name=>hasFullWord(title,name)).sort((a,b)=>title.indexOf(a)-title.indexOf(b));
+ const fromTitle=titleHits[0]||'';
+ if(knownArtists.some(name=>hasFullWord(raw,name)))return fromTitle&&title.indexOf(fromTitle)===0?fromTitle:raw;
+ if(fromTitle)return fromTitle;
+ const fromChannel=knownArtists.find(name=>hasFullWord(channel,name));
+ if(fromChannel)return fromChannel;
+ return /^(youtube|lx music|artista nao informado|artista desconhecido|unknown|varios artistas)$/.test(raw)?'':raw;
+}
+const artistName=item=>identifiedArtist(item);
 const hasArtist=(field,artist)=>artist===field||field.startsWith(artist+' ')||field.includes(' '+artist+' ');
 function knownArtistLane(item){
  const a=artistName(item);
@@ -81,4 +95,10 @@ export function genreSearchTerms(item){
 export function musicLaneLabel(item){
  const lane=musicLane(item);
  return ({trap:'trap',sertanejo:'sertanejo',funk:'funk',forro:'forró',hiphop:'rap',eletronica:'música eletrônica',pagode:'pagode'}[lane.genre])||lane.genre||'mesmo artista';
+}
+
+// For YouTube sessions, LX Flow must not jump into a Spotify track or a direct file.
+export function isYouTubeTrack(item){
+ const value=String(item?.sourceUrl||item?.youtubeUrl||item?.externalMusicUrl||item?.mediaKey||item?.nativeAsset||'');
+ return item?.provider==='YouTube'||/^youtube:[A-Za-z0-9_-]{11}$/.test(value)||/^https:\/\/(?:www\.|music\.)?youtube\.com\//.test(value)||/^https:\/\/youtu\.be\//.test(value);
 }
