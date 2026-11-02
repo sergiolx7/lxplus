@@ -58,7 +58,7 @@ export function musicLane(item){
  const artist=knownArtistLane(item);
  let genre=genreRules.find(([,test])=>test.test(descriptor))?.[0]||'';
  // Prefer explicit genre, but fall back to well-established artists when catalog metadata is absent.
- if(!genre)genre=artist?.genre||'';
+ if(artist&&(!genre||genre==='hiphop'||genre==='pop'||genre===descriptor))genre=artist.genre;
  if(!genre&&descriptor)genre=descriptor; // Unknown genre labels compare exactly, never randomly.
  return {genre,region:regionFor(item,descriptor,artist),artist:artistName(item)};
 }
