@@ -16,7 +16,7 @@ export async function mountRanking(host,ctx){
   try{
    const rollover=await db.rpc('lx_rank_rollover_if_needed');
    if(rollover.error)throw rollover.error;
-   const ranking=await getRanking(),season=ranking.season,rows=ranking.rows||[],mine=rows.find(r=>r.user_id===ctx.user.id);
+   const [ranking,activeResult]=await Promise.all([getRanking(),db.rpc('lx_rank_active_status')]);const activity=activeResult.error?null:activeResult.data,season=ranking.season,rows=ranking.rows||[],mine=rows.find(r=>r.user_id===ctx.user.id);
    let own=mine,position=mine?rows.indexOf(mine)+1:null;
    if(!own&&season){
     own=await checked(db.from('lx_rank_scores').select('user_id,monthly_score').eq('season_key',season.season_key).eq('user_id',ctx.user.id).maybeSingle());
@@ -26,7 +26,7 @@ export async function mountRanking(host,ctx){
    const past=await checked(db.from('lx_rank_seasons').select('season_key,prize_cents,status,winner_user_id,winner_score,winner_confirmed').in('status',['closed','review']).order('starts_at',{ascending:false}).limit(12)).catch(()=>[]);
    const ids=[...new Set([...rows.map(r=>r.user_id),...past.map(s=>s.winner_user_id).filter(Boolean)])];
    const names=ids.length?await checked(db.from('lx_profiles').select('user_id,name,username,avatar_url,verified,ranking_visible').in('user_id',ids).eq('ranking_visible',true)).catch(()=>[]):[];
-   if(alive)host.innerHTML=renderRanking({season,rows,people:[...names.filter(p=>p.user_id!==ctx.user.id),ctx.profile()],userId:ctx.user.id,own,position,past});
+   if(alive)host.innerHTML=renderRanking({season,rows,people:[...names.filter(p=>p.user_id!==ctx.user.id),ctx.profile()],userId:ctx.user.id,own,position,past,activity});
   }catch(error){if(alive&&host.innerHTML==='')host.innerHTML='<div class="panel"><h2>Ranking temporariamente indisponível</h2><p>Tente atualizar a classificação.</p><button class="btn primary" data-rank-refresh>Atualizar ranking</button></div>'}
   finally{busy=false}
  }
