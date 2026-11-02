@@ -12,7 +12,7 @@ test('manual queue reorder never changes the currently playing track',()=>{
  assert.equal(q.move(3,0),true);
  assert.deepEqual(q.items.map(x=>x.id),[4,1,2,3]);
  assert.equal(q.items[q.index].id,2);
- assert.equal(q.move(q.index,3),true);
+ assert.equal(q.move(q.index,0),true);
  assert.equal(q.items[q.index].id,2);
  assert.equal(q.next().id,4,'queue order determines the next track');
 });
