@@ -4,18 +4,19 @@ import {renderExpressions} from './premium-expressions.js';
 
 // Public, viewer-authorized profile fields only. Never invent interests, badges,
 // activity, or expose the raw internal user UUID as a public "profile code".
-export function memberProfileCard(profile,{viewerId='',presence='',nowPlaying='',assets=[],demoFollowers=0}={}){
+export function memberProfileCard(profile,{viewerId='',presence='',nowPlaying='',assets=[],demoFollowers=0,followStats=null}={}){
  const p=profile&&typeof profile==='object'?profile:{},id=esc(p.user_id||''),self=p.user_id===viewerId;
  const username=String(p.username||'').trim(),label=username?'@'+username:'Identificador não definido';
  const bio=String(p.bio||'').trim(),status=String(p.status_text||'').trim();
  const owned=Array.isArray(assets)?assets.filter(asset=>asset?.user_id===p.user_id):[];
- const verified=p.verified===true;
+ const verified=p.verified===true,stats=followStats||{followers:0,following_count:0,is_following:false};
  let actions='';
  if(!self){
-  if(p.relation==='accepted')actions='<button class="btn primary" data-chat-peer="'+id+'">Enviar mensagem</button>'+(p.calls_enabled===true?'<button class="btn" data-voice-peer="'+id+'">Chamada de voz</button>':'');
-  else if(p.relation==='pending'&&p.direction==='incoming')actions='<button class="btn primary" data-friend-accept="'+id+'">Aceitar amizade</button><button class="btn" data-friend-reject="'+id+'">Recusar</button>';
-  else if(p.relation==='pending')actions='<span class="lx-member-pending">Solicitação de amizade enviada</span>';
-  else actions='<button class="btn primary" data-friend-request="'+id+'">Adicionar amigo</button>';
+  actions='<button class="btn '+(stats.is_following?'':'primary')+'" data-social-follow="'+id+'">'+(stats.is_following?'✓ Seguindo':'+ Seguir')+'</button>';
+  if(p.relation==='accepted')actions+='<button class="btn primary" data-chat-peer="'+id+'">Enviar mensagem</button>'+(p.calls_enabled===true?'<button class="btn" data-voice-peer="'+id+'">Chamada de voz</button>':'');
+  else if(p.relation==='pending'&&p.direction==='incoming')actions+='<button class="btn primary" data-friend-accept="'+id+'">Aceitar amizade</button><button class="btn" data-friend-reject="'+id+'">Recusar</button>';
+  else if(p.relation==='pending')actions+='<span class="lx-member-pending">Solicitação de amizade enviada</span>';
+  else actions+='<button class="btn primary" data-friend-request="'+id+'">Adicionar amigo</button>';
  }
  return '<article class="profile-summary lx-member-profile-card" '+profileLedAttributes(p)+'>'
    +profileCover(p)
@@ -24,7 +25,7 @@ export function memberProfileCard(profile,{viewerId='',presence='',nowPlaying=''
   +'<div class="lx-member-identity"><h2>'+profileName(p)+verifiedBadge(p)+'</h2>'
   +'<p class="lx-member-handle">'+esc(label)+'</p></div>'
   +'<div class="lx-member-tags">'+premiumBadge(p)+(verified?'<span class="lx-member-verified">✓ Perfil verificado</span>':'')+(p.relation==='accepted'?'<span class="lx-member-friend-label">Amigo LX</span>':'')+'</div>'
-  +'<div class="lx-member-presence">'+presence+'</div>'+(Number(demoFollowers)>0?'<p class="lx-demo-profile-count">'+Math.min(100000,Math.floor(Number(demoFollowers))).toLocaleString('pt-BR')+' seguidores <strong>SIMULAÇÃO</strong></p>':'')+(nowPlaying?'<section class="lx-member-listening">'+nowPlaying+'</section>':'')
+  +'<div class="lx-follow-stats lx-member-follow-stats"><span><strong>'+Number(stats.followers||0).toLocaleString('pt-BR')+'</strong> seguidores</span><span><strong>'+Number(stats.following_count||0).toLocaleString('pt-BR')+'</strong> seguindo</span></div>'+'<div class="lx-member-presence">'+presence+'</div>'+(Number(demoFollowers)>0?'<p class="lx-demo-profile-count">'+Math.min(100000,Math.floor(Number(demoFollowers))).toLocaleString('pt-BR')+' seguidores <strong>SIMULAÇÃO</strong></p>':'')+(nowPlaying?'<section class="lx-member-listening">'+nowPlaying+'</section>':'')
   +(status?'<div class="lx-member-about"><span>STATUS</span><p>'+esc(status)+'</p></div>':'')
   +'<div class="lx-member-about"><span>SOBRE MIM</span><p>'+ (bio?renderExpressions(bio,owned):'A pessoa ainda não escreveu uma biografia.') +'</p></div>'
   +(username?'<div class="lx-member-public-id"><span>IDENTIFICADOR PÚBLICO</span><div><code>'+esc('@'+username)+'</code><button class="link" data-copy-member="'+esc('@'+username)+'">Copiar @</button></div></div>':'')
