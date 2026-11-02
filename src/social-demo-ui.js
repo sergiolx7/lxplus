@@ -16,6 +16,14 @@ export const compactSocialCount=value=>{
  return n.toLocaleString('pt-BR');
 };
 export const engagementPreview=(real,simulated)=>compactSocialCount(Math.max(0,Number(real)||0)+Math.max(0,Number(simulated)||0));
+// For everyone in the community, demo additions are a separate, clearly
+// identified badge; never add them to authentic social proof.
+export const publicDemoLabel=(value,kind='post')=>{
+ const n=Math.max(0,Math.min(100000,Math.floor(Number(value)||0)));
+ if(!n)return '';
+ const label=kind==='post'?'curtidas':'seguidores';
+ return '<span class="lx-public-demo-label" title="Contagem de teste, não representa interações verdadeiras" aria-label="'+n.toLocaleString('pt-BR')+' '+label+' simulados">+'+compactSocialCount(n)+' '+label+' <strong>TESTE</strong></span>';
+};
 export const demoLabel=(value,kind='post')=>count(value)>0?'<span class="lx-demo-metric" aria-label="'+count(value)+' '+(kind==='post'?'curtidas de teste':'seguidores de teste')+'">+'+count(value).toLocaleString('pt-BR')+' '+(kind==='post'?'curtidas':'seguidores')+' <b>SIMULAÇÃO</b></span>':'';
 export function renderDemoSocialPanel(items=[],message=''){
  const rows=Array.isArray(items)?items:[];
