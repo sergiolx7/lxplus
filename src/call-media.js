@@ -4,20 +4,22 @@
 export const captureSurfaces=['browser','window','monitor'];
 export function captureSurface(value){return captureSurfaces.includes(value)?value:'browser'}
 export function displayCaptureOptions(withAudio=false,quality={width:1920,height:1080,fps:30},kind='browser'){
- const surface=captureSurface(kind),audio=!!withAudio&&surface!=='monitor';
+ const surface=captureSurface(kind),audio=!!withAudio;
  return {
   video:{displaySurface:surface,frameRate:{ideal:quality.fps,max:quality.fps},width:{ideal:quality.width},height:{ideal:quality.height}},
-  audio,systemAudio:'exclude',
+  audio,systemAudio:surface==='monitor'&&audio?'include':'exclude',
   // A window can expose only that window's audio on supported browsers; never
   // ask for unrestricted desktop audio, which could feed back the call voice.
   windowAudio:surface==='window'&&audio?'window':'exclude',
   monitorTypeSurfaces:surface==='monitor'?'include':'exclude',
-  selfBrowserSurface:'exclude',preferCurrentTab:false,surfaceSwitching:'exclude'
+  selfBrowserSurface:'exclude',preferCurrentTab:false,surfaceSwitching:surface==='browser'?'include':'exclude'
  };
 }
 export function captureAudioMessage({surface,track,unavailable},requested=false,kind='browser'){
  if(!requested)return 'Compartilhando vídeo sem som do computador. A voz da chamada continua separada.';
- if(surface==='monitor')return 'Tela inteira compartilhada sem capturar o áudio geral do computador, evitando retorno da chamada.';
+ if(surface==='monitor'&&!requested)return 'Tela inteira sendo transmitida sem áudio do computador.';
+ if(surface==='monitor'&&track&&track.readyState!=='ended')return 'Áudio do computador em transmissão com sua autorização. Para evitar eco, use fones de ouvido e evite transmitir o áudio da LX Plus.';
+ if(surface==='monitor')return 'Tela transmitida, mas o navegador não disponibilizou áudio do computador. Isso depende do navegador e sistema operacional.';
  if(track&&track.readyState!=='ended'&&track.muted)return 'Áudio capturado, mas silenciado pelo navegador. Reproduza o conteúdo e confira as permissões de som.';
  if(track&&track.readyState!=='ended'&&surface==='window')return 'Áudio isolado da janela enviado quando suportado pelo navegador. Microfone da chamada separado.';
  if(track&&track.readyState!=='ended'&&surface==='browser')return 'Transmitindo somente o áudio da aba selecionada, separado do microfone.';
@@ -30,7 +32,8 @@ export function isolateDisplayAudio(stream,withAudio=false,kind='browser'){
  const source=captureSurface(kind),tracks=stream.getAudioTracks(),candidate=tracks.find(t=>t.readyState!=='ended');
  // Never forward audio for entire-screen capture or a mismatched source. Window
  // capture is accepted only when explicitly requested as window capture.
- const allowed=!!withAudio&&source===surface&&(surface==='browser'||surface==='window');
+ // Desktop audio is forwarded only when explicitly opted in by the user.
+ const allowed=!!withAudio&&source===surface&&['browser','window','monitor'].includes(surface);
  const keep=allowed?candidate:null;
  for(const track of tracks)if(track!==keep){stream.removeTrack(track);track.stop()}
  if(keep){try{keep.contentHint=surface==='browser'?'music':'music'}catch{/* Browser hint only. */}}
@@ -43,9 +46,9 @@ export async function activateReceivedAudio(element){
 }
 export function audioSharingState({requested=false,surface='',track=null,listenerEnabled=true}={}){
  if(!requested)return {kind:'video-only',text:'A pessoa está compartilhando somente imagem.'};
- if(surface==='monitor')return {kind:'no-system-audio',text:'Tela inteira transmitida sem som geral do computador.'};
- if(surface&&surface!=='browser'&&surface!=='window')return {kind:'unsupported',text:'Fonte de áudio não reconhecida. Solicite uma aba ou janela.'};
- if(!track||track.readyState==='ended')return {kind:'missing',text:surface==='window'?'A janela não enviou áudio. O vídeo continua funcionando.':'Nenhum áudio da aba foi recebido. Ative Compartilhar áudio da guia.'};
+ if(surface==='monitor'&&!track)return {kind:'no-system-audio',text:'Tela inteira transmitida sem som do computador.'};
+ if(surface&&surface!=='browser'&&surface!=='window'&&surface!=='monitor')return {kind:'unsupported',text:'Fonte de áudio não reconhecida. Solicite uma aba ou janela.'};
+ if(!track||track.readyState==='ended')return {kind:'missing',text:surface==='monitor'?'O navegador não disponibilizou som do computador.':surface==='window'?'A janela não enviou áudio. O vídeo continua funcionando.':'Nenhum áudio da aba foi recebido. Ative Compartilhar áudio da guia.'};
  if(track.muted)return {kind:'waiting',text:'Faixa de áudio recebida, aguardando o navegador liberar o som…'};
  if(!listenerEnabled)return {kind:'muted',text:'Você desativou Ouvir som da tela. Ative para escutar.'};
  return {kind:'ready',text:'Áudio isolado recebido. Ajuste o volume ou clique em Ativar som.'};

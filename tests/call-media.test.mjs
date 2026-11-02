@@ -8,7 +8,7 @@ test('screen sharing never requests system audio and keeps the microphone separa
   assert.equal(value.audio,enabled);assert.equal(value.systemAudio,'exclude');
   assert.equal(value.windowAudio,'exclude');assert.equal(value.monitorTypeSurfaces,'exclude');
   assert.equal(value.video.displaySurface,'browser');assert.equal(value.selfBrowserSurface,'exclude');assert.equal(value.preferCurrentTab,false);
-  assert.equal(value.surfaceSwitching,'exclude');assert.equal(value.video.frameRate.max,30);
+  assert.equal(value.surfaceSwitching,'include');assert.equal(value.video.frameRate.max,30);
  }
 });
 test('only the selected tab audio is forwarded; unverified window and screen audio stop immediately',()=>{
@@ -19,7 +19,7 @@ test('only the selected tab audio is forwarded; unverified window and screen aud
   assert.equal(result.track,allowed?audio[0]:null);assert.equal(audio[0].stopped,!allowed);
   assert.equal(audio[1].stopped,true);assert.equal(removed.length,allowed?1:2);
   assert.equal(result.unavailable,enabled&&!allowed);
-  if(enabled&&surface!=='browser')assert.match(captureAudioMessage(result,enabled),/janela|tela inteira|fonte escolhida/i);
+  if(enabled&&surface!=='browser')assert.match(captureAudioMessage(result,enabled),/janela|tela inteira|Tela transmitida|fonte escolhida/i);
  }
 });
 
@@ -29,7 +29,7 @@ test('tab capture status clearly distinguishes missing native audio permission f
  assert.match(withTrack,/somente o áudio da aba selecionada/i);
  assert.match(missing,/não disponibilizou/);
  assert.match(captureAudioMessage({surface:'window',track:null,unavailable:true},true),/Esta janela não enviou áudio/);
- assert.match(captureAudioMessage({surface:'monitor',track:null,unavailable:true},true),/tela inteira compartilhada sem capturar/i);
+ assert.match(captureAudioMessage({surface:'monitor',track:null,unavailable:true},true),/não disponibilizou áudio do computador/i);
 });
 
 test('remote shared audio starts on incoming track and exposes autoplay blocks safely',async()=>{
@@ -64,7 +64,7 @@ test('call UI exposes both transmitter and receiver controls enabled by default'
  assert.match(calls,/this\.shareAudioSender\.replaceTrack\(audio\.track\)/);
 });
 
-test('share source selection supports games, apps and full desktop without automatic system sound',()=>{
+test('share source selection supports games, apps and explicitly opted-in full desktop audio',()=>{
  const game=displayCaptureOptions(true,{width:1920,height:1080,fps:60},'window');
  assert.equal(game.video.displaySurface,'window');
  assert.equal(game.windowAudio,'window');
@@ -73,8 +73,11 @@ test('share source selection supports games, apps and full desktop without autom
  assert.equal(game.video.frameRate.max,60);
  const screen=displayCaptureOptions(true,undefined,'monitor');
  assert.equal(screen.video.displaySurface,'monitor');
- assert.equal(screen.audio,false);
- assert.equal(screen.systemAudio,'exclude');
+ assert.equal(screen.audio,true);
+ assert.equal(screen.systemAudio,'include');
+ const silentScreen=displayCaptureOptions(false,undefined,'monitor');
+ assert.equal(silentScreen.audio,false);
+ assert.equal(silentScreen.systemAudio,'exclude');
  assert.equal(screen.monitorTypeSurfaces,'include');
  const fallback=displayCaptureOptions(true,undefined,'invalid');
  assert.equal(fallback.video.displaySurface,'browser');
@@ -86,7 +89,7 @@ test('only explicitly requested isolated window/game audio can be forwarded',()=
    const track={readyState:'live',stopCalled:false,stop(){this.stopCalled=true}};
    const stream={getVideoTracks:()=>[{getSettings:()=>({displaySurface:actual})}],getAudioTracks:()=>[track],removeTrack:()=>{}};
    const result=isolateDisplayAudio(stream,true,desired);
-   const allowed=actual===desired&&actual!=='monitor';
+   const allowed=actual===desired;
    assert.equal(!!result.track,allowed);
    assert.equal(track.stopCalled,!allowed);
   }
@@ -103,4 +106,43 @@ test('new call UI exposes real game/window/desktop capture and mic repair contro
  assert.match(calls,/async repairMicrophone\(/);
  assert.match(calls,/replaceTrack\(next\)/);
  assert.match(calls,/displayCaptureOptions\(withAudio,[^;]+,kind\)/);
+});
+
+test('LX Voice Studio minimizes hiss without amplifying it and never auto-plays the local mic',async()=>{
+ const {voiceConstraints,microphoneLevel,inputHealth}=await import('../src/voice-quality.js');
+ const clear=voiceConstraints({mode:'clear'});
+ assert.equal(clear.echoCancellation,true);
+ assert.equal(clear.noiseSuppression,true);
+ assert.equal(clear.autoGainControl,false);
+ assert.equal(clear.channelCount.ideal,1);
+ const natural=voiceConstraints({mode:'natural',deviceId:'microphone-2'});
+ assert.equal(natural.noiseSuppression,false);
+ assert.equal(natural.autoGainControl,false);
+ assert.equal(natural.deviceId.ideal,'microphone-2');
+ assert.equal(microphoneLevel(new Uint8Array(32).fill(128)),0);
+ assert.ok(microphoneLevel(new Uint8Array([0,255]))>0);
+ assert.equal(inputHealth({readyState:'live',enabled:true,muted:false}).ok,true);
+ assert.equal(inputHealth({readyState:'ended',enabled:true,muted:false}).ok,false);
+ const fs=await import('node:fs');
+ const view=fs.readFileSync(new URL('../src/call-view.js',import.meta.url),'utf8');
+ const calls=fs.readFileSync(new URL('../src/calls.js',import.meta.url),'utf8');
+ assert.match(view,/data-call-mic-device/);
+ assert.match(view,/data-call-mic-mode/);
+ assert.match(view,/data-call-mic-test/);
+ assert.match(calls,/async refreshMicrophones\(/);
+ assert.match(calls,/async repairMicrophone\(/);
+ assert.match(calls,/source\.connect\(analyser\)/);
+ assert.doesNotMatch(calls,/analyser\.connect\(context\.destination\)/);
+});
+test('screen studio has source switching, pause, presets and explicit desktop audio opt-in',async()=>{
+ const fs=await import('node:fs');
+ const view=fs.readFileSync(new URL('../src/call-view.js',import.meta.url),'utf8');
+ const calls=fs.readFileSync(new URL('../src/calls.js',import.meta.url),'utf8');
+ for(const attribute of ['data-call-share-switch','data-call-share-pause','data-call-screen-kind','data-call-screen-audio','data-call-preset'])assert.ok(view.includes(attribute));
+ assert.match(calls,/async shareScreen\(switchSource=false\)/);
+ assert.match(calls,/toggleSharePause\(\)/);
+ assert.match(calls,/checkbox\.checked=false/);
+ assert.match(calls,/await this\.screenSender\.replaceTrack\(video\)/);
+ assert.match(calls,/await this\.shareAudioSender\.replaceTrack\(audio\.track\)/);
+ assert.match(calls,/previous\.getTracks\(\)/);
 });
