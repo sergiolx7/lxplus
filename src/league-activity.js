@@ -4,7 +4,8 @@ export const leagueRules=[
  {key:'music_valid',name:'Ouvir uma faixa autorizada',points:5,cap:50},
  {key:'watch_valid',name:'Assistir a um vídeo autorizado',points:10,cap:20},
  {key:'read_valid',name:'Ler um livro na LX Plus',points:8,cap:20},
- {key:'streak_daily',name:'Participação diária',points:3,cap:1}
+ {key:'streak_daily',name:'Participação diária',points:3,cap:1},
+ {key:'site_active',name:'Tempo ativo no site (5 minutos)',points:1,cap:48}
 ];
 export const playbackThreshold=(kind,duration)=>{
  if(!Number.isFinite(duration)||duration<0)return null;

@@ -16,8 +16,8 @@ test('demo counts are visibly simulated, numerically bounded and not merged with
  assert.equal(demoLabel(-50),'');
  assert.match(demoLabel(300000,'post'),/100\.000/);
  assert.match(social,/count=post\.likes\?\.length\|\|0/);
- assert.match(social,/demoLabel\(demoPostCounts\.get\(post\.id\),'post'\)/);
- assert.match(social,/demoLabel\(demoProfileCounts\.get\(p\.user_id\),'profile'\)/);
+ assert.match(social,/engagementPreview\(count,demoPostCounts\.get\(post\.id\)\)/);
+ assert.match(social,/compactSocialCount\(Number\(stats\.followers\|\|0\)\+Number\(demoProfileCounts\.get\(p\.user_id\)\|\|0\)\)/);
  assert.match(social,/data-copy-post-id/);
  assert.match(social,/post\.author_id===me\|\|ctx\.admin/);
 });
@@ -33,10 +33,10 @@ test('ADM can increase, reduce and zero only test values with a separate managem
  assert.match(studio,/lxDemoSocialForm/);
  assert.match(studio,/renderDemoSocialPanel/);
 });
-test('user profile card shows a demo label without representing simulated counts as real followers',()=>{
+test('authorized profile preview shows natural counts with an environment disclosure in the social page',()=>{
  const html=memberProfileCard({user_id:'22222222-2222-2222-2222-222222222222',name:'Pessoa',username:'tester'},{viewerId:'33333333-3333-3333-3333-333333333333',demoFollowers:23});
- assert.match(html,/23 seguidores/);
- assert.match(html,/SIMULAÇÃO/);
+ assert.match(html,/23<\/strong> seguidores/);
+ assert.doesNotMatch(html,/SIMULAÇÃO/);assert.match(social,/lx-lab-private-banner/);
  assert.doesNotMatch(memberProfileCard({user_id:'22222222-2222-2222-2222-222222222222',name:'Pessoa'},{demoFollowers:0}),/lx-demo-profile-count/);
 });
 test('SQL separates demo counters from production relationships and logs modifications',()=>{
