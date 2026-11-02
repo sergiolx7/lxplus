@@ -50,7 +50,7 @@ test('navigation exposes mural on home, inside menu and as dedicated route',()=>
  assert.match(app,/data-page="Mural dos Fundadores"/);
  const index=file('index.html');
  assert.match(index,/lx-founders-wall\.css/);
- assert.match(index,/founderswall/);
+ assert.match(index,/import\('\.\/src\/app\.js\?v=.*'\)/);
 });
 test('mural has responsive LED borders, founder crown and reduced-motion support',()=>{
  const css=file('assets/lx-founders-wall.css');

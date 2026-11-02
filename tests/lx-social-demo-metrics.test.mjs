@@ -79,6 +79,6 @@ test('sponsored posts appear at top, still labeled, and pagination uses unsponso
  assert.match(social,/lx_featured_sponsored_posts/);
  assert.match(social,/special\.data/);
  assert.match(social,/pageRows\?\.length===20/);
- assert.match(social,/sponsoredPostIds\.has\(b\.id\)/);
+ assert.match(file('src/social-experience.js'),/sponsoredIds\.has\(asId\(b\.id\)\)/);
  assert.match(social,/Divulgação patrocinada/);
 });
