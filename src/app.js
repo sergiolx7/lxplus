@@ -26,6 +26,23 @@ const accountPreferences=preferenceSync({save:saveUserField,onSaved(key,value){A
 function savePlaybackPreferences(value){A.stored.playbackPreferences=value;accountPreferences.write('playbackPreferences',value)}
 const approved=()=>A.admin||A.profile?.approved===true||A.profile?.approval_status==='approved';
 const saved=()=>new Set((Array.isArray(A.stored.list)?A.stored.list:[]).map(String));
+let leagueLastInteraction=0,leagueInteractions=0,leagueActiveTicks=0,leagueDailyDone='',leagueDailyBusy=false;
+const leagueDay=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Fortaleza',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+async function checkDailyParticipation(){
+ if(!A.user||!approved()||document.hidden||!document.hasFocus()||leagueDailyBusy)return;
+ // Do not reward watching or listening to third-party embeds (e.g. YouTube).
+ if(musicDock.embedded||document.querySelector('.embed-wrap iframe'))return;
+ const now=Date.now(),today=leagueDay();
+ if(leagueDailyDone===today||leagueInteractions<3||now-leagueLastInteraction>35000){leagueActiveTicks=0;return}
+ leagueActiveTicks++;
+ if(leagueActiveTicks<3)return;
+ leagueDailyBusy=true;
+ try{
+  const r=await db.rpc('lx_rank_record_event',{p_event_type:'streak_daily',p_ref_key:'streak:'+today,p_metadata:{day:today}});
+  if(!r.error&&r.data?.status!=='cooldown'){leagueDailyDone=today;if(r.data?.awarded>0)toast('+'+r.data.awarded+' pontos LX League pela participação diária')}
+ }finally{leagueDailyBusy=false}
+}
+
 
 function authForm(){
  if(A.auth==='reset')return '<form id="reset" class="form"><label class="field">Seu e-mail<input name="email" type="email" autocomplete="email" required></label><button class="btn primary wide">Enviar recuperação</button><button class="link" type="button" data-auth="login">Voltar para entrar</button></form>';
@@ -82,12 +99,12 @@ async function heartbeat(){
 function startMemberServices(){
  A.telemetry?.destroy();A.telemetry=createTelemetry(A.user.id);A.telemetry.record('performance','app_ready','',performance.now());A.telemetry.record('page',A.page);
  A.calls?.destroy();A.calls=new Calls({userId:A.user.id,toast,directory:()=>A.members,profile:()=>A.profile});
- A.party?.destroy();A.party=new WatchParty({userId:A.user.id,directory:()=>A.members,toast,calls:()=>A.calls,validate:async(item,index)=>{const ep=episodes(item)[index],source=await sourceFor(ep?{...item,...ep,id:item.id,type:item.type,license:item.license}:item);if(!['video','hls','dash'].includes(source.kind))throw Error('Assistir juntos está disponível para vídeos diretos, HLS e DASH autorizados. Este player externo não permite sincronizar os controles.');if(source.revokeOnCleanup&&source.url?.startsWith('blob:'))URL.revokeObjectURL(source.url)},onOpen:async room=>{const r=await db.from('lx_catalog').select('id,payload,published').eq('id',room.content_id).eq('published',true).maybeSingle();if(r.error||!r.data)throw Error('Este conteúdo não está disponível para sua conta.');const item=itemFrom(r.data);await play(item,episodes(item).length?room.episode_index:null);if(!document.querySelector('#mediaPlayer')||String(A.modal?.item.id)!==String(room.content_id))throw Error('Não foi possível abrir uma fonte compatível. A sessão permanece em espera.')}});clearInterval(A.heartbeatTimer);A.heartbeatTimer=setInterval(()=>heartbeat().catch(()=>{}),25000);heartbeat().catch(()=>{});
+ A.party?.destroy();A.party=new WatchParty({userId:A.user.id,directory:()=>A.members,toast,calls:()=>A.calls,validate:async(item,index)=>{const ep=episodes(item)[index],source=await sourceFor(ep?{...item,...ep,id:item.id,type:item.type,license:item.license}:item);if(!['video','hls','dash'].includes(source.kind))throw Error('Assistir juntos está disponível para vídeos diretos, HLS e DASH autorizados. Este player externo não permite sincronizar os controles.');if(source.revokeOnCleanup&&source.url?.startsWith('blob:'))URL.revokeObjectURL(source.url)},onOpen:async room=>{const r=await db.from('lx_catalog').select('id,payload,published').eq('id',room.content_id).eq('published',true).maybeSingle();if(r.error||!r.data)throw Error('Este conteúdo não está disponível para sua conta.');const item=itemFrom(r.data);await play(item,episodes(item).length?room.episode_index:null);if(!document.querySelector('#mediaPlayer')||String(A.modal?.item.id)!==String(room.content_id))throw Error('Não foi possível abrir uma fonte compatível. A sessão permanece em espera.')}});clearInterval(A.heartbeatTimer);A.heartbeatTimer=setInterval(()=>{heartbeat().catch(()=>{});checkDailyParticipation().catch(()=>{})},25000);heartbeat().catch(()=>{});
  if(A.noticeChannel)db.removeChannel(A.noticeChannel);A.noticeChannel=db.channel('lx-notice-badge-'+A.user.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'lx_user_notifications',filter:'user_id=eq.'+A.user.id},()=>refreshNotifications().catch(()=>{})).subscribe();refreshNotifications().catch(()=>{});
  socialDirectory().then(rows=>{if(A.user)A.members=rows}).catch(()=>{});
 }
 function clearMemberServices(){
- A.party?.destroy();A.party=null;disposeRoute();closeModal();leagueMusicTracker=null;musicDock.close();clearTimeout(musicActivityTimer);musicActivityTimer=null;activeMusicId=null;A.activity=null;accountPreferences.bind(null);bindDisplayAccount(null);A.calls?.destroy();A.calls=null;A.telemetry?.destroy();A.telemetry=null;clearInterval(A.heartbeatTimer);A.heartbeatTimer=null;if(A.noticeChannel){db.removeChannel(A.noticeChannel);A.noticeChannel=null}
+ A.party?.destroy();A.party=null;disposeRoute();closeModal();leagueMusicTracker=null;leagueInteractions=0;leagueActiveTicks=0;leagueLastInteraction=0;leagueDailyDone='';musicDock.close();clearTimeout(musicActivityTimer);musicActivityTimer=null;activeMusicId=null;A.activity=null;accountPreferences.bind(null);bindDisplayAccount(null);A.calls?.destroy();A.calls=null;A.telemetry?.destroy();A.telemetry=null;clearInterval(A.heartbeatTimer);A.heartbeatTimer=null;if(A.noticeChannel){db.removeChannel(A.noticeChannel);A.noticeChannel=null}
 }
 async function initialize(){
  const generation=++A.generation;A.initializing=true;root.innerHTML='<div class="loading"><span class="loading-orbit"></span>Preparando seu universo LX…</div>';
@@ -171,6 +188,7 @@ function showVideo(item,entry,source,list,index){
 
 let searchTimer;
 root.addEventListener('input',event=>{if(event.target.id==='search'){clearTimeout(searchTimer);const value=event.target.value;searchTimer=setTimeout(()=>navigate(value.trim()?'Buscar':'Início',{term:value,push:false}),350)}});
+root.addEventListener('pointerdown',()=>{if(A.user&&approved()&&!musicDock.embedded&&!document.querySelector('.embed-wrap iframe')){leagueLastInteraction=Date.now();leagueInteractions=Math.min(100,leagueInteractions+1)}},{passive:true});
 root.addEventListener('click',async event=>{
  const button=event.target.closest('button');if(!button)return;
  try{
