@@ -180,7 +180,7 @@ async function spotifyEmbed(area, source, { onState, onEnd, isActive, autoStart 
   if (!isActive()) return null;
   return new Promise(resolve => {
     try {
-      api.createController(area, { uri: 'spotify:' + match[1] + ':' + match[2], width: '100%', height: '152', theme: 'dark' }, controller => {
+      api.createController(area, { uri: 'spotify:' + match[1] + ':' + match[2], width: 344, height: 152 }, controller => {
         if (!isActive()) { controller.destroy(); resolve(null); return; }
         let ready = true, playing = false, elapsed = 0, duration = 0, played = false, completed = false;
         const snapshot = () => ({ ready, playing, elapsed, duration, seekable: false, volumeSupported: false });
