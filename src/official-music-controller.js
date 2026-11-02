@@ -161,7 +161,7 @@ async function youtubeEmbed(area, source, { onState, onEnd, isActive }) {
 }
 
 async function spotifyEmbed(area, source, { onState, onEnd, isActive }) {
-  const match = new URL(source.url).pathname.match(/^\\/embed\\/(track|album|playlist|episode|show)\\/([A-Za-z0-9]{22})/);
+  const match = new URL(source.url).pathname.match(new RegExp('^/embed/(track|album|playlist|episode|show)/([A-Za-z0-9]{22})'));
   if (!match) return plainEmbed(area, source);
   let api;
   try { api = await loadSpotify(); } catch { return isActive() ? plainEmbed(area, source) : null; }
