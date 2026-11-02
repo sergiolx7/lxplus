@@ -50,7 +50,7 @@ export async function getCatalog({light=false}={}){
   const {data,error}=await db.from('lx_catalog').select('id,payload,published,updated_at').eq('published',true).eq('payload->>type',type).order('updated_at',{ascending:false}).order('id',{ascending:false}).limit(light?12:24);
   if(error)throw error;return (data||[]).map(itemFrom);
  }));
- return groups.flat().sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
+ return groups.flat().sort((a,b)=>{const ap=Number(a.editorialRank)||9999,bp=Number(b.editorialRank)||9999;return ap-bp||String(b.updatedAt).localeCompare(String(a.updatedAt))});
 }
 export async function findDiscovery(term){
  const q=String(term||'').trim().replace(/[%,_]/g,'').slice(0,60);
