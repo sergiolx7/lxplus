@@ -2,7 +2,7 @@ import {musicMix} from '../music-discovery.js';
 import {musicGroups} from '../music-organize.js';
 import {listeningSummary} from '../music-friend-activity.js';
 import {musicSidebar,musicHomeShelves,friendListeningShelf,musicGroupHeading,musicTabs} from '../music-experience.js';
-import {referenceMusicPage,completeMusicGroup,musicSuggestions} from '../music-library.js';
+import {referenceMusicPage,completeMusicGroup,musicSuggestions,findMusicActionTrack} from '../music-library.js';
 import {musicViewControls} from '../display-preferences.js';
 import {catalogFilter,fold} from '../catalog-search.js';
 import {db,itemFrom,saveUserField} from '../data.js';
@@ -56,6 +56,7 @@ export async function mount(host,ctx){
  async function syncLists(){playlists=await readPlaylists(ctx.user.id)}
  async function refreshFriendsPlaying(){if(!alive||document.hidden)return;try{const result=await db.rpc('lx_presence_for_viewer');if(result.error||!alive)return;const directory=ctx.directory?.()||[],friends=new Map(directory.filter(x=>x.relation==='accepted').map(x=>[x.user_id,x]));friendsPlaying=(result.data||[]).filter(entry=>friends.has(entry.user_id)&&listeningSummary(entry)).map(activity=>({person:friends.get(activity.user_id),activity})).slice(0,8);if(tab==='Início'&&!selected&&!groupSelection)draw()}catch{/* Private by default when presence cannot be verified. */}}
 
+ function actionTrack(id){return findMusicActionTrack(id,items,groupSelection?groupTracks:null)}
  function dialog(title,content){host.querySelector('#musicDialog').innerHTML='<div class="inline-dialog" role="dialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="panel"><div class="heading"><h2>'+esc(title)+'</h2><button class="close" data-music-dialog-close aria-label="Fechar">×</button></div>'+content+'</div></div>';host.querySelector('#musicDialog input,#musicDialog select')?.focus()}
  async function play(item,queue=items,flow=false){if(!item)return;try{await ctx.music.play(item,queue,{flow})}catch(e){ctx.toast(e.message||'A fonte desta faixa não está disponível.')}}
  const search=value=>{term=value;++generation;++groupGeneration;clearTimeout(searchTimer);searchTimer=setTimeout(()=>{if(!alive)return;if(selected)draw();else load()},300)};
@@ -68,7 +69,7 @@ export async function mount(host,ctx){
    if(b.hasAttribute('data-music-flow')){const queue=musicMix(items,{likes:[...liked],history:ctx.state().musicHistory||{}});await play(queue[0],queue,true);return}
    if(b.dataset.musicTab){++groupGeneration;clearTimeout(searchTimer);tab=b.dataset.musicTab;selected=null;groupSelection=null;groupTracks=[];items=[];total=0;await load();draw();return}
    if(b.hasAttribute('data-more-tracks')){await load(true);return}
-   if(b.dataset.track){const list=groupSelection?groupTracks:items;await play(list.find(x=>String(x.id)===b.dataset.track),list);return}
+   if(b.dataset.track){const list=groupSelection?groupTracks:items;await play(actionTrack(b.dataset.track),list);return}
    if(b.hasAttribute('data-music-play-all')){const queue=groupSelection?groupTracks:tab==='Mix'?musicMix(items,{likes:[...liked],history:ctx.state().musicHistory||{}}):items;await play(queue[0],queue);return}
    if(b.hasAttribute('data-music-group-back')){groupSelection=null;groupTracks=[];draw();return}
    if(b.hasAttribute('data-play-group')){await play(groupTracks[0],groupTracks);return}
@@ -76,10 +77,10 @@ export async function mount(host,ctx){
    if(b.dataset.musicGroup){const token=++groupGeneration;b.disabled=true;try{const group=await completeMusicGroup({field:b.dataset.groupKey,value:b.dataset.musicGroup,artist:b.dataset.groupArtist||'',page:catalogPage,isCurrent:()=>alive&&token===groupGeneration});if(alive&&token===groupGeneration){groupSelection={kind:b.dataset.groupKey,name:b.dataset.musicGroup,artist:b.dataset.groupArtist||''};groupTracks=group;draw()}}finally{if(b.isConnected)b.disabled=false}return}
    if(b.dataset.playlist){groupSelection=null;groupTracks=[];tab='Playlists';const token=++generation,list=playlists.find(p=>p.id===b.dataset.playlist);if(!list)return;const rows=await playlistItems(list.id);if(!alive||token!==generation)return;selected=list;loading=false;items=rows;total=items.length;draw();return}
    if(b.dataset.musicLike){const before=new Set(liked),key=b.dataset.musicLike;liked.has(key)?liked.delete(key):liked.add(key);draw();try{const state=await saveUserField(ctx.user.id,'musicLikes',[...liked]);ctx.setState(state,['musicLikes'])}catch(e){liked=before;draw();throw e}return}
-   if(b.dataset.enqueue){const item=items.find(x=>String(x.id)===b.dataset.enqueue);if(!ctx.music.current){await play(item,[item])}else{ctx.music.queue.add(item);ctx.music.renderQueue();ctx.toast('Música adicionada à fila.')}return}
+   if(b.dataset.enqueue){const item=actionTrack(b.dataset.enqueue);if(!item){ctx.toast('Essa faixa não está mais disponível na seleção. Atualize a biblioteca.');return}if(!ctx.music.current){await play(item,[item])}else{ctx.music.queue.add(item);ctx.music.renderQueue();ctx.toast('Música adicionada à fila.')}return}
    if(b.hasAttribute('data-new-playlist')){dialog('Criar playlist','<form id="newPlaylist" class="form"><label class="field">Nome<input name="name" maxlength="100" required></label><label class="field">Descrição<textarea name="description" maxlength="500"></textarea></label><label class="field">Visibilidade<select name="visibility"><option value="private">Só eu</option><option value="public">Membros da LX Plus</option></select></label><button class="btn music-primary">Criar playlist</button></form>');return}
    if(b.dataset.addPlaylist){if(!playlists.length){ctx.toast('Crie uma playlist primeiro.');return}dialog('Adicionar à playlist','<form id="addPlaylist" class="form"><input type="hidden" name="track" value="'+esc(b.dataset.addPlaylist)+'"><label class="field">Playlist<select name="playlist">'+playlists.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name)+'</option>').join('')+'</select></label><button class="btn music-primary">Adicionar música</button></form>');return}
-   if(b.dataset.lyrics){const item=items.find(x=>String(x.id)===b.dataset.lyrics);dialog('Letra · '+item.title,item.lyrics&&item.lyricsAuthorized?'<div class="lyrics">'+esc(item.lyrics)+'</div>':'<p>Ainda não há letra de uma fonte autorizada para esta faixa.</p>');return}
+   if(b.dataset.lyrics){const item=actionTrack(b.dataset.lyrics);if(!item){ctx.toast('Essa faixa não está mais disponível na seleção.');return}dialog('Letra · '+item.title,item.lyrics&&item.lyricsAuthorized?'<div class="lyrics">'+esc(item.lyrics)+'</div>':'<p>Ainda não há letra de uma fonte autorizada para esta faixa.</p>');return}
    if(b.hasAttribute('data-music-dialog-close'))host.querySelector('#musicDialog').replaceChildren();
   }catch(error){ctx.toast(error.message||'Não foi possível concluir a ação.')}
  });

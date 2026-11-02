@@ -22,3 +22,10 @@ export async function completeMusicGroup({field,value,artist='',page,isCurrent=(
  }
  return items;
 }
+
+// Resolve actions against the opened album/artist, not an unrelated catalogue page.
+export function findMusicActionTrack(id,library=[],groupTracks=null){
+ if(id===null||id===undefined||id==='')return null;
+ const rows=Array.isArray(groupTracks)?groupTracks:Array.isArray(library)?library:[];
+ return rows.find(row=>row&&String(row.id)===String(id))||null;
+}
