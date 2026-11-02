@@ -96,3 +96,9 @@ export function musicLaneLabel(item){
  const lane=musicLane(item);
  return ({trap:'trap',sertanejo:'sertanejo',funk:'funk',forro:'forró',hiphop:'rap',eletronica:'música eletrônica',pagode:'pagode'}[lane.genre])||lane.genre||'mesmo artista';
 }
+
+// For YouTube sessions, LX Flow must not jump into a Spotify track or a direct file.
+export function isYouTubeTrack(item){
+ const value=String(item?.sourceUrl||item?.youtubeUrl||item?.externalMusicUrl||item?.mediaKey||item?.nativeAsset||'');
+ return item?.provider==='YouTube'||/^youtube:[\\w-]{11}$/.test(value)||/^https:\/\/(?:www\.|music\.)?youtube\.com\//.test(value)||/^https:\/\/youtu\.be\//.test(value);
+}
