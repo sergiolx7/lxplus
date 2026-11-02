@@ -69,3 +69,16 @@ test('promo remains separate and existing real-like actions are unchanged',()=>{
  assert.match(file('src/studio-promotions.js'),/Divulgação patrocinada/);
  assert.match(file('index.html'),/lx-social-demo\.css/);
 });
+
+test('sponsored posts appear at top, still labeled, and pagination uses unsponsored base page cursor',()=>{
+ const sql=file('supabase/sql/lx-social-sponsored-feed.sql');
+ assert.match(sql,/lx_featured_sponsored_posts/);
+ assert.match(sql,/p\.visibility='public' and p\.status='published'/);
+ assert.match(sql,/s\.active=true/);
+ assert.match(sql,/limit 5/);
+ assert.match(social,/lx_featured_sponsored_posts/);
+ assert.match(social,/special\.data/);
+ assert.match(social,/pageRows\?\.length===20/);
+ assert.match(social,/sponsoredPostIds\.has\(b\.id\)/);
+ assert.match(social,/Divulgação patrocinada/);
+});
