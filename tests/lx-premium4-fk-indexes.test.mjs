@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {PGlite} from '@electric-sql/pglite';
 
-const migration=readFileSync(new URL('../supabase/migrations/20261102035000_lx_premium4_fk_indexes.sql',import.meta.url),'utf8');
+const migration=readFileSync(new URL('../supabase/migrations/20261102033607_lx_premium4_fk_indexes.sql',import.meta.url),'utf8');
 const expected=['lx_auto_assets_catalog_id_fk_idx','lx_demo_preview_viewers_granted_by_fk_idx','lx_demo_social_audit_updated_by_fk_idx','lx_demo_social_metrics_updated_by_fk_idx','lx_drive_sources_created_by_fk_idx','lx_sponsored_posts_created_by_fk_idx','lx_watch_sessions_content_id_fk_idx','lx_watch_sessions_host_id_fk_idx','lx_watch_signals_sender_id_fk_idx'];
 
 test('performance migration safely adds the nine missing FK indexes and is idempotent',async()=>{
