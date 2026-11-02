@@ -14,11 +14,11 @@ test('100 saved simulated likes are actually assigned from the fourth RPC result
  assert.match(social,/demoPostCounts\.get\(post\.id\)/);
  assert.match(social,/lx_demo_social_visible/);
 });
-test('post heart shows transparent combined preview and separately marks simulated likes',()=>{
+test('authorized LX Lab viewers see the compact combined count without per-item badges',()=>{
  const combined=engagementPreview(1,100);
  assert.match(combined,/101/);
- assert.match(combined,/PRÉVIA/);
- assert.match(combined,/1 reais e 100 de teste/);
+ assert.doesNotMatch(combined,/PRÉVIA/);
+ assert.match(social,/lx-lab-private-banner/);
  assert.equal(engagementPreview(7,0),'7');
  assert.match(demoLabel(100,'post'),/SIMULAÇÃO/);
  assert.match(social,/engagementPreview\(count,demoPostCounts\.get\(post\.id\)\)/);
@@ -59,13 +59,13 @@ test('community supports follow/unfollow and visible follower counts while keepi
   viewerId:'22222222-2222-4222-8222-222222222222',
   followStats:{followers:35,following_count:11,is_following:true},demoFollowers:100
  });
- assert.match(html,/35<\/strong> seguidores/);
+ assert.match(html,/135<\/strong> seguidores/);
  assert.match(html,/11<\/strong> seguindo/);
  assert.match(html,/✓ Seguindo/);
- assert.match(html,/100 seguidores <strong>SIMULAÇÃO<\/strong>/);
+ assert.doesNotMatch(html,/SIMULAÇÃO/);
 });
 test('follow UI does not create real follows from the ADM demo control',()=>{
  assert.doesNotMatch(file('supabase/sql/lx-social-demo-metrics.sql'),/insert into public\.lx_profile_follows/i);
  assert.doesNotMatch(file('src/modules/studio.js'),/lx_social_follow_toggle/);
- assert.match(file('assets/lx-social-demo.css'),/lx-engagement-preview/);
+ assert.match(file('assets/lx-social-demo.css'),/lx-lab-private-banner/);
 });
