@@ -18,7 +18,11 @@
   background:#ffffff0b;letter-spacing:.01em;
 }
 .lx-music-dock .lx-provider-badge[hidden]{display:none!important}
-.lx-provider-badge[data-provider=YouTube]{color:#fff;background:#d61f35;border-color:#ffffff2a}
+.lx-provider-badge[data-provider=YouTube]{color:#fff;background:#24282f;border-color:#ffffff2a}
+.lx-provider-badge[data-provider=YouTube]::before{
+  content:"▶";display:inline-grid;place-items:center;width:21px;height:15px;
+  background:#ff0033;color:#fff;border-radius:5px;font-size:9px;
+}
 .lx-provider-badge[data-provider=Spotify]{color:#1ed760;background:#0b2a1b;border-color:#1ed76038}
 .lx-music-dock.has-official-embed #lxDockMedia{
   display:block!important;position:absolute!important;z-index:12;
