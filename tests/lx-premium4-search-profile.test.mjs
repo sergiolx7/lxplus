@@ -19,7 +19,7 @@ test('global search exposes member-specific profile action instead of generic co
  assert.match(code,/data-search-person=/);
  assert.match(code,/people\.some\(p=>p\.user_id===b\.dataset\.searchPerson\)/);
  assert.match(code,/ctx\.navigate\('Comunidade',\{term:'profile:'\+b\.dataset\.searchPerson\}\)/);
- assert.doesNotMatch(code,/data-page="Comunidade">Abrir comunidade/);
+ assert.match(code,/data-page="Comunidade">Abrir comunidade/,'the separate Communities result still navigates to community');
 });
 
 test('community deep links enforce existing directory access and use real profile card',()=>{
