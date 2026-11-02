@@ -76,7 +76,7 @@ export function sameMusicLane(current,candidate){
 }
 export function genreSearchTerms(item){
  const lane=musicLane(item),terms=[lane.genre,item?.genre,item?.artist].filter(Boolean).map(String);
- return [...new Set(terms)].slice(0,3);
+ const seen=new Set();return terms.filter(term=>{const key=plain(term);if(seen.has(key))return false;seen.add(key);return true}).slice(0,3);
 }
 export function musicLaneLabel(item){
  const lane=musicLane(item);
