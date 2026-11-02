@@ -1,0 +1,13 @@
+/* LX Premium 4.0 — compact accessible global member discovery. */
+.search-people{margin:24px 0;min-width:0}
+.search-people>h2{margin:0 0 14px}
+.search-people .lx-search-person{display:flex;align-items:center;gap:12px;min-width:0;min-height:74px;margin:0 0 9px;padding:12px 16px;border-radius:16px;border:1px solid var(--border,#ffffff24);background:var(--surface,#1b1b23)}
+.search-people .lx-search-person .member-avatar{flex:none;max-width:48px;max-height:48px}
+.lx-search-person-copy{display:flex;flex-direction:column;flex:1;min-width:0;gap:4px}
+.lx-search-person-copy strong,.lx-search-person-copy small{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lx-search-person-copy strong{font-size:14px;line-height:1.4}
+.lx-search-person-copy small{font-size:12px;color:var(--muted,#aaa)}
+.lx-search-person .btn{flex:none;min-height:38px}
+.lx-search-person:focus-within{border-color:var(--accent,#b8a2ff)}
+@media(max-width:470px){.search-people .lx-search-person{padding:10px 11px;gap:9px;min-height:66px}.search-people .lx-search-person .member-avatar{max-width:40px;max-height:40px}.lx-search-person-copy strong{font-size:12px}.lx-search-person-copy small{font-size:11px}.lx-search-person .btn{padding:8px 10px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){.lx-search-person{scroll-behavior:auto}}
