@@ -1,0 +1,16 @@
+/* LX Premium 4.0 — cinematic, readable, shareable editorial Top 10. */
+.top-ten-section{padding:clamp(16px,2vw,28px) 0}
+.top-ten-section .premium-row-title{gap:14px;align-items:end;flex-wrap:wrap}
+.top-ten-section .premium-row-title h2{font-size:clamp(24px,3vw,37px);line-height:1.1}
+.top-ten-header-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.top-ten-header-actions>[data-share-top]{border:1px solid rgba(var(--accent-rgb),.42);background:rgba(var(--accent-rgb),.14);color:var(--foreground,#f4f0ff);min-height:42px;font-size:13px}
+.top-ten-rail{grid-auto-columns:clamp(215px,24vw,300px);gap:clamp(13px,2.4vw,25px);padding:12px 4px 10px}
+.top-ten-rail .top-ten-item{position:relative;display:flex;flex-direction:column;gap:10px;padding:0 0 0 clamp(50px,6vw,77px);min-width:0;isolation:isolate}
+.top-ten-rail .top-ten-number{left:0;top:clamp(16px,3vw,32px);font:900 clamp(92px,11vw,152px)/.85 Outfit,sans-serif;letter-spacing:-.13em;color:#0f0d17;-webkit-text-stroke:2.5px rgba(var(--accent-rgb),.9);text-shadow:0 8px 18px rgba(0,0,0,.75),0 0 24px rgba(var(--accent-rgb),.32);filter:drop-shadow(0 6px 4px #0005);z-index:3;pointer-events:none}
+.top-ten-rail .top-ten-item .premium-card{width:100%;min-width:0;border-radius:18px;box-shadow:0 12px 30px #0005;overflow:hidden}
+.top-ten-rail .top-ten-item .premium-cover{border-radius:16px}
+.top-ten-rail .top-ten-item .premium-card:focus-visible{outline:3px solid rgba(var(--accent-rgb),1);outline-offset:3px}
+.top-ten-rail .top-ten-share{width:100%;min-height:39px;border:1px solid rgba(var(--accent-rgb),.3);border-radius:11px;background:rgba(var(--accent-rgb),.1);color:inherit;font:600 12px Outfit,sans-serif;cursor:pointer;transition:background .2s,border-color .2s}
+.top-ten-rail .top-ten-share:hover,.top-ten-rail .top-ten-share:focus-visible{background:rgba(var(--accent-rgb),.25);border-color:rgba(var(--accent-rgb),.8)}
+@media(max-width:650px){.top-ten-rail{grid-auto-columns:clamp(196px,56vw,240px)}.top-ten-rail .top-ten-number{font-size:clamp(90px,21vw,125px)}.top-ten-rail .top-ten-item{padding-left:52px}.top-ten-header-actions{width:100%;justify-content:space-between}}
+@media(prefers-reduced-motion:reduce){.top-ten-rail .top-ten-share{transition:none}}
