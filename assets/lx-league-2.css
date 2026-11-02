@@ -74,3 +74,11 @@
 .lx-music-dock .lx-native-now-controls button svg{width:21px;height:21px}
 .lx-music-dock .lx-native-mode-note{margin:12px 8px;text-align:center;font-size:11px;line-height:1.65;color:#c5bad4}
 .lx-music-dock .now-playing-panel .now-art{border-radius:18px;overflow:hidden;box-shadow:0 20px 44px #0006,0 0 38px #916fcb29}
+
+/* Live, server-verified active time metric. Four equal cards on desktop. */
+.lx-league-stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+.lx-league-stat-time{background:radial-gradient(ellipse at 90% 10%,#8d70c02e,transparent 65%),linear-gradient(155deg,#252036,#171920)}
+.lx-league-stat-time>strong{font-size:clamp(23px,2.7vw,34px);white-space:nowrap}
+.lx-league-stat-time .lx-league-progress span{background:linear-gradient(90deg,#79b4ef,#c6a8ff)}
+@media(max-width:1100px){.lx-league-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.lx-league-stat-progress,.lx-league-stat-time{grid-column:auto}}
+@media(max-width:700px){.lx-league-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.lx-league-stat-progress,.lx-league-stat-time{grid-column:1/-1}}
