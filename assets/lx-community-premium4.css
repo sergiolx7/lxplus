@@ -1,0 +1,254 @@
+/* LX Social · Community Premium 4.0 — scoped to NEW main application only.
+   No legacy v40 assets. Respect keyboard, contrast and reduced motion. */
+.social-page{
+ --lx-comm-border:rgba(179,158,249,.22);
+ --lx-comm-bg:linear-gradient(150deg,#211e30 0%,#151922 68%,#11151e 100%);
+ --lx-comm-card:linear-gradient(150deg,rgba(48,40,66,.97),rgba(23,26,39,.98));
+ --lx-comm-violet:#bfa7ff;
+ --lx-comm-cyan:#90d3ee;
+ color:#f3f0fb;
+}
+.social-page .social-heading{
+ background:radial-gradient(ellipse at 78% 0%,rgba(148,107,244,.23),transparent 62%),linear-gradient(127deg,#231d33,#171925 76%)!important;
+ border:1px solid rgba(193,168,247,.3)!important;
+ box-shadow:0 20px 55px rgba(6,7,17,.24),inset 0 1px rgba(240,231,255,.05)!important
+}
+.social-page .social-heading:after{content:"";position:absolute;inset:auto 24px 0;height:1px;background:linear-gradient(90deg,transparent,#c4a7ff99,#81c5ff55,transparent);pointer-events:none}
+.social-page .social-heading h1{letter-spacing:-.055em;font-weight:800}
+.social-page .social-heading h1 em{color:#d3beff;text-shadow:0 0 32px #a785f944}
+.social-page .section-tabs,
+.social-page .lx-social-v3-toolbar,
+.social-page .feed-compose,
+.social-page .feed-post,
+.social-page .social-right>.panel,
+.social-page .chat-layout,
+.social-page .people-card{
+ border:1px solid var(--lx-comm-border)!important;
+ background:var(--lx-comm-card)!important;
+ box-shadow:inset 0 1px rgba(255,255,255,.045),0 16px 42px rgba(4,6,14,.2)!important;
+ border-radius:22px!important;
+}
+.social-page .lx-social-v3-toolbar{backdrop-filter:blur(12px)}
+.social-page .feed-post{position:relative;overflow:hidden}
+.social-page .feed-post:before{
+ content:"";position:absolute;left:14px;right:14px;top:0;height:1px;
+ background:linear-gradient(90deg,transparent,rgba(181,152,255,.58),transparent);
+ pointer-events:none
+}
+.social-page .feed-post .post-media{border-radius:16px!important}
+.social-page button,
+.social-page .btn,
+.social-page input,
+.social-page textarea,
+.social-page select,
+.call-surface.lx-call button,
+.call-surface.lx-call select{
+ font:inherit;
+ transition:background-color .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease
+}
+.social-page .section-tabs button,
+.social-page .feed-filters button,
+.social-page .feed-post footer button,
+.social-page .people-card .actions button,
+.social-page .lx-feed-compose-jump,
+.social-page .chat-composer button,
+.social-page .chat-header button,
+.social-page .conversation button,
+.social-page .lx-explore-all,
+.social-page .social-right .btn{
+ min-height:39px;border-radius:13px!important;
+ border:1px solid rgba(190,164,245,.21)!important;
+ background:linear-gradient(145deg,rgba(123,102,166,.19),rgba(54,57,80,.25))!important;
+ color:#eae4fa!important;
+ box-shadow:inset 0 1px rgba(255,255,255,.035)!important;
+ cursor:pointer
+}
+.social-page .section-tabs button.active,
+.social-page .feed-filters button.active,
+.social-page .people-card .actions .btn.primary,
+.social-page .chat-composer .btn.primary,
+.social-page .feed-compose .btn.primary{
+ background:linear-gradient(122deg,#8e66d7,#6c69bd)!important;
+ border-color:#cbb1fc8c!important;
+ box-shadow:0 7px 24px rgba(101,68,167,.27)!important;
+ color:#fff!important
+}
+.social-page button:not(:disabled):hover,
+.social-page .btn:not(:disabled):hover,
+.call-surface.lx-call button:not(:disabled):hover{
+ border-color:#c9aafa99!important;
+ box-shadow:0 9px 24px rgba(105,75,173,.15)!important
+}
+.social-page .feed-post footer button:not(:disabled):hover,
+.social-page .people-card .actions button:not(:disabled):hover,
+.social-page .chat-composer button:not(:disabled):hover{
+ transform:translateY(-2px)
+}
+.social-page button:disabled,.call-surface.lx-call button:disabled{opacity:.46;cursor:not-allowed}
+.social-page :is(button,input,textarea,select,a):focus-visible,
+.call-surface.lx-call :is(button,input,select):focus-visible{
+ outline:2px solid #b9dbff!important;outline-offset:3px!important
+}
+.social-page .lx-feed-search,.social-page .people-search,.social-page .chat-search,
+.social-page .feed-compose textarea,.social-page #chatDraft{
+ background:rgba(12,16,28,.88)!important;
+ border:1px solid rgba(176,152,238,.32)!important;
+ border-radius:14px!important;
+ color:#f2edff!important
+}
+.social-page :is(.lx-feed-search,.people-search,.chat-search,.feed-compose textarea,#chatDraft):focus{
+ border-color:#c4abff!important;box-shadow:0 0 0 3px #a788ff21!important
+}
+.social-page .people-card:hover{border-color:#bfa6ef85!important;box-shadow:0 18px 46px rgba(35,20,58,.3)!important}
+.social-page .social-circle .social-online-friend{border-radius:16px!important}
+.social-page .chat-layout{overflow:hidden;min-height:590px}
+.social-page .chat-sidebar{
+ background:linear-gradient(160deg,#211c30,#151824)!important;
+ border-right:1px solid rgba(186,166,242,.2)!important
+}
+.social-page .chat-main{background:radial-gradient(ellipse at 15% 8%,rgba(108,85,169,.12),transparent 52%),#10131e!important}
+.social-page .chat-header{
+ background:rgba(34,29,48,.94)!important;
+ border-bottom:1px solid rgba(175,151,234,.19)!important;
+ backdrop-filter:blur(15px)
+}
+.social-page .conversation{border:1px solid transparent!important;border-radius:15px!important;min-height:62px}
+.social-page .conversation:hover{background:rgba(155,129,206,.12)!important}
+.social-page .conversation.active{
+ border-color:rgba(190,163,250,.43)!important;
+ background:linear-gradient(100deg,rgba(125,93,196,.32),rgba(89,66,137,.15))!important;
+ box-shadow:inset 3px 0 #bca2ff!important
+}
+.social-page .chat-messages{scrollbar-color:#786797 transparent;scrollbar-width:thin}
+.social-page .message{
+ border-radius:18px 18px 18px 7px!important;
+ border:1px solid rgba(189,165,239,.19)!important;
+ background:linear-gradient(140deg,#292739,#1c2130)!important;
+ box-shadow:0 8px 22px rgba(4,4,12,.2)!important;
+ line-height:1.55;overflow-wrap:anywhere
+}
+.social-page .message.mine{
+ border-radius:18px 18px 7px 18px!important;
+ background:linear-gradient(130deg,#7961bc,#515b9e)!important;
+ border-color:#d0baff55!important
+}
+.social-page .chat-composer{
+ background:linear-gradient(145deg,rgba(30,27,45,.97),rgba(21,24,35,.97))!important;
+ border-top:1px solid rgba(190,164,244,.23)!important;
+ padding:13px!important
+}
+.social-page #chatDraft{min-height:44px;padding:12px 14px!important;font-size:14px!important}
+.social-page .chat-composer .btn{min-height:42px!important}
+.call-surface.lx-call{
+ color:#f3f2fb!important;
+ border:1px solid rgba(183,167,248,.36)!important;
+ background:radial-gradient(ellipse at 90% 0%,#65529724,transparent 44%),#131622!important;
+ border-radius:24px!important;
+ box-shadow:0 27px 110px rgba(0,0,0,.7),inset 0 1px rgba(255,255,255,.075)!important;
+}
+.call-surface.lx-call:not(.has-share){width:min(420px,calc(100vw - 24px))!important}
+.call-surface.lx-call.has-share{inset:3vh 2vw!important}
+.call-surface.lx-call>header{
+ background:linear-gradient(115deg,#29233cdd,#171b2cdd)!important;
+ border-bottom:1px solid rgba(184,166,250,.21)!important;
+ backdrop-filter:blur(22px)
+}
+.call-surface.lx-call .call-titlebar strong{font-size:13px!important}
+.call-surface.lx-call .call-titlebar small{font-size:10px!important}
+.call-surface.lx-call .call-live-dot{width:8px;height:8px;box-shadow:0 0 15px rgba(100,240,178,.64)}
+.call-surface.lx-call .call-titlebar .btn{
+ min-height:34px!important;padding:8px 10px!important;
+ border:1px solid rgba(174,156,227,.32);border-radius:12px!important;
+ background:rgba(123,105,161,.2);color:#eee8fd
+}
+.call-surface.lx-call .call-workspace{grid-template-columns:minmax(0,1fr) minmax(205px,234px)}
+.call-surface.lx-call .call-screen-main{background:radial-gradient(ellipse at center,#111b30,#080c15 70%)!important}
+.call-surface.lx-call .call-screen-heading{background:#111626ce!important;border-bottom:1px solid #c9b2fd20!important}
+.call-surface.lx-call .call-stage{background:#080b15!important}
+.call-surface.lx-call .call-person-tile{
+ border:1px solid rgba(185,169,238,.38)!important;
+ border-radius:18px!important;
+ background:radial-gradient(circle at 50% 0%,rgba(144,112,244,.26),transparent 65%),#1b2131!important;
+ box-shadow:0 11px 30px rgba(0,0,0,.18)
+}
+.call-surface.lx-call .call-person-caption{font-size:11px!important;font-weight:700}
+.call-surface.lx-call .call-participants{
+ border-left:1px solid rgba(177,165,239,.22)!important;
+ background:linear-gradient(165deg,#201e31,#121823)!important;
+ scrollbar-color:#796894 transparent
+}
+.call-surface.lx-call .call-rail-label{font-size:10px!important;letter-spacing:.16em;color:#cec1f5}
+.call-surface.lx-call .call-audio-mixer,.call-surface.lx-call .call-stream-settings{border-color:#bca6ff24}
+.call-surface.lx-call .call-stream-settings select{
+ background:#101525!important;border:1px solid #a98fda55!important;
+ border-radius:12px!important;color:#eeeafe;font-size:12px!important
+}
+.call-surface.lx-call>footer{
+ max-height:245px!important;background:linear-gradient(145deg,rgba(31,27,46,.98),rgba(14,19,32,.98))!important;
+ border-top:1px solid rgba(173,152,236,.21)!important;
+ padding:14px!important;gap:11px!important
+}
+.call-surface.lx-call .call-control-actions{gap:9px!important;display:flex;flex-wrap:wrap}
+.call-surface.lx-call .call-control-actions>.btn{
+ background:linear-gradient(155deg,rgba(96,85,138,.31),rgba(35,42,65,.92))!important;
+ border:1px solid #b5a3ec42!important;border-radius:15px!important;
+ box-shadow:inset 0 1px rgba(255,255,255,.06),0 7px 14px #05051035!important;
+ min-height:44px!important;display:flex;align-items:center;gap:8px!important;
+ padding:11px 13px!important;font-weight:700;font-size:11px!important;color:#f4eeff!important
+}
+.call-surface.lx-call .call-control-actions>.btn svg{width:17px;height:17px}
+.call-surface.lx-call .call-control-actions>.btn[aria-pressed=false]{
+ background:linear-gradient(130deg,rgba(138,45,82,.55),rgba(68,31,55,.87))!important;
+ border-color:#ee809877!important
+}
+.call-surface.lx-call .call-control-actions>.btn.needs-attention{
+ border-color:#f7c487!important;box-shadow:0 0 0 3px #d7904926!important;
+ animation:lxMicAlert 2.3s ease-in-out infinite
+}
+@keyframes lxMicAlert{50%{box-shadow:0 0 0 5px #d7904938}}
+.call-surface.lx-call .call-control-actions>.btn.danger{
+ background:linear-gradient(135deg,#df4d76,#ab274b)!important;border-color:#ffa4b477!important;
+ color:white!important;box-shadow:0 8px 24px #df365e33!important
+}
+.call-surface.lx-call .call-share-choice{
+ display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+ gap:10px!important;text-align:left;
+ background:rgba(13,18,32,.58);border:1px solid rgba(174,153,226,.2);
+ border-radius:15px;padding:10px!important
+}
+.call-surface.lx-call .call-share-choice .call-source-label{
+ display:flex;align-items:center;gap:8px;min-width:0;font-size:11px;
+ color:#e5ddfa
+}
+.call-surface.lx-call [data-call-screen-kind]{
+ background:#151a2c!important;color:#efeafd;border:1px solid #ad92e159!important;
+ border-radius:11px!important;padding:9px;min-width:0;width:100%;font-size:11px!important;
+}
+.call-surface.lx-call .call-share-choice .call-audio-checkbox{font-size:11px!important}
+.call-surface.lx-call .call-share-choice small{
+ grid-column:1/-1;font-size:10px!important;line-height:1.5;color:#b8b7ce!important
+}
+.call-surface.lx-call [data-call-share-status]{font-size:11px!important;color:#c5c3dc!important;line-height:1.5}
+@media(max-width:850px){
+ .call-surface.lx-call.has-share{inset:0!important;width:100vw!important;height:100dvh!important;border-radius:0!important}
+ .call-surface.lx-call .call-workspace{grid-template-columns:minmax(0,1fr) 145px}
+ .call-surface.lx-call .call-participants{padding:8px!important;gap:8px!important}
+}
+@media(max-width:620px){
+ .call-surface.lx-call:not(.has-share){right:8px!important;bottom:8px!important}
+ .call-surface.lx-call .call-titlebar>.actions{gap:5px;flex-wrap:wrap}
+ .call-surface.lx-call.has-share .call-workspace{grid-template-columns:1fr;grid-template-rows:minmax(160px,1fr) auto}
+ .call-surface.lx-call.has-share .call-participants{display:flex;flex-direction:row;align-items:stretch;overflow-x:auto;max-height:116px;border-top:1px solid #cbb7ff22;border-left:none}
+ .call-surface.lx-call.has-share .call-person-tile{min-width:128px;width:128px;min-height:82px;aspect-ratio:1.8}
+ .call-surface.lx-call .call-control-actions>.btn{min-height:40px!important;padding:8px 10px!important;font-size:10px!important}
+ .call-surface.lx-call .call-share-choice{grid-template-columns:1fr;gap:6px}
+ .call-surface.lx-call .call-share-choice small{grid-column:auto}
+ .call-surface.lx-call>footer{max-height:240px!important}
+ .social-page .chat-layout{min-height:calc(100dvh - 190px)}
+ .social-page .chat-sidebar{padding:10px!important}
+ .social-page .chat-messages{padding:13px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .social-page button,.social-page .btn,.social-page .people-card,.social-page .feed-post,
+ .call-surface.lx-call button{transition:none!important;animation:none!important;transform:none!important}
+}
