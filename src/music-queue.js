@@ -8,5 +8,16 @@ export class MusicQueue {
   this.previous.push(this.index);this.index=next;this.played.add(next);return this.items[next];
  }
  back(){if(!this.items.length)return null;this.index=this.previous.length?this.previous.pop():Math.max(0,this.index-1);return this.items[this.index]}
+ // Keep the playing track, shuffle coverage and previous-history stable when ordering changes.
+ move(from,to){
+  if(!Number.isInteger(from)||!Number.isInteger(to)||from<0||to<0||from>=this.items.length||to>=this.items.length)return false;
+  if(from===to)return true;
+  const current=this.items[this.index],history=this.previous.map(i=>this.items[i]).filter(Boolean),played=this.items.filter((_,i)=>this.played.has(i));
+  const [moving]=this.items.splice(from,1);this.items.splice(to,0,moving);
+  this.index=this.items.indexOf(current);
+  this.previous=history.map(track=>this.items.indexOf(track)).filter(i=>i>=0);
+  this.played=new Set(played.map(track=>this.items.indexOf(track)).filter(i=>i>=0));
+  return true;
+ }
  add(item){if(!this.items.some(x=>String(x.id)===String(item.id)))this.items.push(item)}
 }
