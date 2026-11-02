@@ -1,4 +1,5 @@
 import {playCallSound} from './call-sounds.js';
+import {voiceConstraints,microphoneLevel,inputHealth} from './voice-quality.js';
 import {callView} from './call-view.js';
 import {premiumCaptureQuality} from './premium-style.js';
 import {rtcConfig,stunServers} from './rtc-config.js';
@@ -10,7 +11,7 @@ import {checked,esc,avatar} from './ui.js';
 
 // Media permissions are requested only after the member presses Call or Accept.
 export class Calls {
- constructor({userId,toast,directory=()=>[],profile=()=>({})}){this.profile=profile;this.userId=userId;this.toast=toast;this.directory=directory;this.call=null;this.pc=null;this.local=null;this.remote=null;this.screen=null;this.channel=null;this.cursor=0;this.ice=[];this.polling=false;this.closed=false;this.attempts=0;this.seen=new Set();this.incoming=null;this.starting=false;this.pollTimer=setInterval(()=>this.poll().catch(()=>{}),3000);this.poll().catch(()=>{})}
+ constructor({userId,toast,directory=()=>[],profile=()=>({})}){this.profile=profile;this.userId=userId;this.toast=toast;this.directory=directory;this.call=null;this.pc=null;this.local=null;this.remote=null;this.screen=null;this.channel=null;this.cursor=0;this.ice=[];this.polling=false;this.closed=false;this.attempts=0;this.seen=new Set();this.incoming=null;this.starting=false;this.micMode='clear';this.micDeviceId='';this.micTester=null;this.pollTimer=setInterval(()=>this.poll().catch(()=>{}),3000);this.poll().catch(()=>{})}
  async poll(){
   if(this.closed||this.polling)return;this.polling=true;
   try{
@@ -31,7 +32,7 @@ export class Calls {
  async reject(call){await checked(db.rpc('lx_respond_call',{p_call_id:call.id,p_accept:false}));this.incoming=null;this.removeSurface()}
  async capture(mode){
   if(!navigator.mediaDevices?.getUserMedia)throw Error('Este navegador não oferece microfone. Use um navegador atualizado em HTTPS.');
-  const audio={echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:{ideal:1}};
+  const audio=voiceConstraints({mode:this.micMode,deviceId:this.micDeviceId});
   try{return await navigator.mediaDevices.getUserMedia({audio,video:mode==='video'?{width:{ideal:1280},height:{ideal:720},facingMode:'user'}:false})}
   catch(error){if(mode!=='video')throw error;try{const stream=await navigator.mediaDevices.getUserMedia({audio,video:false});this.toast('Câmera indisponível. Entrando com microfone e áudio.');return stream}catch{throw error}}
  }
@@ -52,18 +53,20 @@ export class Calls {
    const camera=el.querySelector('[data-call-camera]');
    if(camera){camera.setAttribute('aria-pressed','false');camera.setAttribute('aria-label','Ativar câmera');camera.querySelector('span').textContent='Ativar câmera'}
   }
-  el.querySelector('#callShareAudio').volume=.85;this.listenScreenAudio=true;this.remoteScreenAudioDeclared=false;
+  el.querySelector('#callShareAudio').volume=.85;this.refreshMicrophones().catch(()=>{});this.listenScreenAudio=true;this.remoteScreenAudioDeclared=false;
   this.callAbort=new AbortController();const signal=this.callAbort.signal;el.addEventListener('keydown',e=>{if(e.key==='Escape'&&el.classList.contains('call-theater')){el.classList.remove('call-theater');el.querySelector('[data-call-fullscreen]').textContent='⤢ Tela cheia'}},{signal});
   document.addEventListener('fullscreenchange',()=>{if(this.surface===el){const b=el.querySelector('[data-call-fullscreen]');b.textContent=document.fullscreenElement===el?'⤡ Sair da tela cheia':'⤢ Tela cheia';b.setAttribute('aria-label',document.fullscreenElement===el?'Sair da tela cheia da chamada':'Tela cheia da chamada')}},{signal});
   el.addEventListener('dblclick',e=>{if(e.target.closest('[data-call-stage]'))this.fullscreen().catch(()=>{})},{signal});
   el.addEventListener('input',e=>{const kind=e.target.dataset.callVolume;if(kind)el.querySelector(kind==='voice'?'#callRemote':'#callShareAudio').volume=Number(e.target.value)/100},{signal});
   el.addEventListener('change',e=>{if(e.target.hasAttribute('data-call-screen-kind')){
    const kind=e.target.value,checkbox=el.querySelector('[data-call-screen-audio]'),hint=el.querySelector('[data-call-share-hint]');
-   if(checkbox)checkbox.disabled=kind==='monitor';
-   if(hint)hint.textContent=kind==='monitor'?'Compartilhe a tela inteira, inclusive jogos. O áudio geral do PC não será capturado para evitar eco.'
+   if(checkbox){checkbox.disabled=false;if(kind==='monitor')checkbox.checked=false;}
+   if(hint)hint.textContent=kind==='monitor'?'Tela inteira e jogos: marque áudio somente se desejar transmitir todo o som. Use fones para evitar chiado e eco.'
     :kind==='window'?'Escolha uma janela de jogo ou aplicativo. Som da janela somente se o navegador disponibilizar captura isolada.'
     :'Selecione uma aba e marque Compartilhar áudio da guia. Sua voz continua separada.';
-  }if(e.target.hasAttribute('data-call-quality')&&this.screen)this.applyShareQuality().catch(error=>this.toast(error.message));if(e.target.hasAttribute('data-call-listen-screen')){this.listenScreenAudio=e.target.checked;const media=el.querySelector('#callShareAudio');setRemoteScreenAudio(media,this.listenScreenAudio);if(this.listenScreenAudio){this.playRemoteAudio(media).catch(()=>{});this.audioNotice(this.remoteShareAudio?'Som da tela reativado.':'Aguardando o áudio da aba do amigo…')}else this.audioNotice('O áudio da tela foi silenciado somente para você.')}} ,{signal});
+  }if(e.target.hasAttribute('data-call-mic-device')){this.micDeviceId=e.target.value;this.repairMicrophone().catch(error=>this.toast(error.message))}
+  if(e.target.hasAttribute('data-call-mic-mode')){this.micMode=e.target.value;this.repairMicrophone().catch(error=>this.toast(error.message))}
+  if(e.target.hasAttribute('data-call-quality')&&this.screen)this.applyShareQuality().catch(error=>this.toast(error.message));if(e.target.hasAttribute('data-call-listen-screen')){this.listenScreenAudio=e.target.checked;const media=el.querySelector('#callShareAudio');setRemoteScreenAudio(media,this.listenScreenAudio);if(this.listenScreenAudio){this.playRemoteAudio(media).catch(()=>{});this.audioNotice(this.remoteShareAudio?'Som da tela reativado.':'Aguardando o áudio da aba do amigo…')}else this.audioNotice('O áudio da tela foi silenciado somente para você.')}} ,{signal});
   el.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;try{
    if(b.hasAttribute('data-call-mini')){if(document.fullscreenElement===el)await document.exitFullscreen();el.classList.remove('call-theater');el.classList.toggle('minimized');b.textContent=el.classList.contains('minimized')?'Ampliar chamada':'Encaixar na lateral'}
    if(b.hasAttribute('data-call-fullscreen'))await this.fullscreen();
@@ -72,6 +75,11 @@ export class Calls {
    if(b.hasAttribute('data-call-unlock')){const elements=[...el.querySelectorAll('audio')].filter(a=>a.srcObject&&(a.id!=='callShareAudio'||this.listenScreenAudio));const results=await Promise.allSettled(elements.map(a=>{a.muted=false;return a.play()}));b.hidden=!results.some(x=>x.status==='rejected');if(!b.hidden)this.audioNotice('O navegador bloqueou a reprodução. Clique em Ativar som novamente.');else this.audioNotice(this.remoteShareAudio?'Áudio recebido. Ajuste o volume de Som compartilhado.':'Áudio da chamada ativado.')}
    if(b.hasAttribute('data-call-retry'))await this.restart(true);
    if(b.hasAttribute('data-call-mic-repair'))await this.repairMicrophone();
+   if(b.hasAttribute('data-call-mic-refresh'))await this.refreshMicrophones();
+   if(b.hasAttribute('data-call-mic-test'))this.toggleMicTest();
+   if(b.dataset.callPreset){const sel=el.querySelector('[data-call-quality]');if(sel)sel.value=b.dataset.callPreset==='game'&&this.profile()?.is_premium===true?'1080-60':'1080-30';const mode=el.querySelector('[data-call-preset="'+b.dataset.callPreset+'"]');el.querySelectorAll('[data-call-preset]').forEach(x=>x.classList.toggle('active',x===mode));if(this.screen)await this.applyShareQuality()}
+   if(b.hasAttribute('data-call-share-switch'))await this.shareScreen(true);
+   if(b.hasAttribute('data-call-share-pause'))this.toggleSharePause();
    if(b.hasAttribute('data-call-mic')){const tracks=this.local?.getAudioTracks()||[];if(!tracks[0]||tracks[0].readyState!=='live'){await this.repairMicrophone();return}const enabled=!tracks[0].enabled;tracks.forEach(t=>t.enabled=enabled);b.querySelector('span').textContent=enabled?'Microfone ligado':'Microfone desligado';b.setAttribute('aria-label',enabled?'Microfone ligado':'Microfone desligado');b.setAttribute('aria-pressed',String(enabled));el.querySelector('[data-call-mic-state]').textContent=enabled?'♫':'⊘'}
    if(b.hasAttribute('data-call-camera')){let tracks=this.local?.getVideoTracks()||[];
     if(!tracks[0]||tracks[0].readyState!=='live'){
@@ -91,23 +99,58 @@ export class Calls {
    if(b.hasAttribute('data-call-screen'))await this.shareScreen();if(b.dataset.callSound){if(this.profile()?.is_premium!==true)throw Error('O painel de sons é exclusivo Premium.');if(Date.now()-(this.lastSound||0)<3000)return;this.lastSound=Date.now();playCallSound(b.dataset.callSound);await this.signal('reaction',{sound:b.dataset.callSound})}
   }catch(error){this.toast(error.message||'Não foi possível alterar a chamada.')}},{signal});this.syncView();
  }
+ async refreshMicrophones(){
+  const select=this.surface?.querySelector('[data-call-mic-device]');if(!select||!navigator.mediaDevices?.enumerateDevices)return;
+  try{
+   const devices=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='audioinput');
+   const selected=this.micDeviceId,items=[{deviceId:'',label:'Padrão do dispositivo'},...devices.filter(d=>d.deviceId).map((d,i)=>({deviceId:d.deviceId,label:d.label||'Microfone '+(i+1)}))];
+   select.replaceChildren();
+   for(const item of items){const option=document.createElement('option');option.value=item.deviceId;option.textContent=item.label;select.appendChild(option)}
+   select.value=items.some(x=>x.deviceId===selected)?selected:'';
+   if(selected&&!items.some(x=>x.deviceId===selected)){this.micDeviceId='';this.status('Microfone desconectado. Selecione outra entrada.')}
+  }catch(e){console.warn('LX microphone devices',e)}
+ }
+ stopMicTest(){
+  const t=this.micTester;this.micTester=null;
+  if(t){clearInterval(t.timer);try{t.source.disconnect()}catch{};try{t.analyser.disconnect()}catch{};t.context.close().catch(()=>{})}
+  const b=this.surface?.querySelector('[data-call-mic-test]');if(b){b.setAttribute('aria-pressed','false');b.textContent='Testar microfone'}
+  const bar=this.surface?.querySelector('[data-call-voice-meter]');if(bar)bar.style.width='0%';
+ }
+ toggleMicTest(){
+  if(this.micTester){this.stopMicTest();return}
+  const track=this.local?.getAudioTracks?.()[0],node=this.surface?.querySelector('[data-call-voice-text]'),health=inputHealth(track);
+  if(!health.ok){if(node)node.textContent=health.text;return}
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;
+  if(!AudioCtx){if(node)node.textContent='Medidor indisponível neste navegador.';return}
+  const context=new AudioCtx(),source=context.createMediaStreamSource(new MediaStream([track])),analyser=context.createAnalyser();
+  analyser.fftSize=1024;source.connect(analyser); // Intentionally NOT connected to speakers; avoids feedback.
+  const data=new Uint8Array(analyser.fftSize),bar=this.surface?.querySelector('[data-call-voice-meter]');
+  context.resume().catch(()=>{});
+  const timer=setInterval(()=>{if(!this.surface||track.readyState!=='live'){this.stopMicTest();return}
+    analyser.getByteTimeDomainData(data);const level=microphoneLevel(data);if(bar)bar.style.width=level+'%';
+    if(node)node.textContent=level>11?'Sua voz está chegando. Se houver chiado, experimente Voz natural ou troque a entrada.':'Entrada ativa · fale para testar. Se só houver chiado, verifique o microfone físico.'
+  },130);
+  this.micTester={timer,context,source,analyser};
+  const b=this.surface?.querySelector('[data-call-mic-test]');if(b){b.setAttribute('aria-pressed','true');b.textContent='Encerrar teste'}
+  if(node)node.textContent='Testando somente o nível local (sem reproduzir nem gravar áudio).';
+ }
  async repairMicrophone(){
   if(!this.call||!this.local||!this.pc)return false;
   let fresh;
   try{
-   fresh=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:{ideal:1}},video:false});
+   fresh=await navigator.mediaDevices.getUserMedia({audio:voiceConstraints({mode:this.micMode,deviceId:this.micDeviceId}),video:false});
    const next=fresh.getAudioTracks()[0],old=this.local.getAudioTracks()[0];
    if(!next)throw Error('Nenhuma entrada de microfone foi encontrada.');
    const sender=this.micSender||this.pc.getSenders().find(s=>s.track===old);
    if(!sender)throw Error('Canal de voz indisponível. Use Reconectar chamada.');
-   await sender.replaceTrack(next);this.micSender=sender;
+   await sender.replaceTrack(next);this.stopMicTest();this.micSender=sender;
    for(const track of this.local.getAudioTracks()){this.local.removeTrack(track);track.stop()}
    this.local.addTrack(next);next.enabled=true;
    next.addEventListener('ended',()=>{if(this.call){this.status('Microfone desconectado. Clique em Reparar mic.');this.surface?.querySelector('[data-call-mic-repair]')?.classList.add('needs-attention')}},{once:true});
    const b=this.surface?.querySelector('[data-call-mic]');if(b){b.setAttribute('aria-label','Microfone ligado');b.setAttribute('aria-pressed','true');b.querySelector('span').textContent='Microfone ligado'}
    this.surface?.querySelector('[data-call-mic-repair]')?.classList.remove('needs-attention');
    const s=this.surface?.querySelector('[data-call-mic-state]');if(s)s.textContent='♫';
-   this.status('Microfone reconectado · teste sua voz com o amigo');
+   this.status('Microfone atualizado · voz com redução de eco');await this.refreshMicrophones();
    this.toast('Microfone recuperado. A chamada foi mantida.');
    return true;
   }catch(e){fresh?.getTracks().forEach(t=>t.stop());this.toast(e?.name==='NotAllowedError'?'Autorize o microfone nas permissões do navegador.':e.message||'Não foi possível recuperar o microfone.');return false}
@@ -178,7 +221,7 @@ export class Calls {
   await this.signal('ice',{media:{screen:false}});
  }
  async end(){const id=this.call?.id;this.call=null;this.disposeMedia();this.removeSurface();if(id)await checked(db.rpc('lx_end_call',{p_call_id:id}))}
- disposeMedia(){clearTimeout(this.retryTimer);this.retryTimer=null;clearTimeout(this.connectionTimeout);clearInterval(this.signalTimer);clearInterval(this.metricsTimer);clearInterval(this.renewTimer);this.negotiating=false;this.pendingNegotiation=false;this.restarting=false;this.signalQueue=null;this.iceKinds=new Set();this.remoteAnswered=false;this.cursor=0;this.ice=[];this.seen.clear();this.pc?.close();this.pc=null;this.local?.getTracks().forEach(t=>t.stop());this.screen?.getTracks().forEach(t=>t.stop());this.local=null;this.remote=null;this.screen=null;this.micSender=null;this.remoteShareSurface=null;this.videoSender=null;this.screenSender=null;this.shareAudioSender=null;this.remoteShareAudio=false;this.remoteScreenAudioDeclared=false;this.sharing=false;this.listenScreenAudio=true;if(this.channel){db.removeChannel(this.channel);this.channel=null}}
+ disposeMedia(){this.stopMicTest();clearTimeout(this.retryTimer);this.retryTimer=null;clearTimeout(this.connectionTimeout);clearInterval(this.signalTimer);clearInterval(this.metricsTimer);clearInterval(this.renewTimer);this.negotiating=false;this.pendingNegotiation=false;this.restarting=false;this.signalQueue=null;this.iceKinds=new Set();this.remoteAnswered=false;this.cursor=0;this.ice=[];this.seen.clear();this.pc?.close();this.pc=null;this.local?.getTracks().forEach(t=>t.stop());this.screen?.getTracks().forEach(t=>t.stop());this.local=null;this.remote=null;this.screen=null;this.micSender=null;this.remoteShareSurface=null;this.videoSender=null;this.screenSender=null;this.shareAudioSender=null;this.remoteShareAudio=false;this.remoteScreenAudioDeclared=false;this.sharing=false;this.listenScreenAudio=true;if(this.channel){db.removeChannel(this.channel);this.channel=null}}
  removeSurface(){this.callAbort?.abort();this.callAbort=null;if(document.fullscreenElement===this.surface)document.exitFullscreen().catch(()=>{});this.surface?.remove();this.surface=null}
  destroy(){this.closed=true;clearInterval(this.pollTimer);const id=this.call?.id;this.call=null;this.disposeMedia();this.removeSurface();if(id)db.rpc('lx_end_call',{p_call_id:id}).catch(()=>{})}
 }
