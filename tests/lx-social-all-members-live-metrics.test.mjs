@@ -19,7 +19,7 @@ test('public counts refresh automatically and on returning focus without resetti
  assert.match(social,/window\.addEventListener\('focus',onCommunityFocus\)/);
  assert.match(social,/document\.addEventListener\('visibilitychange',onCommunityFocus\)/);
  assert.match(social,/document\.hidden\|\|countersRefreshing\|\|postSending/);
- assert.match(social,/!host\.querySelector\('#postForm textarea:focus'\)/);
+ assert.match(social,/!host\.querySelector\('#postForm:focus-within'\)/);
  assert.match(social,/host\.querySelector\('#peopleResults'\)/);
  assert.match(social,/clearInterval\(countersTimer\)/);
  assert.match(social,/window\.removeEventListener\('focus',onCommunityFocus\)/);
