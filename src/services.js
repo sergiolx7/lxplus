@@ -2,6 +2,7 @@ import {VERSION} from './config.js';
 import {db,itemFrom} from './data.js';
 import {uuid,checked,https} from './ui.js';
 import {catalogFilter,searchTerm} from './catalog-search.js';
+import {isGifSignature} from './social-media-validation.js';
 
 export async function catalogPage({types=[],term='',offset=0,limit=48,admin=false,match={}}={}){
  let query=db.from('lx_catalog').select('id,payload,published,updated_at',{count:'exact'}).order('updated_at',{ascending:false}).order('id',{ascending:false});
@@ -21,12 +22,13 @@ const unique=[...new Set(ids)].filter(Boolean).slice(0,100);if(!unique.length)re
 }
 export async function socialDirectory(){const people=await checked(db.rpc('lx_plus_directory'))||[];try{const cosmetics=await db.rpc('lx_profile_cosmetics_many',{p_users:people.map(p=>p.user_id).slice(0,60)});if(!cosmetics.error&&Array.isArray(cosmetics.data)){const map=new Map(cosmetics.data.map(p=>[p.user_id,p]));return people.map(p=>({...p,...map.get(p.user_id)}))}}catch{}return people}
 export async function uploadSocial(file,{userId,kind,target}){
- const accepted=/^(image\/(jpeg|png|webp)|video\/(mp4|webm)|audio\/(webm|ogg|mpeg|mp4|wav)|application\/(pdf|zip)|text\/plain)$/;
+ const accepted=/^(image\/(jpeg|png|webp|gif)|video\/(mp4|webm)|audio\/(webm|ogg|mpeg|mp4|wav)|application\/(pdf|zip)|text\/plain)$/;
  const mime=String(file?.type||'').split(';')[0];
  if(!file||!file.size||file.size>25*1024*1024)throw Error('Envie um arquivo de até 25 MB.');
  if(!accepted.test(mime))throw Error('Formato não permitido. Use imagem, vídeo, áudio, PDF, TXT ou ZIP.');
+ if(mime==='image/gif'&&!isGifSignature(new Uint8Array(await file.slice(0,6).arrayBuffer())))throw Error('O arquivo não é um GIF válido.');
  if(!['dm','group','post'].includes(kind)||!/^[-a-f0-9]{36}$/.test(String(target)))throw Error('Destino do arquivo inválido.');
- const exts={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','video/mp4':'mp4','video/webm':'webm','audio/webm':'webm','audio/ogg':'ogg','audio/mpeg':'mp3','audio/mp4':'m4a','audio/wav':'wav','application/pdf':'pdf','application/zip':'zip','text/plain':'txt'};
+ const exts={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif','video/mp4':'mp4','video/webm':'webm','audio/webm':'webm','audio/ogg':'ogg','audio/mpeg':'mp3','audio/mp4':'m4a','audio/wav':'wav','application/pdf':'pdf','application/zip':'zip','text/plain':'txt'};
  const path=userId+'/'+kind+'/'+target+'/'+uuid()+'.'+exts[mime];
  await checked(db.storage.from('lx-social').upload(path,file,{contentType:mime,upsert:false,cacheControl:'300'}));
  return path;
