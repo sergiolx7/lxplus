@@ -1,5 +1,5 @@
 import {esc,avatar,verifiedBadge} from './ui.js';
-import {profileCover,profileLedAttributes,profileName,premiumBadge} from './profile-premium.js';
+import {profileCover,profileLedAttributes,profileName,premiumBadge,founderBadge} from './profile-premium.js';
 import {renderExpressions} from './premium-expressions.js';
 import {compactSocialCount,publicDemoLabel} from './social-demo-ui.js';
 
@@ -25,7 +25,7 @@ export function memberProfileCard(profile,{viewerId='',presence='',nowPlaying=''
   +'<div class="lx-member-avatar-row">'+avatar(p,'profile-avatar lx-member-avatar')+'</div>'
   +'<div class="lx-member-identity"><h2>'+profileName(p)+verifiedBadge(p)+'</h2>'
   +'<p class="lx-member-handle">'+esc(label)+'</p></div>'
-  +'<div class="lx-member-tags">'+premiumBadge(p)+(verified?'<span class="lx-member-verified">✓ Perfil verificado</span>':'')+(p.relation==='accepted'?'<span class="lx-member-friend-label">Amigo LX</span>':'')+'</div>'
+  +'<div class="lx-member-tags">'+founderBadge(p)+premiumBadge(p)+(verified?'<span class="lx-member-verified">✓ Perfil verificado</span>':'')+(p.relation==='accepted'?'<span class="lx-member-friend-label">Amigo LX</span>':'')+'</div>'
   +'<div class="lx-follow-stats lx-member-follow-stats"><span><strong>'+compactSocialCount(Number(stats.followers||0)+Number(demoFollowers||0))+'</strong> seguidores</span><span><strong>'+compactSocialCount(stats.following_count||0)+'</strong> seguindo</span></div>'+(!labMode?publicDemoLabel(publicDemoFollowers,'profile'):'')+'<div class="lx-member-presence">'+presence+'</div>'+(nowPlaying?'<section class="lx-member-listening">'+nowPlaying+'</section>':'')
   +(status?'<div class="lx-member-about"><span>STATUS</span><p>'+esc(status)+'</p></div>':'')
   +'<div class="lx-member-about"><span>SOBRE MIM</span><p>'+ (bio?renderExpressions(bio,owned):'A pessoa ainda não escreveu uma biografia.') +'</p></div>'

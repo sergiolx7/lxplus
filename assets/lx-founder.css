@@ -1,0 +1,7 @@
+/* Official founder identity is derived from the validated owner role. */
+.lx-founder-badge{display:inline-flex;align-items:center;justify-content:center;gap:6px;max-width:100%;padding:5px 11px;border-radius:999px;font-size:10px;letter-spacing:.035em;font-weight:800;color:#ffe9bf;background:linear-gradient(125deg,#a67c3238,#c9a0ef32);border:1px solid #eac782a8;box-shadow:0 2px 20px #e2b66220;white-space:nowrap;vertical-align:middle}
+.lx-founder-profile{border:1px solid #deb67494!important;background:radial-gradient(circle at 50% 0%,#a8825130,transparent 70%),linear-gradient(160deg,#292335,#161820)!important;box-shadow:0 8px 36px #cbb07816;position:relative}
+.lx-founder-profile::before{content:'OFICIAL · LX PLUS';position:absolute;top:10px;right:10px;color:#e4c596;font-size:8px;letter-spacing:.08em;font-weight:800}
+.lx-member-tags .lx-founder-badge{padding:7px 12px;font-size:11px}
+.people-card .lx-founder-badge{margin-left:6px}
+@media(max-width:650px){.lx-founder-badge{font-size:9px;padding:4px 7px}.lx-founder-profile::before{position:static;display:block;margin-bottom:6px}}
