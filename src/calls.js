@@ -1,5 +1,6 @@
 import {playCallSound} from './call-sounds.js';
 import {voiceConstraints,microphoneLevel,inputHealth} from './voice-quality.js';
+import {bindAnsweringMicrophone,outgoingVoiceState} from './call-voice-signaling.js';
 import {callView} from './call-view.js';
 import {premiumCaptureQuality} from './premium-style.js';
 import {rtcConfig,stunServers} from './rtc-config.js';
@@ -177,8 +178,8 @@ export class Calls {
   pc.onconnectionstatechange=()=>{
    if(pc!==this.pc)return;
    this.updateNetworkStatus();if(pc.connectionState==='connected'){
-    const localMic=this.local?.getAudioTracks()[0],outbound=this.micSender?.track;
-    if(localMic?.readyState==='live'&&outbound!==localMic){
+    const localMic=this.local?.getAudioTracks()[0];
+    if(outgoingVoiceState(this.micSender,localMic)==='not-sending'){
       this.status('Voz não conectada. Tentando reparar o microfone…');
       this.repairMicrophone().catch(()=>{});
     }else this.status('Conectado · chamada privada');
@@ -198,7 +199,7 @@ export class Calls {
  }
  async applySignal(signal,pc){
   if(signal.kind==='reaction'){if(['sparkle','chime','pulse'].includes(signal.payload?.sound)&&Date.now()-(this.lastRemoteSound||0)>3000){this.lastRemoteSound=Date.now();playCallSound(signal.payload.sound)}return}
-  if(signal.kind==='offer'){await pc.setRemoteDescription(signal.payload);this.remoteAnswered=true;this.updateNetworkStatus();const transceivers=pc.getTransceivers(),audios=transceivers.filter(t=>t.receiver.track.kind==='audio');const videos=transceivers.filter(t=>t.receiver.track.kind==='video');this.micSender=audios[0]?.sender;this.videoSender=videos[0]?.sender;this.screenSender=videos[1]?.sender;this.shareAudioSender=audios[1]?.sender;for(const t of transceivers)t.direction='sendrecv';if(!this.micSender||!this.local?.getAudioTracks()[0])throw Error('Canal de voz indisponível. Tente reconectar a chamada.');await this.micSender.replaceTrack(this.local.getAudioTracks()[0]);await this.videoSender?.replaceTrack(this.local?.getVideoTracks()[0]||null);await this.screenSender?.replaceTrack(this.screen?.getVideoTracks()[0]||null);await this.shareAudioSender?.replaceTrack(this.screen?.getAudioTracks()[0]||null);await flushIceQueue(pc,this.ice.splice(0));await pc.setLocalDescription(await pc.createAnswer());await this.signal('answer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp})}
+  if(signal.kind==='offer'){await pc.setRemoteDescription(signal.payload);this.remoteAnswered=true;this.updateNetworkStatus();const transceivers=pc.getTransceivers(),audios=transceivers.filter(t=>t.receiver.track.kind==='audio');const videos=transceivers.filter(t=>t.receiver.track.kind==='video');this.videoSender=videos[0]?.sender;this.screenSender=videos[1]?.sender;this.shareAudioSender=audios[1]?.sender;for(const t of transceivers)t.direction='sendrecv';this.micSender=await bindAnsweringMicrophone(transceivers,this.local);await this.videoSender?.replaceTrack(this.local?.getVideoTracks()[0]||null);await this.screenSender?.replaceTrack(this.screen?.getVideoTracks()[0]||null);await this.shareAudioSender?.replaceTrack(this.screen?.getAudioTracks()[0]||null);await flushIceQueue(pc,this.ice.splice(0));await pc.setLocalDescription(await pc.createAnswer());await this.signal('answer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp})}
   else if(signal.kind==='answer'&&pc.signalingState==='have-local-offer'){await pc.setRemoteDescription(signal.payload);this.remoteAnswered=true;this.updateNetworkStatus();await flushIceQueue(pc,this.ice.splice(0))}
   else if(signal.kind==='ice'){if(signal.payload?.media){const media=signal.payload.media;if(typeof media.screen==='boolean'){this.remoteScreen=media.screen;if(!media.screen){this.remoteScreenReady=false;this.remoteShareAudio=false;this.remoteScreenAudioDeclared=false;this.audioNotice('O compartilhamento de tela foi encerrado.')}else if(typeof media.screenAudio==='boolean'){this.remoteScreenAudioDeclared=media.screenAudio;this.remoteShareSurface=media.screenSurface||'browser';const received=this.surface?.querySelector('#callShareAudio')?.srcObject?.getAudioTracks()?.[0];this.audioNotice(media.screenAudio?audioSharingState({requested:true,surface:this.remoteShareSurface||'browser',track:received,listenerEnabled:this.listenScreenAudio}).text:'A pessoa compartilhou apenas a imagem. Peça para marcar o áudio da guia no seletor.')}}if(typeof media.camera==='boolean')this.remoteCamera=media.camera;else if(typeof media.video==='boolean')this.remoteCamera=media.video;this.syncView();return}if(signal.payload?.restart){if(this.call?.caller_id===this.userId)await this.restart();return}if(pc.remoteDescription){await flushIceQueue(pc,[signal.payload])}else this.ice.push(signal.payload)}
  }
