@@ -105,3 +105,25 @@
 @media(prefers-reduced-motion:reduce){
  .lx-music-dock.has-official-embed #lxDockMedia{transition:none!important}
 }
+
+
+/* YouTube source indicator: tiny red LED integrated into the LX transport. */
+.lx-music-dock.is-youtube-embed .dock-identity{position:relative;padding-left:7px}
+.lx-music-dock.is-youtube-embed .dock-identity::before{
+ content:"";position:absolute;left:-7px;top:50%;transform:translateY(-50%);
+ width:3px;height:27px;border-radius:999px;background:#ff244b;
+ box-shadow:0 0 7px #ff003377,0 0 14px #ff003329;
+ pointer-events:none;
+}
+.lx-music-dock.is-youtube-embed .dock-play{position:relative}
+.lx-music-dock.is-youtube-embed .dock-play::after{
+ content:"";position:absolute;right:-2px;top:-2px;width:7px;height:7px;
+ border-radius:50%;background:#ff244b;border:1px solid #171b24;
+ box-shadow:0 0 6px #ff244ba6,0 0 12px #ff003355;
+ pointer-events:none;
+}
+.lx-music-dock.is-youtube-embed .dock-label{color:#ff667e}
+.lx-music-dock.is-youtube-embed{border-color:#ff244b33!important}
+@media(prefers-reduced-motion:reduce){
+ .lx-music-dock.is-youtube-embed .dock-play::after{animation:none!important}
+}

@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {MusicDock} from '../src/music-dock.js';
 import {mountRoute} from '../src/route-lifecycle.js';
-const track=id=>({id,type:'Música',title:'Track '+id});
+const track=id=>({id,type:'Música',title:'Track '+id,genre:'Trap',country:'Brasil'});
 const source={kind:'audio',url:'https://example.invalid/audio.mp3'};
 const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b});return{promise,resolve,reject}};
 function dock(resolve){const value=new MusicDock({resolve});value.load=async item=>{value.current=item};return value}

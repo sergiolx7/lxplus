@@ -8,6 +8,7 @@ import {renderFoundersWall} from './founders-wall.js';
 import {bindVideoSession,videoControls} from './video-session.js';
 import {preferenceSync} from './preference-sync.js';
 import {musicMix} from './music-discovery.js';
+import {genreSearchTerms} from './music-genre.js';
 import {MusicDock} from './music-dock.js';
 import {createLeagueSession,eligibleLeaguePlayback,playbackThreshold} from './league-activity.js';
 import {Calls} from './calls.js';
@@ -82,7 +83,14 @@ async function refreshNotifications(){if(!A.user)return;const r=await db.from('l
 let listeningSession=null,listeningTrack=null,leagueMusicTracker=null,activeMusicId=null,musicActivityTimer=null;
 async function grantVerifiedPoints({kind,session,id,duration,position}){const {data,error}=await db.rpc('lx_rank_record_event',{p_event_type:kind,p_ref_key:(kind==='music_valid'?'music:':'watch:')+session,p_metadata:{content_id:String(id),duration,position}});if(error)throw error;return data;}
 function broadcastMusicActivity(item,playing){if(!A.user||!item)return;const id=String(item.id);if(playing){activeMusicId=id;A.activity={activity_type:'music',activity_title:String(item.title||'').slice(0,180),activity_subtitle:String(item.artist||'').slice(0,180),activity_cover:item.cover||''}}else{if(activeMusicId!==id)return;activeMusicId=null;if(A.activity?.activity_type==='music')A.activity=null}clearTimeout(musicActivityTimer);musicActivityTimer=setTimeout(()=>{if(A.user)heartbeat().catch(()=>{})},220)}
-const musicDock=new MusicDock({resolve:sourceFor,getPreferences:()=>A.stored.playbackPreferences||{},onPreferences:savePlaybackPreferences,getEffects:()=>A.stored.audioEffects||{},onEffects:value=>{A.stored.audioEffects=value;accountPreferences.write('audioEffects',value)},onMore:async(current,recent)=>{const selection=await catalogPage({types:['Música'],term:current?.genre||current?.artist||'',limit:60});return musicMix(selection.items,{current,likes:A.stored.musicLikes||[],history:A.stored.musicHistory||{},exclude:recent})},onError:message=>{toast(message);A.telemetry?.record('playback','music',message)},onPlayback(item,playing){broadcastMusicActivity(item,playing)},onTrack(item,{embedded,source}){
+const musicDock=new MusicDock({resolve:sourceFor,getPreferences:()=>A.stored.playbackPreferences||{},onPreferences:savePlaybackPreferences,getEffects:()=>A.stored.audioEffects||{},onEffects:value=>{A.stored.audioEffects=value;accountPreferences.write('audioEffects',value)},onMore:async(current,recent)=>{
+ const terms=genreSearchTerms(current);
+ if(!terms.length)return [];
+ const results=await Promise.allSettled(terms.map(term=>catalogPage({types:['Música'],term,limit:60})));
+ const entries=results.filter(result=>result.status==='fulfilled').flatMap(result=>result.value.items||[]);
+ const unique=[...new Map(entries.map(item=>[String(item.id),item])).values()];
+ return musicMix(unique,{current,likes:A.stored.musicLikes||[],history:A.stored.musicHistory||{},exclude:recent,strictGenre:true});
+},onError:message=>{toast(message);A.telemetry?.record('playback','music',message)},onPlayback(item,playing){broadcastMusicActivity(item,playing)},onTrack(item,{embedded,source}){
  if(embedded&&activeMusicId){activeMusicId=null;if(A.activity?.activity_type==='music')A.activity=null;clearTimeout(musicActivityTimer);musicActivityTimer=setTimeout(()=>heartbeat().catch(()=>{}),220)}
  listeningTrack=String(item.id);listeningSession=uuid();const capturedSession=listeningSession;leagueMusicTracker=eligibleLeaguePlayback(item,source)?createLeagueSession({kind:'music_valid',id:String(item.id),session:capturedSession,report:async total=>{const r=await db.rpc('lx_record_listening',{p_session:capturedSession,p_track:String(item.id),p_title:String(item.title).slice(0,200),p_artist:String(item.artist||'').slice(0,200),p_total:total});if(r.error)throw r.error},award:grantVerifiedPoints,onMessage:toast}):null;
  if(A.user){const current={...(A.stored.musicHistory||{}),[item.id]:new Date().toISOString()};A.stored.musicHistory=current;accountPreferences.write('musicHistory',current)}
