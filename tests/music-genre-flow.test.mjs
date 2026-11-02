@@ -40,7 +40,7 @@ test('shuffle remains in the same lane and respects repeat mode',()=>{
  assert.equal(q.next({match:sameMusicLane,random:()=>0})?.id,'teto');
  assert.equal(q.next({match:sameMusicLane}),null);
  q.repeat='all';
- assert.equal(q.next({match:sameMusicLane})?.id,'matue'===q.items[q.index]?.id?'teto':'matue');
+ assert.equal(q.next({match:sameMusicLane})?.id,'matue');
 });
 test('strict LX Flow excludes foreign trap, pop and unclassified candidates',()=>{
  const untagged=track('bad','Unknown Artist','');
