@@ -46,3 +46,17 @@
 .lx-lab-viewer>span{display:grid;gap:5px;min-width:0;overflow-wrap:anywhere}
 .lx-lab-viewer strong{font-size:12px}.lx-lab-viewer small{font-size:10px;color:#aba1bf}
 @media(max-width:590px){.lx-lab-access .form{grid-template-columns:1fr}.lx-lab-viewer{flex-wrap:wrap}}
+
+/* Community-wide transparently labeled test volumes; true hearts/follows
+   remain authentic for everyone, including when the demo badge is present. */
+.lx-public-demo-label{display:inline-flex;align-items:center;flex-wrap:wrap;gap:5px;padding:5px 9px;margin:3px 5px;border-radius:8px;color:#d9c3f7;background:#8362b122;border:1px dashed #b696ed70;font-size:10px;font-variant-numeric:tabular-nums}
+.lx-public-demo-label strong{color:#ead4a0;font-size:9px;letter-spacing:.05em;font-weight:800}
+.feed-post footer .lx-public-demo-label{vertical-align:middle}
+.lx-person-id{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:7px;margin:6px 0;font-size:10px;color:#b1a3c4}
+.lx-person-id .link{display:inline-flex;align-items:center;gap:4px;font-size:10px}
+.lx-person-id svg{width:12px;height:12px}
+.lx-member-profile-id code,.profile-code code{overflow-wrap:anywhere;word-break:break-word;white-space:normal}
+.lx-member-profile-id>div{flex-wrap:wrap}
+.lx-own-follow-stats{margin:12px 0;justify-content:center}
+.account-layout .profile-code{margin-top:11px;overflow-wrap:anywhere}
+@media(max-width:500px){.lx-public-demo-label{font-size:9px;margin:2px}.lx-member-profile-id code{font-size:10px}.lx-person-id{font-size:9px}}
