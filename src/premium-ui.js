@@ -12,7 +12,7 @@ function poster(x,variant='poster'){
  return '<div class="premium-cover '+(variant==='landscape'?'landscape':'portrait')+fit+'">'+
  '<div class="premium-image-fallback" aria-hidden="true">LX<span>PLUS</span></div>'+
  (url?'<img width="'+(variant==='landscape'?640:320)+'" height="'+(variant==='landscape'?360:480)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer" src="'+html(url)+'" alt="">':'<div class="premium-image-fallback">LX<span>PLUS</span></div>')+
- '<div class="premium-image-shade"></div><span class="premium-play">▶</span></div>';
+ '<div class="premium-image-shade"></div>'+(x.metadataOnly||x.catalogOnly||x.availability==='coming_soon'?'<span class="lx-cinema-coming-badge">EM BREVE</span>':'<span class="premium-play">▶</span>')+'</div>';
 }
 export function premiumCard(x,variant='poster'){
  if(x?.type==='Música'){
