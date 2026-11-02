@@ -1,0 +1,237 @@
+/* LX Plus — Community V6. Modern main UI only.
+   Clean surfaces, four primary call actions, accessible advanced panels.
+   Intentional restraint: one accent, no floating LED layers or gratuitous motion. */
+.social-page{--lx6-accent:#afa1f6;--lx6-border:rgba(183,190,222,.18);--lx6-muted:#b1b5cb;color:#f4f4fb}
+.social-page .social-heading{
+ background:linear-gradient(135deg,#1a2030 0%,#171b28 52%,#201d30 100%)!important;
+ border:1px solid var(--lx6-border)!important;
+ border-radius:22px!important;
+ box-shadow:0 15px 40px rgba(0,0,0,.16)!important;
+}
+.social-page .social-heading:before,.social-page .social-heading:after{display:none!important}
+.social-page .social-heading h1{font-weight:780;letter-spacing:-.05em}
+.social-page .social-heading h1 em{color:#c0b5ff;text-shadow:none!important}
+.social-page .social-orbit-mark{filter:none!important;opacity:.7}
+.social-page .section-tabs{
+ background:#1b202d!important;border:1px solid var(--lx6-border)!important;
+ border-radius:16px!important;box-shadow:none!important;
+ backdrop-filter:blur(12px);
+}
+.social-page .section-tabs button{
+ min-height:42px!important;border:1px solid transparent!important;border-radius:12px!important;
+ background:transparent!important;color:#bdc1d2!important;
+ font-size:12px!important;font-weight:650!important;box-shadow:none!important;
+}
+.social-page .section-tabs button.active{
+ background:#34364c!important;color:white!important;border-color:#77708c65!important;
+ box-shadow:none!important;
+}
+.social-page :is(.lx-social-v3-toolbar,.feed-compose,.feed-post,.social-right>.panel,.people-card,.chat-layout){
+ border:1px solid var(--lx6-border)!important;border-radius:19px!important;
+ background:#1b202d!important;
+ box-shadow:0 8px 27px rgba(0,0,0,.12)!important;
+}
+.social-page .feed-post:before{display:none!important}
+.social-page .feed-post:hover,.social-page .people-card:hover{
+ transform:none!important;box-shadow:0 10px 30px rgba(0,0,0,.18)!important;
+ border-color:#a2a0d462!important
+}
+.social-page :is(.feed-post footer button,.feed-filters button,.people-card .actions button,.chat-composer button,.social-right .btn){
+ border:1px solid #bdc2e12a!important;background:#272d3c!important;color:#f1f0fa!important;
+ border-radius:12px!important;min-height:40px;
+ box-shadow:none!important;transform:none!important;
+}
+.social-page :is(.feed-post footer button,.feed-filters button,.people-card .actions button,.chat-composer button):not(:disabled):hover{
+ background:#32394b!important;border-color:#a49afa77!important;transform:none!important
+}
+.social-page :is(.btn.primary,.feed-filters button.active,.people-card .actions .btn.primary){
+ background:#665b9f!important;border-color:#a49bf281!important;color:#fff!important;
+ box-shadow:none!important
+}
+.social-page :is(.lx-feed-search,.people-search,.chat-search,.feed-compose textarea,#chatDraft){
+ background:#111724!important;border:1px solid #8790b34d!important;
+ border-radius:13px!important;color:#eef1fa!important;
+}
+.social-page :is(button,input,textarea,select,a):focus-visible,
+.call-surface.lx-call :is(button,input,select,summary):focus-visible{
+ outline:2px solid #b7c8ff!important;outline-offset:2px!important
+}
+.social-page .chat-layout{overflow:hidden;min-height:600px!important}
+.social-page .chat-sidebar{background:#191f2d!important;border-right:1px solid var(--lx6-border)!important}
+.social-page .chat-main{
+ background:#171c28!important;
+}
+.social-page .chat-header{
+ position:relative;top:auto;background:#202636!important;
+ border-bottom:1px solid var(--lx6-border)!important;backdrop-filter:none!important;
+}
+.social-page .chat-header .icon-button,.social-page .chat-composer .icon-button{
+ width:40px!important;min-width:40px!important;min-height:40px!important;
+ background:#303548!important;border:1px solid #aaa9ce44!important;
+ border-radius:12px!important;box-shadow:none!important
+}
+.social-page .chat-messages{
+ background:#171c28!important;padding:18px!important;
+ scrollbar-color:#626d86 transparent
+}
+.social-page .message{
+ background:#292e40!important;
+ border:1px solid #9faddc2b!important;
+ border-radius:16px 16px 16px 5px!important;
+ box-shadow:none!important;font-size:13px!important;line-height:1.5!important;
+}
+.social-page .message.mine{
+ background:#4f507e!important;border-color:#a7a7df43!important;
+ border-radius:16px 16px 5px 16px!important
+}
+.social-page .chat-composer{
+ position:relative;bottom:auto;background:#1d2332!important;
+ border-top:1px solid var(--lx6-border)!important;backdrop-filter:none!important;
+}
+.social-page .conversation{
+ border-radius:12px!important;transition:background-color .14s ease
+}
+.social-page .conversation:hover{background:#31364b!important}
+.social-page .conversation.active{
+ background:#34354d!important;border-color:#a4a1d455!important;
+ box-shadow:inset 3px 0 #b9adff!important
+}
+.social-page .social-circle .social-online-friend{
+ border-radius:13px!important;background:#252b3b!important;
+ box-shadow:none!important
+}
+.call-surface.lx-call{
+ background:#171c29!important;border:1px solid #aab3d83d!important;
+ box-shadow:0 28px 90px rgba(0,0,0,.62)!important;
+ border-radius:20px!important;
+}
+.call-surface.lx-call .call-titlebar,
+.call-surface.lx-call>header{
+ background:#202637!important;border-bottom:1px solid #a6b2d32e!important;
+ backdrop-filter:none!important
+}
+.call-surface.lx-call .call-titlebar strong{font-size:13px!important;color:#f6f4fc}
+.call-surface.lx-call .call-titlebar small{font-size:10px!important;color:#babed1}
+.call-surface.lx-call .call-live-dot{box-shadow:none!important;background:#69d8af!important}
+.call-surface.lx-call .call-workspace{grid-template-columns:minmax(0,1fr) minmax(195px,216px)}
+.call-surface.lx-call .call-screen-main,
+.call-surface.lx-call .call-stage{
+ background:#0b111d!important;
+}
+.call-surface.lx-call .call-screen-heading{
+ background:#1b2232!important;border-bottom:1px solid #aab3d02c!important;
+}
+.call-surface.lx-call .call-person-tile{
+ border-radius:15px!important;background:#232a3d!important;
+ border:1px solid #a1acd943!important;
+ box-shadow:none!important
+}
+.call-surface.lx-call .call-participants{
+ background:#1b2130!important;border-color:#abb4d02f!important
+}
+.call-surface.lx-call .call-person-caption{background:linear-gradient(transparent,#101725ef)!important}
+.call-surface.lx-call .call-rail-label{color:#c5c7d8!important}
+.call-surface.lx-call .lx-call-advanced{
+ width:100%;min-width:0;display:block;border-top:1px solid #b6b6d42f;padding-top:9px;
+}
+.call-surface.lx-call:not(.has-share) .lx-call-advanced{grid-column:1/-1}
+.call-surface.lx-call :is(.lx-call-advanced,.lx-call-more,.lx-call-share-options)>summary{
+ cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;
+ background:#2a3042;color:#e9eaf6;border:1px solid #a9b0d546;border-radius:12px;
+ padding:10px 13px;font-size:11px;font-weight:750;min-height:39px;
+}
+.call-surface.lx-call :is(.lx-call-advanced,.lx-call-more,.lx-call-share-options)>summary::-webkit-details-marker{display:none}
+.call-surface.lx-call :is(.lx-call-advanced,.lx-call-more,.lx-call-share-options)[open]>summary{
+ background:#33394f;border-color:#aca5e577
+}
+.call-surface.lx-call .lx-call-advanced .lx-voice-studio,
+.call-surface.lx-call .lx-call-advanced .call-audio-mixer,
+.call-surface.lx-call .lx-call-advanced .call-stream-settings,
+.call-surface.lx-call .lx-call-advanced .call-soundboard{
+ margin-top:10px;border-radius:13px!important;
+ background:#212839!important;border:1px solid #afb8db2b!important;
+ box-shadow:none!important;padding:12px!important;
+}
+.call-surface.lx-call .lx-voice-studio-title strong,
+.call-surface.lx-call .lx-share-heading strong{
+ font-size:11px!important;letter-spacing:.025em!important;color:#dcd5ff!important;
+}
+.call-surface.lx-call .lx-voice-studio select{
+ background:#161d2d!important;color:#e9ecf8!important;
+ border:1px solid #a7aed14d!important;min-height:38px
+}
+.call-surface.lx-call>footer{
+ display:flex;flex-direction:column;gap:8px!important;
+ background:#1b2130!important;border-top:1px solid #a7b0d42e!important;
+ padding:10px 13px!important;
+ max-height:min(48dvh,390px)!important;overflow:auto!important;
+}
+.call-surface.lx-call .call-control-actions{
+ display:flex;align-items:center;gap:8px!important;justify-content:center;
+ flex-wrap:wrap
+}
+.call-surface.lx-call .call-control-actions>.btn{
+ flex:0 1 auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+ border-radius:13px!important;padding:10px 13px!important;min-height:44px!important;
+ background:#333a4d!important;border:1px solid #a2abc94c!important;
+ box-shadow:none!important;color:#f3f2fc!important;
+ font-size:11px!important;font-weight:700!important;
+}
+.call-surface.lx-call .call-control-actions>.btn:hover{
+ background:#43495d!important;transform:none!important;
+}
+.call-surface.lx-call .call-control-actions>.btn[aria-pressed=false]{
+ background:#704252!important;border-color:#c5839a88!important
+}
+.call-surface.lx-call .call-control-actions>.lx-call-share-primary{
+ background:#514e83!important;border-color:#aaa5e972!important
+}
+.call-surface.lx-call .call-control-actions>.btn.danger{
+ background:#a93453!important;border-color:#dc7d95aa!important;box-shadow:none!important
+}
+.call-surface.lx-call .lx-call-more,
+.call-surface.lx-call .lx-call-share-options{display:block;width:100%}
+.call-surface.lx-call .lx-call-more-actions{
+ display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:7px;
+ padding:10px 2px 4px
+}
+.call-surface.lx-call .lx-call-more-actions>.btn,
+.call-surface.lx-call .lx-share-presets>.btn{
+ border:1px solid #abb2d347!important;border-radius:11px!important;
+ background:#30374a!important;color:#eceaf8!important;
+ box-shadow:none!important;padding:9px 12px!important;min-height:36px!important;
+ font-size:10px!important
+}
+.call-surface.lx-call .call-share-choice{
+ margin-top:9px;border:1px solid #aeb8d13b!important;
+ background:#232a3b!important;border-radius:13px!important;
+ display:grid!important;gap:9px!important;
+ padding:11px!important;grid-template-columns:1fr 1fr;
+}
+.call-surface.lx-call .lx-share-heading{
+ display:flex;justify-content:space-between;gap:8px;grid-column:1/-1
+}
+.call-surface.lx-call .lx-share-heading span{font-size:10px;color:#bec3da}
+.call-surface.lx-call [data-call-screen-kind]{
+ background:#161c2a!important;border:1px solid #b4bdd459!important;
+ border-radius:10px!important;color:#f0eff9!important;min-height:38px;
+}
+.call-surface.lx-call .call-share-choice small{font-size:10px!important;color:#b9bfd3!important}
+.call-surface.lx-call [data-call-share-status]{font-size:10px!important;line-height:1.45!important}
+.call-surface.lx-call .lx-voice-meter{border-radius:99px;background:#161c29!important}
+.call-surface.lx-call .lx-voice-meter i{background:#8da5e9!important}
+.call-surface.lx-call.minimized .lx-call-advanced{display:none}
+@media(max-width:760px){
+ .social-page .chat-layout{min-height:550px!important}
+ .social-page .chat-messages{padding:12px!important}
+ .social-page .message{max-width:90%!important}
+ .call-surface.lx-call.has-share{inset:0!important;border-radius:0!important}
+ .call-surface.lx-call .call-workspace{grid-template-columns:1fr}
+ .call-surface.lx-call .call-rail-label{font-size:9px!important}
+ .call-surface.lx-call .call-control-actions>.btn{min-height:41px!important;font-size:10px!important;padding:9px!important}
+ .call-surface.lx-call .call-share-choice{grid-template-columns:1fr}
+ .call-surface.lx-call .call-share-choice small,.call-surface.lx-call .lx-share-heading{grid-column:auto}
+}
+@media(prefers-reduced-motion:reduce){
+ .social-page *, .call-surface.lx-call *{animation:none!important;transition-duration:0s!important}
+}
