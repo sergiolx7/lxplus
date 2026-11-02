@@ -7,6 +7,7 @@ const sql=readFileSync(new URL('../supabase/sql/lx-sponsored-posts.sql',import.m
 const social=readFileSync(new URL('../src/modules/social.js',import.meta.url),'utf8');
 const studio=readFileSync(new URL('../src/modules/studio.js',import.meta.url),'utf8');
 const dock=readFileSync(new URL('../src/music-dock.js',import.meta.url),'utf8');
+const official=readFileSync(new URL('../src/official-music-controller.js',import.meta.url),'utf8');
 const ranking=readFileSync(new URL('../src/modules/library.js',import.meta.url),'utf8');
 const queries=readFileSync(new URL('../supabase/sql/lx-music-robot-trap-topics.sql',import.meta.url),'utf8');
 
@@ -37,7 +38,7 @@ test('licensed-native audio uses LX controls; YouTube and Spotify retain their o
  assert.match(dock,/this\.embedded=source\.kind==='iframe'/);
  assert.match(dock,/Reprodução pelo player oficial/);
  assert.match(dock,/Direitos pertencem aos respectivos titulares/);
- assert.match(dock,/document\.createElement\('iframe'\)/);
+ assert.match(official,/document\.createElement\('iframe'\)/);
  assert.match(dock,/document\.createElement\('audio'\)/);
  assert.doesNotMatch(dock,/yt-dlp|spotify-dl|mp3convert|youtube-mp3/i);
 });
