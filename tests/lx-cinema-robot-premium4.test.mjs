@@ -19,7 +19,7 @@ test('new cinema discoveries and automated playback are not publicly released be
   await db.exec("insert into public.lx_catalog(id,payload,published) values(1,'{\"autoPublished\":\"true\",\"type\":\"Filme\"}'::jsonb,true),(2,'{\"type\":\"Filme\"}'::jsonb,true)");
   const catalog=await db.query('select id,payload,published from public.lx_catalog order by id');
   assert.equal(catalog.rows[0].published,false);
-  assert.equal(catalog.rows[0].payload.editorialReviewRequired,'true'===true?true:true);
+  assert.equal(catalog.rows[0].payload.editorialReviewRequired,true);
   assert.equal(catalog.rows[1].published,true);
  }finally{await db.close()}
 });
