@@ -8,7 +8,7 @@ test('every own post offers a real edit action and modal with escaped existing c
  assert.match(social,/if\(b\.dataset\.editPost\)\{/);
  assert.match(social,/p\.author_id===me&&p\.status==='published'/);
  assert.match(social,/const selection='id,author_id,body,media_path,media_type,visibility,status,created_at'/);
- assert.ok((social.match(/\\.select\\(selection\\)/g)||[]).length>=2,'all post queries must include status for edit guard');
+ assert.ok((social.match(/\.select\(selection\)/g)||[]).length>=2,'all post queries must include status for edit guard');
  assert.match(social,/dialog\('Editar publicação'/);
  assert.match(social,/esc\(post\.body\)/);
  assert.match(social,/name="visibility"/);
