@@ -1,5 +1,6 @@
 import {esc,dateTime} from './ui.js';
 const count=value=>Math.max(0,Math.min(100000,Math.floor(Number(value)||0)));
+export const engagementPreview=(real,simulated)=>{const genuine=Math.max(0,Math.floor(Number(real)||0)),demo=Math.max(0,Math.floor(Number(simulated)||0));return demo?'<span class="lx-engagement-preview" aria-label="'+(genuine+demo)+' curtidas na prévia, '+genuine+' reais e '+demo+' de teste">'+(genuine+demo).toLocaleString('pt-BR')+' <small>PRÉVIA</small></span>':genuine.toLocaleString('pt-BR');};
 export const demoLabel=(value,kind='post')=>count(value)>0?'<span class="lx-demo-metric" aria-label="'+count(value)+' '+(kind==='post'?'curtidas de teste':'seguidores de teste')+'">+'+count(value).toLocaleString('pt-BR')+' '+(kind==='post'?'curtidas':'seguidores')+' <b>SIMULAÇÃO</b></span>':'';
 export function renderDemoSocialPanel(items=[],message=''){
  const rows=Array.isArray(items)?items:[];
