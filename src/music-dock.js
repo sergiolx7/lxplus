@@ -67,7 +67,7 @@ export class MusicDock {
   if(this.effects.enabled&&this.effectsBlockedTrack===String(item.id))this.effectsUnavailable=true;this.renderEffects();this.renderNow();
   let started=false,listened=0,lastTick=performance.now(),lastReport=0,prefTimer=null;
   const prefs=applyPlayback(audio,this.getPreferences());
-  const flush=()=>{if(listened>lastReport){lastReport=listened;this.onListening(item,Math.floor(listened))}};
+  const flush=()=>{if(listened>lastReport){lastReport=listened;this.onListening(item,Math.floor(listened),{duration:Number.isFinite(audio.duration)?audio.duration:0,source})}};
   const persist=()=>{clearTimeout(prefTimer);prefTimer=setTimeout(()=>this.onPreferences(normalizePlayback({...prefs,volume:audio.volume,muted:audio.muted,speed:audio.playbackRate})),350)};
   audio.addEventListener('volumechange',persist);audio.addEventListener('ratechange',persist);
   for(const name of ['play','pause','timeupdate','loadedmetadata','volumechange','ended'])audio.addEventListener(name,()=>this.updateTransport(),{signal:this.abort.signal});
@@ -78,14 +78,14 @@ export class MusicDock {
   audio.addEventListener('pause',()=>{if(request===this.request)this.onPlayback(item,false)});
   audio.addEventListener('error',()=>{if(request===this.request)this.onPlayback(item,false)});
   audio.addEventListener('waiting',()=>{setStatus('Aguardando a conexão…');clearTimeout(this.timer);this.timer=setTimeout(()=>{audio.pause();fail('O áudio demorou para responder. Tente outra faixa ou verifique a origem.')},20000)});
-  audio.addEventListener('timeupdate',()=>{const now=performance.now();if(started&&!audio.paused&&!audio.seeking)listened+=Math.min(2,(now-lastTick)/1000);lastTick=now;if(listened-lastReport>=15){lastReport=listened;this.onListening(item,Math.floor(listened))}});
+  audio.addEventListener('timeupdate',()=>{const now=performance.now();if(started&&!audio.paused&&!audio.seeking)listened+=Math.min(2,(now-lastTick)/1000);lastTick=now;if(listened-lastReport>=15){lastReport=listened;this.onListening(item,Math.floor(listened),{duration:Number.isFinite(audio.duration)?audio.duration:0,source})}});
   audio.addEventListener('ended',()=>{if(request===this.request)this.onPlayback(item,false);flush();this.step(1,{ended:true}).catch(e=>this.onError(e.message))});
   this.timer=setTimeout(()=>{audio.pause();fail('Não foi possível iniciar este áudio em 20 segundos. Confira o arquivo e as permissões.')},20000);
   try{
    const cleanup=await attachPlayer(audio,source,{signal:this.abort.signal,onError:fail});
    if(request!==this.request){cleanup();return}this.cleanup=()=>{flush();clearTimeout(prefTimer);audio.removeEventListener('volumechange',persist);audio.removeEventListener('ratechange',persist);cleanup()};
    if(audio.paused){clearTimeout(this.timer);setStatus('Toque em reproduzir para começar.')}
-   this.onTrack(item,{embedded:false});
+   this.onTrack(item,{embedded:false,source});
    if('mediaSession' in navigator){try{navigator.mediaSession.metadata=new MediaMetadata({title:item.title,artist:item.artist||'LX Music',album:item.album||'',artwork:cover?[{src:cover}]:[]});for(const [action,handler] of Object.entries({nexttrack:()=>this.step(1).catch(this.onError),previoustrack:()=>this.step(-1).catch(this.onError),play:()=>audio.play().catch(this.onError),pause:()=>audio.pause()}))navigator.mediaSession.setActionHandler(action,handler)}catch{}}
   }catch(error){clearTimeout(prefTimer);if(request!==this.request||error.name==='AbortError')return;clearTimeout(this.timer);setStatus(error.message);throw error}
   this.renderQueue();
