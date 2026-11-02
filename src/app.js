@@ -51,7 +51,7 @@ async function grantVerifiedPoints({kind,session,id,duration,position}){const {d
 function broadcastMusicActivity(item,playing){if(!A.user||!item)return;const id=String(item.id);if(playing){activeMusicId=id;A.activity={activity_type:'music',activity_title:String(item.title||'').slice(0,180),activity_subtitle:String(item.artist||'').slice(0,180),activity_cover:item.cover||''}}else{if(activeMusicId!==id)return;activeMusicId=null;if(A.activity?.activity_type==='music')A.activity=null}clearTimeout(musicActivityTimer);musicActivityTimer=setTimeout(()=>{if(A.user)heartbeat().catch(()=>{})},220)}
 const musicDock=new MusicDock({resolve:sourceFor,getPreferences:()=>A.stored.playbackPreferences||{},onPreferences:savePlaybackPreferences,getEffects:()=>A.stored.audioEffects||{},onEffects:value=>{A.stored.audioEffects=value;accountPreferences.write('audioEffects',value)},onMore:async(current,recent)=>{const selection=await catalogPage({types:['Música'],term:current?.genre||current?.artist||'',limit:60});return musicMix(selection.items,{current,likes:A.stored.musicLikes||[],history:A.stored.musicHistory||{},exclude:recent})},onError:message=>{toast(message);A.telemetry?.record('playback','music',message)},onPlayback(item,playing){broadcastMusicActivity(item,playing)},onTrack(item,{embedded,source}){
  if(embedded&&activeMusicId){activeMusicId=null;if(A.activity?.activity_type==='music')A.activity=null;clearTimeout(musicActivityTimer);musicActivityTimer=setTimeout(()=>heartbeat().catch(()=>{}),220)}
- listeningTrack=String(item.id);listeningSession=uuid();leagueMusicTracker=eligibleLeaguePlayback(item,source)?createLeagueSession({kind:'music_valid',id:String(item.id),session:listeningSession,report:async total=>{const r=await db.rpc('lx_record_listening',{p_session:listeningSession,p_track:String(item.id),p_title:String(item.title).slice(0,200),p_artist:String(item.artist||'').slice(0,200),p_total:total});if(r.error)throw r.error},award:grantVerifiedPoints,onMessage:toast}):null;
+ listeningTrack=String(item.id);listeningSession=uuid();const capturedSession=listeningSession;leagueMusicTracker=eligibleLeaguePlayback(item,source)?createLeagueSession({kind:'music_valid',id:String(item.id),session:capturedSession,report:async total=>{const r=await db.rpc('lx_record_listening',{p_session:capturedSession,p_track:String(item.id),p_title:String(item.title).slice(0,200),p_artist:String(item.artist||'').slice(0,200),p_total:total});if(r.error)throw r.error},award:grantVerifiedPoints,onMessage:toast}):null;
  if(A.user){const current={...(A.stored.musicHistory||{}),[item.id]:new Date().toISOString()};A.stored.musicHistory=current;accountPreferences.write('musicHistory',current)}
 },onListening(item,total,info={}){if(!A.user||!listeningSession||String(item.id)!==listeningTrack||total<=0)return;if(leagueMusicTracker){leagueMusicTracker({total,duration:info.duration}).catch(()=>{})}else db.rpc('lx_record_listening',{p_session:listeningSession,p_track:String(item.id),p_title:String(item.title).slice(0,200),p_artist:String(item.artist||'').slice(0,200),p_total:total}).then(r=>{if(r.error)console.warn('Histórico musical temporariamente indisponível.')})}});
 function context(){const ownerId=A.user.id;return {user:A.user,admin:A.admin,page:A.page,term:A.term,state:()=>A.stored,setState:(value,keys)=>{if(A.user?.id!==ownerId)return;if(keys)for(const key of keys)A.stored[key]=value[key];else A.stored=value},profile:()=>A.profile,setProfile:p=>{if(A.user?.id!==ownerId)return;A.profile=p;document.querySelectorAll('[data-avatar-user="'+CSS.escape(p.user_id||A.user.id)+'"]').forEach(node=>{if(!node.closest('[data-premium-live-preview]'))node.outerHTML=avatar(p,node.dataset.avatarClass||'member-avatar')});const node=document.querySelector('#sidebarProfileName');if(node)node.innerHTML='<span class="profile-name-text">'+profileName(p)+'</span>'+verifiedBadge(p)},directory:()=>A.members,setDirectory:rows=>{if(A.user?.id===ownerId)A.members=rows},music:musicDock,savePreferences:(key,value)=>{A.stored[key]=value;return accountPreferences.write(key,value)},calls:A.calls,toast,navigate,openItem:modal,play,refreshCatalog:()=>loadCatalog(),refreshNotifications,heartbeat,diagnostics:()=>A.telemetry?.diagnostics()||{}}}
@@ -125,12 +125,24 @@ async function play(item,episodeIndex=null){
 function showBook(item,url,format='pdf'){
  closeModal();const token={item,focus:document.activeElement};A.modal=token;
  const key='book_'+String(item.id),owner=A.user?.id,abort=new AbortController();let stop=null;
+  const readingSession=uuid();let bookPosition=0,bookTotal=0,readingBusy=false,readingRewarded=false,readingTimer=null;
+  async function verifyBookActivity(){
+   if(A.modal!==token||!A.user||A.user.id!==owner||document.hidden||readingBusy||readingRewarded||bookPosition<1||bookTotal<3)return;
+   readingBusy=true;
+   try{
+    const recorded=await db.rpc('lx_record_reading',{p_session:readingSession,p_content:String(item.id),p_page:bookPosition,p_pages:bookTotal});
+    if(recorded.error||!recorded.data?.eligible)return;
+    const awarded=await db.rpc('lx_rank_record_event',{p_event_type:'read_valid',p_ref_key:'read:'+readingSession,p_metadata:{content_id:String(item.id)}});
+    if(!awarded.error&&(awarded.data?.awarded>0||awarded.data?.duplicate)){readingRewarded=true;if(awarded.data.awarded>0)toast('+'+awarded.data.awarded+' pontos LX League pela leitura')}
+   }finally{readingBusy=false}
+  }
+  readingTimer=setInterval(()=>verifyBookActivity().catch(()=>{}),15000);
  document.querySelector('#layer').innerHTML='<div class="overlay"><section class="modal reader-modal" role="dialog" aria-modal="true" aria-label="'+esc(item.title)+'"><div class="modal-head"><h2>'+esc(item.title)+'</h2><button class="close" data-close aria-label="Fechar livro">×</button></div><div id="bookReader"></div><p class="muted reader-note"><a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Abrir a versão original ↗</a></p></section></div>';
  document.body.classList.add('modal-open');document.querySelector('[data-close]').focus();
- A.playerCleanup=()=>{stop?.();abort.abort()};
+ A.playerCleanup=()=>{clearInterval(readingTimer);stop?.();abort.abort()};
  import('./book-reader.js'+new URL(import.meta.url).search).then(async module=>{
   if(A.modal!==token)return;
-  stop=await module.openReader(document.querySelector('#bookReader'),{url,format,state:A.stored[key]||{},signal:abort.signal,onSave:value=>{if(A.user?.id!==owner)return;A.stored[key]=value;accountPreferences.write(key,value)}});
+  stop=await module.openReader(document.querySelector('#bookReader'),{url,format,state:A.stored[key]||{},signal:abort.signal,onSave:value=>{if(A.user?.id!==owner)return;bookPosition=Number(value.position)||0;bookTotal=Number(value.total)||0;A.stored[key]=value;accountPreferences.write(key,value)}});
   if(A.modal!==token)stop?.();
  }).catch(()=>{if(A.modal===token)document.querySelector('#bookReader').innerHTML=empty('Leitor indisponível','Abra a versão original ou tente novamente.')});
 }
