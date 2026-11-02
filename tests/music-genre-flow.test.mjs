@@ -18,7 +18,7 @@ test('Matuê listening lane is Brazilian trap even when country metadata is miss
  assert.equal(sameMusicLane(matue,foreign),false);
  assert.equal(sameMusicLane(matue,other),false);
  assert.equal(sameMusicLane(matue,sertanejo),false);
- assert.deepEqual(genreSearchTerms(matue),['trap','Trap','Matuê']);
+ assert.deepEqual(genreSearchTerms(matue),['trap','Matuê']);
 });
 test('sertanejo remains sertanejo; other styles do not enter by genre or country',()=>{
  assert.equal(sameMusicLane(sertanejo,sertanejo2),true);
