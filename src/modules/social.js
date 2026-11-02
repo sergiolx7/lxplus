@@ -89,13 +89,13 @@ export async function mount(host,ctx){
  async function loadPeople(){const rows=await socialDirectory();if(alive){const permission=await db.rpc('lx_demo_social_view_access');labMode=permission.error?false:permission.data===true;const ids=[...new Set([me,...rows.map(p=>p.user_id)])].slice(0,50);const [demos,publicDemos,follows,founders]=await Promise.all([db.rpc('lx_demo_social_visible',{p_posts:[],p_profiles:ids}),db.rpc('lx_demo_social_public',{p_posts:[],p_profiles:ids}),db.rpc('lx_social_follow_stats',{p_users:ids}),db.rpc('lx_official_founder_profiles',{p_users:ids})]);if(!demos.error)demoProfileCounts=new Map((demos.data||[]).filter(x=>x.kind==='profile').map(x=>[x.id,x.demo_count]));if(!publicDemos.error)publicDemoProfileCounts=new Map((publicDemos.data||[]).filter(x=>x.kind==='profile').map(x=>[x.id,x.demo_count]));if(!follows.error)followStats=new Map((follows.data||[]).map(x=>[x.user_id,x]));if(!founders.error)founderIds=new Set(founders.data||[]);people=rows.map(p=>({...p,is_founder:founderIds.has(p.user_id)})).sort((a,b)=>Number(b.is_founder)-Number(a.is_founder));ctx.setDirectory?.(people);try{const result=await db.rpc('lx_premium_assets',{p_users:[...new Set([me,...rows.map(p=>p.user_id)])].slice(0,60)});if(!result.error)expressionAssets=result.data||[]}catch{}}}
  async function loadGroups(){const rows=await checked(db.rpc('lx_group_list'));if(alive)groups=rows||[]}
  async function loadPosts(append=false){
-  const token=++feedGeneration;let q=db.from('lx_posts').select('id,author_id,body,media_path,media_type,visibility,created_at').eq('status','published').order('created_at',{ascending:false}).order('id',{ascending:false}).limit(20);if(sharedPost)q=q.eq('id',sharedPost);else if(append&&feedBefore)q=q.lt('created_at',feedBefore);
+  const token=++feedGeneration;let q=db.from('lx_posts').select('id,author_id,body,media_path,media_type,visibility,status,created_at').eq('status','published').order('created_at',{ascending:false}).order('id',{ascending:false}).limit(20);if(sharedPost)q=q.eq('id',sharedPost);else if(append&&feedBefore)q=q.lt('created_at',feedBefore);
   const pageRows=await checked(q);if(!alive||token!==feedGeneration)return;
    let rows=pageRows;
    if(!append&&!sharedPost){
     const featured=await db.rpc('lx_featured_sponsored_posts');
     if(!featured.error&&Array.isArray(featured.data)&&featured.data.length){
-     const special=await db.from('lx_posts').select('id,author_id,body,media_path,media_type,visibility,created_at').in('id',featured.data).eq('status','published').eq('visibility','public').limit(5);
+     const special=await db.from('lx_posts').select('id,author_id,body,media_path,media_type,visibility,status,created_at').in('id',featured.data).eq('status','published').eq('visibility','public').limit(5);
      if(!special.error)rows=[...(special.data||[]),...pageRows].filter((post,i,all)=>all.findIndex(other=>other.id===post.id)===i);
     }
    }
