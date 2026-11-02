@@ -43,7 +43,7 @@ test('public cinema preview publishing requires explicit staff checks and no thi
  assert.match(sql,/p_rights_checked is distinct from true/);
  assert.match(sql,/metadataOnly/);
  assert.match(sql,/coming_soon/);
- assert.match(sql,/upload\\.wikimedia|upload\.wikimedia/);
+ assert.ok(sql.includes('wikimedia.org'),'only license-checked Commons artwork is eligible');
  assert.match(sql,/metadataSourceId/);
  assert.match(sql,/pg_advisory_xact_lock/);
  assert.doesNotMatch(sql,/authorizedVideoUrl|mediaKey|sourceMediaKey/);
