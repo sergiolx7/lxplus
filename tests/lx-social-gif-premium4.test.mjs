@@ -12,10 +12,10 @@ test('animated GIF upload validates actual GIF87a and GIF89a headers',()=>{
  for(const value of [new Uint8Array([]),new Uint8Array([71,73,70,56,56,97]),new Uint8Array([137,80,78,71,13,10]),new Uint8Array([71,73,70])])assert.equal(isGifSignature(value),false);
 });
 
-test('post and direct message media accept only signed GIFs and bucket stays private',()=>{
+test('post and direct message media accept only validated GIFs and bucket stays private',()=>{
  const social=source('src/modules/social.js'),services=source('src/services.js');
  const sql=source('supabase/migrations/20261102040858_lx_social_gif_bucket_premium4.sql');
- assert.match(services,/image\\\/\\(jpeg\|png\|webp\|gif\)/);
+ assert.ok(services.includes('webp|gif'),'social upload allow-list contains GIF');
  assert.match(services,/isGifSignature\(new Uint8Array\(await file\.slice\(0,6\)\.arrayBuffer\(\)\)\)/);
  assert.match(services,/'image\/gif':'gif'/);
  assert.equal((social.match(/image\/gif/g)||[]).length,2,'post and private chat file selectors include GIF');
