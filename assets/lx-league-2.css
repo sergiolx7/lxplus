@@ -1,0 +1,76 @@
+/* LX League 2.0 — original premium LX aesthetic */
+.lx-league-v2{--lx-ink:#e8e2f4;--lx-muted:#a6a0b8;color:var(--lx-ink);display:grid;gap:22px;max-width:1430px;margin:0 auto;padding-bottom:50px}
+.lx-league-banner{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 290px;align-items:center;gap:28px;padding:38px;border-radius:25px;overflow:hidden;background:radial-gradient(ellipse at 87% 20%,#a884e24a,transparent 48%),radial-gradient(ellipse at 10% 90%,#7d56ca3d,transparent 55%),linear-gradient(130deg,#30233f,#13151e 68%);border:1px solid #b195e552;box-shadow:0 22px 66px #06061255}
+.lx-league-banner::after{content:"LX";position:absolute;right:35%;bottom:-30px;font-size:220px;font-weight:900;letter-spacing:-.13em;color:#e0ceff08;pointer-events:none;line-height:1}
+.lx-league-banner-copy,.lx-league-trophy{position:relative;z-index:1}
+.lx-league-banner h1{margin:14px 0;font-weight:800;font-size:clamp(34px,5vw,62px);line-height:1.04;letter-spacing:-.05em}
+.lx-league-banner h1 em{font-style:normal;background:linear-gradient(100deg,#f1d9fc,#a7a3ff);background-clip:text;-webkit-text-fill-color:transparent}
+.lx-league-banner-copy p{max-width:570px;color:#c2bacc;font-size:13px;line-height:1.85}
+.lx-league-banner-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:25px}
+.lx-league-countdown,.lx-league-season-pill{display:inline-flex;align-items:center;gap:8px;border:1px solid #baa2fa4a;color:#e5d7fb;background:#8264b522;border-radius:100px;padding:9px 14px;font-size:11px;font-weight:650}
+.lx-league-countdown svg,.lx-rank-refresh svg{width:15px;height:15px}
+.lx-rank-refresh{border-radius:99px!important}
+.lx-league-trophy{display:grid;gap:11px;justify-items:center;text-align:center;padding:31px 22px;background:linear-gradient(150deg,#6f4b9d50,#13131a9e);border:1px solid #d4b4ec5a;border-radius:21px;box-shadow:inset 0 0 40px #be92fe0d}
+.lx-league-trophy>span{font-size:55px;color:#e4bd83;text-shadow:0 0 30px #edbf8c88;line-height:1}
+.lx-league-trophy small{font-size:9px;letter-spacing:.16em;color:#d2c1df}
+.lx-league-trophy strong{font-size:clamp(29px,3.5vw,42px);font-weight:800;color:#f8ebd7}
+.lx-league-trophy p{font-size:10px;color:#bbacc9;line-height:1.6;margin:0}
+.lx-league-stats{display:grid;grid-template-columns:1fr 1fr 1.45fr;gap:14px}
+.lx-league-stat{display:flex;flex-direction:column;gap:9px;min-width:0;padding:20px 23px;background:linear-gradient(155deg,#262235,#171920);border:1px solid #d1b7ed26;border-radius:17px}
+.lx-league-stat small{font-size:10px;letter-spacing:.1em;color:#b7acca}
+.lx-league-stat>strong{font-size:clamp(28px,3.5vw,37px);letter-spacing:-.04em;color:#f0e8f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lx-league-stat>span{font-size:10px;color:#a5a1b1}
+.lx-league-progress{height:9px;overflow:hidden;border-radius:99px;background:#0c0d16;border:1px solid #ccb3fa30}
+.lx-league-progress span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#aa8ae9,#eec99a);box-shadow:0 0 18px #bba0ed77;transition:width .3s ease}
+.lx-league-section{min-width:0;padding:24px;background:linear-gradient(165deg,#1d1c29,#12141b);border:1px solid #ffffff14;border-radius:21px}
+.lx-league-section-title{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:24px}
+.lx-league-section-title h2{font-size:clamp(19px,2.5vw,25px);letter-spacing:-.03em;margin:7px 0 0}
+.lx-league-v2 .premium-overline{font-size:10px;letter-spacing:.13em;color:#c5aef0}
+.lx-league-podium-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:14px;padding-top:12px}
+.lx-league-winner{display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;min-width:0;padding:26px 15px 20px;border-radius:20px;background:linear-gradient(180deg,#383042,#1c1b25);border:1px solid #ffffff16;box-shadow:0 16px 35px #0003}
+.lx-league-place-1{min-height:232px;background:radial-gradient(ellipse at 50% -20%,#e8c99f3c,transparent 65%),linear-gradient(180deg,#44364d,#1c1b25);border-color:#ead29a80;box-shadow:0 0 35px #e5c2851c}
+.lx-league-place-2{min-height:204px;border-color:#b5bae759}.lx-league-place-3{min-height:194px;border-color:#c38c6866}
+.lx-league-medal{font-size:11px;color:#dfc6ef;font-weight:800;letter-spacing:.08em}
+.lx-league-place-1 .lx-league-medal{color:#f5d995}
+.lx-league-face .podium-avatar{width:67px;height:67px;border-radius:50%;border:2px solid #bda4f9;object-fit:cover}
+.lx-league-place-1 .lx-league-face .podium-avatar{width:80px;height:80px;border-color:#e4cb9d}
+.lx-league-winner>strong{max-width:100%;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;font-size:13px}
+.lx-league-score{color:#f2edf8;font-size:22px;font-weight:800;white-space:nowrap}
+.lx-league-score small{font-size:10px;color:#a99fba}
+.lx-you-label{display:inline-flex;font-size:9px;font-weight:800;letter-spacing:.07em;background:#b9a2ea22;color:#dcd0f5;border-radius:99px;padding:4px 7px}
+.lx-league-leaderboard{display:grid;gap:7px}
+.lx-league-member{display:flex;align-items:center;gap:14px;padding:11px 14px;border-radius:13px;border:1px solid transparent;background:#ffffff05;min-width:0}
+.lx-league-member:nth-child(odd){background:#ffffff08}
+.lx-league-member.is-you{border-color:#b49cf57c;background:linear-gradient(100deg,#9a77ec2b,#6e51a70a)}
+.lx-league-place-number{font-size:12px;font-weight:800;color:#a99db9;min-width:24px;font-variant-numeric:tabular-nums}
+.lx-league-member .podium-avatar{width:39px;height:39px;border-radius:50%;flex:none;object-fit:cover}
+.lx-league-member-name{min-width:0;flex:1;display:grid;gap:4px}
+.lx-league-member-name strong{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lx-league-member-name>span{color:#9f96ad;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lx-league-member-score{font-size:15px;color:#e9d6fa;white-space:nowrap}
+.lx-league-member-score small{font-size:9px;color:#aa9eb9}
+.lx-league-rule-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.lx-rule-card{min-width:0;display:flex;align-items:center;gap:12px;padding:15px;border-radius:13px;background:#ffffff06;border:1px solid #ffffff12}
+.lx-rule-icon{display:grid;place-items:center;flex:none;width:39px;height:39px;background:#aa86ed23;border:1px solid #bb9deb2e;border-radius:12px;color:#dbc4fb}
+.lx-rule-icon svg{height:18px;width:18px}
+.lx-rule-card>div{display:grid;gap:5px;min-width:0;flex:1}
+.lx-rule-card strong{font-size:12px}
+.lx-rule-card small{font-size:10px;color:#9f97b0;line-height:1.4}
+.lx-rule-card>b{color:#bbefce;font-size:17px}
+.lx-league-footnote{font-size:11px;line-height:1.7;color:#a5a0b4;margin:19px 0 0}
+.lx-league-hall{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.lx-league-hall>article{display:grid;gap:8px;padding:16px;border:1px solid #ffffff17;border-radius:13px;background:#ffffff06}
+.lx-league-hall>article>span{font-size:11px;color:#d7b9ee}.lx-league-hall>article>strong{font-size:13px}.lx-league-hall>article>small{font-size:10px;color:#aaa3bc}
+.lx-league-empty{padding:18px;color:#ada3bd;text-align:center;font-size:12px}
+@media(max-width:980px){.lx-league-banner{grid-template-columns:1fr 215px;padding:27px;gap:18px}.lx-league-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.lx-league-stat{padding:16px}}
+@media(max-width:700px){.lx-league-banner{grid-template-columns:1fr;padding:23px}.lx-league-trophy{max-width:none;padding:18px}.lx-league-stats{grid-template-columns:1fr 1fr}.lx-league-stat-progress{grid-column:1/-1}.lx-league-section{padding:15px}.lx-league-podium-grid{gap:7px}.lx-league-winner{padding:17px 6px;min-height:165px}.lx-league-place-1{min-height:190px}.lx-league-place-2,.lx-league-place-3{min-height:165px}.lx-league-winner>strong{font-size:10px}.lx-league-score{font-size:17px}.lx-league-face .podium-avatar{width:46px;height:46px}.lx-league-place-1 .lx-league-face .podium-avatar{width:60px;height:60px}.lx-league-rule-grid{grid-template-columns:1fr}.lx-league-section-title{align-items:start;gap:9px}.lx-league-banner::after{font-size:120px;right:3%}}
+@media(max-width:420px){.lx-league-banner h1{font-size:36px}.lx-league-section-title h2{font-size:19px}.lx-league-member{gap:7px;padding:10px 7px}.lx-league-member-name strong{font-size:11px}.lx-league-member-score{font-size:13px}.lx-league-place-number{min-width:18px}.lx-league-trophy strong{font-size:31px}}
+@media(prefers-reduced-motion:reduce){.lx-league-progress span{transition:none}}
+
+/* Audio-only, LX-branded player is offered exclusively for authorized direct audio. */
+.lx-music-dock .lx-native-now-controls{display:flex;align-items:center;justify-content:center;gap:15px;margin:15px 0 9px}
+.lx-music-dock .lx-native-now-controls button{display:grid;place-items:center;width:45px;height:45px;border-radius:50%;background:#9372c62a;border:1px solid #e0c8ff35;color:#f4e5ff;cursor:pointer}
+.lx-music-dock .lx-native-now-controls button:nth-child(2){width:56px;height:56px;background:linear-gradient(135deg,#be9cfa,#7c5db9);color:#151322;border:0;box-shadow:0 0 20px #b18af45c}
+.lx-music-dock .lx-native-now-controls button svg{width:21px;height:21px}
+.lx-music-dock .lx-native-mode-note{margin:12px 8px;text-align:center;font-size:11px;line-height:1.65;color:#c5bad4}
+.lx-music-dock .now-playing-panel .now-art{border-radius:18px;overflow:hidden;box-shadow:0 20px 44px #0006,0 0 38px #916fcb29}

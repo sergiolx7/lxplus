@@ -8,6 +8,7 @@ import {bindVideoSession,videoControls} from './video-session.js';
 import {preferenceSync} from './preference-sync.js';
 import {musicMix} from './music-discovery.js';
 import {MusicDock} from './music-dock.js';
+import {createLeagueSession,eligibleLeaguePlayback,playbackThreshold} from './league-activity.js';
 import {Calls} from './calls.js';
 import {createTelemetry,socialDirectory,catalogPage} from './services.js';
 import {uuid,esc,https,avatar,verifiedBadge,empty,icon,duration} from './ui.js';
@@ -25,6 +26,23 @@ const accountPreferences=preferenceSync({save:saveUserField,onSaved(key,value){A
 function savePlaybackPreferences(value){A.stored.playbackPreferences=value;accountPreferences.write('playbackPreferences',value)}
 const approved=()=>A.admin||A.profile?.approved===true||A.profile?.approval_status==='approved';
 const saved=()=>new Set((Array.isArray(A.stored.list)?A.stored.list:[]).map(String));
+let leagueLastInteraction=0,leagueInteractions=0,leagueActiveTicks=0,leagueDailyDone='',leagueDailyBusy=false;
+const leagueDay=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Fortaleza',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+async function checkDailyParticipation(){
+ if(!A.user||!approved()||document.hidden||!document.hasFocus()||leagueDailyBusy)return;
+ // Do not reward watching or listening to third-party embeds (e.g. YouTube).
+ if(musicDock.embedded||document.querySelector('.embed-wrap iframe'))return;
+ const now=Date.now(),today=leagueDay();
+ if(leagueDailyDone===today||leagueInteractions<3||now-leagueLastInteraction>35000){leagueActiveTicks=0;return}
+ leagueActiveTicks++;
+ if(leagueActiveTicks<3)return;
+ leagueDailyBusy=true;
+ try{
+  const r=await db.rpc('lx_rank_record_event',{p_event_type:'streak_daily',p_ref_key:'streak:'+today,p_metadata:{day:today}});
+  if(!r.error&&r.data?.status!=='cooldown'){leagueDailyDone=today;if(r.data?.awarded>0)toast('+'+r.data.awarded+' pontos LX League pela participação diária')}
+ }finally{leagueDailyBusy=false}
+}
+
 
 function authForm(){
  if(A.auth==='reset')return '<form id="reset" class="form"><label class="field">Seu e-mail<input name="email" type="email" autocomplete="email" required></label><button class="btn primary wide">Enviar recuperação</button><button class="link" type="button" data-auth="login">Voltar para entrar</button></form>';
@@ -45,13 +63,14 @@ function shell(){
 }
 function refreshBadges(){const n=document.querySelector('#noticeBadge');if(n){n.hidden=!A.unread;n.textContent=A.unread>99?'99+':String(A.unread)}const presence=document.querySelector('#headerPresence');if(presence)presence.textContent=A.presence?A.presence+' na comunidade':''}
 async function refreshNotifications(){if(!A.user)return;const r=await db.from('lx_user_notifications').select('id',{count:'exact',head:true}).eq('user_id',A.user.id).is('read_at',null);if(!r.error){A.unread=r.count||0;refreshBadges()}}
-let listeningSession=null,listeningTrack=null,activeMusicId=null,musicActivityTimer=null;
+let listeningSession=null,listeningTrack=null,leagueMusicTracker=null,activeMusicId=null,musicActivityTimer=null;
+async function grantVerifiedPoints({kind,session,id,duration,position}){const {data,error}=await db.rpc('lx_rank_record_event',{p_event_type:kind,p_ref_key:(kind==='music_valid'?'music:':'watch:')+session,p_metadata:{content_id:String(id),duration,position}});if(error)throw error;return data;}
 function broadcastMusicActivity(item,playing){if(!A.user||!item)return;const id=String(item.id);if(playing){activeMusicId=id;A.activity={activity_type:'music',activity_title:String(item.title||'').slice(0,180),activity_subtitle:String(item.artist||'').slice(0,180),activity_cover:item.cover||''}}else{if(activeMusicId!==id)return;activeMusicId=null;if(A.activity?.activity_type==='music')A.activity=null}clearTimeout(musicActivityTimer);musicActivityTimer=setTimeout(()=>{if(A.user)heartbeat().catch(()=>{})},220)}
-const musicDock=new MusicDock({resolve:sourceFor,getPreferences:()=>A.stored.playbackPreferences||{},onPreferences:savePlaybackPreferences,getEffects:()=>A.stored.audioEffects||{},onEffects:value=>{A.stored.audioEffects=value;accountPreferences.write('audioEffects',value)},onMore:async(current,recent)=>{const selection=await catalogPage({types:['Música'],term:current?.genre||current?.artist||'',limit:60});return musicMix(selection.items,{current,likes:A.stored.musicLikes||[],history:A.stored.musicHistory||{},exclude:recent})},onError:message=>{toast(message);A.telemetry?.record('playback','music',message)},onPlayback(item,playing){broadcastMusicActivity(item,playing)},onTrack(item,{embedded}){
+const musicDock=new MusicDock({resolve:sourceFor,getPreferences:()=>A.stored.playbackPreferences||{},onPreferences:savePlaybackPreferences,getEffects:()=>A.stored.audioEffects||{},onEffects:value=>{A.stored.audioEffects=value;accountPreferences.write('audioEffects',value)},onMore:async(current,recent)=>{const selection=await catalogPage({types:['Música'],term:current?.genre||current?.artist||'',limit:60});return musicMix(selection.items,{current,likes:A.stored.musicLikes||[],history:A.stored.musicHistory||{},exclude:recent})},onError:message=>{toast(message);A.telemetry?.record('playback','music',message)},onPlayback(item,playing){broadcastMusicActivity(item,playing)},onTrack(item,{embedded,source}){
  if(embedded&&activeMusicId){activeMusicId=null;if(A.activity?.activity_type==='music')A.activity=null;clearTimeout(musicActivityTimer);musicActivityTimer=setTimeout(()=>heartbeat().catch(()=>{}),220)}
- listeningTrack=String(item.id);listeningSession=uuid();
+ listeningTrack=String(item.id);listeningSession=uuid();const capturedSession=listeningSession;leagueMusicTracker=eligibleLeaguePlayback(item,source)?createLeagueSession({kind:'music_valid',id:String(item.id),session:capturedSession,report:async total=>{const r=await db.rpc('lx_record_listening',{p_session:capturedSession,p_track:String(item.id),p_title:String(item.title).slice(0,200),p_artist:String(item.artist||'').slice(0,200),p_total:total});if(r.error)throw r.error},award:grantVerifiedPoints,onMessage:toast}):null;
  if(A.user){const current={...(A.stored.musicHistory||{}),[item.id]:new Date().toISOString()};A.stored.musicHistory=current;accountPreferences.write('musicHistory',current)}
-},onListening(item,total){if(A.user&&listeningSession&&total>0)db.rpc('lx_record_listening',{p_session:listeningSession,p_track:String(item.id),p_title:String(item.title).slice(0,200),p_artist:String(item.artist||'').slice(0,200),p_total:total}).then(r=>{if(r.error)console.warn('Histórico musical temporariamente indisponível.')})}});
+},onListening(item,total,info={}){if(!A.user||!listeningSession||String(item.id)!==listeningTrack||total<=0)return;if(leagueMusicTracker){leagueMusicTracker({total,duration:info.duration}).catch(()=>{})}else db.rpc('lx_record_listening',{p_session:listeningSession,p_track:String(item.id),p_title:String(item.title).slice(0,200),p_artist:String(item.artist||'').slice(0,200),p_total:total}).then(r=>{if(r.error)console.warn('Histórico musical temporariamente indisponível.')})}});
 function context(){const ownerId=A.user.id;return {user:A.user,admin:A.admin,page:A.page,term:A.term,state:()=>A.stored,setState:(value,keys)=>{if(A.user?.id!==ownerId)return;if(keys)for(const key of keys)A.stored[key]=value[key];else A.stored=value},profile:()=>A.profile,setProfile:p=>{if(A.user?.id!==ownerId)return;A.profile=p;document.querySelectorAll('[data-avatar-user="'+CSS.escape(p.user_id||A.user.id)+'"]').forEach(node=>{if(!node.closest('[data-premium-live-preview]'))node.outerHTML=avatar(p,node.dataset.avatarClass||'member-avatar')});const node=document.querySelector('#sidebarProfileName');if(node)node.innerHTML='<span class="profile-name-text">'+profileName(p)+'</span>'+verifiedBadge(p)},directory:()=>A.members,setDirectory:rows=>{if(A.user?.id===ownerId)A.members=rows},music:musicDock,savePreferences:(key,value)=>{A.stored[key]=value;return accountPreferences.write(key,value)},calls:A.calls,toast,navigate,openItem:modal,play,refreshCatalog:()=>loadCatalog(),refreshNotifications,heartbeat,diagnostics:()=>A.telemetry?.diagnostics()||{}}}
 function disposeRoute(){A.controller?.destroy?.();A.controller=null;A.routeKey='';++A.routeGeneration}
 async function draw(){
@@ -80,12 +99,12 @@ async function heartbeat(){
 function startMemberServices(){
  A.telemetry?.destroy();A.telemetry=createTelemetry(A.user.id);A.telemetry.record('performance','app_ready','',performance.now());A.telemetry.record('page',A.page);
  A.calls?.destroy();A.calls=new Calls({userId:A.user.id,toast,directory:()=>A.members,profile:()=>A.profile});
- A.party?.destroy();A.party=new WatchParty({userId:A.user.id,directory:()=>A.members,toast,calls:()=>A.calls,validate:async(item,index)=>{const ep=episodes(item)[index],source=await sourceFor(ep?{...item,...ep,id:item.id,type:item.type,license:item.license}:item);if(!['video','hls','dash'].includes(source.kind))throw Error('Assistir juntos está disponível para vídeos diretos, HLS e DASH autorizados. Este player externo não permite sincronizar os controles.');if(source.revokeOnCleanup&&source.url?.startsWith('blob:'))URL.revokeObjectURL(source.url)},onOpen:async room=>{const r=await db.from('lx_catalog').select('id,payload,published').eq('id',room.content_id).eq('published',true).maybeSingle();if(r.error||!r.data)throw Error('Este conteúdo não está disponível para sua conta.');const item=itemFrom(r.data);await play(item,episodes(item).length?room.episode_index:null);if(!document.querySelector('#mediaPlayer')||String(A.modal?.item.id)!==String(room.content_id))throw Error('Não foi possível abrir uma fonte compatível. A sessão permanece em espera.')}});clearInterval(A.heartbeatTimer);A.heartbeatTimer=setInterval(()=>heartbeat().catch(()=>{}),25000);heartbeat().catch(()=>{});
+ A.party?.destroy();A.party=new WatchParty({userId:A.user.id,directory:()=>A.members,toast,calls:()=>A.calls,validate:async(item,index)=>{const ep=episodes(item)[index],source=await sourceFor(ep?{...item,...ep,id:item.id,type:item.type,license:item.license}:item);if(!['video','hls','dash'].includes(source.kind))throw Error('Assistir juntos está disponível para vídeos diretos, HLS e DASH autorizados. Este player externo não permite sincronizar os controles.');if(source.revokeOnCleanup&&source.url?.startsWith('blob:'))URL.revokeObjectURL(source.url)},onOpen:async room=>{const r=await db.from('lx_catalog').select('id,payload,published').eq('id',room.content_id).eq('published',true).maybeSingle();if(r.error||!r.data)throw Error('Este conteúdo não está disponível para sua conta.');const item=itemFrom(r.data);await play(item,episodes(item).length?room.episode_index:null);if(!document.querySelector('#mediaPlayer')||String(A.modal?.item.id)!==String(room.content_id))throw Error('Não foi possível abrir uma fonte compatível. A sessão permanece em espera.')}});clearInterval(A.heartbeatTimer);A.heartbeatTimer=setInterval(()=>{heartbeat().catch(()=>{});checkDailyParticipation().catch(()=>{})},25000);heartbeat().catch(()=>{});
  if(A.noticeChannel)db.removeChannel(A.noticeChannel);A.noticeChannel=db.channel('lx-notice-badge-'+A.user.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'lx_user_notifications',filter:'user_id=eq.'+A.user.id},()=>refreshNotifications().catch(()=>{})).subscribe();refreshNotifications().catch(()=>{});
  socialDirectory().then(rows=>{if(A.user)A.members=rows}).catch(()=>{});
 }
 function clearMemberServices(){
- A.party?.destroy();A.party=null;disposeRoute();closeModal();musicDock.close();clearTimeout(musicActivityTimer);musicActivityTimer=null;activeMusicId=null;A.activity=null;accountPreferences.bind(null);bindDisplayAccount(null);A.calls?.destroy();A.calls=null;A.telemetry?.destroy();A.telemetry=null;clearInterval(A.heartbeatTimer);A.heartbeatTimer=null;if(A.noticeChannel){db.removeChannel(A.noticeChannel);A.noticeChannel=null}
+ A.party?.destroy();A.party=null;disposeRoute();closeModal();leagueMusicTracker=null;leagueInteractions=0;leagueActiveTicks=0;leagueLastInteraction=0;leagueDailyDone='';musicDock.close();clearTimeout(musicActivityTimer);musicActivityTimer=null;activeMusicId=null;A.activity=null;accountPreferences.bind(null);bindDisplayAccount(null);A.calls?.destroy();A.calls=null;A.telemetry?.destroy();A.telemetry=null;clearInterval(A.heartbeatTimer);A.heartbeatTimer=null;if(A.noticeChannel){db.removeChannel(A.noticeChannel);A.noticeChannel=null}
 }
 async function initialize(){
  const generation=++A.generation;A.initializing=true;root.innerHTML='<div class="loading"><span class="loading-orbit"></span>Preparando seu universo LX…</div>';
@@ -123,12 +142,24 @@ async function play(item,episodeIndex=null){
 function showBook(item,url,format='pdf'){
  closeModal();const token={item,focus:document.activeElement};A.modal=token;
  const key='book_'+String(item.id),owner=A.user?.id,abort=new AbortController();let stop=null;
+  const readingSession=uuid();let bookPosition=0,bookTotal=0,readingBusy=false,readingRewarded=false,readingTimer=null;
+  async function verifyBookActivity(){
+   if(A.modal!==token||!A.user||A.user.id!==owner||document.hidden||readingBusy||readingRewarded||bookPosition<1||bookTotal<3)return;
+   readingBusy=true;
+   try{
+    const recorded=await db.rpc('lx_record_reading',{p_session:readingSession,p_content:String(item.id),p_page:bookPosition,p_pages:bookTotal});
+    if(recorded.error||!recorded.data?.eligible)return;
+    const awarded=await db.rpc('lx_rank_record_event',{p_event_type:'read_valid',p_ref_key:'read:'+readingSession,p_metadata:{content_id:String(item.id)}});
+    if(!awarded.error&&(awarded.data?.awarded>0||awarded.data?.duplicate)){readingRewarded=true;if(awarded.data.awarded>0)toast('+'+awarded.data.awarded+' pontos LX League pela leitura')}
+   }finally{readingBusy=false}
+  }
+  readingTimer=setInterval(()=>verifyBookActivity().catch(()=>{}),15000);
  document.querySelector('#layer').innerHTML='<div class="overlay"><section class="modal reader-modal" role="dialog" aria-modal="true" aria-label="'+esc(item.title)+'"><div class="modal-head"><h2>'+esc(item.title)+'</h2><button class="close" data-close aria-label="Fechar livro">×</button></div><div id="bookReader"></div><p class="muted reader-note"><a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">Abrir a versão original ↗</a></p></section></div>';
  document.body.classList.add('modal-open');document.querySelector('[data-close]').focus();
- A.playerCleanup=()=>{stop?.();abort.abort()};
+ A.playerCleanup=()=>{clearInterval(readingTimer);stop?.();abort.abort()};
  import('./book-reader.js'+new URL(import.meta.url).search).then(async module=>{
   if(A.modal!==token)return;
-  stop=await module.openReader(document.querySelector('#bookReader'),{url,format,state:A.stored[key]||{},signal:abort.signal,onSave:value=>{if(A.user?.id!==owner)return;A.stored[key]=value;accountPreferences.write(key,value)}});
+  stop=await module.openReader(document.querySelector('#bookReader'),{url,format,state:A.stored[key]||{},signal:abort.signal,onSave:value=>{if(A.user?.id!==owner)return;bookPosition=Number(value.position)||0;bookTotal=Number(value.total)||0;A.stored[key]=value;accountPreferences.write(key,value)}});
   if(A.modal!==token)stop?.();
  }).catch(()=>{if(A.modal===token)document.querySelector('#bookReader').innerHTML=empty('Leitor indisponível','Abra a versão original ou tente novamente.')});
 }
@@ -140,9 +171,15 @@ function showVideo(item,entry,source,list,index){
  document.body.classList.add('modal-open');layer.querySelector('[data-close]').focus();
  A.activity={activity_type:['Série','Dorama','Anime'].includes(item.type)?'series':'movie',activity_title:item.title,activity_subtitle:index!==null?'Temporada '+(entry.season||1)+' · Episódio '+(entry.episode||index+1):'',activity_cover:item.cover||''};heartbeat().catch(()=>{});
  const media=layer.querySelector('#mediaPlayer');if(!media)return;
+  const rankVideoSession=uuid(),rankContentKey=String(item.id)+(index!==null?':episode:'+String(index):'');
+  const leagueWatchTracker=eligibleLeaguePlayback(entry,source)?createLeagueSession({
+   kind:'watch_valid',id:rankContentKey,session:rankVideoSession,
+   report:async total=>{const r=await db.rpc('lx_record_viewing',{p_session:rankVideoSession,p_content:rankContentKey,p_total:total});if(r.error)throw r.error},
+   award:grantVerifiedPoints,onMessage:toast
+  }):null;
  const error=message=>{if(A.modal!==token)return;layer.querySelector('#playerStatus').textContent=message;A.telemetry?.record('playback','video',message)};
  musicDock.element?.querySelector('audio')?.pause();
- const stopVideo=bindVideoSession(media,source,{host:layer,autoplay:!together,progress:together?null:A.stored.history?.[item.id],index,hasNext:!together&&index!==null&&!!list[index+1],onNext:()=>play(item,index+1),preferences:A.stored.playbackPreferences||{},savePreferences:savePlaybackPreferences,onError:error,saveProgress:async progress=>{
+ const stopVideo=bindVideoSession(media,source,{host:layer,autoplay:!together,progress:together?null:A.stored.history?.[item.id],index,hasNext:!together&&index!==null&&!!list[index+1],onNext:()=>play(item,index+1),preferences:A.stored.playbackPreferences||{},savePreferences:savePlaybackPreferences,onError:error,onActiveSeconds:info=>leagueWatchTracker?.(info),saveProgress:async progress=>{
   if(!A.user||String(item.id)==='preview')return;A.stored.history={...(A.stored.history||{}),[item.id]:progress};
   const {error}=await db.rpc('lx_save_watch_progress',{p_content:Number(item.id),p_progress:progress});if(error)throw error;
  }});
@@ -151,6 +188,7 @@ function showVideo(item,entry,source,list,index){
 
 let searchTimer;
 root.addEventListener('input',event=>{if(event.target.id==='search'){clearTimeout(searchTimer);const value=event.target.value;searchTimer=setTimeout(()=>navigate(value.trim()?'Buscar':'Início',{term:value,push:false}),350)}});
+root.addEventListener('pointerdown',()=>{if(A.user&&approved()&&!musicDock.embedded&&!document.querySelector('.embed-wrap iframe')){leagueLastInteraction=Date.now();leagueInteractions=Math.min(100,leagueInteractions+1)}},{passive:true});
 root.addEventListener('click',async event=>{
  const button=event.target.closest('button');if(!button)return;
  try{

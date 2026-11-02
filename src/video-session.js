@@ -4,9 +4,9 @@ import {applyPlayback,normalizePlayback,resumePosition,nextEpisodeCountdown} fro
 
 export function videoControls(tracks=[]){return '<div class="player-toolbar"><label>Velocidade <select id="playerSpeed">'+[.75,1,1.25,1.5,2].map(x=>'<option value="'+x+'">'+String(x).replace('.',',')+'×</option>').join('')+'</select></label><label>Qualidade <select id="playerQuality" disabled><option value="-1">Automática / fonte original</option></select></label><label class="setting-toggle"><input id="playerAutoplay" type="checkbox"> Próximo automático</label>'+(tracks.length?'<label>Legendas <select id="playerSubtitles"><option value="off">Desligadas</option>'+tracks.map((t,i)=>'<option value="'+i+'">'+esc(t.label||t.lang||'Português')+'</option>').join('')+'</select></label><label>Tamanho <select id="subtitleSize"><option value="100">Normal</option><option value="125">Grande</option><option value="150">Muito grande</option></select></label><label>Sincronia (s) <input id="subtitleOffset" type="number" min="-30" max="30" step="0.5" aria-label="Ajuste de sincronia da legenda em segundos"></label>':'')+'<button class="btn small" id="pipMedia" hidden>Janela flutuante</button><button class="btn small" id="castMedia" hidden>Transmitir para TV</button><button class="btn small" id="fullscreenMedia">Tela cheia</button></div><div id="nextEpisode" class="next-episode" hidden></div>'}
 
-export function bindVideoSession(media,source,{host,progress,index=null,hasNext=false,autoplay=true,onNext=()=>{},preferences={},savePreferences=()=>{},saveProgress=()=>{},onError=()=>{}}){
+export function bindVideoSession(media,source,{host,progress,index=null,hasNext=false,autoplay=true,onNext=()=>{},preferences={},savePreferences=()=>{},saveProgress=()=>{},onError=()=>{},onActiveSeconds=()=>{}}){
  const abort=new AbortController(),signal=abort.signal;
- let closed=false,cleanup=null,countdown=null,waitTimer=null,saveTimer=null,saveStamp=0,prefs=applyPlayback(media,preferences);
+ let closed=false,cleanup=null,countdown=null,waitTimer=null,saveTimer=null,saveStamp=0,prefs=applyPlayback(media,preferences),activeSeconds=0,lastActiveTick=0,lastReported=0,lastMediaTime=null;
  const find=id=>host.querySelector('#'+id);
  const fail=message=>{if(!closed){clearTimeout(waitTimer);onError(message)}};
  const listen=(target,name,fn)=>target?.addEventListener(name,fn,{signal});
@@ -21,9 +21,20 @@ export function bindVideoSession(media,source,{host,progress,index=null,hasNext=
  find('playerSpeed').value=String(prefs.speed);find('playerAutoplay').checked=prefs.autoplayNext;
  if(find('subtitleSize')){find('subtitleSize').value=String(prefs.subtitleSize);find('subtitleOffset').value=String(prefs.subtitleOffset);const preferred=Array.from(media.textTracks||[]).findIndex(t=>t.language===prefs.subtitleLanguage);find('playerSubtitles').value=preferred>=0?String(preferred):'off'}
  listen(media,'loadedmetadata',()=>{media.currentTime=resumePosition(progress,media.duration,index);subtitles()});
- listen(media,'timeupdate',()=>{if(performance.now()-saveStamp>=10000){saveStamp=performance.now();checkpoint()}});
+ listen(media,'timeupdate',()=>{
+  const now=performance.now(),position=Number(media.currentTime)||0;
+  if(lastActiveTick&&lastMediaTime!==null&&!media.paused&&!media.seeking&&!media.ended&&!document.hidden&&media.readyState>=2){
+   const elapsed=Math.max(0,(now-lastActiveTick)/1000),advanced=position-lastMediaTime;
+   // Neither seeking nor fast forwarding counts as watched time. Require
+   // approximately real-time progression and cap individual timer gaps.
+   if(elapsed>0&&elapsed<=3&&advanced>0&&advanced<=Math.max(3,elapsed*1.8))activeSeconds+=Math.min(elapsed,advanced);
+  }
+  lastActiveTick=now;lastMediaTime=position;
+  if(activeSeconds-lastReported>=12&&Number.isFinite(media.duration)){lastReported=activeSeconds;Promise.resolve(onActiveSeconds({total:Math.floor(activeSeconds),duration:Math.floor(media.duration)})).catch(()=>{})}
+  if(now-saveStamp>=10000){saveStamp=now;checkpoint()}
+ });
  for(const event of ['pause','seeked'])listen(media,event,checkpoint);
- listen(document,'visibilitychange',()=>{if(document.hidden)checkpoint()});
+ listen(document,'visibilitychange',()=>{lastActiveTick=0;lastMediaTime=null;if(document.hidden)checkpoint()});
  for(const event of ['volumechange','ratechange'])listen(media,event,persist);
  const armTimeout=()=>{clearTimeout(waitTimer);waitTimer=setTimeout(()=>{media.pause();fail('A fonte demorou para responder. Verifique a conexão ou abra o arquivo na origem.')},20000)};
  listen(media,'waiting',armTimeout);listen(media,'playing',()=>{clearTimeout(waitTimer);if(!closed)find('playerStatus').textContent=''});
