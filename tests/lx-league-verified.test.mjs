@@ -82,3 +82,24 @@ test('valid high-frequency or capped events no longer flag the entire ranking ac
  assert.match(video,/media\.seeking/);
  assert.match(dock,/duration:Number\.isFinite\(audio\.duration\)/);
 });
+
+test('daily engagement is real in-app interaction, not passive YouTube or Spotify playback',()=>{
+ const app=file('src/app.js');
+ assert.match(app,/leagueInteractions<3/);
+ assert.match(app,/document\.hasFocus\(\)/);
+ assert.match(app,/musicDock\.embedded/);
+ assert.match(app,/document\.querySelector\('\.embed-wrap iframe'\)/);
+ assert.match(app,/p_event_type:'streak_daily'/);
+ assert.match(app,/lx_record_reading/);
+});
+test('native player has LX controls; third-party providers retain their official interface',()=>{
+ const dock=file('src/music-dock.js');
+ const css=file('assets/lx-league-2.css');
+ assert.match(dock,/lx-native-now-controls/);
+ assert.match(dock,/this\.embedded\?/);
+ assert.match(dock,/player oficial do provedor/);
+ assert.match(dock,/data-music-action="toggle"/);
+ assert.match(css,/lx-native-now-controls/);
+ assert.match(dock,/source\.kind==='iframe'/);
+ assert.match(dock,/document\.createElement\('iframe'\)/);
+});
