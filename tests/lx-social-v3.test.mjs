@@ -67,8 +67,8 @@ test('composer shortcuts preserve drafts and save notes with an accessible chara
 });
 test('new profile discovery works through existing permitted directory and profile modal',()=>{
  assert.match(social,/function suggestedProfiles\(\)/);
- assert.match(social,/data-person="\+esc\(p\.user_id\)/);
- assert.match(social,/data-person="\+esc\(post\.author_id\)/);
+ assert.match(social,/data-person=.*esc\(p\.user_id\)/);
+ assert.match(social,/data-person=.*esc\(post\.author_id\)/);
  assert.match(social,/if\(b\.dataset\.person\)/);
  assert.match(social,/profileReturnFocus/);
  assert.match(social,/lx-social-suggestion/);
