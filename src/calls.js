@@ -45,7 +45,14 @@ export class Calls {
   try{await checked(db.rpc('lx_respond_call',{p_call_id:call.id,p_accept:true}));this.call={...call,status:'accepted'};this.local=stream;this.incoming=null;this.openSurface(this.directory().find(p=>p.user_id===call.caller_id)||{name:'Membro LX'});await this.preparePeer(false);await this.poll()}catch(e){const id=this.call?.id;stream.getTracks().forEach(t=>t.stop());this.call=null;this.disposeMedia();this.removeSurface();if(id)await db.rpc('lx_end_call',{p_call_id:id}).catch(()=>{});throw e}finally{this.starting=false}
  }
  openSurface(person){
-  this.removeSurface();this.person=person;this.remoteScreen=false;this.remoteScreenReady=false;this.remoteCamera=false;this.screenView=null;const el=document.createElement('section');el.className='call-surface lx-call';el.classList.toggle('voice-call',this.call.mode==='audio');el.setAttribute('role','dialog');el.setAttribute('aria-label','Chamada com '+person.name);el.innerHTML=callView(person,this.call.mode,this.profile()?.is_premium===true,this.profile()?.premium_profile?.entrance);document.body.appendChild(el);this.surface=el;el.querySelector('#callLocal').srcObject=this.local;el.querySelector('#callShareAudio').volume=.85;this.listenScreenAudio=true;this.remoteScreenAudioDeclared=false;
+  this.removeSurface();this.person=person;this.remoteScreen=false;this.remoteScreenReady=false;this.remoteCamera=false;this.screenView=null;const el=document.createElement('section');el.className='call-surface lx-call';el.classList.toggle('voice-call',this.call.mode==='audio');el.setAttribute('role','dialog');el.setAttribute('aria-label','Chamada com '+person.name);el.innerHTML=callView(person,this.call.mode,this.profile()?.is_premium===true,this.profile()?.premium_profile?.entrance);document.body.appendChild(el);this.surface=el;el.querySelector('#callLocal').srcObject=this.local;
+  if(!this.local?.getVideoTracks().length){
+   el.querySelector('#callLocal').hidden=true;
+   el.querySelector('[data-call-person-fallback=local]').hidden=false;
+   const camera=el.querySelector('[data-call-camera]');
+   if(camera){camera.setAttribute('aria-pressed','false');camera.setAttribute('aria-label','Ativar câmera');camera.querySelector('span').textContent='Ativar câmera'}
+  }
+  el.querySelector('#callShareAudio').volume=.85;this.listenScreenAudio=true;this.remoteScreenAudioDeclared=false;
   this.callAbort=new AbortController();const signal=this.callAbort.signal;el.addEventListener('keydown',e=>{if(e.key==='Escape'&&el.classList.contains('call-theater')){el.classList.remove('call-theater');el.querySelector('[data-call-fullscreen]').textContent='⤢ Tela cheia'}},{signal});
   document.addEventListener('fullscreenchange',()=>{if(this.surface===el){const b=el.querySelector('[data-call-fullscreen]');b.textContent=document.fullscreenElement===el?'⤡ Sair da tela cheia':'⤢ Tela cheia';b.setAttribute('aria-label',document.fullscreenElement===el?'Sair da tela cheia da chamada':'Tela cheia da chamada')}},{signal});
   el.addEventListener('dblclick',e=>{if(e.target.closest('[data-call-stage]'))this.fullscreen().catch(()=>{})},{signal});
@@ -66,7 +73,21 @@ export class Calls {
    if(b.hasAttribute('data-call-retry'))await this.restart(true);
    if(b.hasAttribute('data-call-mic-repair'))await this.repairMicrophone();
    if(b.hasAttribute('data-call-mic')){const tracks=this.local?.getAudioTracks()||[];if(!tracks[0]||tracks[0].readyState!=='live'){await this.repairMicrophone();return}const enabled=!tracks[0].enabled;tracks.forEach(t=>t.enabled=enabled);b.querySelector('span').textContent=enabled?'Microfone ligado':'Microfone desligado';b.setAttribute('aria-label',enabled?'Microfone ligado':'Microfone desligado');b.setAttribute('aria-pressed',String(enabled));el.querySelector('[data-call-mic-state]').textContent=enabled?'♫':'⊘'}
-   if(b.hasAttribute('data-call-camera')){const tracks=this.local?.getVideoTracks()||[],enabled=!tracks[0]?.enabled;tracks.forEach(t=>t.enabled=enabled);b.querySelector('span').textContent=enabled?'Câmera ligada':'Câmera desligada';b.setAttribute('aria-label',enabled?'Câmera ligada':'Câmera desligada');b.setAttribute('aria-pressed',String(enabled));el.querySelector('#callLocal').hidden=!enabled;el.querySelector('[data-call-person-fallback=local]').hidden=enabled;await this.signal('ice',{media:{camera:enabled}})}
+   if(b.hasAttribute('data-call-camera')){let tracks=this.local?.getVideoTracks()||[];
+    if(!tracks[0]||tracks[0].readyState!=='live'){
+     if(!this.videoSender)throw Error('Aguarde a outra pessoa atender para ativar a câmera.');
+     let cameraStream;
+     try{
+      cameraStream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720},facingMode:'user'},audio:false});
+      const next=cameraStream.getVideoTracks()[0];if(!next)throw Error('Nenhuma câmera disponível.');
+      await this.videoSender.replaceTrack(next);
+      for(const old of tracks){this.local.removeTrack(old);old.stop()}
+      this.local.addTrack(next);this.surface.querySelector('#callLocal').srcObject=this.local;
+      tracks=[next];
+     }catch(e){cameraStream?.getTracks().forEach(t=>t.stop());throw Error(e?.name==='NotAllowedError'?'Permita o acesso à câmera.':e.message||'Câmera não disponível')}
+    }
+    const enabled=!tracks[0].enabled?true:!b.getAttribute('aria-pressed')?.includes('true');
+    tracks.forEach(t=>t.enabled=enabled);b.querySelector('span').textContent=enabled?'Câmera ligada':'Câmera desligada';b.setAttribute('aria-label',enabled?'Câmera ligada':'Câmera desligada');b.setAttribute('aria-pressed',String(enabled));el.querySelector('#callLocal').hidden=!enabled;el.querySelector('[data-call-person-fallback=local]').hidden=enabled;await this.signal('ice',{media:{camera:enabled}})}
    if(b.hasAttribute('data-call-screen'))await this.shareScreen();if(b.dataset.callSound){if(this.profile()?.is_premium!==true)throw Error('O painel de sons é exclusivo Premium.');if(Date.now()-(this.lastSound||0)<3000)return;this.lastSound=Date.now();playCallSound(b.dataset.callSound);await this.signal('reaction',{sound:b.dataset.callSound})}
   }catch(error){this.toast(error.message||'Não foi possível alterar a chamada.')}},{signal});this.syncView();
  }
