@@ -195,29 +195,77 @@ export class Calls {
  }
  async restart(manual=false){if(manual){this.attempts=0;clearTimeout(this.retryTimer);this.retryTimer=null}const pc=this.pc;if(!pc||!this.call)return;if(this.call.caller_id!==this.userId){await this.signal('ice',{restart:true});return}if(this.restarting||this.attempts>=3){this.status('A rede não reconectou. Encerre e tente novamente.');return}this.restarting=true;++this.attempts;try{const fallback={iceServers:pc.getConfiguration().iceServers,turnConfigured:this.turnConfigured};const {initial:config,ready,provisional}=await fastRtcConfig(()=>rtcConfig('call',this.call.id),fallback,450);if(pc!==this.pc)return;if(config.turnConfigured){pc.setConfiguration({...pc.getConfiguration(),iceServers:config.iceServers});this.turnConfigured=true}else if(!this.turnConfigured)pc.setConfiguration({...pc.getConfiguration(),iceServers:config.iceServers});pc.restartIce();this.status(this.turnConfigured?'Reconectando usando TURN…':'Reconectando direto. Em redes restritas é necessário configurar TURN.');if(provisional)ready.then(fresh=>{if(pc!==this.pc||!shouldUpgradeTurn(this.turnConfigured,fresh))return;pc.setConfiguration({...pc.getConfiguration(),iceServers:fresh.iceServers});this.turnConfigured=true;pc.restartIce()}).catch(()=>{})}finally{this.restarting=false}}
  async quality(){const pc=this.pc;if(!pc||pc.connectionState!=='connected')return;const stats=await pc.getStats();let pair;stats.forEach(r=>{if(r.type==='candidate-pair'&&r.state==='succeeded'&&(r.nominated||r.selected))pair=r});if(!pair)return;const local=stats.get(pair.localCandidateId),rtt=Number(pair.currentRoundTripTime);const node=this.surface?.querySelector('#callQuality');if(node)node.textContent=(local?.candidateType==='relay'?'Conexão por relay':'Conexão direta')+(Number.isFinite(rtt)?' · '+Math.round(rtt*1000)+' ms':'')}
- async shareScreen(){
-  if(this.screen){await this.stopSharing();return}
+ async shareScreen(switchSource=false){
+  if(this.screen&&!switchSource){await this.stopSharing();return}
   if(this.sharing)return;
-  if(!this.screenSender||!this.shareAudioSender||!this.pc)throw Error('Aguarde a chamada conectar antes de compartilhar.');
-  if(!navigator.mediaDevices?.getDisplayMedia)throw Error('Compartilhamento de tela não disponível neste navegador. Use um navegador de computador em HTTPS.');
-  this.sharing=true;const pc=this.pc,kind=this.surface.querySelector('[data-call-screen-kind]')?.value||'browser',withAudio=kind!=='monitor'&&this.surface.querySelector('[data-call-screen-audio]').checked;let stream;
+  if(!this.screenSender||!this.shareAudioSender||!this.pc)throw Error('Aguarde a chamada conectar antes de transmitir.');
+  if(!navigator.mediaDevices?.getDisplayMedia)throw Error('Este navegador não permite capturar janelas ou jogos. Use Chrome/Edge em HTTPS.');
+  this.sharing=true;
+  const pc=this.pc,previous=this.screen,kind=this.surface?.querySelector('[data-call-screen-kind]')?.value||'browser',
+   withAudio=!!this.surface?.querySelector('[data-call-screen-audio]')?.checked;
+  const quality=premiumCaptureQuality(this.surface.querySelector('[data-call-quality]').value,this.profile()?.is_premium===true);
+  let stream=null,swapped=false;
   try{
-   stream=await navigator.mediaDevices.getDisplayMedia(displayCaptureOptions(withAudio,premiumCaptureQuality(this.surface.querySelector('[data-call-quality]').value,this.profile()?.is_premium===true),kind));
-   if(this.pc!==pc||!this.call){stream.getTracks().forEach(t=>t.stop());return}
-   const video=stream.getVideoTracks()[0];if(!video)throw Error('Nenhuma janela ou aba foi selecionada.');
-   const audio=isolateDisplayAudio(stream,withAudio,kind);this.screen=stream;
-   await this.screenSender.replaceTrack(video);await this.shareAudioSender.replaceTrack(audio.track);
-   if(this.pc!==pc||this.screen!==stream){stream.getTracks().forEach(t=>t.stop());return}
-   const preview=this.surface.querySelector('#callScreenLocal');preview.srcObject=stream;this.screenView='local';this.syncView();this.applyShareQuality().catch(()=>{const node=this.surface?.querySelector('[data-call-resolution]');if(node)node.textContent='Qualidade automática · adaptada à conexão'});
-   this.surface.querySelector('[data-call-screen] span').textContent='Parar compartilhamento';this.surface.querySelector('[data-call-screen]').setAttribute('aria-label','Parar compartilhamento');this.surface.querySelector('[data-call-screen-audio]').disabled=true;this.surface.querySelector('[data-call-screen-kind]').disabled=true;this.surface.classList.add('sharing-screen');
-   const status=this.surface.querySelector('[data-call-share-status]');status.hidden=false;status.textContent=captureAudioMessage(audio,withAudio,kind);if(audio.track){const update=()=>{if(this.screen!==stream||!status.isConnected)return;status.textContent=captureAudioMessage({surface:audio.surface,track:audio.track,unavailable:audio.track.readyState==='ended'},withAudio,kind)};audio.track.addEventListener('mute',update);audio.track.addEventListener('unmute',update)}
-   if(audio.track)audio.track.addEventListener('ended',()=>{if(this.screen!==stream)return;this.shareAudioSender?.replaceTrack(null).catch(()=>{});const node=this.surface?.querySelector('[data-call-share-status]');if(node)node.textContent='O som da aba foi encerrado pelo navegador. Pare e compartilhe novamente para incluir áudio.';this.signal('ice',{media:{screen:true,screenAudio:false}}).catch(()=>{})},{once:true});video.onended=()=>this.stopSharing().catch(()=>{});await this.signal('ice',{media:{screen:true,screenAudio:!!audio.track,screenSurface:audio.surface||kind}});
-  }catch(error){if(this.screen===stream)await this.stopSharing().catch(()=>{});else stream?.getTracks().forEach(t=>t.stop());if(!['NotAllowedError','AbortError'].includes(error.name))throw error}finally{this.sharing=false}
+   // This picker requires a user click. Browser and OS decide which sources are available.
+   stream=await navigator.mediaDevices.getDisplayMedia(displayCaptureOptions(withAudio,quality,kind));
+   if(!this.call||this.pc!==pc){stream.getTracks().forEach(t=>t.stop());return}
+   const video=stream.getVideoTracks()[0];if(!video)throw Error('Nenhuma tela ou janela foi selecionada.');
+   try{video.contentHint='motion'}catch{}
+   const audio=isolateDisplayAudio(stream,withAudio,kind);
+   // Reuse the existing video/audio transceivers, avoiding a new peer connection or call interruption.
+   await this.screenSender.replaceTrack(video);
+   try{await this.shareAudioSender.replaceTrack(audio.track)}
+   catch(error){await this.screenSender.replaceTrack(previous?.getVideoTracks()[0]||null).catch(()=>{});throw error}
+   swapped=true;
+   if(!this.call||this.pc!==pc){stream.getTracks().forEach(t=>t.stop());return}
+   this.screen=stream;
+   if(previous){for(const t of previous.getTracks()){t.onended=null;try{t.stop()}catch{}}}
+   const el=this.surface,preview=el?.querySelector('#callScreenLocal');
+   if(preview)preview.srcObject=stream;
+   this.screenView='local';this.syncView();this.applyShareQuality().catch(()=>{const node=el?.querySelector('[data-call-resolution]');if(node)node.textContent='Qualidade adaptada à conexão'});
+   const startBtn=el?.querySelector('[data-call-screen]'),switchBtn=el?.querySelector('[data-call-share-switch]'),pauseBtn=el?.querySelector('[data-call-share-pause]');
+   if(startBtn){startBtn.querySelector('span').textContent='Parar transmissão';startBtn.setAttribute('aria-label','Parar transmissão')}
+   if(switchBtn)switchBtn.hidden=false;
+   if(pauseBtn){pauseBtn.hidden=false;pauseBtn.setAttribute('aria-pressed','false');pauseBtn.querySelector('span').textContent='Pausar vídeo'}
+   for(const q of ['[data-call-screen-kind]','[data-call-screen-audio]']){const control=el?.querySelector(q);if(control)control.disabled=false}
+   el?.classList.add('sharing-screen');
+   const status=el?.querySelector('[data-call-share-status]');
+   if(status){status.hidden=false;status.textContent=captureAudioMessage(audio,withAudio,kind)}
+   const update=()=>{if(this.screen!==stream||!status?.isConnected)return;status.textContent=captureAudioMessage({surface:audio.surface,track:audio.track,unavailable:audio.track?.readyState==='ended'},withAudio,kind)};
+   if(audio.track){audio.track.addEventListener('mute',update);audio.track.addEventListener('unmute',update);audio.track.addEventListener('ended',()=>{
+      if(this.screen!==stream)return;
+      this.shareAudioSender?.replaceTrack(null).catch(()=>{});
+      const node=this.surface?.querySelector('[data-call-share-status]');
+      if(node)node.textContent='Áudio da fonte interrompido. Troque a fonte para tentar novamente.';
+      this.signal('ice',{media:{screen:true,screenAudio:false,screenSurface:audio.surface||kind}}).catch(()=>{});
+    },{once:true})}
+   video.onended=()=>{if(this.screen===stream)this.stopSharing().catch(()=>{})};
+   // The actual picked surface is intentionally sent for honest receiver diagnostics.
+   this.signal('ice',{media:{screen:true,screenAudio:!!audio.track,screenSurface:audio.surface||kind}}).catch(()=>{});
+   if(previous)this.toast('Fonte da transmissão trocada sem encerrar a chamada.');
+   else this.toast('Transmissão iniciada. Use Trocar fonte para alternar jogos ou janelas.');
+  }catch(error){
+   if(swapped){
+     await this.screenSender?.replaceTrack(previous?.getVideoTracks()?.[0]||null).catch(()=>{});
+     await this.shareAudioSender?.replaceTrack(previous?.getAudioTracks()?.[0]||null).catch(()=>{});
+     this.screen=previous||null;
+   }
+   if(stream&&stream!==previous)for(const t of stream.getTracks()){t.onended=null;try{t.stop()}catch{}}
+   if(!['NotAllowedError','AbortError'].includes(error?.name))throw error;
+  }finally{this.sharing=false}
+ }
+ toggleSharePause(){
+  const video=this.screen?.getVideoTracks()?.[0];if(!video)return;
+  video.enabled=!video.enabled;
+  const b=this.surface?.querySelector('[data-call-share-pause]');
+  if(b){b.setAttribute('aria-pressed',String(!video.enabled));b.querySelector('span').textContent=video.enabled?'Pausar vídeo':'Retomar vídeo'}
+  const node=this.surface?.querySelector('[data-call-share-status]');
+  if(node)node.textContent=video.enabled?'Transmissão retomada.':'Vídeo pausado: o compartilhamento continua conectado.';
  }
  async stopSharing(){
   const stream=this.screen;if(!stream)return;this.screen=null;stream.getTracks().forEach(t=>{t.onended=null;t.stop()});
   await this.screenSender?.replaceTrack(null);await this.shareAudioSender?.replaceTrack(null);
-  if(this.surface){this.surface.querySelector('#callScreenLocal').srcObject=null;this.surface.querySelector('[data-call-screen] span').textContent='Compartilhar tela';this.surface.querySelector('[data-call-screen]').setAttribute('aria-label','Compartilhar tela');this.surface.querySelector('[data-call-screen-audio]').disabled=this.surface.querySelector('[data-call-screen-kind]').value==='monitor';this.surface.querySelector('[data-call-screen-kind]').disabled=false;this.surface.querySelector('[data-call-share-status]').hidden=true;this.screenView=null;this.syncView()}
+  if(this.surface){this.surface.querySelector('#callScreenLocal').srcObject=null;this.surface.querySelector('[data-call-screen] span').textContent='Compartilhar tela';this.surface.querySelector('[data-call-screen]').setAttribute('aria-label','Compartilhar tela');this.surface.querySelector('[data-call-screen-audio]').disabled=false;this.surface.querySelector('[data-call-screen-kind]').disabled=false;this.surface.querySelector('[data-call-share-status]').hidden=true;const swap=this.surface.querySelector('[data-call-share-switch]'),pause=this.surface.querySelector('[data-call-share-pause]');if(swap)swap.hidden=true;if(pause){pause.hidden=true;pause.setAttribute('aria-pressed','false')}this.screenView=null;this.syncView()}
   await this.signal('ice',{media:{screen:false}});
  }
  async end(){const id=this.call?.id;this.call=null;this.disposeMedia();this.removeSurface();if(id)await checked(db.rpc('lx_end_call',{p_call_id:id}))}
