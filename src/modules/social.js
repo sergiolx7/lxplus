@@ -21,6 +21,15 @@ export async function mount(host,ctx){
  let presence=new Map(),feedSearch='',feedSearchTimer=null,feedFilter='all',sponsoredPostIds=new Set(),demoPostCounts=new Map(),demoProfileCounts=new Map(),publicDemoPostCounts=new Map(),publicDemoProfileCounts=new Map(),followStats=new Map(),labMode=false,founderIds=new Set();
  let draft='',sharedPost=/^#post=([-a-f0-9]{36})$/i.exec(location.hash)?.[1]||null,profileReturnFocus=null;
  function dialog(title,body,mode='standard'){const root=host.querySelector('#socialDialog');if(mode==='member'){profileReturnFocus=document.activeElement;root.innerHTML='<div class="inline-dialog lx-member-profile-overlay" role="dialog" aria-modal="true" aria-label="Perfil de '+esc(title)+'"><div class="lx-member-profile-shell"><button class="lx-member-profile-close" data-social-close aria-label="Fechar perfil">×</button>'+body+'</div></div>';root.querySelector('[data-social-close]')?.focus();return}root.innerHTML='<div class="inline-dialog" role="dialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="panel"><div class="heading"><h2>'+esc(title)+'</h2><button class="close" data-social-close aria-label="Fechar">×</button></div>'+body+'</div></div>';root.querySelector('input,textarea,[data-social-close]')?.focus()}
+ async function showMemberProfile(id){
+  if(id!==me&&!people.some(p=>p.user_id===id))throw Error('Este perfil não está disponível no diretório.');
+  const p={...person(id)};
+  const cosmetics=await db.rpc('lx_profile_cosmetics',{p_user:id});
+  if(!alive)return;
+  if(!cosmetics.error&&cosmetics.data)Object.assign(p,cosmetics.data);
+  dialog(p.name,memberProfileCard(p,{viewerId:me,presence:statusLine(p.user_id),nowPlaying:nowPlayingLine(p.user_id),assets:expressionAssets,demoFollowers:demoProfileCounts.get(p.user_id)||0,publicDemoFollowers:publicDemoProfileCounts.get(p.user_id)||0,followStats:followStats.get(p.user_id),labMode}),'member');
+  syncProfileBanners(host);
+ }
  function closeDialog(){host.querySelector('#socialDialog')?.replaceChildren();const previous=profileReturnFocus;profileReturnFocus=null;if(previous?.isConnected)previous.focus()}
  async function mediaUrl(path){if(!path)return '';const existing=signed.get(path);if(existing&&existing.expires>Date.now())return existing.url;try{const url=await socialMediaUrl(path);signed.set(path,{url,expires:Date.now()+240000});return url}catch{return ''}}
  async function hydrateMedia(area){const nodes=[...area.querySelectorAll('[data-social-media]')];await Promise.all(nodes.map(async node=>{const url=await mediaUrl(node.dataset.socialMedia);if(!alive||!node.isConnected)return;if(!url){node.replaceWith(Object.assign(document.createElement('span'),{className:'muted',textContent:'Arquivo indisponível ou sem permissão de acesso.'}));return}if(node.tagName==='A'){node.href=url}else node.src=url}))}
@@ -171,7 +180,7 @@ export async function mount(host,ctx){
    if(b.dataset.reportPost||b.dataset.reportMessage||b.dataset.reportProfile){dialog('Denunciar conteúdo','<form id="reportForm" class="form"><input type="hidden" name="kind" value="'+(b.dataset.reportPost?'post':b.dataset.reportProfile?'profile':'message')+'"><input type="hidden" name="target" value="'+esc(b.dataset.reportPost||b.dataset.reportMessage||b.dataset.reportProfile)+'"><label class="field">Conte o que aconteceu<textarea name="reason" minlength="5" maxlength="1500" required></textarea></label><button class="btn primary">Enviar denúncia</button></form>');return}
    if(b.hasAttribute('data-copy-member')){const handle=b.dataset.copyMember||'';if(!/^@[a-zA-Z0-9._-]{1,40}$/.test(handle))throw Error('Identificador público inválido.');await navigator.clipboard.writeText(handle);ctx.toast('Identificador copiado.');return}
    if(b.dataset.copyProfileId){const id=b.dataset.copyProfileId;if(!/^[0-9a-f-]{36}$/i.test(id)||!(id===me||people.some(p=>p.user_id===id)))throw Error('Perfil não disponível.');await navigator.clipboard.writeText(id);ctx.toast('ID completo do perfil copiado.');return}
-   if(b.dataset.person){if(b.dataset.person!==me&&!people.some(p=>p.user_id===b.dataset.person))throw Error('Este perfil não está disponível no diretório.');const p={...person(b.dataset.person)};const cosmetics=await db.rpc('lx_profile_cosmetics',{p_user:b.dataset.person});if(!cosmetics.error&&cosmetics.data)Object.assign(p,cosmetics.data);dialog(p.name,memberProfileCard(p,{viewerId:me,presence:statusLine(p.user_id),nowPlaying:nowPlayingLine(p.user_id),assets:expressionAssets,demoFollowers:demoProfileCounts.get(p.user_id)||0,publicDemoFollowers:publicDemoProfileCounts.get(p.user_id)||0,followStats:followStats.get(p.user_id),labMode}),'member');syncProfileBanners(host);return}
+   if(b.dataset.person){await showMemberProfile(b.dataset.person);return}
    if(b.hasAttribute('data-new-group')){dialog('Criar grupo','<form id="groupForm" class="form"><label class="field">Nome<input name="name" maxlength="42" required></label><div class="friend-picker">'+friends().map(p=>'<label><input name="members" type="checkbox" value="'+esc(p.user_id)+'"> '+esc(p.name)+'</label>').join('')+'</div><small>Escolha de 1 a 5 amigos.</small><button class="btn primary">Criar grupo</button></form>');return}
   }catch(error){ctx.toast(error.message||'Não foi possível concluir esta ação.');if(b.isConnected)b.disabled=false}
  });
@@ -211,6 +220,9 @@ export async function mount(host,ctx){
  window.addEventListener('focus',onCommunityFocus);
  document.addEventListener('visibilitychange',onCommunityFocus);
  draw();await Promise.all([loadPeople(),loadGroups()]);await loadPosts();draw();
+ // Open a permitted public member directly from global search; never bypass directory rules.
+ const requestedProfile=/^profile:([0-9a-f-]{36})$/i.exec(String(ctx.term||''))?.[1];
+ if(requestedProfile&&alive)await showMemberProfile(requestedProfile).catch(e=>ctx.toast(e.message||'Perfil não disponível.'));
  channel=db.channel('lx-social-'+me+'-'+uuid()).on('postgres_changes',{event:'*',schema:'public',table:'lx_messages',filter:'recipient_id=eq.'+me},()=>{if(tab==='Mensagens'&&selected?.kind==='dm')loadMessages().catch(()=>{})}).on('postgres_changes',{event:'INSERT',schema:'public',table:'lx_group_messages'},event=>{if(selected?.kind==='group'&&event.new.group_id===selected.id)loadMessages().catch(()=>{})}).subscribe();
  const timer=setInterval(()=>{if(document.hidden)return;if(tab==='Mensagens'&&selected)loadMessages().catch(()=>{});loadPresence();},10000);
  const countersTimer=setInterval(()=>refreshCommunityCounters().catch(()=>{}),30000);
