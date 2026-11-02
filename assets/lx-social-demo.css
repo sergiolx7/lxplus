@@ -19,3 +19,16 @@
 .people-card>.lx-demo-metric{margin:8px 0 10px;justify-content:center}
 .lx-member-profile-card .lx-demo-profile-count{margin:8px 0}
 @media(max-width:650px){.lx-demo-controls{padding:17px}.lx-demo-controls .form{grid-template-columns:1fr}.lx-demo-controls .form .field:nth-child(2){grid-column:auto}.lx-demo-row{grid-template-columns:minmax(0,1fr) auto}.lx-demo-row button{grid-column:1/-1;justify-self:start}}
+
+/* Actual profile follows stay distinct from labeled UI test metrics. */
+.lx-follow-stats,.lx-social-follow-summary{display:flex;gap:11px;flex-wrap:wrap;align-items:center;color:#bcb0cf;font-size:11px;line-height:1.65;margin:8px 0}
+.lx-follow-stats strong,.lx-social-follow-summary strong{color:#eee1ff;font-size:13px;font-variant-numeric:tabular-nums}
+.lx-member-follow-stats{justify-content:center;gap:20px;background:#a68ad51a;border:1px solid #b298de38;border-radius:14px;padding:11px 13px;margin:13px 0}
+.lx-social-follow-summary{margin:8px 0 0}
+.people-card>.actions [data-social-follow]{background:linear-gradient(120deg,#8658d5,#a779e1);color:#f9f3ff;border-radius:12px;min-width:95px}
+.people-card>.actions [data-social-follow]:not(.primary){background:#ffffff0a;border:1px solid #a58bc755}
+.lx-member-actions [data-social-follow]{border-radius:13px;min-width:122px}
+.lx-engagement-preview{display:inline-flex;align-items:center;gap:5px;font-variant-numeric:tabular-nums}
+.lx-engagement-preview small{font-size:8px;letter-spacing:.04em;color:#f2d1a7;border:1px solid #d8b18583;border-radius:6px;padding:2px 4px}
+.feed-post footer .lx-demo-metric{font-variant-numeric:tabular-nums}
+@media(max-width:450px){.lx-follow-stats,.lx-social-follow-summary{font-size:10px;gap:7px}.lx-member-follow-stats{gap:11px;padding:9px}}
