@@ -1,4 +1,5 @@
 import {displaySizeControls,readDisplay} from './display-preferences.js';
+import {cinemaOriginalPoster} from './cinema-original-poster.js';
 // LX Plus Premium: UI-only view helpers. No network calls or privileged credentials.
 const html=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const isCinema=x=>['Filme','Série','Dorama','Anime'].includes(x?.type);
@@ -10,8 +11,8 @@ function poster(x,variant='poster'){
  const url=mediaUrl(variant==='landscape'?(x.bannerDesktop||x.banner||x.cover):(x.cover||x.banner));
  const fit=variant==='landscape'&&!x.banner&&!x.bannerDesktop?' poster-letterbox':'';
  return '<div class="premium-cover '+(variant==='landscape'?'landscape':'portrait')+fit+'">'+
- '<div class="premium-image-fallback" aria-hidden="true">LX<span>PLUS</span></div>'+
- (url?'<img width="'+(variant==='landscape'?640:320)+'" height="'+(variant==='landscape'?360:480)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer" src="'+html(url)+'" alt="">':'<div class="premium-image-fallback">LX<span>PLUS</span></div>')+
+ ''+
+ (url?'<img width="'+(variant==='landscape'?640:320)+'" height="'+(variant==='landscape'?360:480)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer" src="'+html(url)+'" alt="">':cinemaOriginalPoster(x,variant==='landscape'))+
  '<div class="premium-image-shade"></div>'+(x.metadataOnly||x.catalogOnly||x.availability==='coming_soon'?'<span class="lx-cinema-coming-badge">EM BREVE</span>':'<span class="premium-play">▶</span>')+'</div>';
 }
 export function premiumCard(x,variant='poster'){
