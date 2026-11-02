@@ -1,0 +1,107 @@
+/* LX Music · compact provider layout (YouTube/Spotify remain official and visible) */
+.lx-music-dock.has-official-embed{
+  grid-template-columns:minmax(145px,1fr) minmax(240px,1.25fr) minmax(200px,1fr)!important;
+  padding:10px 14px!important;
+  min-height:76px;
+  gap:12px!important;
+  border-radius:20px!important;
+  background:color-mix(in srgb,var(--surface,#101721) 91%,transparent)!important;
+  box-shadow:0 12px 46px #0007,0 0 0 1px rgba(var(--accent-rgb,130,105,255),.12)!important;
+}
+.lx-music-dock.has-official-embed .dock-playback{display:grid!important;min-width:0}
+.lx-music-dock.has-official-embed .dock-playback[hidden]{display:grid!important}
+.lx-music-dock.has-official-embed .dock-identity{min-width:0}
+.lx-music-dock .lx-provider-badge{
+  display:inline-flex;align-items:center;gap:5px;align-self:flex-start;
+  font-size:9px;font-weight:650;line-height:1.25;color:#cbd6e2;
+  border:1px solid #ffffff24;border-radius:999px;padding:3px 7px;
+  background:#ffffff0b;letter-spacing:.01em;
+}
+.lx-music-dock .lx-provider-badge[hidden]{display:none!important}
+.lx-provider-badge[data-provider=YouTube]{color:#fff;background:#24282f;border-color:#ffffff2a}
+.lx-provider-badge[data-provider=YouTube]::before{
+  content:"▶";display:inline-grid;place-items:center;width:21px;height:15px;
+  background:#ff0033;color:#fff;border-radius:5px;font-size:9px;
+}
+.lx-provider-badge[data-provider=Spotify]{color:#1ed760;background:#0b2a1b;border-color:#1ed76038}
+.lx-music-dock.has-official-embed #lxDockMedia{
+  display:block!important;position:absolute!important;z-index:12;
+  grid-column:auto!important;right:0;left:auto;bottom:calc(100% + 31px);
+  box-sizing:border-box;width:278px;height:216px;padding:6px;
+  border:1px solid #66738577;border-radius:17px;
+  background:#050608;box-shadow:0 14px 60px #000c;
+  overflow:hidden;
+}
+.lx-music-dock.has-official-embed #lxDockMedia .music-official-embed,
+.lx-music-dock.has-official-embed #lxDockMedia iframe{
+  display:block!important;position:static!important;
+  box-sizing:border-box;width:100%!important;height:100%!important;
+  min-width:200px!important;min-height:200px!important;
+  max-width:100%!important;
+  border:none!important;border-radius:12px!important;
+}
+.lx-music-dock.is-youtube-embed.is-video-expanded #lxDockMedia{
+  width:min(492px,calc(100vw - 24px));height:282px;
+}
+.lx-music-dock.is-spotify-embed #lxDockMedia{
+  width:min(360px,calc(100vw - 24px));height:164px;
+}
+.lx-music-dock.is-spotify-embed #lxDockMedia iframe{
+  min-height:152px!important;
+}
+.lx-music-dock.has-official-embed #lxDockSourceRights{
+  position:absolute!important;z-index:13;bottom:calc(100% + 4px);right:0;
+  width:min(278px,calc(100vw - 24px));max-width:none!important;
+  font-size:9px!important;line-height:1.1!important;
+  background:#111924e8;border-radius:999px;
+  padding:5px 8px!important;text-align:center!important;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#a7b5c1;
+}
+.lx-music-dock.is-spotify-embed #lxDockSourceRights{width:min(360px,calc(100vw - 24px))}
+.lx-music-dock.is-video-expanded #lxDockSourceRights{width:min(492px,calc(100vw - 24px))}
+.lx-music-dock.has-official-embed .music-dock-status{
+  grid-column:1/-1;min-height:0;margin:0;text-align:center;
+}
+.lx-music-dock.has-official-embed .dock-transport{gap:10px}
+.lx-music-dock.has-official-embed .dock-transport button[disabled],
+.lx-music-dock.has-official-embed .dock-timeline input[disabled]{opacity:.42;cursor:not-allowed}
+.lx-music-dock.has-official-embed .dock-timeline{gap:5px}
+.lx-music-dock.has-official-embed .music-dock-actions{min-width:0}
+.lx-music-dock.has-official-embed button[data-music-action=video][hidden]{display:none!important}
+.lx-music-dock.has-official-embed .dock-popover{z-index:25}
+.lx-music-dock.has-official-embed #lxDockNow .lx-native-now-controls button[disabled]{opacity:.4}
+@media(max-width:1050px){
+ .lx-music-dock.has-official-embed{grid-template-columns:minmax(125px,1fr) minmax(185px,1.2fr) minmax(135px,auto)!important}
+ .lx-music-dock.has-official-embed .dock-volume{width:42px}
+}
+@media(max-width:760px){
+ .lx-music-dock.has-official-embed{
+   grid-template-columns:minmax(0,1fr) auto!important;
+   row-gap:8px!important;column-gap:10px!important;
+   padding:9px 11px!important;bottom:calc(78px + env(safe-area-inset-bottom));
+ }
+ .lx-music-dock.has-official-embed .dock-identity{grid-column:1;grid-row:1}
+ .lx-music-dock.has-official-embed .dock-playback{grid-column:1/-1;grid-row:2}
+ .lx-music-dock.has-official-embed .music-dock-actions{grid-column:2;grid-row:1;gap:2px!important}
+ .lx-music-dock.has-official-embed .music-dock-actions .dock-volume,
+ .lx-music-dock.has-official-embed .music-dock-actions [data-music-action=effects],
+ .lx-music-dock.has-official-embed .music-dock-actions [data-music-action=queue]{display:none!important}
+ .lx-music-dock.has-official-embed .music-dock-actions button{width:27px;height:27px;padding:3px}
+ .lx-music-dock.has-official-embed #lxDockMedia{
+   bottom:calc(100% + 30px);width:min(260px,calc(100vw - 24px));height:214px;
+ }
+ .lx-music-dock.is-youtube-embed.is-video-expanded #lxDockMedia{
+   width:min(492px,calc(100vw - 24px));height:clamp(214px,calc((100vw - 24px) * .5625 + 12px),282px);
+ }
+ .lx-music-dock.has-official-embed #lxDockSourceRights{width:min(260px,calc(100vw - 24px))}
+ .lx-music-dock.is-spotify-embed #lxDockMedia{height:164px;width:min(352px,calc(100vw - 24px))}
+ .lx-music-dock.is-spotify-embed #lxDockSourceRights{width:min(352px,calc(100vw - 24px))}
+}
+@media(max-width:390px){
+ .lx-music-dock.has-official-embed .music-dock-actions [data-music-action=flow],
+ .lx-music-dock.has-official-embed .music-dock-actions [data-music-action=retry]{display:none!important}
+ .lx-music-dock.has-official-embed .music-dock-cover{width:38px!important;height:38px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .lx-music-dock.has-official-embed #lxDockMedia{transition:none!important}
+}
