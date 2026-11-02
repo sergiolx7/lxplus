@@ -1,6 +1,21 @@
 import {esc,dateTime} from './ui.js';
 const count=value=>Math.max(0,Math.min(100000,Math.floor(Number(value)||0)));
-export const engagementPreview=(real,simulated)=>{const genuine=Math.max(0,Math.floor(Number(real)||0)),demo=Math.max(0,Math.floor(Number(simulated)||0));return demo?'<span class="lx-engagement-preview" aria-label="'+(genuine+demo)+' curtidas na prévia, '+genuine+' reais e '+demo+' de teste">'+(genuine+demo).toLocaleString('pt-BR')+' <small>PRÉVIA</small></span>':genuine.toLocaleString('pt-BR');};
+// Compact, locale-aware counters; demo additions are only supplied to
+// owner/administrator or explicitly granted LX Lab viewers.
+export const compactSocialCount=value=>{
+ const n=Math.max(0,Math.floor(Number(value)||0));
+ if(n<1000)return n.toLocaleString('pt-BR');
+ const units=[{v:1e9,s:'B'},{v:1e6,s:'M'},{v:1e3,s:'K'}];
+ for(const {v,s} of units)if(n>=v){
+  const scaled=n/v,decimals=scaled<10?1:0;
+  const rounded=Number(scaled.toFixed(decimals));
+  if(rounded>=1000&&s==='K')return compactSocialCount(1e6);
+  if(rounded>=1000&&s==='M')return compactSocialCount(1e9);
+  return rounded.toLocaleString('pt-BR',{maximumFractionDigits:decimals})+s;
+ }
+ return n.toLocaleString('pt-BR');
+};
+export const engagementPreview=(real,simulated)=>compactSocialCount(Math.max(0,Number(real)||0)+Math.max(0,Number(simulated)||0));
 export const demoLabel=(value,kind='post')=>count(value)>0?'<span class="lx-demo-metric" aria-label="'+count(value)+' '+(kind==='post'?'curtidas de teste':'seguidores de teste')+'">+'+count(value).toLocaleString('pt-BR')+' '+(kind==='post'?'curtidas':'seguidores')+' <b>SIMULAÇÃO</b></span>':'';
 export function renderDemoSocialPanel(items=[],message=''){
  const rows=Array.isArray(items)?items:[];
