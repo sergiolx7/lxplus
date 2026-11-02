@@ -1,0 +1,13 @@
+/* LX Premium 4.0 — shared catalog discovery controls */
+.lx-catalog-filters{display:grid;gap:12px;padding:16px 18px;margin:0 0 18px;border:1px solid #a28ac333;border-radius:19px;background:linear-gradient(145deg,#9f7ac30b,#111015);min-width:0}
+.lx-catalog-subtypes{display:flex;gap:7px;flex-wrap:wrap;max-width:100%}
+.lx-catalog-subtypes button{background:#ffffff0b;border:1px solid #aaa0ba25;border-radius:999px;color:inherit;min-height:38px;padding:8px 15px;font-size:13px;cursor:pointer}
+.lx-catalog-subtypes button[aria-pressed="true"]{border-color:#a884dd;background:#8862b044;color:#f4e9ff}
+#lxCatalogFilters{display:grid;grid-template-columns:minmax(130px,1fr) minmax(130px,1fr) minmax(95px,.6fr) auto;align-items:end;gap:11px}
+#lxCatalogFilters label{display:flex;flex-direction:column;min-width:0;gap:5px;font-size:12px;color:#d5c5e5}
+#lxCatalogFilters input{display:block;width:100%;min-width:0;min-height:42px;padding:10px 12px;border-radius:11px;border:1px solid #9990af44;background:#0d0c13;color:#f3edf8;font-size:14px}
+#lxCatalogFilters input:focus-visible,.lx-catalog-subtypes button:focus-visible{outline:2px solid #bb9ef1;outline-offset:2px}
+#lxCatalogFilters .btn{min-height:42px;white-space:nowrap}
+.lx-catalog-filters>small{font-size:11px;line-height:1.4}
+@media(max-width:660px){#lxCatalogFilters{grid-template-columns:repeat(2,minmax(0,1fr))}#lxCatalogFilters .btn{width:100%}.lx-catalog-filters{padding:12px;border-radius:16px}}
+@media(max-width:370px){#lxCatalogFilters{grid-template-columns:minmax(0,1fr)}.lx-catalog-subtypes button{font-size:12px;padding:7px 10px}}
