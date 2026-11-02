@@ -59,7 +59,7 @@ export async function mount(host,ctx){
  function actionTrack(id){return findMusicActionTrack(id,items,groupSelection?groupTracks:null)}
  function dialog(title,content){host.querySelector('#musicDialog').innerHTML='<div class="inline-dialog" role="dialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="panel"><div class="heading"><h2>'+esc(title)+'</h2><button class="close" data-music-dialog-close aria-label="Fechar">×</button></div>'+content+'</div></div>';host.querySelector('#musicDialog input,#musicDialog select')?.focus()}
  async function play(item,queue=items,flow=false){if(!item)return;try{await ctx.music.play(item,queue,{flow})}catch(e){ctx.toast(e.message||'A fonte desta faixa não está disponível.')}}
- const search=value=>{term=value;++generation;++groupGeneration;clearTimeout(searchTimer);searchTimer=setTimeout(()=>{if(!alive)return;if(selected)draw();else load()},300)};
+ const search=value=>{term=value;groupSelection=null;groupTracks=[];referenceOffset=0;++generation;++groupGeneration;clearTimeout(searchTimer);searchTimer=setTimeout(()=>{if(!alive)return;if(selected)draw();else load()},300)};
  host.addEventListener('change',e=>{if(e.target.id==='recapMonth'&&/^\d{4}-\d{2}$/.test(e.target.value)){month=e.target.value;recap=null;load()}});
  host.addEventListener('input',e=>{if(e.target.id==='musicSearch')search(e.target.value)});
  host.addEventListener('click',async e=>{
@@ -67,7 +67,7 @@ export async function mount(host,ctx){
   try{
    if(b.hasAttribute('data-music-retry')){await load();return}
    if(b.hasAttribute('data-music-flow')){const queue=musicMix(items,{likes:[...liked],history:ctx.state().musicHistory||{}});await play(queue[0],queue,true);return}
-   if(b.dataset.musicTab){++groupGeneration;clearTimeout(searchTimer);tab=b.dataset.musicTab;selected=null;groupSelection=null;groupTracks=[];items=[];total=0;await load();draw();return}
+   if(b.dataset.musicTab){++groupGeneration;clearTimeout(searchTimer);tab=b.dataset.musicTab;selected=null;groupSelection=null;groupTracks=[];items=[];total=0;referenceOffset=0;await load();draw();return}
    if(b.hasAttribute('data-more-tracks')){await load(true);return}
    if(b.dataset.track){const list=groupSelection?groupTracks:items;await play(actionTrack(b.dataset.track),list);return}
    if(b.hasAttribute('data-music-play-all')){const queue=groupSelection?groupTracks:tab==='Mix'?musicMix(items,{likes:[...liked],history:ctx.state().musicHistory||{}}):items;await play(queue[0],queue);return}
