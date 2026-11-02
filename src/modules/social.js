@@ -165,8 +165,34 @@ export async function mount(host,ctx){
    if(form.id==='reportForm'){await checked(db.from('lx_moderation_reports').insert({user_id:me,target_kind:data.get('kind'),target_id:data.get('target'),reason:String(data.get('reason')||'').trim()}));closeDialog();ctx.toast('Denúncia registrada para análise da moderação.')}
   }catch(error){ctx.toast(error.message||'Não foi possível enviar.')}finally{if(form.id==='postForm')postSending=false;if(b?.isConnected)b.disabled=false}
  });
+ // Refresh public genuine counts and distinctly labeled test additions for
+ // every approved member. Keep dialogs, post composers and chat undisturbed.
+ let countersRefreshing=false,lastCountersRefresh=0;
+ async function refreshCommunityCounters(force=false){
+  if(!alive||document.hidden||countersRefreshing||postSending)return;
+  if(!force&&Date.now()-lastCountersRefresh<20000)return;
+  countersRefreshing=true;
+  try{
+   await loadPeople();
+   if(!alive)return;
+   if(tab==='Feed'){
+    if(!host.querySelector('#socialDialog .inline-dialog')&&!host.querySelector('#postForm textarea:focus')){
+     await loadPosts();
+    }
+   }else if(['Pessoas','Amigos','Seguindo'].includes(tab)&&!host.querySelector('#socialDialog .inline-dialog')){
+    const list=people.filter(p=>p.user_id!==me&&(tab!=='Amigos'||['accepted','pending'].includes(p.relation))&&(tab!=='Seguindo'||followStats.get(p.user_id)?.is_following===true)&&[p.name,p.username].join(' ').toLowerCase().includes(search.toLowerCase()));
+    const grid=host.querySelector('#peopleResults');
+    if(grid)grid.innerHTML=list.map(memberCard).join('')||empty('Nenhum perfil encontrado','Tente outro nome ou identificador.');
+   }
+   lastCountersRefresh=Date.now();
+  }finally{countersRefreshing=false}
+ }
+ const onCommunityFocus=()=>refreshCommunityCounters().catch(()=>{});
+ window.addEventListener('focus',onCommunityFocus);
+ document.addEventListener('visibilitychange',onCommunityFocus);
  draw();await Promise.all([loadPeople(),loadGroups()]);await loadPosts();draw();
  channel=db.channel('lx-social-'+me+'-'+uuid()).on('postgres_changes',{event:'*',schema:'public',table:'lx_messages',filter:'recipient_id=eq.'+me},()=>{if(tab==='Mensagens'&&selected?.kind==='dm')loadMessages().catch(()=>{})}).on('postgres_changes',{event:'INSERT',schema:'public',table:'lx_group_messages'},event=>{if(selected?.kind==='group'&&event.new.group_id===selected.id)loadMessages().catch(()=>{})}).subscribe();
  const timer=setInterval(()=>{if(document.hidden)return;if(tab==='Mensagens'&&selected)loadMessages().catch(()=>{});loadPresence();},10000);
- return {refresh(){},destroy(){alive=false;++feedGeneration;++chatGeneration;clearInterval(timer);stopRecording();if(channel)db.removeChannel(channel);signed.clear()}};
+ const countersTimer=setInterval(()=>refreshCommunityCounters().catch(()=>{}),30000);
+ return {refresh(){refreshCommunityCounters(true).catch(()=>{})},destroy(){alive=false;++feedGeneration;++chatGeneration;clearInterval(timer);clearInterval(countersTimer);window.removeEventListener('focus',onCommunityFocus);document.removeEventListener('visibilitychange',onCommunityFocus);stopRecording();if(channel)db.removeChannel(channel);signed.clear()}};
 }
