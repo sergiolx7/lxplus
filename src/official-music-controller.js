@@ -4,6 +4,15 @@ let youtubeLoader;
 let spotifyLoader;
 const apiTimeout = 12000;
 
+function sufficientlyVisible(node) {
+  if (document.visibilityState === 'hidden') return false;
+  const rect = node.getBoundingClientRect();
+  if (rect.width <= 0 || rect.height <= 0) return false;
+  const visibleWidth = Math.max(0, Math.min(rect.right, innerWidth) - Math.max(rect.left, 0));
+  const visibleHeight = Math.max(0, Math.min(rect.bottom, innerHeight) - Math.max(rect.top, 0));
+  return visibleWidth * visibleHeight / (rect.width * rect.height) > 0.5;
+}
+
 function loadYouTube() {
   if (window.YT?.Player) return Promise.resolve(window.YT);
   if (youtubeLoader) return youtubeLoader;
@@ -86,12 +95,14 @@ function plainEmbed(area, source) {
   return { ready: false, snapshot: () => ({ ready: false }), destroy: () => frame.remove() };
 }
 
-async function youtubeEmbed(area, source, { onState, onEnd, isActive }) {
+async function youtubeEmbed(area, source, { onState, onEnd, isActive, autoStart = true }) {
   const frame = document.createElement('iframe');
   const url = new URL(source.url);
   url.searchParams.set('enablejsapi', '1');
   // IFrame API requires a matching origin to prevent accepting commands from another site.
   if (location.origin && location.origin !== 'null') url.searchParams.set('origin', location.origin);
+  // Autoplay is attempted only when the official player will be substantially visible.
+  if (autoStart && sufficientlyVisible(area)) url.searchParams.set('autoplay', '1');
   frame.src = url.toString();
   frame.className = 'music-official-embed';
   frame.title = 'YouTube — ' + (source.title || 'música');
@@ -125,6 +136,7 @@ async function youtubeEmbed(area, source, { onState, onEnd, isActive }) {
           ready = true;
           interval = setInterval(read, 700);
           emit();
+          if (autoStart && sufficientlyVisible(area)) { try { yt.playVideo(); } catch {} }
         },
         onStateChange: event => {
           if (!isActive() || destroyed) return;
@@ -160,7 +172,7 @@ async function youtubeEmbed(area, source, { onState, onEnd, isActive }) {
   }
 }
 
-async function spotifyEmbed(area, source, { onState, onEnd, isActive }) {
+async function spotifyEmbed(area, source, { onState, onEnd, isActive, autoStart = true }) {
   const match = new URL(source.url).pathname.match(new RegExp('^/embed/(track|album|playlist|episode|show)/([A-Za-z0-9]{22})'));
   if (!match) return plainEmbed(area, source);
   let api;
@@ -195,6 +207,7 @@ async function spotifyEmbed(area, source, { onState, onEnd, isActive }) {
           }
         });
         onState(snapshot());
+        if (autoStart && sufficientlyVisible(area)) { try { controller.play(); } catch {} }
         resolve({
           get ready() { return ready; },
           snapshot,
