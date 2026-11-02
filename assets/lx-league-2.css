@@ -66,3 +66,11 @@
 @media(max-width:700px){.lx-league-banner{grid-template-columns:1fr;padding:23px}.lx-league-trophy{max-width:none;padding:18px}.lx-league-stats{grid-template-columns:1fr 1fr}.lx-league-stat-progress{grid-column:1/-1}.lx-league-section{padding:15px}.lx-league-podium-grid{gap:7px}.lx-league-winner{padding:17px 6px;min-height:165px}.lx-league-place-1{min-height:190px}.lx-league-place-2,.lx-league-place-3{min-height:165px}.lx-league-winner>strong{font-size:10px}.lx-league-score{font-size:17px}.lx-league-face .podium-avatar{width:46px;height:46px}.lx-league-place-1 .lx-league-face .podium-avatar{width:60px;height:60px}.lx-league-rule-grid{grid-template-columns:1fr}.lx-league-section-title{align-items:start;gap:9px}.lx-league-banner::after{font-size:120px;right:3%}}
 @media(max-width:420px){.lx-league-banner h1{font-size:36px}.lx-league-section-title h2{font-size:19px}.lx-league-member{gap:7px;padding:10px 7px}.lx-league-member-name strong{font-size:11px}.lx-league-member-score{font-size:13px}.lx-league-place-number{min-width:18px}.lx-league-trophy strong{font-size:31px}}
 @media(prefers-reduced-motion:reduce){.lx-league-progress span{transition:none}}
+
+/* Audio-only, LX-branded player is offered exclusively for authorized direct audio. */
+.lx-music-dock .lx-native-now-controls{display:flex;align-items:center;justify-content:center;gap:15px;margin:15px 0 9px}
+.lx-music-dock .lx-native-now-controls button{display:grid;place-items:center;width:45px;height:45px;border-radius:50%;background:#9372c62a;border:1px solid #e0c8ff35;color:#f4e5ff;cursor:pointer}
+.lx-music-dock .lx-native-now-controls button:nth-child(2){width:56px;height:56px;background:linear-gradient(135deg,#be9cfa,#7c5db9);color:#151322;border:0;box-shadow:0 0 20px #b18af45c}
+.lx-music-dock .lx-native-now-controls button svg{width:21px;height:21px}
+.lx-music-dock .lx-native-mode-note{margin:12px 8px;text-align:center;font-size:11px;line-height:1.65;color:#c5bad4}
+.lx-music-dock .now-playing-panel .now-art{border-radius:18px;overflow:hidden;box-shadow:0 20px 44px #0006,0 0 38px #916fcb29}
