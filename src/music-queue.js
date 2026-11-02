@@ -18,7 +18,7 @@ export class MusicQueue {
    for(let i=this.index+1;i<this.items.length;i++)if(accepts(i)){next=i;break}
    if(next<0&&this.repeat!=='off')
     for(let i=0;i<this.index;i++)if(accepts(i)){next=i;break}
-   if(next<0&&!match(this.items[this.index],this.items[this.index])&&this.repeat!=='off'&&this.items.length===1)
+   if(next<0&&this.repeat!=='off'&&this.items.length===1)
     next=this.index;
   }
   if(next<0)return null;
