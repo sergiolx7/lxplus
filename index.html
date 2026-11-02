@@ -2,10 +2,10 @@
 <html lang="pt-BR"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#090a0e"><meta name="description" content="LX Plus — filmes, séries, músicas, livros e conexões. Desenvolvido pela LX Group.">
-<title>LX Plus · Seu universo, conectado.</title>
-<link rel="apple-touch-icon" href="./assets/lx-face-192.png"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./assets/lx-face-64.png" type="image/png"><link rel="stylesheet" href="./assets/styles.css?v=20261030-premium3">
-<link rel="stylesheet" href="./assets/refresh.css?v=20261101-refresh">
-<link rel="stylesheet" href="./assets/ambient.css?v=20261101-ambient2">
+<meta name="lxplus-ui-generation" content="premium-next-main-20261102"><title>LX Plus · Seu universo, conectado.</title>
+<link rel="apple-touch-icon" href="./assets/lx-face-192.png"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./assets/lx-face-64.png" type="image/png"><link rel="stylesheet" href="./assets/styles.css?v=20261102-main-ui-restore1">
+<link rel="stylesheet" href="./assets/refresh.css?v=20261102-main-ui-restore1">
+<link rel="stylesheet" href="./assets/ambient.css?v=20261102-main-ui-restore1">
 <script>
 // Boot guard is deliberately independent from the Supabase SDK: failures must never be a black spinner.
 (function(){
@@ -38,11 +38,18 @@
     navigator.serviceWorker.getRegistrations().then(regs=>{
       for(const reg of regs)reg.unregister().catch(()=>{});
     }).catch(()=>{});
+    // Remove only obsolete LX shell caches. Do not clear accounts, login tokens,
+    // preferences or any database belonging to the new site.
+    if('caches' in window){
+      caches.keys().then(keys=>Promise.all(keys
+        .filter(key=>key.startsWith('lxplus-shell-'))
+        .map(key=>caches.delete(key)))).catch(()=>{});
+    }
   }
 })();
 </script>
 <script type="module">
-  import('./src/app.js?v=20261102-priority-v1').catch(error=>window.__lxBootFailure(error));
+  import('./src/app.js?v=20261102-main-ui-restore1').catch(error=>window.__lxBootFailure(error));
 </script>
 <link rel="stylesheet" href="./assets/premium-studio.css?v=call-audio-20261101">
 <link rel="stylesheet" href="./assets/member-profile.css?v=20261101-member-profile">
