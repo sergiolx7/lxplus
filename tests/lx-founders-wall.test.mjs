@@ -18,7 +18,7 @@ test('mural celebrates three people with @sergiolx in the prominent center posit
  assert.match(html,/Natalha/);
  assert.match(html,/Agradecimento especial/);
  assert.match(html,/@xaruto/);
- assert.match(html,/Obrigado por fazer parte/);
+ assert.match(html,/Obrigado, @xaruto, por fazer parte/);
  assert.match(html,/Com gratidão, LX Plus/);
  assert.doesNotMatch(html,/natalha054@gmail\.com/);
  assert.doesNotMatch(html,/role="owner"|1M seguidores/i);
