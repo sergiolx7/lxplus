@@ -1,11 +1,11 @@
 import {esc,avatar,verifiedBadge} from './ui.js';
 import {profileCover,profileLedAttributes,profileName,premiumBadge} from './profile-premium.js';
 import {renderExpressions} from './premium-expressions.js';
-import {compactSocialCount} from './social-demo-ui.js';
+import {compactSocialCount,publicDemoLabel} from './social-demo-ui.js';
 
 // Public, viewer-authorized profile fields only. Never invent interests, badges,
 // activity, or expose the raw internal user UUID as a public "profile code".
-export function memberProfileCard(profile,{viewerId='',presence='',nowPlaying='',assets=[],demoFollowers=0,followStats=null}={}){
+export function memberProfileCard(profile,{viewerId='',presence='',nowPlaying='',assets=[],demoFollowers=0,publicDemoFollowers=0,labMode=false,followStats=null}={}){
  const p=profile&&typeof profile==='object'?profile:{},id=esc(p.user_id||''),self=p.user_id===viewerId;
  const username=String(p.username||'').trim(),label=username?'@'+username:'Identificador não definido';
  const bio=String(p.bio||'').trim(),status=String(p.status_text||'').trim();
@@ -26,10 +26,10 @@ export function memberProfileCard(profile,{viewerId='',presence='',nowPlaying=''
   +'<div class="lx-member-identity"><h2>'+profileName(p)+verifiedBadge(p)+'</h2>'
   +'<p class="lx-member-handle">'+esc(label)+'</p></div>'
   +'<div class="lx-member-tags">'+premiumBadge(p)+(verified?'<span class="lx-member-verified">✓ Perfil verificado</span>':'')+(p.relation==='accepted'?'<span class="lx-member-friend-label">Amigo LX</span>':'')+'</div>'
-  +'<div class="lx-follow-stats lx-member-follow-stats"><span><strong>'+compactSocialCount(Number(stats.followers||0)+Number(demoFollowers||0))+'</strong> seguidores</span><span><strong>'+compactSocialCount(stats.following_count||0)+'</strong> seguindo</span></div>'+'<div class="lx-member-presence">'+presence+'</div>'+(nowPlaying?'<section class="lx-member-listening">'+nowPlaying+'</section>':'')
+  +'<div class="lx-follow-stats lx-member-follow-stats"><span><strong>'+compactSocialCount(Number(stats.followers||0)+Number(demoFollowers||0))+'</strong> seguidores</span><span><strong>'+compactSocialCount(stats.following_count||0)+'</strong> seguindo</span></div>'+(!labMode?publicDemoLabel(publicDemoFollowers,'profile'):'')+'<div class="lx-member-presence">'+presence+'</div>'+(nowPlaying?'<section class="lx-member-listening">'+nowPlaying+'</section>':'')
   +(status?'<div class="lx-member-about"><span>STATUS</span><p>'+esc(status)+'</p></div>':'')
   +'<div class="lx-member-about"><span>SOBRE MIM</span><p>'+ (bio?renderExpressions(bio,owned):'A pessoa ainda não escreveu uma biografia.') +'</p></div>'
-  +(username?'<div class="lx-member-public-id"><span>IDENTIFICADOR PÚBLICO</span><div><code>'+esc('@'+username)+'</code><button class="link" data-copy-member="'+esc('@'+username)+'">Copiar @</button></div></div>':'')
+  +(username?'<div class="lx-member-public-id"><span>IDENTIFICADOR PÚBLICO</span><div><code>'+esc('@'+username)+'</code><button class="link" data-copy-member="'+esc('@'+username)+'">Copiar @</button></div></div>':'')+(p.user_id?'<div class="lx-member-public-id lx-member-profile-id"><span>ID DO PERFIL</span><div><code>'+id+'</code><button type="button" class="link" data-copy-profile-id="'+id+'">Copiar ID</button></div></div>':'')
   +(actions?'<div class="lx-member-actions">'+actions+'</div>':'')
   +(self?'<p class="lx-member-self-note">Este é seu perfil público na comunidade.</p>':'<div class="lx-member-report"><button class="link" data-report-profile="'+id+'">Denunciar perfil</button></div>')
   +'</div></article>';
