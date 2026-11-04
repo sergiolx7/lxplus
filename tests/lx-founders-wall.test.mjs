@@ -41,13 +41,13 @@ test('mural reuses only public profile photos and survives absent profile photos
  assert.doesNotMatch(html,/private\.png/);
  assert.match(html,/lx-wall-monogram/);
 });
-test('navigation exposes mural on home, inside menu and as dedicated route',()=>{
+test('mural stays in its dedicated route and menu without occupying the home or footer',()=>{
  const app=file('src/app.js');
- assert.match(app,/import \{renderFoundersWall\} from '\.\/founders-wall\.js'/);
+ assert.doesNotMatch(app,/renderFoundersWall\(\{compact:true\}\)/);
  assert.match(app,/\['Mural dos Fundadores','sparkles'\]/);
  assert.match(app,/'Mural dos Fundadores':\['founders','mount'\]/);
- assert.match(app,/renderPremiumCatalog\(\{.*\}\)\+renderFoundersWall\(\{compact:true\}\)/);
- assert.match(app,/data-page="Mural dos Fundadores"/);
+ const footer=app.match(/<footer class="site-footer">([\s\S]*?)<\/footer>/)?.[1]||'';
+ assert.doesNotMatch(footer,/Mural dos Fundadores/);
  const index=file('index.html');
  assert.match(index,/lx-founders-wall\.css/);
  assert.match(index,/import\('\.\/src\/app\.js\?v=.*'\)/);

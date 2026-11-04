@@ -2,6 +2,12 @@
 
 Plataforma da LX Group com frontend modular estático e Supabase para autenticação, dados, arquivos, presença e comunicação. A atualização de 30/10/2026 substitui a interface anterior e preserva as contas existentes.
 
+## Ultimate Experience 8.0 · 04/11/2026
+
+Atualização construída sobre a `main` moderna: identidade visual compartilhada, fontes locais, home com carrossel controlável, descoberta musical, pesquisa de recursos, biblioteca Premium e administração de assinaturas/cupons. Chamadas receberam detecção de fala, diagnóstico por etapa, troca de entrada preservando o silêncio e correções de ciclo de vida. Mensagens de voz podem ser ouvidas e descartadas antes do envio.
+
+Foram aprovados 328 testes automatizados e o build. A base financeira foi aplicada no Supabase; cobranças continuam bloqueadas até a integração e homologação de um gateway. A chamada entre duas sessões de QA não encontrou rota de mídia; áudio entre participantes, vídeo e transmissão remota continuam sujeitos à homologação em aparelhos e redes reais. Consulte [a entrega e a matriz de validação](docs/ULTIMATE8-20261104.md). Os registros abaixo descrevem etapas anteriores do projeto.
+
 ## Premium 2.0 · revisão e publicação de 31/10/2026
 
 A revisão do PR 29 recupera controles de reprodução, preferências por conta, leitura PDF/EPUB, busca por metadados, Mix/Flow, retrospectiva e LX IA. A correção de papéis administrativos já foi aplicada; a quota e o handler seguro da LX IA também foram implantados. A revisão adicional corrige respostas musicais fora de ordem, estado de preferências e módulos que terminam após tempo limite.

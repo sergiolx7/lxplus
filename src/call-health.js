@@ -26,3 +26,11 @@ export async function flushIceQueue(pc,candidates=[]){
  }
  return {added,ignored};
 }
+
+// A late answer must still get a connection timeout; the first timer may expire while ringing.
+export function watchCallConnection({state,onTimeout,delayMs=12000,schedule=setTimeout,cancel=clearTimeout}){
+ let timer,stopped=false;
+ const stop=()=>{stopped=true;cancel(timer)};
+ const check=()=>{if(stopped)return;const current=state();if(!current.current||current.connected){stop();return}if(!current.accepted){timer=schedule(check,delayMs);return}onTimeout()};
+ timer=schedule(check,delayMs);return stop;
+}

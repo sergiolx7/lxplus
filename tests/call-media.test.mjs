@@ -119,6 +119,7 @@ test('LX Voice Studio minimizes hiss without amplifying it and never auto-plays 
  assert.equal(natural.noiseSuppression,false);
  assert.equal(natural.autoGainControl,false);
  assert.equal(natural.deviceId.ideal,'microphone-2');
+ assert.equal(natural.deviceId.exact,'microphone-2');
  assert.equal(microphoneLevel(new Uint8Array(32).fill(128)),0);
  assert.ok(microphoneLevel(new Uint8Array([0,255]))>0);
  assert.equal(inputHealth({readyState:'live',enabled:true,muted:false}).ok,true);

@@ -10,7 +10,7 @@ export function voiceConstraints({mode='clear',deviceId=''}={}){
   autoGainControl:false,
   channelCount:{ideal:1},
   sampleRate:{ideal:48000},
-  ...(typeof deviceId==='string'&&deviceId?{deviceId:{ideal:deviceId}}:{})
+  ...(typeof deviceId==='string'&&deviceId?{deviceId:{exact:deviceId,ideal:deviceId}}:{})
  };
 }
 export function microphoneLevel(data){

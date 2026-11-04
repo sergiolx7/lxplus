@@ -1,0 +1,7 @@
+import {premiumChoices,premiumPresets,normalizePremiumProfile} from './premium-style.js';
+const names={decoration:'Molduras',effect:'Efeitos de perfil',nameStyle:'Estilos de nome',chatTheme:'Temas de conversa',entrance:'Sons de chamada'};
+const labels={orbit:'Órbita',halo:'Halo',crown:'Coroa',wings:'Asas',electric:'Elétrico',bloom:'Sakura',aurora:'Aurora',stars:'Constelação',meteors:'Meteoros',embers:'Brasas',prism:'Prisma',solid:'Clássico',gradient:'Gradiente',glow:'Neon',shimmer:'Brilho',midnight:'Meia-noite',rose:'Sakura',ocean:'Oceano',sparkle:'Estrelas',chime:'Cristal',pulse:'Pulso'};
+export const cosmeticCategories=['Todos','Universos',...Object.values(names)];
+export const cosmeticItems=[...premiumPresets.map(p=>({id:'preset:'+p.id,name:p.name,category:'Universos',color:p.color,second:p.secondColor,patch:{...p,accent:p.color,preset:p.id}})),...Object.entries(names).flatMap(([key,category])=>premiumChoices[key].filter(v=>v!=='none').map((v,i)=>({id:key+':'+v,name:labels[v]||v,category,color:premiumPresets[i%premiumPresets.length].color,second:premiumPresets[i%premiumPresets.length].secondColor,patch:{[key]:v}})))];
+export function cosmeticPreview(value,item){return normalizePremiumProfile({...value,...item?.patch})}
+export function filterCosmetics({category='Todos',term='',favorites=null}={}){const q=term.trim().toLocaleLowerCase('pt-BR');return cosmeticItems.filter(item=>(category==='Todos'||item.category===category)&&(!q||(item.name+' '+item.category).toLocaleLowerCase('pt-BR').includes(q))&&(!favorites||favorites.includes(item.id)))}

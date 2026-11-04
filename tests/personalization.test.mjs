@@ -7,11 +7,13 @@ import {classifyLink,resolveItem} from '../src/universal-player.js';
 import {parseImportText} from '../src/import-text.js';
 globalThis.location={origin:'https://lxplus.example'};
 const movie={id:1,title:'Cinema',type:'Filme',cover:'https://example.org/poster.jpg',genre:'Aventura'};
-test('all home rails exclude books, music and live entries even when saved, recent and personalized',()=>{
+test('cinema rails stay separate from the new home music discovery section',()=>{
  const items=[movie,{id:2,title:'Livro proibido no início',type:'Livro',cover:movie.cover,genre:'Aventura',featured:true},{id:3,title:'Faixa fora do início',type:'Música',cover:movie.cover,genre:'Aventura'},{id:4,title:'Ao vivo',type:'Ao Vivo',cover:movie.cover}];
  const html=renderPremiumCatalog({page:'Início',items,list:[2,3,4],history:{1:{position:30,duration:100},2:{position:10,duration:20}}});
  for(const id of [2,3,4])assert.doesNotMatch(html,new RegExp('data-item="'+id+'"'));
- assert.doesNotMatch(html,/LX Books|LX Music|data-page="Livros"/);
+ assert.doesNotMatch(html,/LX Books|data-page="Livros"/);
+ assert.match(html,/LX MUSIC/);
+ assert.match(html,/class="home-music-card" data-play="3"/);
 });
 test('editorial Top 10 uses at most ten real available entries without inventing places',()=>{
  const html=renderPremiumCatalog({page:'Início',items:Array.from({length:12},(_,i)=>({...movie,id:i+1,title:'Filme '+i}))});

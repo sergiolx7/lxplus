@@ -11,7 +11,7 @@ import {compactSocialCount,publicDemoLabel} from '../social-demo-ui.js';
 export async function mount(host,ctx){
  let alive=true,tickets=[],consents=[];
  const me=ctx.user.id,profile=()=>ctx.profile();
- let settingsTab='appearance',ownFollowers={followers:0,following_count:0},ownPublicDemoFollowers=0,ownLabMode=false,ownFounder=false;
+ let settingsTab=['profile','premium'].includes(ctx.term)?ctx.term:'appearance',ownFollowers={followers:0,following_count:0},ownPublicDemoFollowers=0,ownLabMode=false,ownFounder=false;
  const settingsTabs=[['appearance','Aparência'],['music','Música'],['profile','Conta e perfil'],['premium','✦ Premium'],['privacy','Privacidade e comunidade'],['accessibility','Acessibilidade']];
  function selectSettingsTab(key,focus=false){settingsTab=key;host.querySelectorAll('[data-settings-section]').forEach(node=>node.hidden=node.dataset.settingsSection!==key);host.querySelectorAll('[data-settings-tab]').forEach(node=>{const active=node.dataset.settingsTab===key;node.setAttribute('aria-selected',String(active));node.tabIndex=active?0:-1;if(active&&focus)node.focus()})}
  function organizeSettings(){

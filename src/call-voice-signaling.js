@@ -18,3 +18,16 @@ export function outgoingVoiceState(sender,track){
  if(track.enabled===false)return 'muted';
  return 'sending';
 }
+
+export async function replaceMicrophoneTrack({stream,sender,next,isCurrent=()=>true}){
+ const previous=stream.getAudioTracks()[0];
+ if(!next||next.readyState!=='live')throw Error('Nenhuma entrada de microfone foi encontrada.');
+ next.enabled=previous?.enabled!==false;
+ try{
+  if(!isCurrent()){next.stop();return false}
+  if(sender)await sender.replaceTrack(next);
+  if(!isCurrent()){next.stop();return false}
+  for(const old of stream.getAudioTracks()){stream.removeTrack(old);old.stop()}
+  stream.addTrack(next);return true;
+ }catch(error){next.stop();throw error}
+}
