@@ -4,6 +4,8 @@ Plataforma da LX Group com frontend modular estático e Supabase para autentica�
 
 ## Ultimate Experience 8.0 · 04/11/2026
 
+Continuação da Comunidade: edição de textos individuais e de grupo, encaminhamento com destino explícito e proteção contra envio duplicado, pausa de avisos por conversa e preferências de notificações no servidor. Avisos de grupos e acesso direto à conversa foram acrescentados. A suíte passou a 352 testes aprovados. Consulte [a entrega desta etapa](docs/ULTIMATE8-SOCIAL-20261104.md).
+
 Atualização construída sobre a `main` moderna: identidade visual compartilhada, fontes locais, home com carrossel controlável, descoberta musical, pesquisa de recursos, biblioteca Premium e administração de assinaturas/cupons. Chamadas receberam detecção de fala, diagnóstico por etapa, troca de entrada preservando o silêncio e correções de ciclo de vida. Mensagens de voz podem ser ouvidas e descartadas antes do envio.
 
 Foram aprovados 328 testes automatizados e o build. A base financeira foi aplicada no Supabase; cobranças continuam bloqueadas até a integração e homologação de um gateway. A chamada entre duas sessões de QA não encontrou rota de mídia; áudio entre participantes, vídeo e transmissão remota continuam sujeitos à homologação em aparelhos e redes reais. Consulte [a entrega e a matriz de validação](docs/ULTIMATE8-20261104.md). Os registros abaixo descrevem etapas anteriores do projeto.
