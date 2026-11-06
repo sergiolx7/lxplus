@@ -18,13 +18,17 @@ export class Calls {
  async poll(){
   if(this.closed||this.polling)return;this.polling=true;
   try{
-   if(!this.call){const rows=await checked(db.from('lx_calls').select('id,caller_id,callee_id,mode,status,created_at').eq('callee_id',this.userId).eq('status','ringing').gte('created_at',new Date(Date.now()-90000).toISOString()).order('created_at',{ascending:false}).limit(1));if(rows?.length&&this.incoming?.id!==rows[0].id)this.showIncoming(rows[0]);if(!rows?.length&&this.incoming){this.incoming=null;this.removeSurface()}return}
-   const state=await checked(db.rpc('lx_call_heartbeat',{p_call_id:this.call.id}));
+   if(!this.call){const rows=await checked(db.from('lx_calls').select('id,caller_id,callee_id,mode,status,created_at').eq('callee_id',this.userId).eq('status','ringing').gte('created_at',new Date(Date.now()-90000).toISOString()).order('created_at',{ascending:false}).limit(1));if(this.closed||this.call)return;if(rows?.length&&this.incoming?.id!==rows[0].id)this.showIncoming(rows[0]);if(!rows?.length&&this.incoming){this.incoming=null;this.removeSurface()}return}
+   const callId=this.call.id,state=await checked(db.rpc('lx_call_heartbeat',{p_call_id:callId}));
+   if(this.closed||this.call?.id!==callId)return;
    if(!['ringing','accepted'].includes(state.status)){this.disposeMedia();this.removeSurface();this.call=null;return}
    if(this.call.status!==state.status){this.call.status=state.status;this.status(state.status==='accepted'?'Conectando…':'Chamando…')}
    if(state.status==='ringing'&&Date.now()-new Date(this.call.created_at).valueOf()>60000){await this.end();return}
-   const signals=await checked(db.from('lx_call_signals').select('id,sender_id,kind,payload').eq('call_id',this.call.id).gt('id',this.cursor).order('id').limit(100));
-   for(const signal of signals||[]){if(signal.sender_id!==this.userId)await this.receive(signal);this.cursor=Math.max(this.cursor,Number(signal.id))}
+   // The heartbeat can run while TURN configuration/peer preparation is awaiting.
+   // Do not consume an offer until receive() actually has a peer to apply it to.
+   const pc=this.pc;if(!pc)return;
+   const signals=await checked(db.from('lx_call_signals').select('id,sender_id,kind,payload').eq('call_id',callId).gt('id',this.cursor).order('id').limit(100));
+   for(const signal of signals||[]){if(this.closed||this.call?.id!==callId||this.pc!==pc)return;if(signal.sender_id!==this.userId)await this.receive(signal);if(this.call?.id!==callId||this.pc!==pc)return;this.cursor=Math.max(this.cursor,Number(signal.id))}
   }finally{this.polling=false}
  }
  showIncoming(call){
@@ -208,7 +212,7 @@ export class Calls {
    if(['disconnected','failed'].includes(pc.connectionState)){this.status('Reconectando…');if(!this.retryTimer&&this.attempts<3){this.retryTimer=setTimeout(()=>{this.retryTimer=null;if(this.pc===pc&&['disconnected','failed'].includes(pc.connectionState))this.restart().catch(error=>this.status(error.message||'Falha ao reconectar'))},pc.connectionState==='failed'?400:2400)}else if(this.attempts>=3&&pc.connectionState==='failed')this.status(this.turnConfigured?'A conexão falhou. Tente reconectar manualmente.':'TURN não configurado. O proprietário pode ativá-lo no ADM Studio → Visão geral.')}
   };
   const negotiate=async()=>{if(!caller||pc!==this.pc||this.closed)return;if(this.negotiating||pc.signalingState!=='stable'){this.pendingNegotiation=true;return}this.negotiating=true;this.pendingNegotiation=false;try{const offer=await pc.createOffer();if(pc!==this.pc||pc.signalingState!=='stable')return;await pc.setLocalDescription(offer);await this.signal('offer',{type:pc.localDescription.type,sdp:pc.localDescription.sdp})}catch(e){this.status('Não foi possível negociar a chamada. Tente reconectar.')}finally{this.negotiating=false;if(this.pendingNegotiation&&pc.signalingState==='stable'&&pc===this.pc){this.pendingNegotiation=false;queueMicrotask(()=>negotiate())}}};pc.onnegotiationneeded=()=>negotiate();
-  this.channel=db.channel('lx-call-'+this.call.id+'-'+this.userId).on('postgres_changes',{event:'INSERT',schema:'public',table:'lx_call_signals',filter:'call_id=eq.'+this.call.id},event=>{if(event.new.sender_id!==this.userId)this.receive(event.new).catch(e=>this.status(e.message))}).subscribe();
+  this.channel=db.channel('lx-call-'+this.call.id+'-'+this.userId).on('postgres_changes',{event:'INSERT',schema:'public',table:'lx_call_signals',filter:'call_id=eq.'+this.call.id},event=>{if(this.pc===pc&&this.call?.id===id&&event.new.sender_id!==this.userId)this.receive(event.new).catch(e=>this.status(e.message))}).subscribe();
   this.signalTimer=setInterval(()=>this.poll().catch(()=>{}),900);this.metricsTimer=setInterval(()=>{this.quality().catch(()=>{});this.updateVoiceDiagnostics().catch(()=>{})},1800);
   const upgrade=fresh=>{if(this.call?.id!==id||this.pc!==pc||!shouldUpgradeTurn(this.turnConfigured,fresh))return;pc.setConfiguration({...pc.getConfiguration(),iceServers:fresh.iceServers});this.turnConfigured=true;this.status('Relay TURN disponível. Reforçando a conexão…');this.updateNetworkStatus();if(caller)pc.restartIce()};if(provisional)ready.then(upgrade).catch(()=>{});this.renewTimer=setInterval(async()=>{if(this.call?.id!==id||this.pc!==pc)return;const fresh=await rtcConfig('call',id);if(this.call?.id!==id||this.pc!==pc||!fresh.turnConfigured)return;const previous=this.turnConfigured;pc.setConfiguration({...pc.getConfiguration(),iceServers:fresh.iceServers});this.turnConfigured=true;if(caller&&!previous)pc.restartIce()},3000000);
   this.stopConnectionWatch?.();this.stopConnectionWatch=watchCallConnection({state:()=>({current:this.pc===pc,connected:pc.connectionState==='connected',accepted:this.call?.status==='accepted'}),onTimeout:()=>{this.updateNetworkStatus();this.status(this.turnConfigured?'Aguardando rota de mídia. Se continuar, use Reconectar.':'Sem conexão direta. Redes privadas restritas precisam de TURN ativo no ADM Studio → Visão geral.');if(caller&&this.attempts===0)this.restart().catch(()=>{})}});

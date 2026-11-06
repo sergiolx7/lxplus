@@ -83,13 +83,13 @@ test('share source selection supports games, apps and explicitly opted-in full d
  assert.equal(fallback.video.displaySurface,'browser');
 });
 
-test('only explicitly requested isolated window/game audio can be forwarded',()=>{
+test('native picker tab audio stays isolated while window and desktop audio require explicit matching opt-in',()=>{
  for(const actual of ['browser','window','monitor']){
   for(const desired of ['browser','window','monitor']){
    const track={readyState:'live',stopCalled:false,stop(){this.stopCalled=true}};
    const stream={getVideoTracks:()=>[{getSettings:()=>({displaySurface:actual})}],getAudioTracks:()=>[track],removeTrack:()=>{}};
    const result=isolateDisplayAudio(stream,true,desired);
-   const allowed=actual===desired;
+   const allowed=actual===desired||actual==='browser';
    assert.equal(!!result.track,allowed);
    assert.equal(track.stopCalled,!allowed);
   }

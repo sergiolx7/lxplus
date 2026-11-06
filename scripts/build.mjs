@@ -15,5 +15,5 @@ const bundle=styleSources.map(s=>'/* '+s.path+' */\n'+s.content).join('\n');
 writeFileSync('dist/assets/lx-ui.css',bundle);
 let first=true;
 const html=sourceHtml.replace(/<link\b[^>]*rel="stylesheet"[^>]*href="\.\/assets\/[^"?]+\.css(?:\?[^\"]*)?"[^>]*>/g,()=>{if(!first)return '';first=false;return '<link rel="stylesheet" href="./assets/lx-ui.css?v='+release+'">'}).replace(/app\.js\?v=[^'"\s]+/g,'app.js?v='+release);
-writeFileSync('dist/index.html',html);writeFileSync('dist/build.json',JSON.stringify({release,source_commit:process.env.GITHUB_SHA||null,ui_generation:'ultimate8-20261104'},null,2)+'\n');
+writeFileSync('dist/index.html',html);writeFileSync('dist/build.json',JSON.stringify({release,source_commit:process.env.GITHUB_SHA||null,ui_generation:'ultimate8-20261104',feature_revision:'improvements-premium64-20261106'},null,2)+'\n');
 console.log('Frontend preparado em dist/. Backups, testes e SQL não são publicados.');

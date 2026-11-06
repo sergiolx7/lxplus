@@ -1,5 +1,5 @@
 import {esc,avatar,verifiedBadge} from './ui.js';
-import {profileCover,profileLedAttributes,profileName,premiumBadge,founderBadge} from './profile-premium.js';
+import {profileCover,profileLedAttributes,profileName,premiumBadge,founderBadge,profileImageUrl} from './profile-premium.js';
 import {renderExpressions} from './premium-expressions.js';
 import {compactSocialCount,publicDemoLabel} from './social-demo-ui.js';
 
@@ -11,6 +11,7 @@ export function memberProfileCard(profile,{viewerId='',presence='',nowPlaying=''
  const bio=String(p.bio||'').trim(),status=String(p.status_text||'').trim();
  const owned=Array.isArray(assets)?assets.filter(asset=>asset?.user_id===p.user_id):[];
  const verified=p.verified===true,stats=followStats||{followers:0,following_count:0,is_following:false};
+ const photo=profileImageUrl(p.avatar_url),portrait=avatar(p,'profile-avatar lx-member-avatar');
  let actions='';
  if(!self){
   actions='<button class="btn '+(stats.is_following?'':'primary')+'" data-social-follow="'+id+'">'+(stats.is_following?'✓ Seguindo':'+ Seguir')+'</button>';
@@ -22,7 +23,7 @@ export function memberProfileCard(profile,{viewerId='',presence='',nowPlaying=''
  return '<article class="profile-summary lx-member-profile-card" '+profileLedAttributes(p)+'>'
    +profileCover(p)
   +'<div class="lx-member-profile-body">'
-  +'<div class="lx-member-avatar-row">'+avatar(p,'profile-avatar lx-member-avatar')+'</div>'
+  +'<div class="lx-member-avatar-row">'+(photo?'<button type="button" class="lx-member-avatar-button" data-member-photo="'+esc(photo)+'" data-member-photo-name="'+esc(p.name||'membro LX')+'" aria-label="Ampliar foto de '+esc(p.name||'membro LX')+'">'+portrait+'<span class="lx-member-photo-hint" aria-hidden="true">⤢</span></button>':portrait)+'</div>'
   +'<div class="lx-member-identity"><h2>'+profileName(p)+verifiedBadge(p)+'</h2>'
   +'<p class="lx-member-handle">'+esc(label)+'</p></div>'
   +'<div class="lx-member-tags">'+founderBadge(p)+premiumBadge(p)+(verified?'<span class="lx-member-verified">✓ Perfil verificado</span>':'')+(p.relation==='accepted'?'<span class="lx-member-friend-label">Amigo LX</span>':'')+'</div>'

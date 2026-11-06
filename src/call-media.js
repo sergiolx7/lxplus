@@ -30,10 +30,10 @@ export function captureAudioMessage({surface,track,unavailable},requested=false,
 export function isolateDisplayAudio(stream,withAudio=false,kind='browser'){
  const surface=stream.getVideoTracks()[0]?.getSettings?.().displaySurface;
  const source=captureSurface(kind),tracks=stream.getAudioTracks(),candidate=tracks.find(t=>t.readyState!=='ended');
- // Never forward audio for entire-screen capture or a mismatched source. Window
- // capture is accepted only when explicitly requested as window capture.
- // Desktop audio is forwarded only when explicitly opted in by the user.
- const allowed=!!withAudio&&source===surface&&['browser','window','monitor'].includes(surface);
+ // The native picker may choose a tab even when the UI suggested a window.
+ // A verified tab remains isolated. Window/desktop audio still requires its
+ // corresponding explicit request; unknown surfaces are never forwarded.
+ const allowed=!!withAudio&&(surface==='browser'||source===surface&&['window','monitor'].includes(surface));
  const keep=allowed?candidate:null;
  for(const track of tracks)if(track!==keep){stream.removeTrack(track);track.stop()}
  if(keep){try{keep.contentHint=surface==='browser'?'music':'music'}catch{/* Browser hint only. */}}

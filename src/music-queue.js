@@ -40,5 +40,13 @@ export class MusicQueue {
   this.played=new Set(played.map(track=>this.items.indexOf(track)).filter(i=>i>=0));
   return true;
  }
+ remove(index){
+  if(!Number.isInteger(index)||index<0||index>=this.items.length||index===this.index)return false;
+  const current=this.items[this.index],history=this.previous.map(i=>this.items[i]),played=[...this.played].map(i=>this.items[i]);
+  this.items.splice(index,1);this.index=this.items.indexOf(current);
+  this.previous=history.map(item=>this.items.indexOf(item)).filter(i=>i>=0);
+  this.played=new Set(played.map(item=>this.items.indexOf(item)).filter(i=>i>=0));
+  return true;
+ }
  add(item){if(!this.items.some(x=>String(x.id)===String(item.id)))this.items.push(item)}
 }

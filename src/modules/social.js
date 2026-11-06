@@ -1,6 +1,7 @@
 import {voiceConstraints} from '../voice-quality.js';
 import {expressionToken,renderExpressions} from '../premium-expressions.js';
 import {memberProfileCard} from '../member-profile.js';
+import {openImagePreview} from '../image-preview.js';
 import {normalizePremiumProfile} from '../premium-style.js';
 import {profileImageUrl,profileLedAttributes,profileCover,profileName,premiumBadge,founderBadge,syncProfileBanners} from '../profile-premium.js';
 import {presenceSummary,presenceMarkup} from '../social-presence.js';
@@ -24,7 +25,7 @@ export async function mount(host,ctx){
  const threadKey=target=>target?target.kind+':'+target.id:'';
  let postDraft=drafts.get('post'),postFile=null,postSending=false,loadingThread='';
  let presence=new Map(),feedSearch='',feedSearchTimer=null,feedFilter='all',sponsoredPostIds=new Set(),savedPostIds=new Set(),demoPostCounts=new Map(),demoProfileCounts=new Map(),publicDemoPostCounts=new Map(),publicDemoProfileCounts=new Map(),followStats=new Map(),labMode=false,founderIds=new Set();
- let draft='',sharedPost=/^#post=([-a-f0-9]{36})$/i.exec(location.hash)?.[1]||null,profileReturnFocus=null;
+ let draft='',sharedPost=/^#post=([-a-f0-9]{36})$/i.exec(location.hash)?.[1]||null,profileReturnFocus=null,closePhoto=null;
  function dialog(title,body,mode='standard'){profileReturnFocus=document.activeElement;const root=host.querySelector('#socialDialog');if(mode==='member'){profileReturnFocus=document.activeElement;root.innerHTML='<div class="inline-dialog lx-member-profile-overlay" role="dialog" aria-modal="true" aria-label="Perfil de '+esc(title)+'"><div class="lx-member-profile-shell"><button class="lx-member-profile-close" data-social-close aria-label="Fechar perfil">×</button>'+body+'</div></div>';root.querySelector('[data-social-close]')?.focus();return}root.innerHTML='<div class="inline-dialog" role="dialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="panel"><div class="heading"><h2>'+esc(title)+'</h2><button class="close" data-social-close aria-label="Fechar">×</button></div>'+body+'</div></div>';(root.querySelector('textarea,input:not([type=hidden])')||root.querySelector('[data-social-close]'))?.focus()}
  async function showMemberProfile(id){
   if(id!==me&&!people.some(p=>p.user_id===id))throw Error('Este perfil não está disponível no diretório.');
@@ -301,6 +302,7 @@ export async function mount(host,ctx){
    if(b.dataset.deletePost){if(b.dataset.confirm!=='yes'){b.dataset.confirm='yes';b.textContent='Confirmar exclusão';return}await checked(db.from('lx_posts').delete().eq('id',b.dataset.deletePost).eq('author_id',me));posts=posts.filter(p=>p.id!==b.dataset.deletePost);draw();return}
    if(b.hasAttribute('data-more-posts')){await loadPosts(true);return}
    if(b.dataset.reportPost||b.dataset.reportMessage||b.dataset.reportProfile){dialog('Denunciar conteúdo','<form id="reportForm" class="form"><input type="hidden" name="kind" value="'+(b.dataset.reportPost?'post':b.dataset.reportProfile?'profile':'message')+'"><input type="hidden" name="target" value="'+esc(b.dataset.reportPost||b.dataset.reportMessage||b.dataset.reportProfile)+'"><label class="field">Conte o que aconteceu<textarea name="reason" minlength="5" maxlength="1500" required></textarea></label><button class="btn primary">Enviar denúncia</button></form>');return}
+   if(b.hasAttribute('data-member-photo')){closePhoto?.();closePhoto=openImagePreview(b.dataset.memberPhoto,'Foto de '+b.dataset.memberPhotoName);return}
    if(b.hasAttribute('data-copy-member')){const handle=b.dataset.copyMember||'';if(!/^@[a-zA-Z0-9._-]{1,40}$/.test(handle))throw Error('Identificador público inválido.');await navigator.clipboard.writeText(handle);ctx.toast('Identificador copiado.');return}
    if(b.dataset.copyProfileId){const id=b.dataset.copyProfileId;if(!/^[0-9a-f-]{36}$/i.test(id)||!(id===me||people.some(p=>p.user_id===id)))throw Error('Perfil não disponível.');await navigator.clipboard.writeText(id);ctx.toast('ID completo do perfil copiado.');return}
    if(b.dataset.person){await showMemberProfile(b.dataset.person);return}
@@ -376,5 +378,5 @@ export async function mount(host,ctx){
  channel=db.channel('lx-social-'+me+'-'+uuid()).on('postgres_changes',{event:'*',schema:'public',table:'lx_messages',filter:'recipient_id=eq.'+me},()=>{if(tab==='Mensagens'&&selected?.kind==='dm')loadMessages().catch(()=>{})}).on('postgres_changes',{event:'*',schema:'public',table:'lx_messages',filter:'sender_id=eq.'+me},()=>{if(tab==='Mensagens'&&selected?.kind==='dm')loadMessages().catch(()=>{})}).on('postgres_changes',{event:'*',schema:'public',table:'lx_group_messages'},event=>{if(selected?.kind==='group'&&event.new.group_id===selected.id)loadMessages().catch(()=>{})}).subscribe();
  const timer=setInterval(()=>{if(document.hidden)return;if(tab==='Mensagens'&&selected)loadMessages().catch(()=>{});loadPresence();},10000);
  const countersTimer=setInterval(()=>refreshCommunityCounters().catch(()=>{}),30000);
- return {refresh(){refreshCommunityCounters(true).catch(()=>{})},destroy(){alive=false;++feedGeneration;++chatGeneration;clearInterval(timer);clearInterval(countersTimer);clearTimeout(feedSearchTimer);window.removeEventListener('focus',onCommunityFocus);document.removeEventListener('visibilitychange',onCommunityFocus);stopRecording();if(channel)db.removeChannel(channel);signed.clear()}};
+ return {refresh(){refreshCommunityCounters(true).catch(()=>{})},destroy(){closePhoto?.();alive=false;++feedGeneration;++chatGeneration;clearInterval(timer);clearInterval(countersTimer);clearTimeout(feedSearchTimer);window.removeEventListener('focus',onCommunityFocus);document.removeEventListener('visibilitychange',onCommunityFocus);stopRecording();if(channel)db.removeChannel(channel);signed.clear()}};
 }

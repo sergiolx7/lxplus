@@ -58,7 +58,7 @@ export async function mount(host,ctx){
 
  function actionTrack(id){return findMusicActionTrack(id,items,groupSelection?groupTracks:null)}
  function dialog(title,content){host.querySelector('#musicDialog').innerHTML='<div class="inline-dialog" role="dialog" aria-modal="true" aria-label="'+esc(title)+'"><div class="panel"><div class="heading"><h2>'+esc(title)+'</h2><button class="close" data-music-dialog-close aria-label="Fechar">×</button></div>'+content+'</div></div>';host.querySelector('#musicDialog input,#musicDialog select')?.focus()}
- async function play(item,queue=items,flow=true){if(!item)return;try{await ctx.music.play(item,queue,{flow})}catch(e){ctx.toast(e.message||'A fonte desta faixa não está disponível.')}}
+ async function play(item,queue=items,flow=!(selected||groupSelection)){if(!item)return;try{await ctx.music.play(item,queue,{flow})}catch(e){ctx.toast(e.message||'A fonte desta faixa não está disponível.')}}
  const search=value=>{term=value;groupSelection=null;groupTracks=[];referenceOffset=0;++generation;++groupGeneration;clearTimeout(searchTimer);searchTimer=setTimeout(()=>{if(!alive)return;if(selected)draw();else load()},300)};
  host.addEventListener('change',e=>{if(e.target.id==='recapMonth'&&/^\d{4}-\d{2}$/.test(e.target.value)){month=e.target.value;recap=null;load()}});
  host.addEventListener('input',e=>{if(e.target.id==='musicSearch')search(e.target.value)});

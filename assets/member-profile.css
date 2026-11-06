@@ -1,9 +1,9 @@
 /* LX Social · expanded member profile. Keep the same identity system used by My Profile. */
 .lx-member-profile-overlay{z-index:155;display:grid;place-items:center;padding:16px;overflow-y:auto;overscroll-behavior:contain;background:rgba(3,4,9,.82);backdrop-filter:blur(16px)}
-.lx-member-profile-shell{position:relative;isolation:isolate;width:min(382px,100%);max-width:calc(100vw - 24px);max-height:calc(100dvh - 32px);min-width:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;border-radius:25px;box-shadow:0 34px 105px rgba(0,0,0,.76);scrollbar-width:thin;scrollbar-color:#6b577e transparent}
+.lx-member-profile-shell{position:relative;isolation:isolate;width:min(520px,100%);max-width:calc(100vw - 24px);max-height:calc(100dvh - 32px);min-width:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;border-radius:25px;box-shadow:0 34px 105px rgba(0,0,0,.76);scrollbar-width:thin;scrollbar-color:#6b577e transparent}
 .lx-member-profile-card{position:relative;display:block;width:100%;min-width:0;min-height:620px;margin:0;border-radius:25px!important;overflow:hidden;background:#0e1017!important;color:#f3f1f8}
 .lx-member-profile-card[data-premium-profile=true]{background:linear-gradient(180deg,color-mix(in srgb,var(--profile-surface,#13121b) 82%,#0c0d13),#0b0d14 80%)!important}
-.lx-member-profile-card>.profile-banner{height:185px;width:100%;position:relative;overflow:hidden;background-color:#211629}
+.lx-member-profile-card>.profile-banner{height:210px;width:100%;position:relative;overflow:hidden;background-color:#211629}
 .lx-member-profile-card>.profile-banner img,.lx-member-profile-card>.profile-banner canvas{width:100%;height:100%;object-fit:cover}
 .lx-member-profile-card>.profile-banner:after{content:"";position:absolute;inset:auto 0 0;height:50%;background:linear-gradient(0deg,rgba(9,10,16,.55),transparent);pointer-events:none}
 .lx-member-profile-card .lx-member-profile-body{position:relative;z-index:3;display:flex;flex-direction:column;align-items:stretch;padding:0 27px 25px;min-height:360px}
@@ -11,6 +11,17 @@
 .lx-member-profile-card .lx-member-avatar{display:inline-grid;width:96px!important;height:96px!important;min-width:96px;min-height:96px;margin:-49px 0 0!important;flex:none;border:5px solid #11121a;border-radius:29%;box-shadow:0 11px 30px #0008,0 0 0 1px #dfd0ff35;font-size:27px;z-index:4}
 .lx-member-profile-card .lx-member-avatar[data-avatar-shape=circle]{border-radius:50%}
 .lx-member-profile-card .lx-member-avatar[data-avatar-shape=rounded]{border-radius:27%}
+.lx-member-profile-card:not([data-premium-profile=true]) .lx-member-avatar{border-radius:50%}
+.lx-member-avatar-button{position:relative;display:block;width:96px;height:96px;margin:-49px 0 0;padding:0;border:0;border-radius:50%;background:none;cursor:zoom-in;flex:none;z-index:5}
+.lx-member-profile-card .lx-member-avatar-button .lx-member-avatar{margin:0!important}
+.lx-member-photo-hint{position:absolute;right:0;bottom:0;display:grid;place-items:center;width:26px;height:26px;border:2px solid #11121a;border-radius:50%;background:#d3c5ff;color:#161121;font-size:17px}
+.lx-image-preview{position:fixed;inset:0;width:min(920px,calc(100vw - 32px));max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);padding:18px;border:1px solid #b4a3df55;border-radius:20px;background:#10121c;color:#f3f1f8;box-sizing:border-box;overflow:auto;box-shadow:0 28px 100px #000b}
+.lx-image-preview::backdrop{background:#03050be8;backdrop-filter:blur(12px)}
+.lx-image-preview-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}
+.lx-image-preview-toolbar strong{font-size:15px;overflow-wrap:anywhere}
+.lx-image-preview-toolbar button{flex:none;width:44px;height:44px;font-size:25px}
+.lx-image-preview img{display:block;width:100%;height:auto;max-height:calc(100dvh - 170px);object-fit:contain;margin:auto;border-radius:10px}
+.lx-image-preview p{font-size:12px;text-align:center;color:#adb5cb;margin:14px 0 0}
 .lx-member-profile-card .lx-member-identity{min-width:0}
 .lx-member-profile-card .lx-member-identity h2{display:flex;gap:4px;align-items:center;flex-wrap:wrap;min-width:0;margin:0 0 5px;font-size:clamp(21px,5vw,27px);line-height:1.23;font-weight:700;letter-spacing:-.04em;overflow-wrap:anywhere}
 .lx-member-profile-card .lx-member-identity h2 .premium-display-name{max-width:100%;overflow-wrap:anywhere}
@@ -42,6 +53,7 @@
  .lx-member-profile-card>.profile-banner{height:160px}
  .lx-member-profile-card .lx-member-profile-body{padding:0 20px 23px}
  .lx-member-profile-card .lx-member-avatar{width:88px!important;height:88px!important;min-width:88px;min-height:88px;margin-top:-45px!important}
+ .lx-member-avatar-button{width:88px;height:88px;margin-top:-45px}
  .lx-member-profile-card .lx-member-avatar-row{height:50px}
  .lx-member-profile-card .lx-member-about{padding:14px 0 15px}
 }

@@ -1,0 +1,7 @@
+<!doctype html>
+<html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>LX Plus — revisão de interface</title>
+<style>body{margin:0;background:#080b13;color:#eee8ff;font:14px system-ui}header{display:flex;align-items:center;justify-content:center;gap:18px;padding:14px;flex-wrap:wrap}select{font:inherit;padding:8px;background:#1a2031;color:#eee8ff;border:1px solid #706185;border-radius:8px}iframe{display:block;width:390px;max-width:100%;height:844px;margin:0 auto 20px;border:1px solid #706185;border-radius:16px;box-sizing:border-box}</style>
+<header><strong>QA LOCAL · Layout e fotos fictícias</strong><label>Largura do aparelho <select id="width"><option value="360">360 px</option><option value="390" selected>390 px</option><option value="1024">1024 px</option></select></label></header>
+<iframe title="LX Plus em revisão" id="preview" src="../../qa/?qa-photo=1"></iframe>
+<script>const params=new URLSearchParams(location.search);if(params.get('qa-premium')==='1')document.getElementById('preview').src='../../qa/?qa-photo=1&qa-premium=1&qa-case=mobile-library-20261106';document.getElementById('width').onchange=e=>document.getElementById('preview').style.width=e.target.value+'px';</script>
+</html>

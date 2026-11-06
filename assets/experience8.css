@@ -1,4 +1,16 @@
 /* LX Plus 8.0: shared tokens and component refinements. Existing modules keep their behavior. */
+.brand .brand-logo{width:54px;height:54px;flex:none;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible}
+.brand .brand-logo img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 9px #a18aff25)}
+.brand-button{gap:12px}.brand-title{min-width:0}.brand-title b{font-size:30px;letter-spacing:-.055em}
+.header-search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(var(--accent-rgb),.1)}
+.topbar .header-search input{min-width:0;text-overflow:ellipsis}
+.lx-queue-move-controls button{min-width:32px;min-height:36px}
+.lx-queue-move-controls button[data-queue-remove]:hover:not(:disabled){color:#ffb8c6;background:#a43c5a22}
+.lx-member-profile-card .lx-member-follow-stats{display:flex;gap:22px;flex-wrap:wrap;margin:17px 0 2px;padding:15px 0;border-block:1px solid var(--border)}
+.lx-member-follow-stats strong{font-family:var(--font-heading);font-size:21px;font-variant-numeric:tabular-nums;color:#f0ebff}
+@media(min-width:1251px) and (max-width:1450px){.header-presence{display:none}.header-search{flex:1;max-width:none}}
+@media(min-width:600px){.lx-member-profile-card .lx-member-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.lx-member-actions>.btn:last-child:nth-child(odd){grid-column:1/-1}}
+@media(max-width:760px){.lx-queue-move-controls button{min-width:36px;min-height:40px}.lx-music-dock.has-official-embed .music-dock-actions [data-music-action=queue]{display:inline-grid!important;width:32px;height:32px}.header-brand{object-fit:contain;border-radius:0}}
 :root{--canvas:#0a0d14;--surface:#111622;--surface-raised:#1a2130;--panel:var(--surface);--border:#283143;--muted:#a3acc0;--radius:16px;--radius-lg:24px;--shadow-soft:0 12px 40px #0002;--font-body:Inter,system-ui,sans-serif;--font-heading:Outfit,Inter,system-ui,sans-serif;font-family:var(--font-body);font-size:15px}
 body{background:radial-gradient(ellipse at 85% 0,#6579ec0a,transparent 42%),var(--canvas);color:#f1f3fc;-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:var(--font-heading);letter-spacing:-.025em}h1{font-size:clamp(30px,3.4vw,48px);line-height:1.12}h2{font-size:24px;line-height:1.25}h3{font-size:19px}p{color:#b4bed0;line-height:1.65}small{font-size:13px;line-height:1.5}button,input,textarea,select{font-family:var(--font-body)}
