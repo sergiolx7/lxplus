@@ -2,6 +2,10 @@
 
 Plataforma da LX Group com frontend modular estático e Supabase para autenticação, dados, arquivos, presença e comunicação. A atualização de 30/10/2026 substitui a interface anterior e preserva as contas existentes.
 
+## LX Nexus · 06/11/2026
+
+Identidade aprovada em grafite e azul gelo aplicada à plataforma: navegação mais clara, home cinematográfica, biblioteca musical com destaque real, player compacto, conversas organizadas e perfis amplos. As 84 personalizações e as escolhas de aparência existentes foram preservadas. 377 testes passaram. Veja [a entrega Nexus e a validação](docs/LX-NEXUS-20261106.md).
+
 ## LX Orbit · 06/11/2026
 
 Nova composição visual em toda a plataforma, com portais na Home, navegação para Animes e Ao vivo, catálogo ordenável, Minha Lista com filtros e desfazer, playlists editáveis, 84 personalizações Premium e ambientes rápidos de aparência. A recuperação de microfone preserva o silêncio e os dispositivos conectados atualizam o seletor. Os 373 testes e o build passaram; testes de mídia entre aparelhos e a integração de pagamentos seguem pendentes. Consulte [a entrega e os limites](docs/LX-ORBIT-20261106.md).

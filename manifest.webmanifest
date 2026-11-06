@@ -3,8 +3,8 @@
   "short_name": "LX Plus",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#090a10",
-  "theme_color": "#090a0e",
+  "background_color": "#0b1018",
+  "theme_color": "#0b1018",
   "icons": [
     {
       "src": "./assets/lx-face-192.png",

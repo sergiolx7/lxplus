@@ -9,9 +9,9 @@ import {premiumCard} from '../src/premium-ui.js';
 import {AudioEffects} from '../src/audio-effects.js';
 
 test('LED values are bounded, legacy appearance migrates, and Home order cannot drop or repeat sections',()=>{
- const legacy=normalizeDisplay({theme:'mint',leds:false,coverSize:'small'});assert.equal(legacy.theme,'mint');assert.equal(legacy.leds,false);assert.equal(legacy.ledIntensity,42);
- for(const [value,expected] of [[-20,0],[400,100],['56.7',57],[null,42],['',42],['evil',42]])assert.equal(normalizeDisplay({ledIntensity:value}).ledIntensity,expected);
- const p=normalizeDisplay({ledColor:'red;url(bad)',ledMode:'flash',homeOrder:['saved','saved','admin','continue']});assert.equal(p.ledColor,'#b8a2ff');assert.equal(p.ledMode,'static');assert.deepEqual(p.homeOrder.slice(0,2),['saved','continue']);assert.deepEqual([...p.homeOrder].sort(),[...homeSections].sort());
+ const legacy=normalizeDisplay({theme:'mint',leds:false,coverSize:'small'});assert.equal(legacy.theme,'mint');assert.equal(legacy.leds,false);assert.equal(legacy.ledIntensity,24);
+ for(const [value,expected] of [[-20,0],[400,100],['56.7',57],[null,24],['',24],['evil',24]])assert.equal(normalizeDisplay({ledIntensity:value}).ledIntensity,expected);
+ const p=normalizeDisplay({ledColor:'red;url(bad)',ledMode:'flash',homeOrder:['saved','saved','admin','continue']});assert.equal(p.ledColor,'#69ddec');assert.equal(p.ledMode,'static');assert.deepEqual(p.homeOrder.slice(0,2),['saved','continue']);assert.deepEqual([...p.homeOrder].sort(),[...homeSections].sort());
 });
 test('music light requires an enabled side and stops for light performance, zero intensity or reduced motion',()=>{
  const p=normalizeDisplay({ledMode:'music'});assert.equal(musicLightAllowed(p),true);
