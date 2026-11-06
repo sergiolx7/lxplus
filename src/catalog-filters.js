@@ -1,5 +1,5 @@
 // Exact metadata filters are applied server-side to the complete published catalogue.
-const typesByPage={Filmes:['Filme'],Séries:['Série','Dorama','Anime'],Doramas:['Dorama'],Livros:['Livro'],'Ao vivo':['Ao Vivo']};
+const typesByPage={Filmes:['Filme'],Séries:['Série','Dorama','Anime'],Doramas:['Dorama'],Animes:['Anime'],Livros:['Livro'],'Ao vivo':['Ao Vivo']};
 export function catalogPageTypes(page,subtype='Todos'){
  const types=typesByPage[page]||[];
  return page==='Séries'&&types.includes(subtype)?[subtype]:[...types];

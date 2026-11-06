@@ -3,9 +3,11 @@ import {db,itemFrom} from './data.js';
 import {uuid,checked,https} from './ui.js';
 import {catalogFilter,searchTerm} from './catalog-search.js';
 import {isGifSignature} from './social-media-validation.js';
+import {catalogSort} from './catalog-sort.js';
 
-export async function catalogPage({types=[],term='',offset=0,limit=48,admin=false,match={}}={}){
- let query=db.from('lx_catalog').select('id,payload,published,updated_at',{count:'exact'}).order('updated_at',{ascending:false}).order('id',{ascending:false});
+export async function catalogPage({types=[],term='',offset=0,limit=48,admin=false,match={},sort='recent'}={}){
+ const order=catalogSort(sort);
+ let query=db.from('lx_catalog').select('id,payload,published,updated_at',{count:'exact'}).order(order.column,{ascending:order.ascending,nullsFirst:false}).order('id',{ascending:false});
  if(!admin)query=query.eq('published',true);
  if(types.length)query=query.in('payload->>type',types);
  for(const field of ['artist','album','genre','country','year'])if(typeof match[field]==='string'&&match[field].trim())query=query.eq('payload->>'+field,match[field]);

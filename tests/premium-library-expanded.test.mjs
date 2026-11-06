@@ -5,10 +5,10 @@ import {PGlite} from '@electric-sql/pglite';
 import {cosmeticItems,cosmeticPreview,cosmeticStylePreview,filterCosmetics,normalizeSavedLooks,savedLookLimit} from '../src/cosmetic-library.js';
 
 test('the expanded library keeps existing identities and adds complete looks, LED palettes and avatar shapes',()=>{
- assert.equal(cosmeticItems.length,64);assert.equal(new Set(cosmeticItems.map(item=>item.id)).size,64);
- for(const [category,count] of [['Coleções completas',18],['Paletas de LEDs',16],['Avatares',2]])assert.equal(filterCosmetics({category}).length,count);
+ assert.equal(cosmeticItems.length,84);assert.equal(new Set(cosmeticItems.map(item=>item.id)).size,84);
+ for(const [category,count] of [['Coleções completas',30],['Paletas de LEDs',24],['Avatares',2]])assert.equal(filterCosmetics({category}).length,count);
  for(const id of ['preset:nova','decoration:halo','effect:stars','nameStyle:glow','chatTheme:ocean','entrance:chime'])assert.ok(cosmeticItems.some(item=>item.id===id),id);
- assert.equal(filterCosmetics({onlyNew:true}).length,36);
+ assert.equal(filterCosmetics({onlyNew:true}).length,56);
 });
 
 test('a collection applies its real profile colors and complete style instead of only changing a thumbnail',()=>{

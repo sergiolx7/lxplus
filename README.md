@@ -2,6 +2,10 @@
 
 Plataforma da LX Group com frontend modular estático e Supabase para autenticação, dados, arquivos, presença e comunicação. A atualização de 30/10/2026 substitui a interface anterior e preserva as contas existentes.
 
+## LX Orbit · 06/11/2026
+
+Nova composição visual em toda a plataforma, com portais na Home, navegação para Animes e Ao vivo, catálogo ordenável, Minha Lista com filtros e desfazer, playlists editáveis, 84 personalizações Premium e ambientes rápidos de aparência. A recuperação de microfone preserva o silêncio e os dispositivos conectados atualizam o seletor. Os 373 testes e o build passaram; testes de mídia entre aparelhos e a integração de pagamentos seguem pendentes. Consulte [a entrega e os limites](docs/LX-ORBIT-20261106.md).
+
 ## Ultimate Experience 8.0 · 04/11/2026
 
 Continuação da Comunidade: edição de textos individuais e de grupo, encaminhamento com destino explícito e proteção contra envio duplicado, pausa de avisos por conversa e preferências de notificações no servidor. Avisos de grupos e acesso direto à conversa foram acrescentados. A suíte passou a 352 testes aprovados. Consulte [a entrega desta etapa](docs/ULTIMATE8-SOCIAL-20261104.md).

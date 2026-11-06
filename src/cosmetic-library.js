@@ -21,7 +21,19 @@ const collections=[
  ['solar','Chama solar','#ffc276','#ff8589','#2b1e1b','ember','electric','embers','gradient','midnight','pulse'],
  ['lunar','Prata lunar','#d4e0f2','#b6b9e3','#1b202c','eclipse','orbit','meteors','solid','midnight','chime'],
  ['turquoise','Turquesa cósmica','#7be1e1','#aca0ff','#122328','aurora','wings','prism','shimmer','aurora','sparkle'],
- ['violet-night','Violeta noturna','#9f8fff','#c5a2e8','#191526','nova','crown','aurora','glow','midnight','pulse']
+ ['violet-night','Violeta noturna','#9f8fff','#c5a2e8','#191526','nova','crown','aurora','glow','midnight','pulse'],
+ ['cyber','Circuito cyber','#91efff','#b2a0ff','#0e1b2b','ocean','electric','prism','glow','ocean','pulse'],
+ ['orbital','Estação orbital','#bec4ff','#86e4e8','#141a2d','nova','orbit','stars','gradient','midnight','chime'],
+ ['hologram','Holograma','#94f2df','#e7b2ff','#0d2428','aurora','halo','prism','shimmer','aurora','sparkle'],
+ ['darkmatter','Matéria escura','#a69bff','#fa9fdf','#161428','eclipse','wings','meteors','gradient','midnight','pulse'],
+ ['neoncity','Cidade neon','#ff88c9','#86dcff','#271a2e','rose','electric','aurora','glow','rose','pulse'],
+ ['silverdust','Poeira estelar','#dbe6ff','#aabfff','#182332','eclipse','orbit','stars','shimmer','ocean','sparkle'],
+ ['ion','Pulso de íons','#a9f6c0','#98b2ff','#11251e','aurora','halo','meteors','glow','aurora','pulse'],
+ ['quasar','Quasar','#ffc6a0','#b5acff','#271d2b','ember','crown','prism','gradient','midnight','chime'],
+ ['saturn','Anéis de Saturno','#e8cf9c','#adc0ef','#24212b','eclipse','orbit','aurora','shimmer','midnight','chime'],
+ ['void','Além do vazio','#94aaff','#d3b8ff','#10192b','nova','wings','stars','gradient','ocean','sparkle'],
+ ['superlight','Velocidade da luz','#c3f7ff','#d5b5ff','#10242a','ocean','electric','meteors','shimmer','ocean','pulse'],
+ ['stargarden','Jardim das estrelas','#bce7b6','#efbfff','#19251f','aurora','bloom','stars','gradient','aurora','sparkle']
 ].map(([id,name,color,second,background,preset,decoration,effect,nameStyle,chatTheme,entrance])=>({
  id:'collection:'+id,name,category:'Coleções completas',color,second,isNew:true,
  description:'Perfil, moldura, nome, conversa e luzes em uma combinação.',
@@ -35,7 +47,11 @@ const palettes=[
  ['sky','Céu e espuma','#9fd4ff','#a6e6dd'],['berry','Framboesa e ametista','#f4a0ca','#bc9fef'],
  ['sun','Ouro e violeta','#ead299','#b9a7f1'],['coral','Coral e aurora','#ffa3a3','#aeceee'],
  ['ice','Prata e gelo','#d5dfef','#a3dce9'],['orchid','Orquídea e néon','#d8a1ee','#8edfd6'],
- ['marine','Maré e lavanda','#83b5db','#bba6de'],['citrus','Lima e aurora','#cedd9a','#9edac4']
+ ['marine','Maré e lavanda','#83b5db','#bba6de'],['citrus','Lima e aurora','#cedd9a','#9edac4'],
+ ['plasma','Plasma','#ff99d9','#9fafff'],['photon','Fóton','#aff4ff','#e6e4ff'],
+ ['matrix','Matrix LX','#9ae8ba','#9bbdff'],['dusk','Crepúsculo astral','#b3a2ee','#f0b598'],
+ ['titanium','Titânio','#c2d4e7','#a9a8d9'],['ultraviolet','Ultravioleta','#bf9eff','#f2a2d0'],
+ ['glacier','Geleira neon','#9cdbeb','#b9f5d7'],['cosmic','Rosa cósmica','#e8acdb','#bec9f5']
 ].map(([id,name,color,second])=>({id:'palette:'+id,name,category:'Paletas de LEDs',color,second,isNew:true,description:'Duas cores para as bordas do seu perfil.',patch:{accent:color},stylePatch:led(color,second)}));
 export const cosmeticCategories=['Todos','Coleções completas','Universos',...Object.values(names),'Paletas de LEDs','Avatares'];
 export const cosmeticItems=[
@@ -44,6 +60,7 @@ export const cosmeticItems=[
  ...collections,...palettes,
  ...[['circle','Avatar circular'],['rounded','Avatar com cantos suaves']].map(([shape,name])=>({id:'avatar:'+shape,name,category:'Avatares',color:'#b69cff',second:'#6ce5f5',isNew:true,patch:{avatarShape:shape}}))
 ];
+export const cosmeticInventory={total:cosmeticItems.length,collections:collections.length,palettes:palettes.length};
 export function cosmeticPreview(value,item){return normalizePremiumProfile({...value,...item?.patch})}
 export function cosmeticStylePreview(value,item){return normalizeProfileStyle({...value,...item?.stylePatch})}
 const fold=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR');

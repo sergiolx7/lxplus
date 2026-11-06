@@ -3,12 +3,13 @@ import {catalogPageTypes,normalizedCatalogMatch} from '../catalog-filters.js';
 import {esc,empty} from '../ui.js';
 import {displaySizeControls} from '../display-preferences.js';
 import {premiumCard} from '../premium-ui.js';
+import {catalogSorts} from '../catalog-sort.js';
 
 export async function mount(host,ctx){
- let alive=true,busy=false,generation=0,items=[],total=0,offset=0,error='',subtype='Todos';
+ let alive=true,busy=false,generation=0,items=[],total=0,offset=0,error='',subtype='Todos',sort='recent';
  const filters={genre:'',country:'',year:''};
  const isSeries=ctx.page==='Séries';
- const canFilter=['Filmes','Séries','Doramas','Livros'].includes(ctx.page);
+ const canFilter=['Filmes','Séries','Doramas','Animes','Livros'].includes(ctx.page);
  function filterBar(){
   if(!canFilter)return '';
   const tabs=isSeries?'<div class="lx-catalog-subtypes" role="group" aria-label="Tipo de conteúdo">'+[['Todos','Tudo'],['Série','Séries'],['Dorama','Doramas'],['Anime','Animes']].map(([key,label])=>'<button type="button" data-catalog-subtype="'+key+'" aria-pressed="'+(subtype===key)+'">'+label+'</button>').join('')+'</div>':'';
@@ -22,7 +23,8 @@ export async function mount(host,ctx){
   if(!alive)return;
   host.innerHTML='<div class="module-heading"><span class="premium-overline">SEU UNIVERSO LX</span><h1>'+esc(ctx.term?'Resultados para “'+ctx.term+'”':ctx.page)+'</h1><p>'+total.toLocaleString('pt-BR')+' títulos encontrados · Descubra sua próxima história.</p></div>'+
    filterBar()+(error?'<div class="panel" role="alert"><p>'+esc(error)+'</p><button class="btn" data-catalog-retry>Tentar novamente</button></div>':'')+
-   (items.length?displaySizeControls()+'<div class="premium-grid">'+items.map(item=>premiumCard(item).replace('data-item=','data-catalog-item=')).join('')+'</div>':empty(busy?'Carregando histórias…':'Nenhum título encontrado',ctx.term||Object.values(filters).some(Boolean)||subtype!=='Todos'?'Altere os filtros ou tente outro título.':'Este catálogo está pronto para receber conteúdos revisados.'))+
+   '<div class="catalog-browse-bar">'+displaySizeControls()+'<label class="catalog-sort">Ordenar<select data-catalog-sort aria-label="Ordenar catálogo">'+Object.entries(catalogSorts).map(([key,value])=>'<option value="'+key+'" '+(sort===key?'selected':'')+'>'+value.label+'</option>').join('')+'</select></label></div>'+
+   (items.length?'<div class="premium-grid">'+items.map(item=>premiumCard(item).replace('data-item=','data-catalog-item=')).join('')+'</div>':empty(busy?'Carregando histórias…':'Nenhum título encontrado',ctx.term||Object.values(filters).some(Boolean)||subtype!=='Todos'?'Altere os filtros ou tente outro título.':'Este catálogo está pronto para receber conteúdos revisados.'))+
    (offset<total?'<button class="btn load-more" data-catalog-more '+(busy?'disabled':'')+'>Carregar mais títulos</button>':'');
  }
  async function load(append=false){
@@ -30,7 +32,7 @@ export async function mount(host,ctx){
   const token=++generation;busy=true;error='';
   if(!append){items=[];total=0;offset=0;draw()}
   try{
-   const result=await catalogPage({types:catalogPageTypes(ctx.page,subtype),term:ctx.term,offset:append?offset:0,match:normalizedCatalogMatch(filters)});
+   const result=await catalogPage({types:catalogPageTypes(ctx.page,subtype),term:ctx.term,offset:append?offset:0,match:normalizedCatalogMatch(filters),sort});
    if(!alive||token!==generation)return;
    items=append?[...items,...result.items]:result.items;total=result.total;offset=items.length;
   }catch(failure){if(alive&&token===generation)error='Não foi possível carregar o catálogo. Verifique sua conexão e tente novamente.'}
@@ -38,6 +40,7 @@ export async function mount(host,ctx){
  }
  host.addEventListener('submit',event=>{if(event.target.id==='lxCatalogFilters')event.preventDefault()});
  host.addEventListener('change',event=>{
+  if(event.target.matches('[data-catalog-sort]')){sort=Object.hasOwn(catalogSorts,event.target.value)?event.target.value:'recent';load();return}
   if(!event.target.closest('#lxCatalogFilters'))return;
   if(!['genre','country','year'].includes(event.target.name))return;
   filters[event.target.name]=event.target.value;

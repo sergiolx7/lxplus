@@ -4,6 +4,7 @@ import {playCallSound} from './call-sounds.js';
 import {voiceConstraints,microphoneLevel,inputHealth} from './voice-quality.js';
 import {bindAnsweringMicrophone,outgoingVoiceState,replaceMicrophoneTrack} from './call-voice-signaling.js';
 import {callView} from './call-view.js';
+import {watchInputDevices} from './call-devices.js';
 import {premiumCaptureQuality} from './premium-style.js';
 import {rtcConfig,stunServers} from './rtc-config.js';
 import {fastRtcConfig,shouldUpgradeTurn} from './rtc-fast.js';
@@ -63,7 +64,7 @@ export class Calls {
    if(camera){camera.setAttribute('aria-pressed','false');camera.setAttribute('aria-label','Ativar câmera');camera.querySelector('span').textContent='Ativar câmera'}
   }
   el.querySelector('#callShareAudio').volume=.85;this.refreshMicrophones().catch(()=>{});this.listenScreenAudio=true;this.remoteScreenAudioDeclared=false;this.voicePlaybackState='not-ready';this.voicePrevious=null;this.callStartedAt=Date.now();this.watchVoice('local',this.local?.getAudioTracks()[0]);this.durationTimer=setInterval(()=>this.updateDuration(),1000);this.updateDuration();
-  this.callAbort=new AbortController();const signal=this.callAbort.signal;el.addEventListener('keydown',e=>{if(e.key==='Escape'&&el.classList.contains('call-theater')){el.classList.remove('call-theater');el.querySelector('[data-call-fullscreen]').textContent='⤢ Tela cheia'}},{signal});
+  this.callAbort=new AbortController();this.watchInput();const signal=this.callAbort.signal;el.addEventListener('keydown',e=>{if(e.key==='Escape'&&el.classList.contains('call-theater')){el.classList.remove('call-theater');el.querySelector('[data-call-fullscreen]').textContent='⤢ Tela cheia'}},{signal});
   document.addEventListener('fullscreenchange',()=>{if(this.surface===el){const b=el.querySelector('[data-call-fullscreen]');b.textContent=document.fullscreenElement===el?'⤡ Sair da tela cheia':'⤢ Tela cheia';b.setAttribute('aria-label',document.fullscreenElement===el?'Sair da tela cheia da chamada':'Tela cheia da chamada')}},{signal});
   el.addEventListener('dblclick',e=>{if(e.target.closest('[data-call-stage]'))this.fullscreen().catch(()=>{})},{signal});
   el.addEventListener('input',e=>{const kind=e.target.dataset.callVolume;if(kind)el.querySelector(kind==='voice'?'#callRemote':'#callShareAudio').volume=Number(e.target.value)/100},{signal});
@@ -119,6 +120,10 @@ export class Calls {
    if(selected&&!items.some(x=>x.deviceId===selected)){this.micDeviceId='';this.status('Microfone desconectado. Selecione outra entrada.')}
   }catch(e){console.warn('LX microphone devices',e)}
  }
+ watchInput(track=this.local?.getAudioTracks()[0]){
+  this.stopInputDevices?.();const callId=this.call?.id;
+  this.stopInputDevices=watchInputDevices({devices:navigator.mediaDevices,track,isCurrent:()=>!!callId&&this.call?.id===callId&&this.local?.getAudioTracks()[0]===track,onChange:()=>this.refreshMicrophones().catch(()=>{}),onLost:()=>{this.status('Microfone desconectado. Escolha outra entrada ou use Reparar mic.');this.surface?.querySelector('[data-call-mic-repair]')?.classList.add('needs-attention');this.refreshMicrophones().catch(()=>{})}});
+ }
  stopMicTest(){
   const t=this.micTester;this.micTester=null;
   if(t){clearInterval(t.timer);try{t.source.disconnect()}catch{};try{t.analyser.disconnect()}catch{};t.context.close().catch(()=>{})}
@@ -156,8 +161,7 @@ export class Calls {
     if(!sender&&this.call?.caller_id===this.userId)throw Error('Canal de voz indisponível. Use Reconectar chamada.');
     const current=()=>this.pc===pc&&this.local===local&&this.call?.id===callId;
     if(!await replaceMicrophoneTrack({stream:local,sender,next,isCurrent:current}))return false;
-    this.stopMicTest();this.micSender=sender||null;this.watchVoice('local',next);
-    next.addEventListener('ended',()=>{if(current()){this.status('Microfone desconectado. Clique em Reparar mic.');this.surface?.querySelector('[data-call-mic-repair]')?.classList.add('needs-attention')}},{once:true});
+    this.stopMicTest();this.micSender=sender||null;this.watchVoice('local',next);this.watchInput(next);
     this.syncMicControl();this.surface?.querySelector('[data-call-mic-repair]')?.classList.remove('needs-attention');
     this.status(next.enabled?'Microfone atualizado':'Microfone atualizado · continua silenciado');await this.refreshMicrophones();
     this.toast(next.enabled?'Microfone atualizado.':'Microfone atualizado e mantido silenciado.');return true;
@@ -308,7 +312,7 @@ export class Calls {
   await this.signal('ice',{media:{screen:false}});
  }
  async end(){const id=this.call?.id;this.call=null;this.disposeMedia();this.removeSurface();if(id)await checked(db.rpc('lx_end_call',{p_call_id:id}))}
- disposeMedia(){this.stopConnectionWatch?.();this.stopConnectionWatch=null;this.stopMicTest();this.stopLocalVoice?.();this.stopRemoteVoice?.();this.stopLocalVoice=null;this.stopRemoteVoice=null;this.voiceContext?.close().catch(()=>{});this.voiceContext=null;clearInterval(this.durationTimer);this.pendingSignals?.clear();this.voicePrevious=null;this.localSpeaking=false;clearTimeout(this.retryTimer);this.retryTimer=null;clearTimeout(this.connectionTimeout);clearInterval(this.signalTimer);clearInterval(this.metricsTimer);clearInterval(this.renewTimer);this.negotiating=false;this.pendingNegotiation=false;this.restarting=false;this.signalQueue=null;this.iceKinds=new Set();this.remoteAnswered=false;this.cursor=0;this.ice=[];this.seen.clear();this.pc?.close();this.pc=null;this.local?.getTracks().forEach(t=>t.stop());this.screen?.getTracks().forEach(t=>t.stop());this.local=null;this.remote=null;this.screen=null;this.micSender=null;this.remoteShareSurface=null;this.videoSender=null;this.screenSender=null;this.shareAudioSender=null;this.remoteShareAudio=false;this.remoteScreenAudioDeclared=false;this.sharing=false;this.listenScreenAudio=true;if(this.channel){db.removeChannel(this.channel);this.channel=null}}
+ disposeMedia(){this.stopInputDevices?.();this.stopInputDevices=null;this.stopConnectionWatch?.();this.stopConnectionWatch=null;this.stopMicTest();this.stopLocalVoice?.();this.stopRemoteVoice?.();this.stopLocalVoice=null;this.stopRemoteVoice=null;this.voiceContext?.close().catch(()=>{});this.voiceContext=null;clearInterval(this.durationTimer);this.pendingSignals?.clear();this.voicePrevious=null;this.localSpeaking=false;clearTimeout(this.retryTimer);this.retryTimer=null;clearTimeout(this.connectionTimeout);clearInterval(this.signalTimer);clearInterval(this.metricsTimer);clearInterval(this.renewTimer);this.negotiating=false;this.pendingNegotiation=false;this.restarting=false;this.signalQueue=null;this.iceKinds=new Set();this.remoteAnswered=false;this.cursor=0;this.ice=[];this.seen.clear();this.pc?.close();this.pc=null;this.local?.getTracks().forEach(t=>t.stop());this.screen?.getTracks().forEach(t=>t.stop());this.local=null;this.remote=null;this.screen=null;this.micSender=null;this.remoteShareSurface=null;this.videoSender=null;this.screenSender=null;this.shareAudioSender=null;this.remoteShareAudio=false;this.remoteScreenAudioDeclared=false;this.sharing=false;this.listenScreenAudio=true;if(this.channel){db.removeChannel(this.channel);this.channel=null}}
  removeSurface(){this.callAbort?.abort();this.callAbort=null;if(document.fullscreenElement===this.surface)document.exitFullscreen().catch(()=>{});if(this.surface){for(const media of this.surface.querySelectorAll('audio,video')){media.pause();media.srcObject=null}}this.surface?.remove();this.surface=null}
  destroy(){this.closed=true;clearInterval(this.pollTimer);const id=this.call?.id;this.call=null;this.disposeMedia();this.removeSurface();if(id)db.rpc('lx_end_call',{p_call_id:id}).catch(()=>{})}
 }
