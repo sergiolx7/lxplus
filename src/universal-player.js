@@ -1,6 +1,6 @@
-// LX Plus Next: link classification, not an arbitrary file proxy.
-// Only provider-approved embeds and browser-supported media are attempted.
-const googleDriveHosts=new Set(['drive.google.com','docs.google.com']);
+import {driveReference,driveViewUrl} from './drive-source.js';
+// Drive originals use authenticated media tickets; other providers keep their embeds.
+const googleDriveHosts=new Set(['drive.google.com','docs.google.com','drive.usercontent.google.com']);
 const ytHosts=new Set(['youtube.com','www.youtube.com','m.youtube.com','music.youtube.com','youtu.be','www.youtu.be','www.youtube-nocookie.com','youtube-nocookie.com']);
 const vimeoHosts=new Set(['vimeo.com','www.vimeo.com','player.vimeo.com']);
 const extensions={
@@ -35,14 +35,9 @@ export function classifyLink(input,{audio=false,kind:hint='auto'}={}){
   return {kind:'iframe',provider:'YouTube',url:'https://www.youtube-nocookie.com/embed/'+id+'?rel=0&playsinline=1',source:u.href};
  }
  if(googleDriveHosts.has(h)){
-  const i=parts.indexOf('d');
-  let driveId=i>=0&&parts[i+1]||'';
-  if(!driveId&&parts[0]==='file'&&parts[1]==='d')driveId=parts[2]||'';
-  if(!driveId)driveId=u.searchParams.get('id')||'';
-  if(/^[-\w]{10,256}$/.test(driveId)&&(/^(?:file|open|uc|preview)/.test(parts[0]||'')||h==='drive.google.com')){
-    return {kind:'iframe',provider:'Google Drive',url:'https://drive.google.com/file/d/'+encodeURIComponent(driveId)+'/preview',source:u.href,message:'O arquivo precisa estar compartilhado para visualização e permitir prévia.'};
-  }
-  return {...unavailable('Documentos do Google que não são arquivos de vídeo precisam ser abertos no serviço original.'),url:u.href};
+  const ref=driveReference(u.href);
+  if(ref)return {kind:'drive',provider:'Google Drive',...ref,audio,source:driveViewUrl(ref),url:driveViewUrl(ref)};
+  return {...unavailable('Documentos e pastas do Google precisam ser abertos no serviço original.'),url:u.href};
  }
  if(vimeoHosts.has(h)){
   const videoId=(h==='player.vimeo.com'?parts[1]:parts[0])||'';
@@ -58,9 +53,16 @@ export function classifyLink(input,{audio=false,kind:hint='auto'}={}){
  }
  if(!kind&&['video','audio','hls','dash'].includes(hint))kind=hint;
  if(kind)return{kind,provider:kind==='hls'?'HLS':kind==='dash'?'MPEG-DASH':'Arquivo direto',url:u.href,source:u.href};
- return {...unavailable('Link reconhecido, mas sem formato incorporável. Abra na origem ou use MP4, HLS, DASH ou uma prévia pública do Drive/YouTube.'),url:u.href};
+ return {...unavailable('Link reconhecido, mas sem formato incorporável. Abra na origem ou use MP4, HLS, DASH ou um arquivo compartilhado do Drive/YouTube.'),url:u.href};
 }
-export async function resolveItem(item,{signStorage}={}){
+export async function resolveItem(item,{signStorage,resolveDrive}={}){
+ const playable=async result=>{
+  if(result.kind!=='drive')return result;
+  if(!resolveDrive)return {kind:'unavailable',provider:'Google Drive',source:result.source,message:'O player do Drive precisa de uma sessão válida na LX Plus.'};
+  const media=await resolveDrive(result,item);
+  if(!media||!['video','audio'].includes(media.kind)||!safe(media.url))throw Error('O Drive não retornou um arquivo compatível para o player LX.');
+  return {...media,provider:'Google Drive',source:result.source,driveId:result.driveId};
+ };
  if(!item||typeof item!=='object')return {kind:'invalid',message:'Item inválido.'};
  if(item.type==='Livro'){
   const link=item.externalReadUrl||item.sourceUrl;
@@ -76,24 +78,24 @@ export async function resolveItem(item,{signStorage}={}){
    item.license?.authorized||item.license?.status==='approved');
  if(direct){
   const result=classifyLink(String(direct),{audio,kind:item.sourceKind});
-  if(result.kind!=='invalid')return result;
+  if(result.kind!=='invalid')return playable(result);
  }
  const native=item.nativeAsset||item.mediaKey||item.sourceMediaKey;
  const path=typeof native==='string'?native:(native?.url||native?.path||native?.storagePath||'');
- if(typeof path==='string'&&/^gdrive:[\w-]{10,256}$/.test(path))return classifyLink('https://drive.google.com/file/d/'+path.slice(7)+'/view');
+ if(typeof path==='string'&&/^gdrive:[\w-]{10,256}$/.test(path))return playable(classifyLink('https://drive.google.com/file/d/'+path.slice(7)+'/view',{audio}));
  if(typeof path==='string'&&/^youtube:[\w-]{11}$/.test(path))return classifyLink('https://www.youtube.com/watch?v='+path.slice(8));
  if(typeof path==='string'&&/^spotify:(track|album|playlist):[A-Za-z0-9]{22}$/.test(path)){const [,kind,id]=path.split(':');return classifyLink('https://open.spotify.com/'+kind+'/'+id)}
  if(typeof path==='string'&&path.startsWith('cloud:')&&signStorage){
   const result=await signStorage(path);if(result)return classifyLink(result,{audio});
  }
- if(typeof path==='string'&&path.startsWith('https:'))return classifyLink(path,{audio,kind:item.sourceKind});
+ if(typeof path==='string'&&path.startsWith('https:'))return playable(classifyLink(path,{audio,kind:item.sourceKind}));
  if(authorized){
   let external=null;
   for(const key of preferred){
     const url=item[key];
     if(typeof url==='string'&&url){
       const result=classifyLink(url,{audio,kind:item.sourceKind});
-      if(result.kind!=='invalid'&&result.kind!=='external')return result;
+      if(result.kind!=='invalid'&&result.kind!=='external')return playable(result);
       if(result.kind==='external')external=result;
     }
   }
@@ -115,7 +117,7 @@ export async function attachPlayer(media,source,{onError=()=>{},onQualities=()=>
  let library=null,closed=false;
  const assertOpen=()=>{if(closed||signal?.aborted)throw new DOMException('Reprodução cancelada.','AbortError')};
  assertOpen();
- const mediaError=()=>{if(!closed)onError('O navegador não conseguiu reproduzir este arquivo. Confira o link, formato, permissões e suporte a CORS.')};
+ const mediaError=()=>{if(!closed)onError(source.provider==='Google Drive'?'O arquivo original não pôde ser reproduzido. Confira o acesso no Drive e use MP4 com vídeo H.264 e áudio AAC. MKV e áudio AC3 podem não funcionar neste navegador.':'O navegador não conseguiu reproduzir este arquivo. Confira o link, formato, permissões e suporte a CORS.')};
  const cleanup=()=>{
   if(closed)return;closed=true;signal?.removeEventListener('abort',cleanup);media.removeEventListener('error',mediaError);
   media.pause();try{library?.destroy?.()}catch{}try{library?.reset?.()}catch{}

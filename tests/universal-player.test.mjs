@@ -9,8 +9,9 @@ test('Google Drive supports file, open and uc links',()=>{
   'https://drive.google.com/uc?export=download&id=1Abcde1234567890xyz'
  ]){
   const entry=classifyLink(link);
-  assert.equal(entry.kind,'iframe');assert.equal(entry.provider,'Google Drive');
-  assert.equal(entry.url,'https://drive.google.com/file/d/1Abcde1234567890xyz/preview');
+  assert.equal(entry.kind,'drive');assert.equal(entry.provider,'Google Drive');
+  assert.equal(entry.url,'https://drive.google.com/file/d/1Abcde1234567890xyz/view');
+  assert.equal(entry.driveId,'1Abcde1234567890xyz');
  }
 });
 test('Google Docs text files are external, not playable',()=>{

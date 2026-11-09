@@ -93,7 +93,15 @@ export async function publicMembers(){
  return error?[]:(data||[]);
 }
 export async function sourceFor(item){
- return resolveItem(item,{signStorage:async key=>{
+ return resolveItem(item,{resolveDrive:async source=>{
+  const {data,error}=await db.functions.invoke('lx-drive-player',{body:{catalogId:String(item.id),driveId:source.driveId}});
+  if(error||!data?.url){
+   let detail=data;
+   if(error?.context?.json)try{detail=await error.context.json()}catch{}
+   throw Error(detail?.message||(detail?.error==='AUTH_REQUIRED'?'Entre novamente na sua conta para reproduzir.':'Não foi possível abrir o original do Drive. Confira o compartilhamento e tente novamente.'));
+  }
+  return data;
+ },signStorage:async key=>{
   if(!/^cloud:media\//.test(key))return null;
   // A signed URL is scoped to an authenticated session; not an arbitrary proxy.
   const {data,error}=await db.storage.from(BACKEND.mediaBucket).createSignedUrl(key.slice(6),900);

@@ -79,7 +79,7 @@ export function buildMoviePayload(row,rightsConfirmed){
   rating:Number(m.rating||0),
   driveId,
   sourceUrl:viewUrl,
-  playbackMode:'google-drive-preview',
+  playbackMode:'lx-drive-player',
   sourceProvider:'Google Drive',
   metadataProvider:'TMDB',
   providerRemoteId:'tmdb:movie:'+String(m.remoteId||''),
