@@ -1,8 +1,9 @@
 import {icon} from './ui.js';
-import {nexusHomeMusic,resumeProgress} from './nexus-ui.js';
-import {displaySizeControls,readDisplay} from './display-preferences.js';
+import {lx5QuickNavigation,lx5HomeIntro,lx5EmptyHero,lx5HomeAside,lx5CommunityActivity} from './lx5-design.js';
+import {resumeProgress} from './nexus-ui.js';
+import {readDisplay} from './display-preferences.js';
 import {cinemaOriginalPoster} from './cinema-original-poster.js';
-import {orbitWelcome,orbitPortals,orbitDiscovery} from './orbit-ui.js';
+import {orbitDiscovery} from './orbit-ui.js';
 // LX Plus Premium: UI-only view helpers. No network calls or privileged credentials.
 const html=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const isCinema=x=>['Filme','Série','Dorama','Anime'].includes(x?.type);
@@ -34,12 +35,12 @@ function row(title,subtitle,items,key,variant='poster',history={}){
  '<div class="premium-rail" data-rail="'+html(key)+'">'+picks.map(x=>premiumCard(x,variant,history[String(x.id)])).join('')+'</div></section>';
 }
 function feature(item,eager=true){
- if(!item)return orbitWelcome();
+ if(!item)return lx5EmptyHero();
  const coming=item.metadataOnly||item.catalogOnly||item.availability==='coming_soon';
  const light=readDisplay().performance==='light',url=light?'':mediaUrl(item.bannerDesktop||item.banner||item.cover),mobile=light?'':mediaUrl(item.bannerMobile),position=Math.max(0,Math.min(100,Number(item.focalX)||50));
  return '<section class="premium-feature"><div class="premium-feature-image">'+(url?'<picture>'+(mobile?'<source media="(max-width:600px)" srcset="'+html(mobile)+'">':'')+'<img src="'+html(url)+'" style="object-position:'+position+'% center" alt="" loading="'+(eager?'eager':'lazy')+'" fetchpriority="'+(eager?'high':'low')+'" referrerpolicy="no-referrer"></picture>':'')+'</div><div class="premium-feature-grad"></div>'+
- '<div class="premium-feature-text"><span class="premium-overline">EM DESTAQUE NA LX PLUS</span><h1>'+safeTitle(item)+'</h1><p>'+html((item.description||item.desc||'Descubra uma nova história na LX Plus.').slice(0,230))+'</p><div class="premium-meta"><span>'+html(item.year||'Destaque')+'</span><span>'+html(fmtKind(item.type))+'</span><span>Na LX Plus</span></div>'+
- '<div class="premium-feature-actions">'+(coming?'<button class="btn primary" data-item="'+setItem(item)+'">✦ Em breve · ver detalhes</button>':'<button class="btn primary" data-play="'+setItem(item)+'">'+icon('play')+' Assistir agora</button>')+'<button class="btn premium-secondary" data-item="'+setItem(item)+'">'+icon('plus')+' Ver detalhes</button></div></div><span class="premium-feature-bottom">DESENVOLVIDO PELA LX GROUP</span></section>';
+ '<div class="premium-feature-text"><span class="lx5-live-tag">✦ DESTAQUE DA LX PLUS</span><h2>'+safeTitle(item)+'</h2><p>'+html((item.description||item.desc||'Descubra uma nova história na LX Plus.').slice(0,230))+'</p><div class="premium-meta"><span>'+html(item.year||'Destaque')+'</span><span>'+html(fmtKind(item.type))+'</span><span>Na LX Plus</span></div>'+
+ '<div class="premium-feature-actions">'+(coming?'<button class="btn primary" data-item="'+setItem(item)+'">✦ Em breve · ver detalhes</button>':'<button class="btn primary" data-play="'+setItem(item)+'">'+icon('play')+' Assistir agora</button>')+'<button class="btn premium-secondary" data-item="'+setItem(item)+'">'+icon('plus')+' Ver detalhes</button></div></div><span class="premium-feature-bottom">CINEMA · NO SEU UNIVERSO</span></section>';
 }
 function categoryStats(items){
  const labels=[['Filmes','Filme','▣'],['Séries','Série','▤']];
@@ -48,7 +49,7 @@ function categoryStats(items){
  return '<button class="premium-quick-tile" data-page="'+page+'"><span class="quick-icon">'+icon+'</span><span><strong>'+page+'</strong><small>'+(n?'Explore os títulos':'Novos títulos em breve')+'</small></span><i>↗</i></button>';
  }).join('')+'</section>';
 }
-function home({items,history,list,musicHistory={},members=[],presence=[]}){
+function home({items,history,list,musicHistory={},members=[],presence=[],profile={},overview=null}){
  const current=(items||[]).filter(isCinema),withArt=current.filter(x=>x.banner||x.cover);
  const fav=new Set((list||[]).map(String));
  const seen=Object.entries(history||{}).filter(([,h])=>h?.position>0&&(!h.duration||h.position<h.duration-15)).sort((a,b)=>String(b[1]?.updatedAt||'').localeCompare(String(a[1]?.updatedAt||'')))
@@ -70,7 +71,8 @@ function home({items,history,list,musicHistory={},members=[],presence=[]}){
  top:topTen(top),recent:row('Novidades do catálogo','SELEÇÃO DA LX PLUS',recent,'recent','landscape'),
  saved:row('Sua lista','SALVOS PARA VOCÊ',favorites,'saved'),movies:row('Filmes para explorar','CINEMA',movies,'movies'),series:row('Séries em destaque','TEMPORADAS E HISTÓRIAS',shows.filter(x=>x.type==='Série'),'series')+row('Seu próximo dorama','HISTÓRIAS PARA SE APAIXONAR',shows.filter(x=>x.type==='Dorama'),'doramas')+row('Universos de anime','OUTRAS DIMENSÕES',shows.filter(x=>x.type==='Anime'),'animes')
  };
- return '<div class="home-intro-line"><div><span class="premium-overline">BEM-VINDO À LX PLUS</span><p>Seu próximo favorito está aqui.</p></div><div class="home-display-toolbar">'+displaySizeControls()+'</div></div>'+'<div class="nexus-home-stage '+(items.some(x=>x.type==='Música')?'has-music':'')+'">'+carousel+nexusHomeMusic(items,musicHistory)+'</div>'+orbitPortals()+readDisplay().homeOrder.map(id=>sections[id]).join('')+orbitDiscovery()+homeMusic(items||[],musicHistory)+homeConnections(members,presence)+'<section class="home-discover-strip"><div><span class="premium-overline">FEITO PARA VOCÊ</span><h2>Seu universo tem a sua assinatura.</h2><p>Explore decorações, cores e efeitos no LX Premium.</p></div><button class="btn" data-page="Premium">Conhecer Premium ✦</button><button class="link" data-page="Novidades">O que há de novo ↗</button></section>';
+ return lx5HomeIntro(profile)+'<div class="lx5-home-layout"><div class="lx5-home-main">'+carousel+lx5QuickNavigation()+readDisplay().homeOrder.map(id=>sections[id]).join('')+homeMusic(items||[],musicHistory)+orbitDiscovery()+'</div>'+lx5HomeAside({items,musicHistory,members,presence,overview,profile})+'</div>'+lx5CommunityActivity(overview)+'<section class="home-discover-strip lx5-discover-strip"><div><span class="premium-overline">SEU ESTILO TEM ESPAÇO AQUI</span><h2>Seu universo. Sua assinatura.</h2><p>Decorações, avatares e experiências que combinam com você.</p></div><button class="btn primary" data-page="Premium">Explorar o LX Premium '+icon('sparkles')+'</button></section>';
+
 }
 
 function homeMusic(items,history){
@@ -87,7 +89,7 @@ export function homeConnections(members=[],presence=[]){
 
 function topTen(items){
  if(!items.length)return '';
- return '<section class="premium-section top-ten-section" aria-label="Top 10 da LX Plus"><div class="premium-row-title"><div><span class="premium-overline">SELEÇÃO LX · CINEMA</span><h2>Top 10 da LX Plus</h2><p>Seleção editorial · '+items.length+' '+(items.length===1?'título':'títulos')+' disponível(is). Não é um ranking fictício.</p></div><div class="top-ten-header-actions"><button class="btn small" type="button" data-share-top aria-label="Compartilhar a seleção Top 10 da LX Plus">↗ Compartilhar</button><div class="rail-actions"><button data-scroll="top-ten" data-direction="-1" aria-label="Voltar Top 10">‹</button><button data-scroll="top-ten" data-direction="1" aria-label="Avançar Top 10">›</button></div></div></div><div class="premium-rail top-ten-rail" data-rail="top-ten">'+items.map((item,i)=>'<article class="top-ten-item"><span class="top-ten-number" aria-hidden="true">'+(i+1)+'</span>'+premiumCard(item)+'<button class="top-ten-share" type="button" data-share-item="'+setItem(item)+'" aria-label="Compartilhar '+safeTitle(item)+'">↗ Compartilhar</button></article>').join('')+'</div></section>';
+ return '<section class="premium-section top-ten-section" aria-label="Top 10 da LX Plus"><div class="premium-row-title"><div><span class="premium-overline">SELEÇÃO LX · CINEMA</span><h2>Top 10 da LX Plus</h2><p>Seleção editorial · '+items.length+' '+(items.length===1?'título selecionado':'títulos selecionados')+'.</p></div><div class="top-ten-header-actions"><button class="btn small" type="button" data-share-top aria-label="Compartilhar a seleção Top 10 da LX Plus">↗ Compartilhar</button><div class="rail-actions"><button data-scroll="top-ten" data-direction="-1" aria-label="Voltar Top 10">‹</button><button data-scroll="top-ten" data-direction="1" aria-label="Avançar Top 10">›</button></div></div></div><div class="premium-rail top-ten-rail" data-rail="top-ten">'+items.map((item,i)=>'<article class="top-ten-item"><span class="top-ten-number" aria-hidden="true">'+(i+1)+'</span>'+premiumCard(item)+'<button class="top-ten-share" type="button" data-share-item="'+setItem(item)+'" aria-label="Compartilhar '+safeTitle(item)+'">↗ Compartilhar</button></article>').join('')+'</div></section>';
 }
 function listing({items,page,filter,term}){
  const options=['Todos','Filme','Série','Dorama','Anime','Música','Livro'];
@@ -95,9 +97,9 @@ function listing({items,page,filter,term}){
  '<div class="filters premium-filters">'+options.map(x=>'<button type="button" class="chip '+(filter===x?'active':'')+'" data-filter="'+html(x)+'">'+html(x)+'</button>').join('')+'</div>'+
  (items.length?'<div class="premium-grid">'+items.slice(0,100).map(x=>premiumCard(x)).join('')+'</div>'+(items.length>100?'<p class="muted premium-result-note">Mostrando os primeiros 100 resultados. Refine sua busca para localizar outros títulos.</p>':''):'<div class="panel premium-empty"><h2>Nenhum resultado encontrado</h2><p>Tente outra palavra ou categoria.</p><button id="clear" class="btn">Limpar pesquisa</button></div>');
 }
-export function renderPremiumCatalog({items,page,filter='Todos',term='',history={},list=[],musicHistory={},members=[],presence=[],catalogStatus='ready'}={}){
+export function renderPremiumCatalog({items,page,filter='Todos',term='',history={},list=[],musicHistory={},members=[],presence=[],profile={},overview=null,catalogStatus='ready'}={}){
  if(catalogStatus==='loading'&&!items?.length)return '<div class="premium-skeleton"><div class="premium-skeleton-feature"></div><div class="premium-skeleton-row"></div><div class="premium-skeleton-row"></div><p>Preparando sua biblioteca LX Plus…</p></div>';
  if(catalogStatus==='error'&&!items?.length)return '<div class="premium-listing-head"><h1>Catálogo indisponível</h1><p>Seu login continua conectado; os títulos não responderam.</p><button class="btn primary" id="retryCatalog">Tentar novamente</button></div>';
- if(page==='Início'&&!term)return home({items,history,list,musicHistory,members,presence});
+ if(page==='Início'&&!term)return home({items,history,list,musicHistory,members,presence,profile,overview});
  return listing({items,page,filter,term});
 }

@@ -1,0 +1,24 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LX Plus 5.0 · Validação de interface</title><style>
+*{box-sizing:border-box}body{margin:0;background:#090511;color:#eddefe;font:13px system-ui}header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:17px;flex-wrap:wrap;padding:15px 22px;border-bottom:1px solid #563469;background:#160b24}header strong{font-size:16px;margin-right:auto}label{display:flex;align-items:center;gap:8px;font-size:11px}select,button{background:#29113e;color:#edd7ff;border:1px solid #72508b;border-radius:8px;padding:9px 12px}output{font-size:10px;color:#c29ede;min-width:90px}main{padding:20px;overflow:auto}iframe{box-sizing:content-box;display:block;max-width:none;border:1px solid #67417f;border-radius:12px;background:#080611;box-shadow:0 16px 70px #0008}#diagnostic{padding:12px 20px;margin:0;border-top:1px solid #422453;font:11px/1.6 ui-monospace,monospace;white-space:pre-wrap;color:#b09cc1}a{color:#d6b5ff}
+</style></head><body><header><strong>LX Plus 5.0 · QA local</strong><label>Dispositivo<select id="device" aria-label="Dispositivo de teste"><option value="1440,1000">Desktop · 1440 × 1000</option><option value="1280,900">Notebook · 1280 × 900</option><option value="768,1024">Tablet · 768 × 1024</option><option value="390,844">Celular · 390 × 844</option><option value="340,800">Compacto · 340 × 800</option></select></label><label>Página<select id="route" aria-label="Página de teste"></select></label><button id="refresh">Recarregar</button><output id="status" aria-live="polite">Carregando</output></header><main><iframe id="appFrame" title="LX Plus em validação" width="1440" height="1000"></iframe></main><pre id="diagnostic">Os dados exibidos nesta página são exclusivamente de teste. Não há conexão com o banco real.</pre><script type="module">
+const frame=document.querySelector('#appFrame'),device=document.querySelector('#device'),route=document.querySelector('#route'),status=document.querySelector('#status'),diagnostic=document.querySelector('#diagnostic');
+const routes=['Início','Filmes','Séries','Doramas','Animes','Ao vivo','Livros','Músicas','Playlists','Comunidade','Minha Lista','Ranking','Perfil','Premium','Avisos','Suporte','LX IA','Mural dos Fundadores','Novidades','Administração'];
+for(const name of routes){const option=document.createElement('option');option.value=name;option.textContent=name;route.append(option)}
+let generation=0;
+function load(){const [width,height]=device.value.split(',').map(Number);frame.width=width;frame.height=height;status.value='Carregando';generation++;frame.src='/qa/?qa-premium=1&qa-photo=1&qa-case=lx5-ui#'+encodeURIComponent(route.value);observe()}
+function observe(){
+ const current=generation,start=Date.now();
+ const check=()=>{if(current!==generation)return;const doc=frame.contentDocument,view=frame.contentWindow;const host=doc.querySelector('.route-content');
+  if(!host||host.dataset.route!==route.value||host.getAttribute('aria-busy')==='true'||host.querySelector('.lx5-route-skeleton,.module-loading,.loading')){if(Date.now()-start>35000){status.value='Falha ao carregar';return}requestAnimationFrame(check);return}
+  const failures=[...doc.querySelectorAll('h1,h2')].filter(e=>e.textContent.includes('Não foi possível abrir esta seção'));
+  const width=view.innerWidth,overflow=Math.max(0,doc.documentElement.scrollWidth-width);
+  const clipped=el=>{for(let parent=el.parentElement;parent&&parent!==doc.body;parent=parent.parentElement){const style=view.getComputedStyle(parent),rect=parent.getBoundingClientRect();if(/auto|scroll|hidden|clip/.test(style.overflowX)&&rect.right<=width+2)return true}return false};
+  const outside=[...doc.querySelectorAll('body *')].filter(el=>{const style=view.getComputedStyle(el),r=el.getBoundingClientRect();return r.width>0&&r.right>width+2&&r.left>=0&&style.position!=='fixed'&&!clipped(el)&&!el.closest('.premium-rail,.data-table-wrap,.section-tabs,.studio-tabs,.lx-music-nav,.reader-viewport,.reader-sidebar,.chat-messages,.compact-menu-panel')}).slice(0,7).map(e=>({tag:e.tagName,class:e.className,right:Math.round(e.getBoundingClientRect().right)}));
+  status.value=failures.length?'Erro na página':'Pronto';
+  diagnostic.textContent=JSON.stringify({route:route.value,viewport:[width,view.innerHeight],documentWidth:doc.documentElement.scrollWidth,overflow,routeError:failures.length>0,outside},null,2);
+ };
+ requestAnimationFrame(check);
+}
+frame.addEventListener('load',observe);
+device.addEventListener('change',load);route.addEventListener('change',load);document.querySelector('#refresh').addEventListener('click',load);load();
+</script></body></html>

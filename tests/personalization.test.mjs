@@ -11,7 +11,7 @@ test('cinema rails stay separate from the new home music discovery section',()=>
  const items=[movie,{id:2,title:'Livro proibido no início',type:'Livro',cover:movie.cover,genre:'Aventura',featured:true},{id:3,title:'Faixa fora do início',type:'Música',cover:movie.cover,genre:'Aventura'},{id:4,title:'Ao vivo',type:'Ao Vivo',cover:movie.cover}];
  const html=renderPremiumCatalog({page:'Início',items,list:[2,3,4],history:{1:{position:30,duration:100},2:{position:10,duration:20}}});
  for(const id of [2,3,4])assert.doesNotMatch(html,new RegExp('data-item="'+id+'"'));
- assert.match(html,/class="orbit-portal" data-page="Livros"/);
+ assert.match(html,/data-page="Livros"/);
  assert.doesNotMatch(html,/Livro proibido no início/);
  assert.match(html,/LX MUSIC/);
  assert.match(html,/class="home-music-card" data-play="3"/);

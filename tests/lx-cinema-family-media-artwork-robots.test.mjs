@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {cinemaOriginalPoster} from '../src/cinema-original-poster.js';
 import {renderCinemaRobotAdmin} from '../src/cinema-robot-admin.js';
+import {lx5Details} from '../src/lx5-design.js';
 import {renderPremiumCatalog} from '../src/premium-ui.js';
 const file=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 
@@ -15,7 +16,7 @@ test('original cinema covers escape malicious titles and provide actual visual a
  const html=renderPremiumCatalog({page:'Início',items:[{id:1,type:'Filme',title:'Uma história nova',metadataOnly:true,availability:'coming_soon'}],history:{},list:[]});
  assert.match(html,/lx-original-cover/);
  assert.match(html,/EM BREVE/);
- assert.match(file('src/app.js'),/cinemaOriginalPoster\(item\)/);
+ assert.match(lx5Details({id:1,type:'Filme',title:'Uma história nova',metadataOnly:true,availability:'coming_soon'}),/lx-original-cover/);
  assert.match(file('index.html'),/lx-original-cinema-posters\.css/);
 });
 

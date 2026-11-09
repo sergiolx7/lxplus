@@ -1,0 +1,1106 @@
+{
+  "testDate": "2026-11-09",
+  "environment": "Chrome · local QA with synthetic data, no production DB connection",
+  "checks": [
+    {
+      "route": "Início",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Filmes",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Séries",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Doramas",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Animes",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Ao vivo",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Livros",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Músicas",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Playlists",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Comunidade",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Minha Lista",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Ranking",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Perfil",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Premium",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Avisos",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Suporte",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "LX IA",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Mural dos Fundadores",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Novidades",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Administração",
+      "viewport": [
+        390,
+        844
+      ],
+      "documentWidth": 375,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Início",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Filmes",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Séries",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Doramas",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Animes",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Ao vivo",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Livros",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Músicas",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Playlists",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Comunidade",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Minha Lista",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Ranking",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Perfil",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Premium",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Avisos",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Suporte",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "LX IA",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Mural dos Fundadores",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Novidades",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Administração",
+      "viewport": [
+        340,
+        800
+      ],
+      "documentWidth": 325,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Início",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1425,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Filmes",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1440,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Séries",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1425,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Doramas",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1440,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Animes",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1440,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Ao vivo",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1440,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Livros",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1440,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Músicas",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1425,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Playlists",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1440,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Comunidade",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1425,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Minha Lista",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1440,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Ranking",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1425,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Perfil",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1425,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Premium",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1425,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Avisos",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1425,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Suporte",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1440,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "LX IA",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1425,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Mural dos Fundadores",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1425,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Novidades",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1425,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Administração",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "documentWidth": 1425,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Início",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Filmes",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Séries",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Doramas",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Animes",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Ao vivo",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Livros",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Músicas",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Playlists",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Comunidade",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Minha Lista",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Ranking",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Perfil",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Premium",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Avisos",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Suporte",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "LX IA",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Mural dos Fundadores",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Novidades",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Administração",
+      "viewport": [
+        768,
+        1024
+      ],
+      "documentWidth": 753,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Início",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Filmes",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Séries",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Doramas",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Animes",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Ao vivo",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1280,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Livros",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Músicas",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Playlists",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1280,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Comunidade",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Minha Lista",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1280,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Ranking",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Perfil",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Premium",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Avisos",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Suporte",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "LX IA",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Mural dos Fundadores",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Novidades",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    },
+    {
+      "route": "Administração",
+      "viewport": [
+        1280,
+        900
+      ],
+      "documentWidth": 1265,
+      "overflow": 0,
+      "routeError": false,
+      "outside": []
+    }
+  ]
+}

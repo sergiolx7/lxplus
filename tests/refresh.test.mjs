@@ -8,8 +8,8 @@ import {presenceSummary} from '../src/social-presence.js';
 import {verifiedBadge,duration} from '../src/ui.js';
 test('theme colors survive account changes without leaking another account preference',()=>{
  const storage=new Map();globalThis.localStorage={getItem:key=>storage.get(key),setItem:(key,val)=>storage.set(key,val)};
- bindDisplayAccount('one');writeDisplay({theme:'rose',surface:'graphite'});bindDisplayAccount('two');assert.equal(readDisplay().theme,'nexus');writeDisplay({theme:'mint'});bindDisplayAccount('one');assert.equal(readDisplay().theme,'rose');bindDisplayAccount(null);delete globalThis.localStorage;
- assert.equal(normalizeDisplay({theme:'evil',customColor:'red;url(evil)'}).theme,'nexus');assert.equal(themeTokens({theme:'custom',customColor:'#000000'}).ink,'#ffffff');assert.equal(themeTokens({theme:'custom',customColor:'#ffffff'}).ink,'#101216');
+ bindDisplayAccount('one');writeDisplay({theme:'rose',surface:'graphite'});bindDisplayAccount('two');assert.equal(readDisplay().theme,'lx5');writeDisplay({theme:'mint'});bindDisplayAccount('one');assert.equal(readDisplay().theme,'rose');bindDisplayAccount(null);delete globalThis.localStorage;
+ assert.equal(normalizeDisplay({theme:'evil',customColor:'red;url(evil)'}).theme,'lx5');assert.equal(themeTokens({theme:'custom',customColor:'#000000'}).ink,'#ffffff');assert.equal(themeTokens({theme:'custom',customColor:'#ffffff'}).ink,'#101216');
 });
 test('equalization rejects unsupported streams and failed cross-origin permission without downloading audio',async()=>{
  assert.equal(await supportsAudioEffects({kind:'iframe',url:'https://example.test'}),false);

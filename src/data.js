@@ -46,7 +46,7 @@ export const itemFrom=r=>{
  return {...p,id:r.id??p.id,title:String(p.title||'Sem título'),type:String(p.type||p.media_kind||'Conteúdo'),cover:safeUrl(p.cover||p.cover_url||''),banner:safeUrl(p.bannerDesktop||p.banner||p.heroArt||''),bannerMobile:safeUrl(p.bannerMobile||''),description:String(p.desc||p.description||''),updatedAt:r.updated_at||p.importedAt||''};
 };
 export async function getCatalog({light=false}={}){
- const groups=await Promise.all(['Filme','Série','Dorama','Anime'].map(async type=>{
+ const groups=await Promise.all(['Filme','Série','Dorama','Anime','Música'].map(async type=>{
   const {data,error}=await db.from('lx_catalog').select('id,payload,published,updated_at').eq('published',true).eq('payload->>type',type).order('updated_at',{ascending:false}).order('id',{ascending:false}).limit(light?12:24);
   if(error)throw error;return (data||[]).map(itemFrom);
  }));
@@ -159,4 +159,18 @@ export async function openSupportTicket(userId,topic){
  const {data,error}=await db.from('lx_support_tickets').insert({user_id:userId,topic:value,status:'open'}).select('id').single();
  if(error)throw error;
  return data;
+}
+
+// Home panels are read through the member's existing RLS policies. No counters are invented.
+export async function getHomeOverview(){
+ const [rankingResult,postsResult]=await Promise.allSettled([
+  getRanking(),
+  db.from('lx_posts').select('id,body,created_at').eq('status','published').eq('visibility','public').order('created_at',{ascending:false}).limit(2)
+ ]);
+ const ranking=rankingResult.status==='fulfilled'?rankingResult.value:null;
+ const rows=(ranking?.rows||[]).slice(0,3),ids=rows.map(row=>row.user_id);
+ const names=ids.length?await db.from('lx_profiles').select('user_id,name,avatar_url,verified').in('user_id',ids).eq('ranking_visible',true):{data:[]};
+ const leaders=rows.map((row,index)=>{const person=names.data?.find(p=>p.user_id===row.user_id);return person?{...row,...person,rank:index+1}:null}).filter(Boolean);
+ const posts=postsResult.status==='fulfilled'&&!postsResult.value.error?postsResult.value.data||[]:[];
+ return {season:ranking?.season||null,leaders,posts};
 }

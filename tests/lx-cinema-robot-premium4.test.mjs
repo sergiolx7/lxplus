@@ -76,6 +76,6 @@ test('metadata only cinema titles visibly say Em breve and never attempt playbac
  assert.match(html,/EM BREVE/);
  const app=file('src/app.js');
  assert.match(app,/if\(item\?\.metadataOnly\|\|item\?\.catalogOnly\|\|item\?\.availability==='coming_soon'\)/);
- assert.match(app,/lx-cinema-modal-coming/);
+ assert.match(file('src/lx5-design.js'),/lx-cinema-modal-coming/);
  assert.match(file('index.html'),/lx-cinema-robot-premium4\.css/);
 });

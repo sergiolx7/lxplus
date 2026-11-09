@@ -1,11 +1,11 @@
 import {mountHomeExperience} from './home-experience.js';
-import {orbitPremiumCard} from './orbit-ui.js';
+import {lx5Brand,lx5Shell,lx5RouteSkeleton,lx5Details,lx5HomeFriends} from './lx5-design.js';
 import {profileName,syncProfileBanners,observePremiumMedia} from './profile-premium.js';
 import {WatchParty} from './watch-party.js';
 import {mountRoute} from './route-lifecycle.js';
 import {bindAmbientLight} from './ambient-light.js';
-import {db,categories,getCatalog,getProfile,getUserState,itemFrom,isAdmin,switchToRecoveryLogin,saveUserField,sourceFor} from './data.js';
-import {renderPremiumCatalog,homeConnections} from './premium-ui.js';
+import {db,categories,getCatalog,getHomeOverview,getProfile,getUserState,itemFrom,isAdmin,switchToRecoveryLogin,saveUserField,sourceFor} from './data.js';
+import {renderPremiumCatalog} from './premium-ui.js';
 import {bindVideoSession,videoControls} from './video-session.js';
 import {preferenceSync} from './preference-sync.js';
 import {musicMix} from './music-discovery.js';
@@ -16,16 +16,15 @@ import {Calls} from './calls.js';
 import {createTelemetry,socialDirectory,catalogPage} from './services.js';
 import {uuid,esc,https,avatar,verifiedBadge,empty,icon,duration} from './ui.js';
 import {cinemaShareUrl,cinemaSharedId,cinemaHomeUrl} from './cinema-sharing.js';
-import {cinemaOriginalPoster} from './cinema-original-poster.js';
 import {bindDisplayControls,bindDisplayAccount,writeDisplay,applyDisplay,readDisplay,greetingForHour,reconcileDisplay,markDisplaySynced} from './display-preferences.js';
 import {showAuthError} from './auth-feedback.js';
 
 const root=document.querySelector('#app');
-const A={user:null,profile:null,admin:false,stored:{},items:[],members:[],page:'Início',term:'',auth:'login',catalogStatus:'loading',generation:0,routeGeneration:0,routeKey:'',controller:null,modal:null,playerCleanup:null,unread:0,presence:0,activity:null,telemetry:null,calls:null,party:null,noticeChannel:null,heartbeatTimer:null,initializing:false};
+const A={user:null,profile:null,admin:false,stored:{},items:[],members:[],homeOverview:null,page:'Início',term:'',auth:'login',catalogStatus:'loading',generation:0,routeGeneration:0,routeKey:'',controller:null,modal:null,playerCleanup:null,unread:0,presence:0,activity:null,telemetry:null,calls:null,party:null,noticeChannel:null,heartbeatTimer:null,initializing:false};
 const pages=[['Início','home'],['Filmes','film'],['Séries','series'],['Doramas','series'],['Músicas','music'],['Livros','book'],['Comunidade','social'],['Minha Lista','heart'],['Playlists','list'],['Ranking','trophy'],['Avisos','bell'],['Perfil','user'],['Suporte','support'],['Mural dos Fundadores','sparkles'],['Premium','sparkles']];
 const routeFiles={'LX IA':['assistant','mount'],Filmes:['catalog','mount'],Séries:['catalog','mount'],Doramas:['catalog','mount'],Animes:['catalog','mount'],Livros:['catalog','mount'],'Ao vivo':['catalog','mount'],Buscar:['search','mount'],Músicas:['music','mount'],Playlists:['music','mount'],Comunidade:['social','mount'],Perfil:['account','mount'],Suporte:['account','mountSupport'],Premium:['premium','mount'],Novidades:['updates','mount'],'Mural dos Fundadores':['founders','mount'],Avisos:['notifications','mount'],'Minha Lista':['library','mount'],Ranking:['library','mountRanking'],Administração:['studio','mount']};
 const timed=(promise,label,ms=12000)=>{let timer;return Promise.race([Promise.resolve(promise),new Promise((_,reject)=>timer=setTimeout(()=>reject(Error(label+' demorou para responder. Verifique a conexão e tente novamente.')),ms))]).finally(()=>clearTimeout(timer))};
-const brand=()=>'<span class="brand-logo"><img src="./assets/lx-play-mark.svg" width="40" height="40" alt=""></span><span class="brand-title"><b>LX PLUS</b><small>Seu mundo, conectado.</small></span>';
+const brand=()=>lx5Brand();
 function toast(message){document.querySelector('.toast')?.remove();const el=document.createElement('div');el.className='toast';el.setAttribute('role','status');el.textContent=String(message);document.body.appendChild(el);setTimeout(()=>el.remove(),5500)}
 const accountPreferences=preferenceSync({save:saveUserField,onSaved(key,value){A.stored={...A.stored,[key]:value};const status=document.querySelector('[data-display-sync-status]');if(key==='displayPreferences'){markDisplaySynced(value);if(status)status.textContent='Aparência sincronizada com a sua conta.'}if(key==='playbackPreferences'){const playback=document.querySelector('[data-playback-status]');if(playback)playback.textContent='Reprodução sincronizada com a sua conta.'}},onError(_error,key){if(key==='playbackPreferences'){const playback=document.querySelector('[data-playback-status]');if(playback)playback.textContent='Preferências atualizadas nesta sessão. Não foi possível sincronizar agora.'}if(key!=='displayPreferences')return;const status=document.querySelector('[data-display-sync-status]');if(status)status.textContent='Salvo neste aparelho. Não foi possível sincronizar agora.'}});
 function savePlaybackPreferences(value){A.stored.playbackPreferences=value;accountPreferences.write('playbackPreferences',value)}
@@ -73,46 +72,11 @@ function renderAuth(){
 }
 function showError(message){root.innerHTML='<main class="full-screen"><div class="brand">'+brand()+'</div><div class="panel"><h2>Vamos tentar de novo.</h2><p>'+esc(message)+'</p><div class="actions"><button class="btn primary" id="retry">Tentar novamente</button><button class="btn" id="manualLogin">Entrar com e-mail e senha</button></div></div></main>'}
 function showGate(){root.innerHTML='<main class="full-screen"><div class="brand">'+brand()+'</div><div class="panel"><span class="badge">Aguardando aprovação</span><h2>Seu cadastro está com a equipe.</h2><p>Depois da confirmação por e-mail e da aprovação, seu acesso será liberado aqui.</p><div class="actions"><button class="btn primary" id="retry">Verificar acesso</button><button class="btn" id="signout">Sair</button></div></div></main>'}
-function nav(name,symbol,mobile=false){const label=name==='Músicas'?'Música':name==='Avisos'?'Notificações':name;return '<button type="button" class="'+(mobile?'mobile-button':'nav-btn')+(A.page===name?' active':'')+'" data-page="'+esc(name)+'" aria-label="'+esc(label)+'" title="'+esc(label)+'">'+icon(symbol)+'<span>'+esc(label)+'</span></button>'}
 function shell(){
- const primary=[['Início','home'],['Filmes','film'],['Séries','series'],['Músicas','music'],['Comunidade','social'],['Livros','book']].map(p=>nav(...p)).join('');
- const extra=[['Doramas','series'],['Animes','sparkles'],['Ao vivo','screen'],['LX IA','sparkles']].map(p=>nav(...p)).join('');
- const collection=[['Minha Lista','heart'],['Playlists','list'],['Ranking','trophy']].map(p=>nav(...p)).join('');
- const account=[['Perfil','user'],['Avisos','bell'],['Suporte','support'],['Mural dos Fundadores','sparkles'],['Novidades','clock']].map(p=>nav(...p)).join('')+(A.admin?nav('Administração','settings'):'');
- root.innerHTML=`<a class="orbit-skip" href="#pageArea">Pular para o conteúdo</a>
- <div class="lx-ambient" aria-hidden="true"><i class="lx-led left"></i><i class="lx-led right"></i></div>
- <div class="shell nexus-shell">
-  <aside class="aside" id="lxSidebar">
-   <button type="button" class="brand brand-button" data-page="Início" aria-label="LX Plus · Início">${brand()}</button>
-   <div class="sidebar-scroll">
-    <nav class="nav-group" aria-label="Explorar LX Plus">${primary}</nav>
-    <details class="nexus-nav-more"><summary>${icon('plus')}<span>Mais para explorar</span></summary><nav>${extra}</nav></details>
-    <nav class="nav-group" aria-label="Sua biblioteca"><span class="nav-label">SUA BIBLIOTECA</span>${collection}</nav>
-    <details class="nexus-nav-more nexus-nav-account"><summary>${icon('settings')}<span>Seu espaço</span></summary><nav>${account}<button type="button" class="performance-toggle" data-performance-toggle aria-label="Alternar modo leve" aria-pressed="false">Modo leve</button></nav></details>
-   </div>
-   ${orbitPremiumCard(A.profile?.is_premium===true)}
-   <button type="button" class="sidebar-profile" data-page="Perfil" aria-label="Abrir perfil da conta">${avatar(A.profile,'sidebar-avatar')}<span><strong id="sidebarProfileName"><span class="profile-name-text">${esc(A.profile?.name||'Membro LX')}</span>${verifiedBadge(A.profile)}</strong><small>${esc(A.profile?.username?'@'+A.profile.username:'Sua conta LX Plus')}</small></span>${icon('arrow')}</button>
-   <small class="sidebar-signature">Uma experiência LX Group</small>
-  </aside>
-  <div class="content">
-   <header class="topbar">
-    <button type="button" class="sidebar-toggle icon-button" data-sidebar-toggle aria-controls="lxSidebar" aria-expanded="true" aria-label="Recolher menu lateral">${icon('list')}</button>
-    <div class="top-context"><img class="header-brand" src="./assets/lx-play-mark.svg" alt="" width="32" height="32"><b class="nexus-mobile-wordmark">LX PLUS</b><strong id="headerGreeting" class="sr-only">${esc(greetingForHour(new Date().getHours()))}, ${esc((A.profile?.name||'Membro LX').split(' ')[0])}.</strong><span id="pageTitle" class="sr-only">${esc(A.page)}</span></div>
-    <label class="header-search">${icon('search')}<input id="search" type="search" placeholder="Buscar filmes, séries, músicas e mais" aria-label="Buscar títulos, músicas, pessoas e recursos" value="${esc(A.term)}"><kbd>Ctrl K</kbd></label>
-    <span class="header-presence sr-only" id="headerPresence"></span>
-    <button type="button" class="header-notifications" data-page="Avisos" aria-label="Abrir notificações">${icon('bell')}<span id="noticeBadge" hidden></span></button>
-    <span class="nexus-header-divider" aria-hidden="true"></span>
-    <button type="button" class="header-upgrade ${A.profile?.is_premium?'active':''}" data-page="Premium">${icon('sparkles')}<span>Premium</span></button>
-    <details class="compact-menu"><summary aria-label="Abrir menu de páginas">${icon('list')}</summary><nav class="compact-menu-panel">${primary}<span class="nav-label">EXPLORAR MAIS</span>${extra}<span class="nav-label">SUA BIBLIOTECA</span>${collection}<span class="nav-label">SEU ESPAÇO</span>${account}</nav></details>
-    <button type="button" class="avatar-button" data-page="Perfil" aria-label="Abrir seu perfil">${avatar(A.profile,'header-avatar')}</button>
-   </header>
-   <main id="pageArea" class="page" tabindex="-1"></main>
-   <footer class="site-footer"><span>LX PLUS <i>por LX Group</i></span><button class="link" data-page="Novidades">Novidades</button><button class="link" data-page="Suporte">Precisa de ajuda?</button></footer>
-  </div>
- </div>
- <nav class="mobile-nav" aria-label="Navegação principal">${[['Início','home'],['Músicas','music'],['Comunidade','social'],['Minha Lista','heart'],['Perfil','user']].map(p=>nav(...p,true)).join('')}</nav><div id="layer"></div>`;
+ root.innerHTML=lx5Shell({profile:A.profile||{},admin:A.admin,page:A.page,term:A.term});
  applyDisplay();refreshBadges();
 }
+
 function refreshBadges(){const n=document.querySelector('#noticeBadge');if(n){n.hidden=!A.unread;n.textContent=A.unread>99?'99+':String(A.unread)}const presence=document.querySelector('#headerPresence');if(presence)presence.textContent=A.presence?A.presence+' na comunidade':''}
 async function refreshNotifications(){if(!A.user)return;const r=await db.from('lx_user_notifications').select('id',{count:'exact',head:true}).eq('user_id',A.user.id).is('read_at',null);if(!r.error){A.unread=r.count||0;refreshBadges()}}
 let listeningSession=null,listeningTrack=null,leagueMusicTracker=null,activeMusicId=null,musicActivityTimer=null;
@@ -156,14 +120,18 @@ async function draw(){
  document.querySelectorAll('.nexus-nav-more').forEach(group=>{if(group.querySelector('.nav-btn.active'))group.open=true});
  document.querySelector('#pageTitle').textContent=A.page==='Músicas'?'LX Music':A.page==='Comunidade'?'LX Social':A.page;
  const key=A.page+'|'+A.term;if(A.routeKey===key)return;
- disposeRoute();A.routeKey=key;const generation=A.routeGeneration,area=document.querySelector('#pageArea'),host=document.createElement('div');host.className='route-content';host.dataset.route=A.page;area.replaceChildren(host);
- if(A.page==='Início'&&!A.term){host.innerHTML=renderPremiumCatalog({items:A.items,page:A.page,history:A.stored.history||{},list:A.stored.list||[],musicHistory:A.stored.musicHistory||{},members:A.members,presence:A.homePresence||[],catalogStatus:A.catalogStatus});A.controller=mountHomeExperience(host);return}
- if(A.page==='Administração'&&!A.admin){host.innerHTML=empty('Esta área é restrita.');return}
- const route=routeFiles[A.page]||routeFiles.Buscar;host.innerHTML='<div class="module-loading"><span class="loading-orbit"></span><p>Preparando seu espaço…</p></div>';
- try{const controller=await mountRoute(async()=>{const module=await import('./modules/'+route[0]+'.js'+new URL(import.meta.url).search);if(generation!==A.routeGeneration)return null;return module[route[1]](host,context())},{isCurrent:()=>generation===A.routeGeneration});if(generation!==A.routeGeneration)return;A.controller=controller}
+ disposeRoute();A.routeKey=key;const generation=A.routeGeneration,area=document.querySelector('#pageArea'),host=document.createElement('div');host.className='route-content';host.dataset.route=A.page;host.setAttribute('aria-busy','true');area.replaceChildren(host);
+ if(A.page==='Início'&&!A.term){host.innerHTML=renderPremiumCatalog({items:A.items,page:A.page,history:A.stored.history||{},list:A.stored.list||[],musicHistory:A.stored.musicHistory||{},members:A.members,presence:A.homePresence||[],profile:A.profile,overview:A.homeOverview,catalogStatus:A.catalogStatus});A.controller=mountHomeExperience(host);host.setAttribute('aria-busy','false');return}
+ if(A.page==='Administração'&&!A.admin){host.innerHTML=empty('Esta área é restrita.');host.setAttribute('aria-busy','false');return}
+ const route=routeFiles[A.page]||routeFiles.Buscar;host.innerHTML=lx5RouteSkeleton(A.page);
+ try{const controller=await mountRoute(async()=>{const module=await import('./modules/'+route[0]+'.js'+new URL(import.meta.url).search);if(generation!==A.routeGeneration)return null;return module[route[1]](host,context())},{isCurrent:()=>generation===A.routeGeneration});if(generation!==A.routeGeneration)return;A.controller=controller;host.setAttribute('aria-busy','false')}
  catch(error){if(generation===A.routeGeneration){const failure=document.createElement('div');failure.className='route-content';failure.innerHTML=empty('Não foi possível abrir esta seção.',error.message,'<button class="btn primary" data-retry-module>Tentar novamente</button>');host.replaceWith(failure);A.telemetry?.record('error','route:'+A.page,error.message)}}
 }
 function navigate(page,{term='',push=true}={}){closeModal();A.page=routeFiles[page]||page==='Início'?page:'Início';A.term=term;const search=document.querySelector('#search');if(search)search.value=/^(?:profile|dm|group):[0-9a-f-]{36}$/i.test(term)||term==='calls'?'':term;if(push)history.pushState({page:A.page,term},'',location.pathname+location.search+'#'+encodeURIComponent(A.page));draw();document.querySelector('#pageArea')?.focus({preventScroll:true});A.telemetry?.record('page',A.page);heartbeat().catch(()=>{});window.scrollTo({top:0,behavior:readDisplay().performance==='light'||matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})}
+async function loadHomeOverview(generation=A.generation){
+ const userId=A.user?.id;if(!userId)return;
+ try{const overview=await timed(getHomeOverview(),'Os destaques da comunidade',16000);if(generation!==A.generation||A.user?.id!==userId)return;A.homeOverview=overview;if(A.page==='Início'){A.routeKey='';draw()}}catch{/* Secondary panels never prevent the catalogue from opening. */}
+}
 async function loadCatalog(generation=A.generation){A.catalogStatus='loading';try{const rows=await timed(getCatalog({light:readDisplay().performance==='light'}),'O catálogo',22000);if(generation!==A.generation||!A.user)return;A.items=rows;A.catalogStatus='ready'}catch(error){if(generation!==A.generation)return;A.catalogStatus='error';A.telemetry?.record('error','catalog',error.message)}if(A.page==='Início'){A.routeKey='';draw()}await openSharedTitle(generation)}
 async function openSharedTitle(generation){
  const id=cinemaSharedId(location.href);
@@ -197,7 +165,7 @@ async function heartbeat(){
  const r=await db.from('lx_presence').upsert({user_id:A.user.id,status,privacy,...activity,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(r.error)return;
  const visible=await db.rpc('lx_presence_for_viewer');if(!visible.error){A.homePresence=visible.data||[];refreshHomeFriends();A.presence=(visible.data||[]).filter(p=>p.status==='online'&&Date.now()-new Date(p.updated_at).valueOf()<90000).length;refreshBadges()}
 }
-function refreshHomeFriends(){if(A.page!=='Início')return;const node=document.querySelector('.home-connections');if(node)node.outerHTML=homeConnections(A.members,(A.homePresence||[]).filter(p=>p.user_id!==A.user?.id))}
+function refreshHomeFriends(){if(A.page!=='Início')return;const node=document.querySelector('.lx5-friends-widget');if(node&&!node.contains(document.activeElement))node.outerHTML=lx5HomeFriends(A.members,(A.homePresence||[]).filter(p=>p.user_id!==A.user?.id))}
 function startMemberServices(){
  A.telemetry?.destroy();A.telemetry=createTelemetry(A.user.id);A.telemetry.record('performance','app_ready','',performance.now());A.telemetry.record('page',A.page);
  A.calls?.destroy();A.calls=new Calls({userId:A.user.id,toast,catalog:()=>A.items,directory:()=>A.members,profile:()=>A.profile});
@@ -206,6 +174,7 @@ function startMemberServices(){
  socialDirectory().then(rows=>{if(A.user){A.members=rows;refreshHomeFriends()}}).catch(()=>{});
 }
 function clearMemberServices(){
+ A.homeOverview=null;
  A.party?.destroy();A.party=null;disposeRoute();closeModal();leagueMusicTracker=null;leagueInteractions=0;leagueActiveTicks=0;leagueLastInteraction=0;leagueDailyDone='';leagueTimeBusy=false;leagueLastMotion=0;musicDock.close();clearTimeout(musicActivityTimer);musicActivityTimer=null;activeMusicId=null;A.activity=null;accountPreferences.bind(null);bindDisplayAccount(null);A.calls?.destroy();A.calls=null;A.telemetry?.destroy();A.telemetry=null;clearInterval(A.heartbeatTimer);A.heartbeatTimer=null;if(A.noticeChannel){db.removeChannel(A.noticeChannel);A.noticeChannel=null}
 }
 async function initialize(){
@@ -213,16 +182,16 @@ async function initialize(){
  try{
   const {data,error}=await timed(db.auth.getSession(),'A autenticação',9000);if(generation!==A.generation)return;if(error)throw error;A.user=data.session?.user||null;if(!A.user){renderAuth();return}if(A.auth==='password'){renderAuth();return}
   const [profile,admin,state]=await timed(Promise.all([getProfile(A.user.id),isAdmin(),getUserState(A.user.id)]),'Seu perfil',12000);if(generation!==A.generation)return;A.profile=profile;A.admin=admin;A.stored=state;accountPreferences.bind(A.user.id);bindDisplayAccount(A.user.id);const display=reconcileDisplay(state.displayPreferences);if(display.pending)accountPreferences.write('displayPreferences',display.value);if(!approved()){showGate();return}
-  A.routeKey='';shell();draw();startMemberServices();loadCatalog(generation);
+  A.routeKey='';shell();draw();startMemberServices();loadCatalog(generation);loadHomeOverview(generation);
  }catch(error){if(generation===A.generation)showError(error.message||'Não foi possível conectar à LX Plus.')}finally{if(generation===A.generation)A.initializing=false}
 }
 function modal(item){
  if(!item)return;closeModal();A.modal={item,focus:document.activeElement};
- const cover=https(item.cover),liked=saved().has(String(item.id));
  const layer=document.querySelector('#layer');if(!layer)return;
- layer.innerHTML='<div class="overlay"><section class="modal detail-modal'+(item.type==='Música'?' music-detail':'')+'" role="dialog" aria-modal="true" aria-label="'+esc(item.title)+'"><header class="modal-head"><span class="premium-overline">'+esc(item.type)+' · LX PLUS</span><button class="close" data-close aria-label="Fechar detalhes">×</button></header><div class="modal-body details"><div>'+(cover?'<img class="detail-poster" src="'+esc(cover)+'" alt="Capa de '+esc(item.title)+'">':cinemaOriginalPoster(item))+'</div><div><span class="premium-overline">'+esc([item.year,item.genre].filter(Boolean).join(' · '))+'</span><h2>'+esc(item.title)+'</h2><p>'+esc(item.description||item.desc||'Uma nova descoberta na LX Plus.')+'</p><small>'+esc(item.artist||item.author|| (Array.isArray(item.cast)?item.cast.slice(0,5).join(' · '):''))+'</small><div class="actions">'+(item.metadataOnly||item.catalogOnly||item.availability==='coming_soon'?'<span class="lx-cinema-modal-coming">✦ Em breve · A LX Plus ainda não possui reprodução autorizada para este título.</span>':'<button class="btn primary" data-modal-play>'+icon('play')+' '+(item.type==='Música'?'Ouvir':item.type==='Livro'?'Ler agora':'Assistir')+'</button>')+'<button class="btn" data-modal-save>'+icon('heart')+' '+(liked?'Na sua lista':'Minha lista')+'</button>'+(['Filme','Série','Dorama','Anime'].includes(item.type)&&!(item.metadataOnly||item.catalogOnly||item.availability==='coming_soon')?'<button class="btn" data-watch-start>Assistir juntos</button>':'')+'</div><p id="detailStatus" role="status" class="muted"></p></div></div></section></div>';
+ layer.innerHTML=lx5Details(item,{liked:saved().has(String(item.id))});
  document.body.classList.add('modal-open');layer.querySelector('[data-close]')?.focus();
 }
+
 function closeModal(){A.playGeneration=(A.playGeneration||0)+1;if(A.playerCleanup){try{A.playerCleanup()}catch{}A.playerCleanup=null}const focus=A.modal?.focus;A.modal=null;document.querySelector('#layer')?.replaceChildren();document.body.classList.remove('modal-open');if(focus?.isConnected)focus.focus()}
 async function toggleSaved(item){const previous=A.stored.list,list=saved();list.has(String(item.id))?list.delete(String(item.id)):list.add(String(item.id));A.stored.list=[...list].map(x=>/^\d+$/.test(x)?Number(x):x);try{const result=await saveUserField(A.user.id,'list',A.stored.list);A.stored.list=result.list;toast('Sua lista foi atualizada.');modal(item);if(A.page==='Minha Lista'){A.routeKey='';draw()}}catch(error){A.stored.list=previous;toast(error.message)}}
 function episodes(item){if(Array.isArray(item.episodes))return item.episodes;if(Array.isArray(item.seasons))return item.seasons.flatMap(s=>(s.episodes||[]).filter(e=>e&&typeof e==='object').map((e,n)=>({...e,season:s.season||s.number||1,episode:e.episode||n+1})));return []}
@@ -270,7 +239,7 @@ function showVideo(item,entry,source,list,index){
  closeModal();const together=!!A.party?.room&&String(A.party.room.content_id)===String(item.id);const token={item,episodeIndex:index,focus:document.activeElement};A.modal=token;
  const iframe=source.kind==='iframe',kind=source.kind==='audio'?'audio':'video',layer=document.querySelector('#layer');
  const tracks=(Array.isArray(entry.subtitles)?entry.subtitles:[]).filter(t=>https(t.url)&&/\.vtt(?:[?#]|$)/i.test(t.url));
- layer.innerHTML='<div class="overlay"><section class="modal video-modal" role="dialog" aria-modal="true" aria-label="Reproduzindo '+esc(item.title)+'"><header class="modal-head"><div><small class="premium-overline">AGORA NA LX PLUS</small><h2>'+esc(entry.title||item.title)+'</h2></div><button class="close" data-close aria-label="Fechar reprodução">×</button></header><div class="modal-body">'+(iframe?'<div class="embed-wrap"><iframe class="player embed" src="'+esc(source.url)+'" title="'+esc(entry.title||item.title)+'" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><p class="muted">Os controles e as permissões desta reprodução são fornecidos por '+esc(source.provider)+'. Se a prévia não abrir, confira o compartilhamento ou abra na origem.</p>':'<'+kind+' id="mediaPlayer" class="player" controls playsinline preload="metadata" '+(tracks.length?'crossorigin="anonymous"':'')+' '+(https(item.cover)?'poster="'+esc(item.cover)+'"':'')+'>'+tracks.map(t=>'<track kind="subtitles" src="'+esc(t.url)+'" srclang="'+esc(t.lang||'pt-BR')+'" label="'+esc(t.label||t.lang||'Português')+'">').join('')+'</'+kind+'>'+videoControls(tracks))+(!iframe&&!together?'<div class="party-launch"><button class="btn" data-watch-start>Convidar amigo para assistir juntos</button><small>Play, pausa e posição compartilhados.</small></div>':'')+'<div id="playerStatus" class="player-status" role="status"></div>'+(https(source.source||source.url)?'<a class="link" href="'+esc(source.source||source.url)+'" target="_blank" rel="noopener noreferrer">Abrir na origem ↗</a>':'')+(list.length?'<div class="episode-list"><h3>Temporadas e episódios</h3>'+list.map((e,n)=>'<button class="'+(n===index?'active':'')+'" data-player-episode="'+n+'"><span>T'+Number(e.season||1)+' · EP '+Number(e.episode||n+1)+'</span>'+esc(e.title||'Episódio '+(n+1))+'</button>').join('')+'</div>':'')+'</div></section></div>';
+ layer.innerHTML='<div class="overlay"><section class="modal video-modal lx5-video-modal" role="dialog" aria-modal="true" aria-label="Reproduzindo '+esc(item.title)+'"><header class="modal-head"><div><small class="premium-overline">AGORA NA LX PLUS</small><h2>'+esc(entry.title||item.title)+'</h2></div><button class="close" data-close aria-label="Fechar reprodução">×</button></header><div class="modal-body">'+(iframe?'<div class="embed-wrap"><iframe class="player embed" src="'+esc(source.url)+'" title="'+esc(entry.title||item.title)+'" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><p class="muted">Os controles e as permissões desta reprodução são fornecidos por '+esc(source.provider)+'. Se a prévia não abrir, confira o compartilhamento ou abra na origem.</p>':'<'+kind+' id="mediaPlayer" class="player" controls playsinline preload="metadata" '+(tracks.length?'crossorigin="anonymous"':'')+' '+(https(item.cover)?'poster="'+esc(item.cover)+'"':'')+'>'+tracks.map(t=>'<track kind="subtitles" src="'+esc(t.url)+'" srclang="'+esc(t.lang||'pt-BR')+'" label="'+esc(t.label||t.lang||'Português')+'">').join('')+'</'+kind+'>'+videoControls(tracks))+(!iframe&&!together?'<div class="party-launch"><button class="btn" data-watch-start>Convidar amigo para assistir juntos</button><small>Play, pausa e posição compartilhados.</small></div>':'')+'<div id="playerStatus" class="player-status" role="status"></div>'+(https(source.source||source.url)?'<a class="link" href="'+esc(source.source||source.url)+'" target="_blank" rel="noopener noreferrer">Abrir na origem ↗</a>':'')+(list.length?'<div class="episode-list"><h3>Temporadas e episódios</h3>'+list.map((e,n)=>'<button class="'+(n===index?'active':'')+'" data-player-episode="'+n+'"><span>T'+Number(e.season||1)+' · EP '+Number(e.episode||n+1)+'</span>'+esc(e.title||'Episódio '+(n+1))+'</button>').join('')+'</div>':'')+'</div></section></div>';
  document.body.classList.add('modal-open');layer.querySelector('[data-close]').focus();
  A.activity={activity_type:['Série','Dorama','Anime'].includes(item.type)?'series':'movie',activity_title:item.title,activity_subtitle:index!==null?'Temporada '+(entry.season||1)+' · Episódio '+(entry.episode||index+1):'',activity_cover:item.cover||''};heartbeat().catch(()=>{});
  const media=layer.querySelector('#mediaPlayer');if(!media)return;
