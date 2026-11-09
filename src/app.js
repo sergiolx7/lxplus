@@ -234,7 +234,7 @@ async function play(item,episodeIndex=null){
   if(item.type==='Livro'){const url=https(item.epubUrl||item.pdfUrl||item.externalReadUrl||item.sourceUrl);if(!url)throw Error('Este livro ainda não possui uma fonte de leitura disponível.');const format=/\.epub(?:[?#]|$)/i.test(url)||item.bookFormat==='epub'?'epub':/\.pdf(?:[?#]|$)/i.test(url)||item.bookFormat==='pdf'?'pdf':null;if(format){showBook(item,url,format);return}window.open(url,'_blank','noopener,noreferrer');toast('Leitura aberta na fonte original.');return}
   const list=episodes(item);if(episodeIndex===null&&list.length)episodeIndex=Number(A.stored.history?.[item.id]?.episodeIndex)||0;
   const entry=episodeIndex!==null&&list[episodeIndex]?{...item,...list[episodeIndex],id:item.id,type:item.type,license:item.license,sourceVerified:item.sourceVerified||item.license?.authorized}:item;
-  const source=await timed(sourceFor(entry),'A fonte de reprodução',15000);
+  const source=await timed(sourceFor(entry),'A fonte de reprodução',30000);
   if(playGeneration!==A.playGeneration)return;
   if(['unavailable','invalid'].includes(source.kind))throw Error(source.message||'Este título ainda não possui uma fonte compatível.');
   if(source.kind==='external'){const url=https(source.url);if(url)window.open(url,'_blank','noopener,noreferrer');toast(source.message||'Conteúdo aberto na origem.');return}

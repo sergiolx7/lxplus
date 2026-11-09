@@ -1,4 +1,5 @@
 import {driveReference,driveViewUrl} from './drive-source.js';
+import {attachProgressiveQuality} from './progressive-quality.js';
 // Drive originals use authenticated media tickets; other providers keep their embeds.
 const googleDriveHosts=new Set(['drive.google.com','docs.google.com','drive.usercontent.google.com']);
 const ytHosts=new Set(['youtube.com','www.youtube.com','m.youtube.com','music.youtube.com','youtu.be','www.youtu.be','www.youtube-nocookie.com','youtube-nocookie.com']);
@@ -156,6 +157,8 @@ export async function attachPlayer(media,source,{onError=()=>{},onQualities=()=>
   });
   library.initialize(media,url.href,autoplay);
   if(library.on&&dashjs.MediaPlayer.events?.ERROR)library.on(dashjs.MediaPlayer.events.ERROR,()=>{if(!closed)onError('Fluxo DASH indisponível ou bloqueado pela origem.')});
+ }else if(source.kind==='video'&&source.variants?.length){
+  library={destroy:attachProgressiveQuality(media,source,{onQualities,autoplay,onError})};
  }else{
   media.src=url.href;if(autoplay)tryPlay(media);
  }

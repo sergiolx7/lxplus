@@ -2,11 +2,11 @@ import {attachPlayer} from './universal-player.js';
 import {esc} from './ui.js';
 import {applyPlayback,normalizePlayback,resumePosition,nextEpisodeCountdown} from './playback-preferences.js';
 
-export function videoControls(tracks=[]){return '<div class="lx-player-transport"><strong>LX <span>PLAYER</span></strong><button type="button" class="btn small" id="playerBack" aria-label="Voltar 10 segundos">↶ 10 s</button><button type="button" class="btn primary small" id="playerToggle" aria-label="Reproduzir">Reproduzir</button><button type="button" class="btn small" id="playerForward" aria-label="Avançar 10 segundos">10 s ↷</button></div><div class="player-toolbar"><label>Velocidade <select id="playerSpeed">'+[.75,1,1.25,1.5,2].map(x=>'<option value="'+x+'">'+String(x).replace('.',',')+'×</option>').join('')+'</select></label><label>Qualidade <select id="playerQuality" disabled><option value="-1">Automática / fonte original</option></select></label><label class="setting-toggle"><input id="playerAutoplay" type="checkbox"> Próximo automático</label>'+(tracks.length?'<label>Legendas <select id="playerSubtitles"><option value="off">Desligadas</option>'+tracks.map((t,i)=>'<option value="'+i+'">'+esc(t.label||t.lang||'Português')+'</option>').join('')+'</select></label><label>Tamanho <select id="subtitleSize"><option value="100">Normal</option><option value="125">Grande</option><option value="150">Muito grande</option></select></label><label>Sincronia (s) <input id="subtitleOffset" type="number" min="-30" max="30" step="0.5" aria-label="Ajuste de sincronia da legenda em segundos"></label>':'')+'<button class="btn small" id="pipMedia" hidden>Janela flutuante</button><button class="btn small" id="castMedia" hidden>Transmitir para TV</button><button class="btn small" id="fullscreenMedia">Tela cheia</button></div><div id="nextEpisode" class="next-episode" hidden></div>'}
+export function videoControls(tracks=[]){return '<div class="lx-player-transport"><strong>LX <span>PLAYER</span></strong><button type="button" class="btn small" id="playerBack" aria-label="Voltar 10 segundos">↶ 10 s</button><button type="button" class="btn primary small" id="playerToggle" aria-label="Reproduzir">Reproduzir</button><button type="button" class="btn small" id="playerForward" aria-label="Avançar 10 segundos">10 s ↷</button><button type="button" class="btn small" id="playerSound" aria-label="Silenciar">Som ligado</button></div><div class="player-toolbar"><label>Velocidade <select id="playerSpeed">'+[.75,1,1.25,1.5,2].map(x=>'<option value="'+x+'">'+String(x).replace('.',',')+'×</option>').join('')+'</select></label><label>Qualidade <select id="playerQuality" disabled><option value="-1">Automática / fonte original</option></select></label><label class="setting-toggle"><input id="playerAutoplay" type="checkbox"> Próximo automático</label>'+(tracks.length?'<label>Legendas <select id="playerSubtitles"><option value="off">Desligadas</option>'+tracks.map((t,i)=>'<option value="'+i+'">'+esc(t.label||t.lang||'Português')+'</option>').join('')+'</select></label><label>Tamanho <select id="subtitleSize"><option value="100">Normal</option><option value="125">Grande</option><option value="150">Muito grande</option></select></label><label>Sincronia (s) <input id="subtitleOffset" type="number" min="-30" max="30" step="0.5" aria-label="Ajuste de sincronia da legenda em segundos"></label>':'')+'<button class="btn small" id="pipMedia" hidden>Janela flutuante</button><button class="btn small" id="castMedia" hidden>Transmitir para TV</button><button class="btn small" id="fullscreenMedia">Tela cheia</button></div><div id="nextEpisode" class="next-episode" hidden></div>'}
 
 export function bindVideoSession(media,source,{host,progress,index=null,hasNext=false,autoplay=true,onNext=()=>{},preferences={},savePreferences=()=>{},saveProgress=()=>{},onError=()=>{},onActiveSeconds=()=>{}}){
  const abort=new AbortController(),signal=abort.signal;
- let closed=false,cleanup=null,countdown=null,waitTimer=null,saveTimer=null,saveStamp=0,prefs=applyPlayback(media,preferences),activeSeconds=0,lastActiveTick=0,lastReported=0,lastMediaTime=null;
+ let closed=false,cleanup=null,countdown=null,waitTimer=null,saveTimer=null,saveStamp=0,prefs=applyPlayback(media,preferences),activeSeconds=0,lastActiveTick=0,lastReported=0,lastMediaTime=null,initialMetadata=false;
  const find=id=>host.querySelector('#'+id);
  if(source.warning&&find('playerStatus'))find('playerStatus').textContent=source.warning;
  const fail=message=>{if(!closed){clearTimeout(waitTimer);onError(message)}};
@@ -16,6 +16,9 @@ export function bindVideoSession(media,source,{host,progress,index=null,hasNext=
  listen(find('playerBack'),'click',()=>{if(Number.isFinite(media.duration))media.currentTime=Math.max(0,media.currentTime-10)});
  listen(find('playerForward'),'click',()=>{if(Number.isFinite(media.duration))media.currentTime=Math.min(media.duration,media.currentTime+10)});
  listen(media,'play',transport);listen(media,'pause',transport);transport();
+ const sound=()=>{const button=find('playerSound');if(button){const muted=media.muted||media.volume===0;button.textContent=muted?'Ativar som':'Som ligado';button.setAttribute('aria-label',muted?'Ativar som':'Silenciar')}};
+ listen(find('playerSound'),'click',()=>{if(media.muted||media.volume===0){media.muted=false;if(media.volume===0)media.volume=.7}else media.muted=true;sound()});
+ listen(media,'volumechange',sound);sound();
  const checkpoint=()=>{if(!closed&&Number.isFinite(media.currentTime)&&Number.isFinite(media.duration)&&media.duration>0){Promise.resolve(saveProgress({position:media.currentTime,duration:media.duration,episodeIndex:index,updatedAt:new Date().toISOString()})).catch(()=>fail('Seu progresso está salvo nesta sessão; não foi possível sincronizar agora.'))}};
  const persist=()=>{prefs=normalizePlayback({...prefs,volume:media.volume,muted:media.muted,speed:media.playbackRate});clearTimeout(saveTimer);saveTimer=setTimeout(()=>savePreferences(prefs),350)};
  const subtitleTimes=new WeakMap();
@@ -26,7 +29,7 @@ export function bindVideoSession(media,source,{host,progress,index=null,hasNext=
  }
  find('playerSpeed').value=String(prefs.speed);find('playerAutoplay').checked=prefs.autoplayNext;
  if(find('subtitleSize')){find('subtitleSize').value=String(prefs.subtitleSize);find('subtitleOffset').value=String(prefs.subtitleOffset);const preferred=Array.from(media.textTracks||[]).findIndex(t=>t.language===prefs.subtitleLanguage);find('playerSubtitles').value=preferred>=0?String(preferred):'off'}
- listen(media,'loadedmetadata',()=>{media.currentTime=resumePosition(progress,media.duration,index);subtitles()});
+ listen(media,'loadedmetadata',()=>{if(!initialMetadata){media.currentTime=resumePosition(progress,media.duration,index);initialMetadata=true}subtitles()});
  listen(media,'timeupdate',()=>{
   const now=performance.now(),position=Number(media.currentTime)||0;
   if(lastActiveTick&&lastMediaTime!==null&&!media.paused&&!media.seeking&&!media.ended&&!document.hidden&&media.readyState>=2){
@@ -42,7 +45,7 @@ export function bindVideoSession(media,source,{host,progress,index=null,hasNext=
  for(const event of ['pause','seeked'])listen(media,event,checkpoint);
  listen(document,'visibilitychange',()=>{lastActiveTick=0;lastMediaTime=null;if(document.hidden)checkpoint()});
  for(const event of ['volumechange','ratechange'])listen(media,event,persist);
- const armTimeout=()=>{clearTimeout(waitTimer);waitTimer=setTimeout(()=>{media.pause();fail('A fonte demorou para responder. Verifique a conexão ou abra o arquivo na origem.')},20000)};
+ const armTimeout=()=>{clearTimeout(waitTimer);waitTimer=setTimeout(()=>{media.pause();fail('A fonte demorou para responder. Verifique a conexão ou abra o arquivo na origem.')},source.provider==='Google Drive'?45000:20000)};
  listen(media,'waiting',armTimeout);listen(media,'playing',()=>{clearTimeout(waitTimer);if(!closed)find('playerStatus').textContent=source.warning||''});
  listen(media,'loadedmetadata',()=>clearTimeout(waitTimer));
  listen(media,'ended',()=>{

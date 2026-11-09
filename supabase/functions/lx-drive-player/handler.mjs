@@ -1,4 +1,5 @@
 import {driveReference,validDriveId} from '../../../src/drive-source.js';
+import {loadDrivePlayback,fetchDriveVariant} from './playback.mjs';
 
 const cors={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'authorization,apikey,content-type,x-client-info,range','Access-Control-Allow-Methods':'POST,GET,HEAD,OPTIONS','Access-Control-Expose-Headers':'content-type,content-length,content-range,accept-ranges','Cross-Origin-Resource-Policy':'cross-origin'};
 const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{...cors,'Content-Type':'application/json','Cache-Control':'no-store'}});
@@ -18,6 +19,7 @@ export async function readDriveTicket(token,secret,now=Date.now()){
   const payload=JSON.parse(new TextDecoder().decode(unb64(body)));
   if(!validDriveId(payload.d)||!Number.isFinite(payload.e)||payload.e<=now||payload.e>now+(ticketSeconds+60)*1000||!payload.u)return null;
   if(payload.r&&!/^[\w-]{1,256}$/.test(payload.r))return null;
+  if(payload.t!==undefined&&(!Number.isInteger(payload.t)||payload.t<1||payload.t>9999))return null;
   return payload;
  }catch{return null}
 }
@@ -35,13 +37,14 @@ export function catalogDriveSource(payload,driveId){
  if(!payload||payload.archived||payload.catalogOnly||payload.metadataOnly||payload.availability==='coming_soon')return null;
  const authorized=!!(payload.sourceVerified||payload.publicDomain||payload.openFilm||payload.license?.authorized||payload.license?.status==='approved');
  const entries=[payload,...(Array.isArray(payload.episodes)?payload.episodes:[]),...(Array.isArray(payload.seasons)?payload.seasons.flatMap(s=>Array.isArray(s?.episodes)?s.episodes:[]):[])];
+ let fallback=null;
  for(const entry of entries){
   if(!entry||typeof entry!=='object')continue;
-  const refs=[entry.authorizedVideoUrl,entry.authorizedAudioUrl,entry.mediaKey,entry.sourceMediaKey,typeof entry.nativeAsset==='string'?entry.nativeAsset:entry.nativeAsset?.url||entry.nativeAsset?.path];
+  const refs=[entry.authorizedVideoUrl,entry.authorizedAudioUrl,entry.mediaKey,entry.sourceMediaKey,typeof entry.nativeAsset==='string'?entry.nativeAsset:entry.nativeAsset?.url||entry.nativeAsset?.path||entry.nativeAsset?.storagePath];
   if(authorized)refs.push(entry.sourceUrl,entry.videoUrl,entry.playbackUrl,entry.audioUrl,validDriveId(entry.driveId)?'gdrive:'+entry.driveId:null);
-  for(const candidate of refs){const ref=driveReference(candidate);if(ref?.driveId===driveId)return {...ref,audio:payload.type==='Música'}};
+  for(const candidate of refs){const ref=driveReference(candidate);if(ref?.driveId===driveId){const source={...ref,audio:payload.type==='Música'};if(ref.resourceKey)return source;fallback=source}};
  }
- return null;
+ return fallback;
 }
 export function driveMediaType(response){
  const disposition=response.headers.get('content-disposition')||'';
@@ -83,10 +86,22 @@ export async function handleDrivePlayer(req,{env,fetcher=fetch,now=Date.now}={})
    if(!catalog.ok){await catalog.body?.cancel();return json({error:'CATALOG_ACCESS_DENIED'},403)}
    const rows=await catalog.json(),ref=catalogDriveSource(rows?.[0]?.payload,body.driveId);
    if(!ref)return json({error:'SOURCE_NOT_ALLOWED',message:'Este arquivo não está disponível no catálogo para sua conta.'},403);
+   const expiresAt=now()+ticketSeconds*1000;
+   if(!ref.audio){
+    const formats=await loadDrivePlayback(ref,{fetcher}).catch(()=>[]);
+    if(formats.length){
+     const variants=[];
+     for(const format of formats){
+      const token=await issueDriveTicket({d:ref.driveId,r:ref.resourceKey,e:expiresAt,u:account.id,t:format.id,m:'video/mp4'},secret);
+      variants.push({id:format.id,label:format.label,width:format.width,height:format.height,bitrate:format.bitrate,url:base+'/functions/v1/lx-drive-player?ticket='+encodeURIComponent(token)});
+     }
+     return json({url:variants[0].url,kind:'video',mime:'video/mp4',variants,expiresAt,audioCodec:'AAC',warning:''});
+    }
+   }
    const probe=await driveFetch(ref,'bytes=0-0',{fetcher,signal:AbortSignal.timeout(12000)});
    if(!probe.ok||/text\/html|application\/json/i.test(probe.headers.get('content-type')||''))return providerError(probe);
    const info=driveMediaType(probe);await probe.body?.cancel();
-   const expiresAt=now()+ticketSeconds*1000;
+   if(!ref.audio&&!info.compatible)return json({error:'DRIVE_COMPATIBLE_VERSION_PENDING',message:'O Drive ainda não liberou uma versão com áudio compatível para este arquivo. Tente novamente após o processamento ou use MP4 com H.264 e AAC.'},425);
    const token=await issueDriveTicket({d:ref.driveId,r:ref.resourceKey,e:expiresAt,u:account.id,a:ref.audio,m:info.mime},secret);
    return json({url:base+'/functions/v1/lx-drive-player?ticket='+encodeURIComponent(token),kind:ref.audio?'audio':'video',mime:info.mime,filename:info.filename,expiresAt,warning:info.compatible?'':'Este arquivo está em MKV. Se faltar áudio ou imagem, substitua por MP4 com vídeo H.264 e áudio AAC.'});
   }
@@ -94,7 +109,9 @@ export async function handleDrivePlayer(req,{env,fetcher=fetch,now=Date.now}={})
   if(!ticket)return json({error:'INVALID_OR_EXPIRED_TICKET'},401);
   const range=driveRequestRange(req.method==='HEAD'?'bytes=0-0':req.headers.get('range'));
   if(!range)return json({error:'INVALID_RANGE'},416);
-  const upstream=await driveFetch(ticket,range,{fetcher,signal:AbortSignal.any([req.signal,AbortSignal.timeout(25000)])});
+  const options={fetcher,signal:AbortSignal.any([req.signal,AbortSignal.timeout(45000)])};
+  const upstream=ticket.t?await fetchDriveVariant({driveId:ticket.d,resourceKey:ticket.r},ticket.t,range,options):await driveFetch(ticket,range,options);
+  if(!upstream)return json({error:'DRIVE_QUALITY_UNAVAILABLE',message:'Esta qualidade não está disponível agora. Escolha outra qualidade ou reabra o vídeo.'},424);
   if(upstream.status===416){const out=new Headers(cors);out.set('Cache-Control','no-store');if(upstream.headers.has('content-range'))out.set('Content-Range',upstream.headers.get('content-range'));await upstream.body?.cancel();return new Response(null,{status:416,headers:out})}
   if(!upstream.ok||/text\/html|application\/json/i.test(upstream.headers.get('content-type')||''))return providerError(upstream);
   // Never let a provider ignoring Range stream a whole multi-gigabyte file.
@@ -105,7 +122,7 @@ export async function handleDrivePlayer(req,{env,fetcher=fetch,now=Date.now}={})
   const out=new Headers(cors);
   for(const name of ['content-length','content-range','etag','last-modified'])if(upstream.headers.has(name))out.set(name,upstream.headers.get(name));
   const info=driveMediaType(upstream);
-  out.set('Content-Type',(info.mime&&info.mime!=='application/octet-stream'?info.mime:ticket.m)||(ticket.a?'audio/mpeg':'video/mp4'));
+  out.set('Content-Type',ticket.t?'video/mp4':(info.mime&&info.mime!=='application/octet-stream'?info.mime:ticket.m)||(ticket.a?'audio/mpeg':'video/mp4'));
   out.set('Content-Disposition','inline');out.set('Accept-Ranges','bytes');out.set('Cache-Control','private, no-store');out.set('X-Content-Type-Options','nosniff');
   if(req.method==='HEAD'){
    const size=/\/(\d+)$/.exec(out.get('Content-Range')||'')?.[1];await upstream.body?.cancel();out.delete('Content-Range');if(size)out.set('Content-Length',size);
