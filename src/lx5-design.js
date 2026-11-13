@@ -31,8 +31,8 @@ export function lx5Shell({profile={},admin=false,page='Início',term=''}){
   <div class="content">
    <header class="topbar lx5-topbar">
     <button type="button" class="sidebar-toggle icon-button" data-sidebar-toggle aria-controls="lxSidebar" aria-expanded="true" aria-label="Recolher menu lateral">${icon('list')}</button>
-    <div class="top-context"><img class="header-brand" src="./assets/lx5-play-mark.svg" alt="" width="34" height="34"><b class="nexus-mobile-wordmark">LX PLUS</b><strong id="headerGreeting" class="sr-only"></strong><span id="pageTitle" class="sr-only">${esc(page)}</span></div>
-    <label class="header-search">${icon('search')}<input id="search" type="search" placeholder="O que combina com você hoje?" aria-label="Buscar títulos, músicas, pessoas e recursos" value="${esc(term)}"><kbd>Ctrl K</kbd></label>
+    <div class="top-context"><img class="header-brand" src="./assets/lx5-play-mark.svg" alt="" width="34" height="34"><b class="nexus-mobile-wordmark">LX PLUS</b><strong id="headerGreeting" class="sr-only"></strong><span id="pageTitle" class="lx5-route-title">${esc(page)}</span></div>
+    <label class="header-search">${icon('search')}<input id="search" type="search" placeholder="Buscar na LX Plus" aria-label="Buscar títulos, músicas, pessoas e recursos" value="${esc(term)}"><kbd>Ctrl K</kbd></label>
     <span class="header-presence sr-only" id="headerPresence"></span>
     <button type="button" class="header-upgrade ${premium?'active':''}" data-page="Premium" aria-label="${premium?'Abrir seu Premium':'Conhecer o LX Premium'}">${icon('sparkles')}<span>${premium?'Seu Premium':'Fazer upgrade'}</span></button>
     <button type="button" class="header-notifications icon-button" data-page="Avisos" aria-label="Abrir notificações">${icon('bell')}<span id="noticeBadge" hidden></span></button>

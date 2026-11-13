@@ -17,11 +17,13 @@ import {createTelemetry,socialDirectory,catalogPage} from './services.js';
 import {uuid,esc,https,avatar,verifiedBadge,empty,icon,duration} from './ui.js';
 import {cinemaShareUrl,cinemaSharedId,cinemaHomeUrl} from './cinema-sharing.js';
 import {bindDisplayControls,bindDisplayAccount,writeDisplay,applyDisplay,readDisplay,greetingForHour,reconcileDisplay,markDisplaySynced} from './display-preferences.js';
-import {showAuthError} from './auth-feedback.js';
+import {showAuthError,authServiceState,authErrorMessage} from './auth-feedback.js';
+import {authServiceBlocked,probeAuthAvailability,syncAuthAvailability} from './auth-availability.js';
 
 const root=document.querySelector('#app');
 const A={user:null,profile:null,admin:false,stored:{},items:[],members:[],homeOverview:null,page:'Início',term:'',auth:'login',catalogStatus:'loading',generation:0,routeGeneration:0,routeKey:'',controller:null,modal:null,playerCleanup:null,unread:0,presence:0,activity:null,telemetry:null,calls:null,party:null,noticeChannel:null,heartbeatTimer:null,initializing:false};
 const pages=[['Início','home'],['Filmes','film'],['Séries','series'],['Doramas','series'],['Músicas','music'],['Livros','book'],['Comunidade','social'],['Minha Lista','heart'],['Playlists','list'],['Ranking','trophy'],['Avisos','bell'],['Perfil','user'],['Suporte','support'],['Mural dos Fundadores','sparkles'],['Premium','sparkles']];
+A.authService='unknown';let accessProbeGeneration=0;
 const routeFiles={'LX IA':['assistant','mount'],Filmes:['catalog','mount'],Séries:['catalog','mount'],Doramas:['catalog','mount'],Animes:['catalog','mount'],Livros:['catalog','mount'],'Ao vivo':['catalog','mount'],Buscar:['search','mount'],Músicas:['music','mount'],Playlists:['music','mount'],Comunidade:['social','mount'],Perfil:['account','mount'],Suporte:['account','mountSupport'],Premium:['premium','mount'],Novidades:['updates','mount'],'Mural dos Fundadores':['founders','mount'],Avisos:['notifications','mount'],'Minha Lista':['library','mount'],Ranking:['library','mountRanking'],Administração:['studio','mount']};
 const timed=(promise,label,ms=12000)=>{let timer;return Promise.race([Promise.resolve(promise),new Promise((_,reject)=>timer=setTimeout(()=>reject(Error(label+' demorou para responder. Verifique a conexão e tente novamente.')),ms))]).finally(()=>clearTimeout(timer))};
 const brand=()=>lx5Brand();
@@ -61,6 +63,14 @@ async function checkSiteActivePoints(){
  }finally{leagueTimeBusy=false}
 }
 
+async function refreshAuthAvailability(){
+ const generation=++accessProbeGeneration,retry=root.querySelector('[data-auth-service-retry]');
+ if(retry){retry.disabled=true;retry.textContent='Verificando…'}
+ const state=await probeAuthAvailability();
+ if(generation!==accessProbeGeneration)return;
+ if(state!=='unknown'||!authServiceBlocked(A.authService))A.authService=state;
+ syncAuthAvailability(root,A.authService);
+}
 function authForm(){
  if(A.auth==='reset')return '<form id="reset" class="form"><label class="field">Seu e-mail<input name="email" type="email" autocomplete="email" required></label><button class="btn primary wide">Enviar recuperação</button><button class="link" type="button" data-auth="login">Voltar para entrar</button></form>';
  if(A.auth==='password')return '<form id="newPassword" class="form"><label class="field">Nova senha<input name="password" type="password" minlength="8" autocomplete="new-password" required></label><label class="field">Confirmar senha<input name="confirm" type="password" minlength="8" autocomplete="new-password" required></label><button class="btn primary wide">Salvar nova senha</button></form>';
@@ -69,8 +79,9 @@ function authForm(){
 }
 function renderAuth(){
  root.innerHTML='<main class="auth"><section class="auth-left"><a class="brand" href="#">'+brand()+'</a><div class="auth-art" aria-hidden="true"><div class="auth-ring ring-one"></div><div class="auth-ring ring-two"></div><span class="auth-art-mark">LX<span>PLUS</span></span><span class="auth-art-note">SEU MUNDO, CONECTADO.</span></div><div class="auth-copy"><span class="premium-overline">UMA NOVA FORMA DE VIVER O ENTRETENIMENTO</span><h1>Boas histórias.<br>Melhores conexões.</h1><p>Filmes, séries, música e livros.<br>Um universo que combina com você.</p><div class="auth-categories"><span>'+icon('film')+' Cinema</span><span>'+icon('music')+' Música</span><span>'+icon('book')+' Livros</span><span>'+icon('social')+' Comunidade</span></div></div><footer><span>Desenvolvido pela <strong>LX Group</strong></span><span>© 2026 LX Plus</span></footer></section><section class="auth-right"><div class="auth-card"><span class="premium-overline">SEU PRÓXIMO PLAY COMEÇA AQUI</span><h2>'+({login:'Que bom ter você aqui.',signup:'Seu universo começa agora.',reset:'Vamos recuperar seu acesso.',password:'Crie uma nova senha.'}[A.auth])+'</h2><p>'+({login:'Entre para continuar de onde parou.',signup:'Crie sua conta e descubra a LX Plus.',reset:'Enviaremos as instruções para seu e-mail.',password:'Escolha uma senha com pelo menos 8 caracteres.'}[A.auth])+'</p>'+(['login','signup'].includes(A.auth)?'<div class="auth-tabs"><button type="button" data-auth="login" class="'+(A.auth==='login'?'active':'')+'">Entrar</button><button type="button" data-auth="signup" class="'+(A.auth==='signup'?'active':'')+'">Criar conta</button></div>':'')+authForm()+'<div class="auth-secure">'+icon('check')+' Sua conta e suas preferências ficam com você.</div></div><small class="auth-signature">LX PLUS · PELA LX GROUP</small></section></main>';
+ const notice=document.createElement('section');notice.className='auth-service-notice';notice.dataset.authService='';notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');root.querySelector('.auth-card .form').before(notice);syncAuthAvailability(root,A.authService);
 }
-function showError(message){root.innerHTML='<main class="full-screen"><div class="brand">'+brand()+'</div><div class="panel"><h2>Vamos tentar de novo.</h2><p>'+esc(message)+'</p><div class="actions"><button class="btn primary" id="retry">Tentar novamente</button><button class="btn" id="manualLogin">Entrar com e-mail e senha</button></div></div></main>'}
+function showError(error){const service=authServiceState(error);root.innerHTML='<main class="full-screen"><div class="brand">'+brand()+'</div><div class="panel"><h2>'+(service?'Acesso temporariamente indisponível':'Vamos tentar de novo.')+'</h2><p>'+esc(service?authErrorMessage(error):error.message||'Não foi possível conectar à LX Plus.')+'</p><div class="actions"><button class="btn primary" id="retry">'+(service?'Verificar disponibilidade':'Tentar novamente')+'</button>'+(service?'':'<button class="btn" id="manualLogin">Entrar com e-mail e senha</button>')+'</div></div></main>'}
 function showGate(){root.innerHTML='<main class="full-screen"><div class="brand">'+brand()+'</div><div class="panel"><span class="badge">Aguardando aprovação</span><h2>Seu cadastro está com a equipe.</h2><p>Depois da confirmação por e-mail e da aprovação, seu acesso será liberado aqui.</p><div class="actions"><button class="btn primary" id="retry">Verificar acesso</button><button class="btn" id="signout">Sair</button></div></div></main>'}
 function shell(){
  root.innerHTML=lx5Shell({profile:A.profile||{},admin:A.admin,page:A.page,term:A.term});
@@ -180,10 +191,10 @@ function clearMemberServices(){
 async function initialize(){
  const generation=++A.generation;A.initializing=true;root.innerHTML='<div class="loading"><span class="loading-orbit"></span>Preparando seu universo LX…</div>';
  try{
-  const {data,error}=await timed(db.auth.getSession(),'A autenticação',9000);if(generation!==A.generation)return;if(error)throw error;A.user=data.session?.user||null;if(!A.user){renderAuth();return}if(A.auth==='password'){renderAuth();return}
+  const {data,error}=await timed(db.auth.getSession(),'A autenticação',9000);if(generation!==A.generation)return;if(error)throw error;A.user=data.session?.user||null;if(!A.user){renderAuth();refreshAuthAvailability();return}if(A.auth==='password'){renderAuth();refreshAuthAvailability();return}
   const [profile,admin,state]=await timed(Promise.all([getProfile(A.user.id),isAdmin(),getUserState(A.user.id)]),'Seu perfil',12000);if(generation!==A.generation)return;A.profile=profile;A.admin=admin;A.stored=state;accountPreferences.bind(A.user.id);bindDisplayAccount(A.user.id);const display=reconcileDisplay(state.displayPreferences);if(display.pending)accountPreferences.write('displayPreferences',display.value);if(!approved()){showGate();return}
   A.routeKey='';shell();draw();startMemberServices();loadCatalog(generation);loadHomeOverview(generation);
- }catch(error){if(generation===A.generation)showError(error.message||'Não foi possível conectar à LX Plus.')}finally{if(generation===A.generation)A.initializing=false}
+ }catch(error){if(generation===A.generation)showError(error)}finally{if(generation===A.generation)A.initializing=false}
 }
 function modal(item){
  if(!item)return;closeModal();A.modal={item,focus:document.activeElement};
@@ -285,22 +296,23 @@ root.addEventListener('click',async event=>{if(event.target.closest('.orbit-skip
   if(button.hasAttribute('data-close')){closeModal();return}if(button.hasAttribute('data-modal-play')){if(A.modal)await play(A.modal.item);return}if(button.hasAttribute('data-modal-save')){if(A.modal)await toggleSaved(A.modal.item);return}
   if(button.hasAttribute('data-watch-start')){if(A.modal)await A.party?.inviteFriend(A.modal.item,A.modal.episodeIndex||0,document.querySelector('#mediaPlayer')?.currentTime||0);return}
   if(button.dataset.playerEpisode!==undefined){if(A.modal){if(A.party?.room&&String(A.party.room.content_id)===String(A.modal.item.id))await A.party.changeEpisode(Number(button.dataset.playerEpisode));else await play(A.modal.item,Number(button.dataset.playerEpisode))}return}
+  if(button.hasAttribute('data-auth-service-retry')){await refreshAuthAvailability();return}
   if(button.id==='retry'){await initialize();return}if(button.id==='retryCatalog'){await loadCatalog();return}
   if(button.id==='manualLogin'){++A.generation;clearMemberServices();const client=switchToRecoveryLogin();attachAuthListener(client);A.user=null;A.profile=null;A.auth='login';renderAuth();return}
   if(button.id==='signout'){await signout();return}
   if(button.id==='resend'){const email=root.querySelector('#signin [name="email"]')?.value?.trim();if(!email)throw Error('Digite seu e-mail primeiro.');const {error}=await timed(db.auth.resend({type:'signup',email}),'O envio');if(error)throw error;toast('Se necessário, a confirmação será reenviada.');return}
- }catch(error){toast(error.message||'Não foi possível concluir.')}
+ }catch(error){if(button.id==='resend'){const service=authServiceState(error);if(service){A.authService=service;syncAuthAvailability(root,service)}else{const form=root.querySelector('#signin');if(form)showAuthError(form,error);else toast(authErrorMessage(error))}}else toast(error.message||'Não foi possível concluir.')}
 });
 root.addEventListener('click',event=>{if(event.target.classList.contains('overlay'))closeModal()});
 root.addEventListener('error',event=>{if(event.target.tagName!=='IMG')return;if(event.target.closest('.music-result-cover,.track-info,.collection-cover,.music-quick-track,.home-music-card,.home-albums')){const fallback=document.createElement('span');fallback.className='track-cover-fallback';fallback.textContent='♫';fallback.setAttribute('aria-hidden','true');event.target.replaceWith(fallback)}else if(event.target.closest('.premium-cover,.avatar-frame,.premium-feature-image'))event.target.remove()},true);
 root.addEventListener('submit',async event=>{
- if(event.defaultPrevented)return;const form=event.target;if(!['signin','signup','reset','newPassword'].includes(form.id))return;event.preventDefault();const button=form.querySelector('button.btn');if(button.disabled)return;const originalLabel=button.innerHTML;button.disabled=true;button.textContent='Aguarde…';form.setAttribute('aria-busy','true');form.querySelector('[data-auth-error]')?.remove();const data=Object.fromEntries(new FormData(form));
+ if(event.defaultPrevented)return;const form=event.target;if(!['signin','signup','reset','newPassword'].includes(form.id))return;event.preventDefault();const button=form.querySelector('button.btn');if(button.disabled||authServiceBlocked(A.authService))return;const originalLabel=button.innerHTML;button.disabled=true;button.textContent='Aguarde…';form.setAttribute('aria-busy','true');form.querySelector('[data-auth-error]')?.remove();const data=Object.fromEntries(new FormData(form));
  try{
   if(form.id==='signin'){const {error}=await timed(db.auth.signInWithPassword({email:String(data.email).trim(),password:String(data.password)}),'O login',12000);if(error)throw error;await initialize()}
   if(form.id==='signup'){const {data:created,error}=await timed(db.auth.signUp({email:String(data.email).trim(),password:String(data.password),options:{data:{name:String(data.name).trim()},emailRedirectTo:location.origin+location.pathname}}),'O cadastro');if(error)throw error;if(created.session)await initialize();else{A.auth='login';renderAuth();toast('Cadastro enviado. Confirme seu e-mail para continuar.')}}
   if(form.id==='reset'){const {error}=await timed(db.auth.resetPasswordForEmail(String(data.email).trim(),{redirectTo:location.origin+location.pathname+'?recovery=1'}),'A recuperação');if(error)throw error;A.auth='login';renderAuth();toast('Se a conta existir, você receberá as instruções por e-mail.')}
-  if(form.id==='newPassword'){if(data.password!==data.confirm)throw Error('As senhas não coincidem.');const {error}=await timed(db.auth.updateUser({password:String(data.password)}),'A alteração');if(error)throw error;history.replaceState(null,'',location.pathname);A.auth='login';toast('Senha atualizada.');await initialize()}
- }catch(error){if(form.isConnected)showAuthError(form,error);else toast(error.message||'Não foi possível realizar essa ação.')}finally{if(button.isConnected){button.disabled=false;button.innerHTML=originalLabel;form.removeAttribute('aria-busy')}}
+  if(form.id==='newPassword'){if(data.password!==data.confirm)throw Object.assign(Error('As senhas não coincidem.'),{code:'password_mismatch'});const {error}=await timed(db.auth.updateUser({password:String(data.password)}),'A alteração');if(error)throw error;history.replaceState(null,'',location.pathname);A.auth='login';toast('Senha atualizada.');await initialize()}
+ }catch(error){const service=authServiceState(error);if(service){A.authService=service;syncAuthAvailability(root,service)}else if(form.isConnected)showAuthError(form,error);else toast(authErrorMessage(error))}finally{if(button.isConnected){button.innerHTML=originalLabel;form.removeAttribute('aria-busy');button.disabled=authServiceBlocked(A.authService)}}
 });
 async function signout(){++A.generation;clearMemberServices();try{await timed(db.auth.signOut({scope:'local'}),'A saída',7000)}catch(error){toast(error.message)}A.user=null;A.profile=null;A.stored={};A.items=[];A.auth='login';renderAuth()}
 function attachAuthListener(client=db){client.auth.onAuthStateChange((event,session)=>{
