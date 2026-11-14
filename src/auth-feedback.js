@@ -1,7 +1,10 @@
+import {accessRestriction} from './access-health.js';
 // Keep authentication failures useful without exposing account or request details.
 export function authErrorMessage(error){
+ if(accessRestriction(error))return 'O acesso à LX Plus está temporariamente indisponível. A equipe precisa restabelecer o serviço. Sua conta não precisa ser recriada nem sua senha alterada.';
+ if(Number(error?.status)>=500)return 'O serviço de acesso está temporariamente indisponível. Aguarde um pouco e tente novamente.';
  const code=String(error?.code||'');
- const messages={invalid_credentials:'E-mail ou senha não conferem. Revise os dados e tente novamente.',email_not_confirmed:'Confirme seu e-mail antes de entrar. Você pode solicitar um novo envio da confirmação.',over_request_rate_limit:'Muitas tentativas em pouco tempo. Aguarde alguns minutos antes de tentar novamente.',over_email_send_rate_limit:'O limite de envio de e-mails foi atingido. Aguarde alguns minutos.',user_banned:'O acesso a esta conta está restrito. Entre em contato com a equipe LX Group.',signup_disabled:'Novos cadastros estão temporariamente desativados.'};
+ const messages={invalid_credentials:'E-mail ou senha não conferem. Revise os dados e tente novamente.',email_not_confirmed:'Confirme seu e-mail antes de entrar. Você pode solicitar um novo envio da confirmação.',over_request_rate_limit:'Muitas tentativas em pouco tempo. Aguarde alguns minutos antes de tentar novamente.',over_email_send_rate_limit:'O limite de envio de e-mails foi atingido. Aguarde alguns minutos.',user_banned:'O acesso a esta conta está restrito. Entre em contato com a equipe LX Group.',signup_disabled:'Novos cadastros estão temporariamente desativados.',password_mismatch:'As senhas não coincidem. Digite a mesma senha nos dois campos.'};
  if(messages[code])return messages[code];
  if(Number(error?.status)===429)return messages.over_request_rate_limit;
  const text=String(error?.message||'');

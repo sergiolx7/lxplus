@@ -46,7 +46,7 @@ export function lx5Shell({profile={},admin=false,page='Início',term=''}){
  <nav class="mobile-nav" aria-label="Navegação principal">${[['Início','home'],['Músicas','music'],['Comunidade','social'],['Minha Lista','heart'],['Perfil','user']].map(([name,symbol])=>nav(name,symbol,true)).join('')}</nav><div id="layer"></div>`;
 }
 export function lx5QuickNavigation(){
- return '<nav class="lx5-universe-tabs" aria-label="Explore os universos da LX Plus">'+[['Filmes','film','Cinema'],['Séries','series','Séries'],['Doramas','heart','Doramas'],['Animes','sparkles','Animes'],['Músicas','music','Música'],['Livros','book','Livros']].map(([page,symbol,label])=>'<button type="button" data-page="'+page+'">'+icon(symbol)+'<span>'+label+'</span></button>').join('')+'</nav>';
+ return '<nav class="lx5-universe-tabs" aria-label="Explore os universos da LX Plus">'+[['Filmes','film','Cinema','Histórias que ficam.'],['Séries','series','Séries','Seu próximo episódio.'],['Doramas','heart','Doramas','Uma nova paixão.'],['Animes','sparkles','Animes','Além da imaginação.'],['Músicas','music','LX Music','Encontre seu ritmo.'],['Livros','book','Livros','Vire a próxima página.']].map(([page,symbol,label,description],index)=>'<button type="button" data-page="'+page+'"><span class="lx5-universe-index" aria-hidden="true">0'+(index+1)+'</span><span class="lx5-universe-icon">'+icon(symbol)+'</span><span class="lx5-universe-copy"><strong>'+label+'</strong><small>'+description+'</small></span><span class="lx5-universe-arrow" aria-hidden="true">'+icon('arrow')+'</span></button>').join('')+'</nav>';
 }
 export function lx5HomeIntro(profile={}){
  const first=String(profile?.name||'').trim().split(' ')[0];

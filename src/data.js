@@ -1,3 +1,8 @@
+import {BACKEND} from './config.js';
+import {probeAccessHealth,sessionClient} from './access-health.js';
+// Check the gateway before constructing the SDK: a 402 refresh response can
+// otherwise make its initializer remove an expired, still recoverable session.
+let initialAccessHealth=await probeAccessHealth(BACKEND);
 // LX Plus startup: two independent CDNs and a network timeout prevent an endless black loader.
 // Both URLs point to the same pinned version of the official Supabase JS SDK.
 async function loadSupabaseModule(url,timeoutMs=6500){
@@ -19,7 +24,6 @@ try{
 }
 const {createClient}=supabaseModule;
 if(typeof createClient!=='function')throw Error('Biblioteca de autenticação indisponível.');
-import {BACKEND} from './config.js';
 import {resolveItem} from './universal-player.js';
 
 // Keep existing sessions on the original key. If a legacy browser session blocks
@@ -30,7 +34,15 @@ const authOptions=()=>{
  const recovery=(()=>{try{return localStorage.getItem(RECOVERY_FLAG)==='1'}catch{return false}})();
  return {persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,...(recovery?{storageKey:RECOVERY_KEY}:{})};
 };
-export let db=createClient(BACKEND.url,BACKEND.key,{auth:authOptions()});
+const sessionBackend=sessionClient({health:initialAccessHealth,create:()=>createClient(BACKEND.url,BACKEND.key,{auth:authOptions()})});
+export let db=sessionBackend.current;
+export async function getAccessHealth(){
+ if(initialAccessHealth){const health=initialAccessHealth;initialAccessHealth=null;return health}
+ return probeAccessHealth(BACKEND);
+}
+export function resumeAuthSession(){
+ const resumed=sessionBackend.resume();if(resumed)db=resumed;return resumed;
+}
 export function switchToRecoveryLogin(){
  try{localStorage.setItem(RECOVERY_FLAG,'1')}catch{}
  db=createClient(BACKEND.url,BACKEND.key,{auth:authOptions()});
